@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { faBars, faDharmachakra, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -29,9 +30,17 @@ export class HeaderComponent implements OnInit {
   ];
   showNav = false;
 
-  constructor() { }
+  constructor(
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
+  }
+
+
+  navigateTo(target:string) {
+    this.router.navigate([target]);
+    this.showNav = false;
   }
 
 

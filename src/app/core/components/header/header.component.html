@@ -5,7 +5,7 @@
   <nav *ngIf="showNav">
     <ul>
       <li *ngFor="let item of navigation">
-        <button type="button" routerLink="{{item.link}}">
+        <button type="button" (click)="navigateTo(item.link)">
           <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
           {{item.label}}
         </button>

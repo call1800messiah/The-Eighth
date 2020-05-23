@@ -18,7 +18,9 @@ button {
   font-size: $base-body-font-size;
   height: 5rem;
   line-height: 5rem;
+  min-width: 5rem;
   outline: none;
+  padding: 0 10px;
 }
 
 header {
