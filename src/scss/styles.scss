@@ -1,0 +1,22 @@
+@import "variables.scss";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: $base-font-size;  
+}
+
+body {
+  background-color: $color-dark;
+  color: $color-bright;
+  font-family: $base-body-font-family;
+  font-size: $base-body-font-size;
+  line-height: $base-body-line-height;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}

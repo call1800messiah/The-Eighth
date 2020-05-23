@@ -1,0 +1,16 @@
+<header>
+  <button type="button" ng-click="toggleNavigation()" title="Menu"></button>
+  <nav ng-if="showNav">
+    <ul>
+      <li>
+        <a routerLink="/">Home</a>
+      </li>
+      <li>
+        <a routerLink="/achievements">Achievements</a>
+      </li>
+      <li>
+        <a routerLink="/people">Personen</a>
+      </li>
+    </ul>
+  </nav>
+</header>
