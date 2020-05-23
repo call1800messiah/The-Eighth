@@ -1,15 +1,14 @@
 <header>
-  <button type="button" ng-click="toggleNavigation()" title="Menu"></button>
-  <nav ng-if="showNav">
+  <button type="button" (click)="toggleNavigation()" title="Menu">
+    <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
+  <nav *ngIf="showNav">
     <ul>
-      <li>
-        <a routerLink="/">Home</a>
-      </li>
-      <li>
-        <a routerLink="/achievements">Achievements</a>
-      </li>
-      <li>
-        <a routerLink="/people">Personen</a>
+      <li *ngFor="let item of navigation">
+        <button type="button" routerLink="{{item.link}}">
+          <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
+          {{item.label}}
+        </button>
       </li>
     </ul>
   </nav>
