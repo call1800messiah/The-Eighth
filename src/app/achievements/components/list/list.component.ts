@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { Achievement } from 'src/app/core/models/achievements.model';
+import { DataService } from 'src/app/core/services/data.service';
+
+
 
 @Component({
   selector: 'app-list',
@@ -6,8 +12,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
+  achievements$: Observable<Achievement[]>;
 
-  constructor() { }
+  constructor(
+    private data: DataService,
+  ) {
+    this.achievements$ = this.data.getAchievements();
+    this.achievements$.subscribe((stuff) => {
+      console.log(stuff);
+    });
+  }
 
   ngOnInit(): void {
   }

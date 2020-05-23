@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
+import { Achievement } from '../models/achievements.model';
 
 
 
@@ -15,12 +16,34 @@ export class DataService {
   constructor(
     private api: ApiService
   ) {}
+  
+  
+  getAchievements(): Observable<Achievement[]> {
+    return this.api.getAchievements().pipe(
+      map(this.transformAchievements),
+    );
+  }  
 
 
   getPeople(): Observable<Person[]> {
     return this.api.getPeople().pipe(
-      map(this.transformPeople)
+      map(this.transformPeople),
     );
+  }
+  
+  
+  private transformAchievements(achievements: any[]): Achievement[] {
+    return achievements.reduce((all, achieve) => {
+      all.push(new Achievement(
+        achieve.id,
+        achieve.name,
+        achieve.description,
+        new Date(achieve.unlocked),
+        achieve.icon,
+        achieve.people
+      ));
+      return all;
+    }, []);
   }
 
 

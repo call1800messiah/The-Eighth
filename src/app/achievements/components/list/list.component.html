@@ -1,1 +1,6 @@
-<p>list works!</p>
+<ul>
+  <li *ngFor="let achievement of achievements$ | async">
+    {{achievement.name}}<br />
+    {{achievement.description}}
+  </li>
+</ul>

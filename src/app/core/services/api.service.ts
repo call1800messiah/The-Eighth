@@ -12,6 +12,10 @@ export class ApiService {
     private afs: AngularFirestore
   ) {}
   
+  getAchievements(): Observable<any[]> {
+    return this.afs.collection('achievements').valueChanges();
+  }
+  
   getPeople(): Observable<any[]> {
     return this.afs.collection('people').valueChanges();
   }
