@@ -18,9 +18,6 @@ export class ListComponent implements OnInit {
     private data: DataService,
   ) {
     this.achievements$ = this.data.getAchievements();
-    this.achievements$.subscribe((stuff) => {
-      console.log(stuff);
-    });
   }
 
   ngOnInit(): void {

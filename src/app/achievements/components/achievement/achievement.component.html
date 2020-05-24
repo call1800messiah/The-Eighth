@@ -1,0 +1,19 @@
+<div class="wrapper">
+  <div class="image">
+    <img *ngIf="achievement.icon" src="{{achievement.icon}}" alt="{{achievement.name}}" />
+    <fa-icon *ngIf="!achievement.icon" [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>
+  </div>
+  <div class="text">
+    <div class="title">{{achievement.name}}</div>
+    {{achievement.description}}
+  </div>
+  <div class="meta clearfix">
+    <div class="label">
+      <fa-icon [icon]="faUnlock" [fixedWidth]="true"></fa-icon>
+      {{achievement.unlocked | date: 'dd.MM.yy'}}
+    </div>
+    <div class="people">
+      <app-avatar *ngFor="let person of achievement.people" [person]="person"></app-avatar>
+    </div>
+  </div>
+</div>

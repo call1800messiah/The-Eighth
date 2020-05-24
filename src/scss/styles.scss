@@ -19,3 +19,13 @@ body {
   margin: 0;
   padding: $header-height 0 0;
 }
+
+.clearfix:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.float-right { float: right; }
+.float-left { float: left; }
+

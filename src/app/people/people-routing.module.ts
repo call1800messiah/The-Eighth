@@ -8,7 +8,13 @@ import { ListComponent } from './components/list/list.component';
 const routes: Routes = [{
   path: '',
   children: [
-    { path: '', component: ListComponent },
+    { 
+      path: '', 
+      component: ListComponent,
+      children: [
+        { path: ':id', component: ListComponent },
+      ],
+    },
   ]
 }];
 

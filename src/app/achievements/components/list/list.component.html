@@ -1,6 +1,1 @@
-<ul>
-  <li *ngFor="let achievement of achievements$ | async">
-    {{achievement.name}}<br />
-    {{achievement.description}}
-  </li>
-</ul>
+<app-achievement *ngFor="let achievement of achievements$ | async" [achievement]="achievement"></app-achievement>

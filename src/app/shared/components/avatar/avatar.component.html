@@ -1,0 +1,7 @@
+<div class="wrapper" (click)="goToPerson()">
+  <div class="image">
+    <img *ngIf="person.image" src="{{person.image}}" alt="{{person.name}}" />
+  </div>
+  
+  <div *ngIf="!person.image" class="default">{{person.name.substr(0,1)}}</div>
+</div>

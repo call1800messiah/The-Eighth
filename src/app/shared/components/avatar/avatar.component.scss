@@ -1,0 +1,30 @@
+@import '../../../../scss/variables.scss';
+
+.wrapper {
+  border: 1px solid $color-primary;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.image {
+  padding-bottom: 100%;
+  position: relative;
+  width: 100%
+}
+
+.default {
+  height: calc(100% + 2px);
+  left: -1px;
+  position: absolute;
+  text-align: center;
+  top: -1px;
+  width: calc(100% + 2px);
+}
+
+img {
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}

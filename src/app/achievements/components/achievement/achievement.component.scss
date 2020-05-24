@@ -1,0 +1,56 @@
+@import '../../../../scss/variables.scss';
+$achievement-padding:     10px;
+$achievement-image-size:  80px;
+$avatar-size:             2.8rem;
+
+.wrapper {
+  border: 1px solid $color-primary;
+  display: flex;
+  flex-wrap: wrap;
+  padding: $achievement-padding;
+}
+
+.image {
+  font-size: 4rem;
+  height: $achievement-image-size;
+  line-height: $achievement-image-size;
+  margin-right: $achievement-padding;
+  text-align: center;
+  width: $achievement-image-size;
+}
+
+.text {
+  margin-bottom: $achievement-padding;
+  width: calc(100% - #{$achievement-image-size} - #{$achievement-padding});
+}
+
+.title {
+  font-size: $item-title-font-size;  
+  line-height: $item-title-line-height;
+  margin-bottom: 5px;
+}
+
+.meta {
+  position: relative;
+  width: 100%;
+  
+  .label {
+    bottom: 0;
+    font-size: $detail-text-font-size;
+    left: 0;
+    position: absolute;
+  }
+}
+
+.people {
+  padding-left: $achievement-image-size + $achievement-padding;
+  text-align: right;
+}
+
+app-avatar {
+  display: inline-block;
+  margin-left: 5px;
+  overflow: hidden;
+  line-height: $avatar-size;
+  width: $avatar-size;
+}
