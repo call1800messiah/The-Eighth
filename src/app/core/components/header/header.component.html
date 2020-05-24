@@ -1,8 +1,11 @@
 <header>
-  <button type="button" (click)="toggleNavigation()" title="Menu">
+  <button id="menu-button" type="button" (click)="toggleNavigation()" title="Menu">
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
-  <nav *ngIf="showNav">
+  
+  <h1>{{pageLabel$ | async}}</h1>
+  
+  <nav *ngIf="navVisible$ | async">
     <ul>
       <li *ngFor="let item of navigation">
         <button type="button" (click)="navigateTo(item.link)">

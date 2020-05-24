@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { faBars, faDharmachakra, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+
+import { NavigationService } from '../../services/navigation.service';
+import {Observable} from 'rxjs';
 
 
 
@@ -11,40 +13,27 @@ import { faBars, faDharmachakra, faTrophy, faUsers } from '@fortawesome/free-sol
 })
 export class HeaderComponent implements OnInit {
   faBars = faBars;
-  navigation = [
-    {
-      label: 'Home',
-      icon: faDharmachakra,
-      link: '/'
-    },
-    {
-      label: 'Personen',
-      icon: faUsers,
-      link: '/people'
-    },
-    {
-      label: 'Achievements',
-      icon: faTrophy,
-      link: '/achievements'
-    },
-  ];
-  showNav = false;
+  navigation: any[];
+  navVisible$: Observable<boolean>;
+  pageLabel$: Observable<string>;
 
   constructor(
-    private router: Router,
-  ) { }
-
-  ngOnInit(): void {
+    public nav: NavigationService,
+  ) {
+    this.navVisible$ = this.nav.navVisible$;
+    this.pageLabel$ = this.nav.pageLabel$;
+    this.navigation = this.nav.getNavigation();
   }
+
+  ngOnInit(): void {}
 
 
   navigateTo(target:string) {
-    this.router.navigate([target]);
-    this.showNav = false;
+    this.nav.navigateTo(target);
   }
 
 
   toggleNavigation() {
-    this.showNav = !this.showNav;
+    this.nav.toggleNavigation();
   }
 }

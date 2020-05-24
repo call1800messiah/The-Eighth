@@ -23,15 +23,31 @@ button {
   padding: 0 10px;
 }
 
+#menu-button {
+  left: 0;
+  position: absolute;
+}
+
 header {
   background-color: $color-dark;
   box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
   height: $header-height;
   left: 0;
+  padding: 0 6rem;
   position: fixed;
   right: 0;
   top: 0;
   z-index: 100;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: $header-height;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 nav {
