@@ -20,12 +20,14 @@ export class DataService {
   ) {
     this.people$ = this.api.getPeople().pipe(
       map(this.transformPeople),
+      map((people) => people.sort(this.orderByName)),
     );
     this.achievements$ = combineLatest(
       this.api.getAchievements(),
       this.people$,
     ).pipe(
       map(([achievements, people]) => this.transformAchievements(achievements, people)),
+      map((achievements) => achievements.sort(this.orderByUnlocked)),
     );
   }
   
@@ -47,7 +49,7 @@ export class DataService {
         entry.payload.doc.id,
         achieve.name,
         achieve.description,
-        new Date(achieve.unlocked),
+        new Date(achieve.unlocked.seconds * 1000),
         achieve.icon,
         people.filter((person) => achieve.people.indexOf(person.id) !== -1),
       ));
@@ -75,5 +77,19 @@ export class DataService {
       ));
       return all;
     }, []);
+  }
+  
+  
+  private orderByName(a: Person, b: Person) {
+    if (a.name > b.name) return 1;
+    if (a.name < b.name) return -1;
+    return 0;
+  }
+  
+  
+  private orderByUnlocked(a: Achievement, b: Achievement) {
+    if (a.unlocked < b.unlocked) return 1;
+    if (a.unlocked > b.unlocked) return -1;
+    return 0;
   }
 }
