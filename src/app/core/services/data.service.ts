@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Person } from '../models/person.model';
@@ -12,35 +12,44 @@ import { Achievement } from '../models/achievements.model';
   providedIn: 'root'
 })
 export class DataService {
+  private people$: Observable<Person[]>;
+  private achievements$: Observable<Achievement[]>;
 
   constructor(
     private api: ApiService
-  ) {}
-  
-  
-  getAchievements(): Observable<Achievement[]> {
-    return this.api.getAchievements().pipe(
-      map(this.transformAchievements),
-    );
-  }  
-
-
-  getPeople(): Observable<Person[]> {
-    return this.api.getPeople().pipe(
+  ) {
+    this.people$ = this.api.getPeople().pipe(
       map(this.transformPeople),
+    );
+    this.achievements$ = combineLatest(
+      this.api.getAchievements(),
+      this.people$,
+    ).pipe(
+      map(([achievements, people]) => this.transformAchievements(achievements, people)),
     );
   }
   
   
-  private transformAchievements(achievements: any[]): Achievement[] {
-    return achievements.reduce((all, achieve) => {
+  getAchievements(): Observable<Achievement[]> {
+    return this.achievements$;
+  }  
+
+
+  getPeople(): Observable<Person[]> {
+    return this.people$;
+  }
+  
+  
+  private transformAchievements(achievements: any[], people: Person[]): Achievement[] {
+    return achievements.reduce((all, entry) => {
+      const achieve = entry.payload.doc.data();
       all.push(new Achievement(
-        achieve.id,
+        entry.payload.doc.id,
         achieve.name,
         achieve.description,
         new Date(achieve.unlocked),
         achieve.icon,
-        achieve.people
+        people.filter((person) => achieve.people.indexOf(person.id) !== -1),
       ));
       return all;
     }, []);
@@ -48,10 +57,11 @@ export class DataService {
 
 
   private transformPeople(people: any[]): Person[] {
-    return people.reduce((all, person) => {
+    return people.reduce((all, entry) => {
+      const person = entry.payload.doc.data();
       all.push(new Person(
-        person.id,
-        person.name,
+        entry.payload.doc.id,
+        person.name || '',
         person.affiliation || null,
         person.birthday || null,
         person.birthyear || null,

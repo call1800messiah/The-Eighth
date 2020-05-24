@@ -13,10 +13,10 @@ export class ApiService {
   ) {}
   
   getAchievements(): Observable<any[]> {
-    return this.afs.collection('achievements').valueChanges();
+    return this.afs.collection('achievements').snapshotChanges();
   }
   
   getPeople(): Observable<any[]> {
-    return this.afs.collection('people').valueChanges();
+    return this.afs.collection('people').snapshotChanges();
   }
 }
