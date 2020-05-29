@@ -7,5 +7,8 @@
     <div class="title" *ngIf="person.title">{{person.title}}</div>
     <div class="name">{{person.name}}</div>
     <div class="birthday">{{person.birthday}} {{person.birthyear}} BF</div>
+    <div class="dead" *ngIf="person.deathday">
+      <fa-icon [icon]="faSkullCrossbones" [fixedWidth]="true"></fa-icon>
+    </div>
   </div>
 </div>
