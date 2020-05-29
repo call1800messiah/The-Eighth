@@ -1,0 +1,11 @@
+<div class="wrapper">
+  <div class="image">
+    <app-avatar [person]="person"></app-avatar>
+  </div>
+
+  <div class="text">
+    <div class="title" *ngIf="person.title">{{person.title}}</div>
+    <div class="name">{{person.name}}</div>
+    <div class="birthday">{{person.birthday}} {{person.birthyear}} BF</div>
+  </div>
+</div>

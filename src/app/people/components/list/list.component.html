@@ -1,5 +1,1 @@
-<ul>
-  <li *ngFor="let person of people$ | async">
-    {{person.name}}
-  </li>
-</ul>
+<app-person-info *ngFor="let person of people$ | async" [person]="person"></app-person-info>

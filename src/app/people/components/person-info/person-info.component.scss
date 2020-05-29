@@ -1,0 +1,37 @@
+@import '../../../../scss/variables.scss';
+
+.wrapper {
+  border: 1px solid $color-primary;
+  display: flex;
+  flex-wrap: wrap;
+  padding: $item-padding;
+}
+
+.image {
+  font-size: 4rem;
+  height: $item-image-size;
+  line-height: $item-image-size;
+  margin-right: $item-padding;
+  text-align: center;
+  width: $item-image-size;
+}
+
+.text {
+  margin-bottom: $item-padding;
+  position: relative;
+  width: calc(100% - #{$item-image-size} - #{$item-padding});
+}
+
+.name {
+  font-size: 2rem;
+  line-height: 2.8rem;
+  padding-top: $detail-text-line-height;
+}
+
+.title {
+  font-size: $detail-text-font-size;
+  line-height: $detail-text-line-height;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
