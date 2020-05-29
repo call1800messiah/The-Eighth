@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { faDharmachakra, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 
@@ -15,7 +15,7 @@ export class NavigationService {
   private activeNavigation: any;
   private navigation = [
     {
-      label: 'Home',
+      label: 'Sphärenreiter',
       icon: faDharmachakra,
       link: '/'
     },
@@ -32,40 +32,37 @@ export class NavigationService {
   ];
 
   constructor(
-    private router: Router,  
+    private router: Router,
   ) {
     this.navVisible$ = new BehaviorSubject(this.showNav);
-    // TODO: Set this based on initial route
     this.activeNavigation = this.navigation[0];
     this.pageLabel$ = new BehaviorSubject(this.activeNavigation.label);
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        const active = this.navigation.find((page) => page.link === event.url);
+        if (active) {
+          this.activeNavigation = active;
+          this.pageLabel$.next(this.activeNavigation.label);
+        }
+      }
+    });
   }
-  
-  
-  
+
+
+
   getNavigation() {
     return this.navigation;
   }
-    
-  
-  navigateTo(target:string) {
-    this.router.navigate([target]).then((success) => {
-      if (success) {
-        // TODO: Move this to a route change listener
-        this.activeNavigation = this.findNavigationByLink(target);
-        this.pageLabel$.next(this.activeNavigation.label);
-      }
-    });
+
+
+  navigateTo(target: string) {
+    this.router.navigate([target]);
     this.toggleNavigation();
   }
-  
-  
+
+
   toggleNavigation() {
     this.showNav = !this.showNav;
     this.navVisible$.next(this.showNav);
-  }
-  
-  
-  private findNavigationByLink(link: string) {
-    return this.navigation.find((element) => element.link === link);
   }
 }
