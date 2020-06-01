@@ -7,7 +7,7 @@ ul {
 }
 
 button {
-  -webkit-appearance: none; 
+  -webkit-appearance: none;
   appearance: none;
   background: transparent;
   border: none;
@@ -42,6 +42,7 @@ header {
 
 h1 {
   font-size: 3rem;
+  font-weight: normal;
   line-height: $header-height;
   margin: 0;
   overflow: hidden;
@@ -58,7 +59,7 @@ nav {
   right: 0;
   top: $header-height;
   z-index: 100;
-  
+
   button {
     display: block;
     text-align: left;

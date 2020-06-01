@@ -15,7 +15,7 @@ export class NavigationService {
   private activeNavigation: any;
   private navigation = [
     {
-      label: 'Sphärenreiter',
+      label: 'Isidas Hoffnung',
       icon: faDharmachakra,
       link: '/overview'
     },
