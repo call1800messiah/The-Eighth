@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
 
@@ -9,14 +10,27 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
   constructor(
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private afAuth: AngularFireAuth,
   ) {}
-  
+
   getAchievements(): Observable<any[]> {
     return this.afs.collection('achievements').snapshotChanges();
   }
-  
+
+  getAuthState() {
+    return this.afAuth.authState;
+  }
+
   getPeople(): Observable<any[]> {
     return this.afs.collection('people').snapshotChanges();
+  }
+
+  login(email: string, password: string) {
+    return this.afAuth.signInWithEmailAndPassword(email, password);
+  }
+
+  logout() {
+    return this.afAuth.signOut();
   }
 }

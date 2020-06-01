@@ -2,14 +2,16 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ListComponent } from './components/list/list.component';
+import { AuthGuardService } from '../core/services/auth-guard.service';
 
 
 
 const routes: Routes = [{
+  canActivateChild: [AuthGuardService],
   path: '',
   children: [
-    { 
-      path: '', 
+    {
+      path: '',
       component: ListComponent,
       children: [
         { path: ':id', component: ListComponent },

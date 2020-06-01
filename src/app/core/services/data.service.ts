@@ -12,8 +12,8 @@ import { Achievement } from '../models/achievements.model';
   providedIn: 'root'
 })
 export class DataService {
-  private people$: Observable<Person[]>;
-  private achievements$: Observable<Achievement[]>;
+  private readonly people$: Observable<Person[]>;
+  private readonly achievements$: Observable<Achievement[]>;
 
   constructor(
     private api: ApiService
@@ -30,18 +30,18 @@ export class DataService {
       map((achievements) => achievements.sort(this.orderByUnlocked)),
     );
   }
-  
-  
+
+
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
-  }  
+  }
 
 
   getPeople(): Observable<Person[]> {
     return this.people$;
   }
-  
-  
+
+
   private transformAchievements(achievements: any[], people: Person[]): Achievement[] {
     return achievements.reduce((all, entry) => {
       const achieve = entry.payload.doc.data();
@@ -78,15 +78,15 @@ export class DataService {
       return all;
     }, []);
   }
-  
-  
+
+
   private orderByName(a: Person, b: Person) {
     if (a.name > b.name) return 1;
     if (a.name < b.name) return -1;
     return 0;
   }
-  
-  
+
+
   private orderByUnlocked(a: Achievement, b: Achievement) {
     if (a.unlocked < b.unlocked) return 1;
     if (a.unlocked > b.unlocked) return -1;

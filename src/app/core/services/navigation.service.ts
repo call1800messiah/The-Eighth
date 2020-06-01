@@ -17,7 +17,7 @@ export class NavigationService {
     {
       label: 'Sphärenreiter',
       icon: faDharmachakra,
-      link: '/'
+      link: '/overview'
     },
     {
       label: 'Personen',
@@ -58,6 +58,11 @@ export class NavigationService {
   navigateTo(target: string) {
     this.router.navigate([target]);
     this.toggleNavigation();
+  }
+
+
+  setPageLabel(title: string) {
+    this.pageLabel$.next(title);
   }
 
 

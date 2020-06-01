@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { AvatarComponent } from './components/avatar/avatar.component';
 
 
@@ -12,10 +14,12 @@ import { AvatarComponent } from './components/avatar/avatar.component';
   imports: [
     CommonModule,
     FontAwesomeModule,
+    ReactiveFormsModule,
   ],
   exports: [
     AvatarComponent,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ReactiveFormsModule,
   ]
 })
 export class SharedModule { }
