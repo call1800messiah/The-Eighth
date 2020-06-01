@@ -19,15 +19,17 @@ export class DataService {
   constructor(
     private api: ApiService
   ) {
-    this.campaignInfo$ = this.api.getCampaignInfo();
-    this.people$ = this.api.getPeople().pipe(
+    this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
+      map(this.transformSnapshotChanges),
+    );
+    this.people$ = this.api.getDataFromCollection('people').pipe(
       map(this.transformPeople),
       map((people) => people.sort(this.orderByName)),
     );
-    this.achievements$ = combineLatest(
-      this.api.getAchievements(),
+    this.achievements$ = combineLatest([
+      this.api.getDataFromCollection('achievements'),
       this.people$,
-    ).pipe(
+    ]).pipe(
       map(([achievements, people]) => this.transformAchievements(achievements, people)),
       map((achievements) => achievements.sort(this.orderByUnlocked)),
     );
@@ -83,6 +85,14 @@ export class DataService {
         person.title || null,
         person.pc || false,
       ));
+      return all;
+    }, []);
+  }
+
+
+  private transformSnapshotChanges(changeList: any[]) {
+    return changeList.reduce((all, entry) => {
+      all.push(entry.payload.doc.data());
       return all;
     }, []);
   }
