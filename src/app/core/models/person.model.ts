@@ -2,7 +2,6 @@ export class Person{
   constructor(
     public id: string,
     public name: string,
-    public affiliation?: string,
     public birthday?: string,
     public birthyear?: number,
     public culture?: string,

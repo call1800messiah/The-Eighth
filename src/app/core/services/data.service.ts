@@ -73,7 +73,6 @@ export class DataService {
       all.push(new Person(
         entry.payload.doc.id,
         person.name || '',
-        person.affiliation || null,
         person.birthday || null,
         person.birthyear || null,
         person.culture || null,
