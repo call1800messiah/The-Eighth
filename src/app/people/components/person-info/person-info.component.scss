@@ -24,6 +24,7 @@
 
 .name {
   font-size: 2rem;
+  font-weight: bold;
   line-height: 2.8rem;
   padding-top: $detail-text-line-height;
 }
@@ -33,11 +34,13 @@
   line-height: $detail-text-line-height;
   left: 0;
   position: absolute;
+  text-transform: uppercase;
   top: 0;
 }
 
-.dead {
+.status {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: -3px;
+  text-align: right;
+  top: -3px;
 }

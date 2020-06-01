@@ -11,6 +11,7 @@ export class Person{
     public image?: string,
     public profession?: string,
     public race?: string,
-    public title?: string
+    public title?: string,
+    public pc?: boolean,
   ){}
 }

@@ -74,6 +74,7 @@ export class DataService {
         person.profession || null,
         person.race || null,
         person.title || null,
+        person.pc || false,
       ));
       return all;
     }, []);
