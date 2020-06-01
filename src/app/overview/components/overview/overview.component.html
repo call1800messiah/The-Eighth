@@ -1,1 +1,12 @@
-<p>overview works!</p>
+<dl *ngFor="let campaign of campaignInfo$ | async">
+  <dt>Aktuelles Datum</dt>
+  <dd>{{campaign.date}}</dd>
+  <dt>Ausdauer Malus</dt>
+  <dd>-{{campaign.staminaReduction}}</dd>
+  <dt>Schiff</dt>
+  <dd>{{campaign.ship}}</dd>
+  <dt>Kapitän</dt>
+  <dd>{{campaign.captain}}</dd>
+  <dt>Besatzung</dt>
+  <dd>{{campaign.crewcount}}</dd>
+</dl>

@@ -1,0 +1,15 @@
+dl {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+
+  dt {
+    margin-bottom: 5px;
+    width: 50%;
+  }
+
+  dd {
+    margin: 0 0 5px;
+    width: 50%;
+  }
+}

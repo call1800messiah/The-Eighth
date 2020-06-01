@@ -12,12 +12,14 @@ import { Achievement } from '../models/achievements.model';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly people$: Observable<Person[]>;
   private readonly achievements$: Observable<Achievement[]>;
+  private readonly campaignInfo$: Observable<any[]>;
+  private readonly people$: Observable<Person[]>;
 
   constructor(
     private api: ApiService
   ) {
+    this.campaignInfo$ = this.api.getCampaignInfo();
     this.people$ = this.api.getPeople().pipe(
       map(this.transformPeople),
       map((people) => people.sort(this.orderByName)),
@@ -34,6 +36,11 @@ export class DataService {
 
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
+  }
+
+
+  getCampaignInfo(): Observable<any[]> {
+    return this.campaignInfo$;
   }
 
 

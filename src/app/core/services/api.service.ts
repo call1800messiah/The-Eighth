@@ -22,6 +22,10 @@ export class ApiService {
     return this.afAuth.authState;
   }
 
+  getCampaignInfo(): Observable<any[]> {
+    return this.afs.collection('campaign').valueChanges();
+  }
+
   getPeople(): Observable<any[]> {
     return this.afs.collection('people').snapshotChanges();
   }
