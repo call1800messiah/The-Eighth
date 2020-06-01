@@ -1,1 +1,8 @@
-<app-person-info *ngFor="let person of people$ | async" [person]="person"></app-person-info>
+<div class="top-bar clearfix">
+  <div class="form-group">
+    <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name">
+    <label for="filterText">Filter</label>
+  </div>
+</div>
+
+<app-person-info *ngFor="let person of filteredPeople$ | async" [person]="person"></app-person-info>
