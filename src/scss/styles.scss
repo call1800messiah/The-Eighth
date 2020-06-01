@@ -86,3 +86,21 @@ body {
     color: $color-dark;
   }
 }
+
+.btn-icon {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: $color-dark;
+  border: 1px solid $color-primary;
+  border-radius: 0;
+  box-shadow: none;
+  color: $color-primary;
+  cursor: pointer;
+  display: inline-block;
+  font-size: $base-body-font-size;
+  height: $mobile-interactive-height;
+  line-height: $mobile-interactive-height - 2px;
+  padding: 0;
+  text-align: center;
+  width: $mobile-interactive-height;
+}

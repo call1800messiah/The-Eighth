@@ -36,6 +36,15 @@ export class DataService {
   }
 
 
+  addPerson(newPerson: Person) {
+    this.api.addDocumentToCollection(newPerson, 'people').then((result) => {
+      console.log('New person created', result);
+    }).catch((error) => {
+      console.error('Couldn\'t create new person', error);
+    });
+  }
+
+
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
   }

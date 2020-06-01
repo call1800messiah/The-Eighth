@@ -3,6 +3,11 @@
     <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name">
     <label for="filterText">Filter</label>
   </div>
+
+  <button type="button" class="btn-icon" (click)="showAddDialog()">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Person hinzufügen"></fa-icon>
+  </button>
 </div>
 
 <app-person-info *ngFor="let person of filteredPeople$ | async" [person]="person"></app-person-info>

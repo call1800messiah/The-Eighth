@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
@@ -14,6 +14,10 @@ export class ApiService {
     private afAuth: AngularFireAuth,
   ) {}
 
+
+  addDocumentToCollection(document: any, collection: string): Promise<DocumentReference> {
+    return this.afs.collection(collection).add(document);
+  }
 
   getAuthState() {
     return this.afAuth.authState;
