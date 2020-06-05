@@ -6,55 +6,17 @@ ul {
   padding: 0;
 }
 
-button {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  color: $color-primary;
-  cursor: pointer;
-  display: block;
-  font-family: $base-body-font-family;
-  font-size: $base-body-font-size;
-  height: 5rem;
-  line-height: 5rem;
-  min-width: 5rem;
-  outline: none;
-  padding: 0 10px;
-}
-
 #menu-button {
-  left: 0;
+  left: 5px;
   position: absolute;
-}
-
-header {
-  background-color: $color-dark;
-  box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
-  height: $header-height;
-  left: 0;
-  padding: 0 6rem;
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 100;
-}
-
-h1 {
-  font-size: 3rem;
-  font-weight: normal;
-  line-height: $header-height;
-  margin: 0;
-  overflow: hidden;
-  text-align: center;
-  text-overflow: ellipsis;
-  width: 100%;
+  top: 5px;
 }
 
 nav {
   background-color: $color-dark;
   bottom: 0;
   left: 0;
+  padding: $item-padding;
   position: fixed;
   right: 0;
   top: $header-height;

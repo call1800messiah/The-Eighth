@@ -1,14 +1,14 @@
-<header>
-  <button id="menu-button" type="button" (click)="toggleNavigation()" title="Menu">
+<header class="page-header">
+  <button id="menu-button" type="button" class="btn-icon borderless" (click)="toggleNavigation()" title="Menu">
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
-  
+
   <h1>{{pageLabel$ | async}}</h1>
-  
+
   <nav *ngIf="navVisible$ | async">
     <ul>
       <li *ngFor="let item of navigation">
-        <button type="button" (click)="navigateTo(item.link)">
+        <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
           <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
           {{item.label}}
         </button>

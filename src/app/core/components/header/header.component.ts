@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {}
 
 
-  navigateTo(target:string) {
+  navigateTo(target: string) {
     this.nav.navigateTo(target);
   }
 

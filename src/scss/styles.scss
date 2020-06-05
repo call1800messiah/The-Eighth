@@ -85,6 +85,16 @@ body {
     background-color: $color-primary;
     color: $color-dark;
   }
+
+  &.borderless {
+    border: none;
+  }
+
+  &:disabled {
+    border-color: $color-gray;
+    color: $color-gray;
+    cursor: not-allowed;
+  }
 }
 
 .btn-icon {
@@ -103,4 +113,38 @@ body {
   padding: 0;
   text-align: center;
   width: $mobile-interactive-height;
+
+  &.borderless {
+    border: none;
+    line-height: $mobile-interactive-height;
+  }
+
+  &:disabled {
+    border-color: $color-gray;
+    color: $color-gray;
+    cursor: not-allowed;
+  }
+}
+
+.page-header {
+  background-color: $color-dark;
+  box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
+  height: $header-height;
+  left: 0;
+  padding: 0 6rem;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+
+  h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    line-height: $header-height;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
 }
