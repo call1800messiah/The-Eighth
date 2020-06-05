@@ -34,6 +34,7 @@
       display: none;
 
       + label {
+        display: block;
         font-size: $base-body-font-size;
         line-height: $mobile-interactive-height;
         position: static;
