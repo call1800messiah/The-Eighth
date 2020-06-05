@@ -79,20 +79,20 @@ export class DataService {
   private transformPeople(people: any[]): Person[] {
     return people.reduce((all, entry) => {
       const person = entry.payload.doc.data();
-      all.push(new Person(
-        entry.payload.doc.id,
-        person.name || '',
-        person.birthday || null,
-        person.birthyear || null,
-        person.culture || null,
-        person.deathday || null,
-        person.height || null,
-        person.image || null,
-        person.profession || null,
-        person.race || null,
-        person.title || null,
-        person.pc || false,
-      ));
+      all.push({
+        id: entry.payload.doc.id,
+        name: person.name || '',
+        birthday: person.birthday || null,
+        birthyear: person.birthyear || null,
+        culture: person.culture || null,
+        deathday: person.deathday || null,
+        height: person.height || null,
+        image: person.image || null,
+        profession: person.profession || null,
+        race: person.race || null,
+        title: person.title || null,
+        pc: person.pc || false,
+      });
       return all;
     }, []);
   }
