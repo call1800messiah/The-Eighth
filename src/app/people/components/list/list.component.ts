@@ -6,6 +6,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { DataService } from '../../../core/services/data.service';
 import { Person } from 'src/app/core/models/person.model';
+import { PopoverService } from '../../../popover/services/popover.service';
+import { AddPersonComponent } from '../add-person/add-person.component';
 
 
 
@@ -20,7 +22,8 @@ export class ListComponent implements OnInit {
   textFilter: FormControl;
 
   constructor(
-    private data: DataService
+    private data: DataService,
+    private popover: PopoverService,
   ) {
     this.textFilter = new FormControl('');
     this.filteredPeople$ = combineLatest([
@@ -40,7 +43,7 @@ export class ListComponent implements OnInit {
 
 
   showAddDialog() {
-    // TODO: Implement popover component and add person form
+    this.popover.showPopover('Neue Person', AddPersonComponent);
   }
 
 

@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
+import { DocumentReference } from '@angular/fire/firestore';
 
 
 
@@ -36,12 +37,8 @@ export class DataService {
   }
 
 
-  addPerson(newPerson: Person) {
-    this.api.addDocumentToCollection(newPerson, 'people').then((result) => {
-      console.log('New person created', result);
-    }).catch((error) => {
-      console.error('Couldn\'t create new person', error);
-    });
+  addPerson(newPerson: Person): Promise<DocumentReference> {
+    return this.api.addDocumentToCollection(newPerson, 'people');
   }
 
 
