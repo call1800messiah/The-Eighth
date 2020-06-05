@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "the-eighth-52dae": {
+      "hosting": {
+        "The-Eighth": [
+          "the-eighth-52dae"
+        ]
+      }
+    }
+  }
+}

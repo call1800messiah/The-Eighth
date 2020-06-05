@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "The-Eighth",
+      "public": "dist/The-Eighth",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
