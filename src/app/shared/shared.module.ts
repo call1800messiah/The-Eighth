@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AvatarComponent } from './components/avatar/avatar.component';
+import { PopoverModule } from '../popover/popover.module';
 
 
 
@@ -15,11 +16,13 @@ import { AvatarComponent } from './components/avatar/avatar.component';
     CommonModule,
     FontAwesomeModule,
     ReactiveFormsModule,
+    PopoverModule,
   ],
   exports: [
     AvatarComponent,
     FontAwesomeModule,
     ReactiveFormsModule,
+    PopoverModule,
   ]
 })
 export class SharedModule { }

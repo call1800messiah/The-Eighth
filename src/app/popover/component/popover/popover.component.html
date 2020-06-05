@@ -1,0 +1,13 @@
+<div class="popover-wrapper" [ngClass]="{'visible' : visible$ | async}">
+  <header class="page-header">
+    <button id="back-btn" type="button" class="btn-icon borderless" (click)="dismissPopover()">
+      <fa-icon [icon]="faArrowLeft" [fixedWidth]="true"></fa-icon>
+    </button>
+
+    <h1>{{pageLabel$ | async}}</h1>
+  </header>
+
+  <div class="wrapper">
+    <ng-template #popoverHost appPopoverHost></ng-template>
+  </div>
+</div>

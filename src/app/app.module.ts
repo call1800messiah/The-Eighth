@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { OverviewModule } from './overview/overview.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { PopoverModule } from './popover/popover.module';
 
 
 
@@ -18,7 +19,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     CoreModule,
     OverviewModule,
     AppRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    PopoverModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

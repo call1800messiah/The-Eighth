@@ -1,0 +1,29 @@
+@import '../../../../scss/variables.scss';
+
+.popover-wrapper {
+  background-color: $color-dark;
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  top: 100vh;
+  transition: opacity $animation-time, top $animation-time;
+  width: 100%;
+  z-index: 10000;
+
+  &.visible {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+#back-btn {
+  left: 5px;
+  position: absolute;
+  top: 5px;
+}
+
+.wrapper {
+  padding: calc(#{$header-height} + #{$container-horizontal-padding}) $container-horizontal-padding $container-horizontal-padding;
+}
