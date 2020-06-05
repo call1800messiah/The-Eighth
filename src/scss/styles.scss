@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import "forms.scss";
 
 * {
   box-sizing: border-box;
@@ -28,38 +29,6 @@ body {
 
 .float-right { float: right; }
 .float-left { float: left; }
-
-.form-group {
-  margin-bottom: $item-padding;
-  position: relative;
-
-  label {
-    background: $color-dark;
-    font-size: $detail-text-font-size;
-    left: 10px;
-    line-height: $detail-text-line-height;
-    padding: 0 5px;
-    position: absolute;
-    top: -8px;
-    z-index: 1;
-  }
-
-  input {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: $color-dark;
-    border: 1px solid $color-primary;
-    border-radius: 0;
-    box-shadow: none;
-    color: $color-primary;
-    font-family: $base-body-font-family;
-    font-size: $base-body-font-size;
-    height: $mobile-interactive-height;
-    line-height: $mobile-interactive-height - 2px;
-    padding: 0 5px;
-    width: 100%;
-  }
-}
 
 .btn {
   -webkit-appearance: none;

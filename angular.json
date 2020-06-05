@@ -29,6 +29,7 @@
             ],
             "styles": [
               "src/scss/variables.scss",
+              "src/scss/forms.scss",
               "src/scss/styles.scss"
             ],
             "scripts": []
@@ -93,7 +94,8 @@
               "src/assets"
             ],
             "styles": [
-               "src/scss/variables.scss",
+              "src/scss/variables.scss",
+              "src/scss/form.scss",
               "src/scss/styles.scss"
             ],
             "scripts": []
