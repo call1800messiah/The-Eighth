@@ -34,18 +34,20 @@ export class AddPersonComponent implements OnInit, PopoverChild {
   ) { }
 
   ngOnInit(): void {
+    if (this.data.id) {
+      const person = this.data as Person;
+      this.personForm.patchValue(person);
+    }
   }
 
 
   savePerson() {
     const person: Person = {...this.personForm.value};
-    this.dataService.addPerson(person).then((success) => {
-      console.log(success);
-      if (success) {
-        this.dismissPopover.emit(true);
-      }
-    }).catch((error) => {
-      console.log(error);
+    if (this.data.id) {
+      person.id = this.data.id;
+    }
+    this.dataService.storePerson(person).then(() => {
+      this.dismissPopover.emit(true);
     });
   }
 }

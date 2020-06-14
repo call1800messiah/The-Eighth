@@ -5,7 +5,6 @@ import { map } from 'rxjs/operators';
 import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
-import { DocumentReference } from '@angular/fire/firestore';
 
 
 
@@ -37,11 +36,6 @@ export class DataService {
   }
 
 
-  addPerson(newPerson: Person): Promise<DocumentReference> {
-    return this.api.addDocumentToCollection(newPerson, 'people');
-  }
-
-
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
   }
@@ -54,6 +48,31 @@ export class DataService {
 
   getPeople(): Observable<Person[]> {
     return this.people$;
+  }
+
+
+  storePerson(person): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (person.id) {
+        this.api.updateDocumentInCollection(person.id, 'people', person).then(() => {
+          resolve(true);
+        }).catch((error) => {
+          console.log(error);
+          resolve(false);
+        });
+      } else {
+        this.api.addDocumentToCollection(person, 'people').then((reference) => {
+          if (reference) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }).catch((error) => {
+          console.log(error);
+          resolve(false);
+        });
+      }
+    });
   }
 
 
@@ -80,10 +99,10 @@ export class DataService {
         id: entry.payload.doc.id,
         name: person.name || '',
         birthday: person.birthday || null,
-        birthyear: person.birthyear || null,
+        birthyear: person.birthyear !== undefined ? person.birthyear : null,
         culture: person.culture || null,
         deathday: person.deathday || null,
-        height: person.height || null,
+        height: person.height !== undefined ? person.height : null,
         image: person.image || null,
         profession: person.profession || null,
         race: person.race || null,

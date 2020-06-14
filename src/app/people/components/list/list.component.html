@@ -10,4 +10,6 @@
   </button>
 </div>
 
-<app-person-info *ngFor="let person of filteredPeople$ | async" [person]="person"></app-person-info>
+<app-person-info *ngFor="let person of filteredPeople$ | async" [person]="person"
+  (click)="showEditDialog(person)">
+</app-person-info>

@@ -34,4 +34,8 @@ export class ApiService {
   logout() {
     return this.afAuth.signOut();
   }
+
+  updateDocumentInCollection(documentID: string, collection: string, data: any) {
+    return this.afs.collection(collection).doc(documentID).set(data);
+  }
 }

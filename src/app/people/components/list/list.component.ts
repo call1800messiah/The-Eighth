@@ -47,6 +47,11 @@ export class ListComponent implements OnInit {
   }
 
 
+  showEditDialog(person: Person) {
+    this.popover.showPopover(person.name, AddPersonComponent, person);
+  }
+
+
   private filterPeopleByText(data): Person[] {
     const [people, text] = data;
     return people.filter((person) => {
