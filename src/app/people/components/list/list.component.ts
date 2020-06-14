@@ -7,7 +7,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../../core/services/data.service';
 import { Person } from 'src/app/core/models/person.model';
 import { PopoverService } from '../../../popover/services/popover.service';
-import { AddPersonComponent } from '../add-person/add-person.component';
+import { EditPersonComponent } from '../edit-person/edit-person.component';
 
 
 
@@ -43,12 +43,12 @@ export class ListComponent implements OnInit {
 
 
   showAddDialog() {
-    this.popover.showPopover('Neue Person', AddPersonComponent);
+    this.popover.showPopover('Neue Person', EditPersonComponent);
   }
 
 
   showEditDialog(person: Person) {
-    this.popover.showPopover(person.name, AddPersonComponent, person);
+    this.popover.showPopover(person.name, EditPersonComponent, person);
   }
 
 

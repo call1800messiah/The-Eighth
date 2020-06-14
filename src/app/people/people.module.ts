@@ -5,7 +5,7 @@ import { ListComponent } from './components/list/list.component';
 import { PeopleRoutingModule } from './people-routing.module';
 import { PersonInfoComponent } from './components/person-info/person-info.component';
 import { SharedModule } from '../shared/shared.module';
-import { AddPersonComponent } from './components/add-person/add-person.component';
+import { EditPersonComponent } from './components/edit-person/edit-person.component';
 
 
 
@@ -13,7 +13,7 @@ import { AddPersonComponent } from './components/add-person/add-person.component
   declarations: [
     ListComponent,
     PersonInfoComponent,
-    AddPersonComponent,
+    EditPersonComponent,
   ],
   imports: [
       CommonModule,
@@ -21,7 +21,7 @@ import { AddPersonComponent } from './components/add-person/add-person.component
       SharedModule,
   ],
   exports: [
-    AddPersonComponent,
+    EditPersonComponent,
   ]
 })
 export class PeopleModule { }

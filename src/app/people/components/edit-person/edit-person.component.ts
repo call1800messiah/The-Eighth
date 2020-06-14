@@ -8,11 +8,11 @@ import { FormControl, FormGroup } from '@angular/forms';
 
 
 @Component({
-  selector: 'app-add-person',
-  templateUrl: './add-person.component.html',
-  styleUrls: ['./add-person.component.scss']
+  selector: 'app-edit-person',
+  templateUrl: './edit-person.component.html',
+  styleUrls: ['./edit-person.component.scss']
 })
-export class AddPersonComponent implements OnInit, PopoverChild {
+export class EditPersonComponent implements OnInit, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new FormGroup({
