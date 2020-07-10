@@ -16,9 +16,9 @@ import { EditPersonComponent } from './components/edit-person/edit-person.compon
     EditPersonComponent,
   ],
   imports: [
-      CommonModule,
-      PeopleRoutingModule,
-      SharedModule,
+    CommonModule,
+    PeopleRoutingModule,
+    SharedModule,
   ],
   exports: [
     EditPersonComponent,

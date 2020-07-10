@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { Person } from '../../../core/models/person.model';

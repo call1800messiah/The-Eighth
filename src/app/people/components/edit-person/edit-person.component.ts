@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
@@ -25,7 +25,6 @@ export class EditPersonComponent implements OnInit, PopoverChild {
     birthyear: new FormControl(1000),
     height: new FormControl(0),
     deathday: new FormControl(''),
-    // image: new FormControl(''),
     pc: new FormControl(false),
   });
 

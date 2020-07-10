@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {Observable} from 'rxjs';
-import {DataService} from '../../../core/services/data.service';
+import { Observable } from 'rxjs';
+
+import { DataService } from '../../../core/services/data.service';
+
+
 
 @Component({
   selector: 'app-overview',

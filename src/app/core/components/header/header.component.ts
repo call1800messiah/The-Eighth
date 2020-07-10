@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { Observable } from 'rxjs';
 
 import { NavigationService } from '../../services/navigation.service';
-import {Observable} from 'rxjs';
 
 
 
