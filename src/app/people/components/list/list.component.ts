@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -24,6 +25,7 @@ export class ListComponent implements OnInit {
   constructor(
     private data: DataService,
     private popover: PopoverService,
+    private router: Router,
   ) {
     this.textFilter = new FormControl('');
     this.filteredPeople$ = combineLatest([
@@ -42,13 +44,13 @@ export class ListComponent implements OnInit {
   }
 
 
-  showAddDialog() {
-    this.popover.showPopover('Neue Person', EditPersonComponent);
+  goToPerson(person: Person) {
+    this.router.navigate([`people/${person.id}`]);
   }
 
 
-  showEditDialog(person: Person) {
-    this.popover.showPopover(person.name, EditPersonComponent, person);
+  showAddDialog() {
+    this.popover.showPopover('Neue Person', EditPersonComponent);
   }
 
 

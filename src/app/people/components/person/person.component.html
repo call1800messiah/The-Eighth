@@ -1,0 +1,49 @@
+<div class="person" *ngIf="person">
+  <button type="button" id="btn-edit" class="btn-icon" (click)="showEditDialog()">
+    <fa-icon [fixedWidth]="true" [icon]="faUserEdit"></fa-icon>
+  </button>
+
+  <div class="image">
+    <app-avatar [person]="person"></app-avatar>
+  </div>
+
+
+  <div class="info">
+    <dl>
+      <ng-container *ngIf="person.title">
+        <dt>Titel</dt>
+        <dd>{{person.title}}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.birthyear || person.birthday">
+        <dt>Geboren</dt>
+        <dd>{{person.birthday}} {{person.birthyear}} BF</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.deathday">
+        <dt>Gestorben</dt>
+        <dd>{{person.deathday}} BF</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.race">
+        <dt>Rasse</dt>
+        <dd>{{person.race}}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.culture">
+        <dt>Kultur</dt>
+        <dd>{{person.culture}}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.profession">
+        <dt>Profession</dt>
+        <dd>{{person.profession}}</dd>
+      </ng-container>
+
+      <ng-container *ngIf="person.height">
+        <dt>Größe</dt>
+        <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
+      </ng-container>
+    </dl>
+  </div>
+</div>

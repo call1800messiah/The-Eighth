@@ -6,6 +6,8 @@ import { PeopleRoutingModule } from './people-routing.module';
 import { PersonSummaryComponent } from './components/person-summary/person-summary.component';
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
+import { PersonComponent } from './components/person/person.component';
+import { PeopleDashboardComponent } from './components/people-dashboard/people-dashboard.component';
 
 
 
@@ -14,6 +16,8 @@ import { EditPersonComponent } from './components/edit-person/edit-person.compon
     ListComponent,
     PersonSummaryComponent,
     EditPersonComponent,
+    PersonComponent,
+    PeopleDashboardComponent,
   ],
   imports: [
     CommonModule,

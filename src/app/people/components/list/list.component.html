@@ -11,5 +11,5 @@
 </div>
 
 <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person"
-  (click)="showEditDialog(person)">
+  (click)="goToPerson(person)">
 </app-person-summary>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import { Person } from '../models/person.model';
@@ -15,19 +15,22 @@ import { Achievement } from '../models/achievements.model';
 export class DataService {
   private readonly achievements$: Observable<Achievement[]>;
   private readonly campaignInfo$: Observable<any[]>;
-  private readonly people$: Observable<Person[]>;
+  private readonly people$: BehaviorSubject<Person[]>;
 
   constructor(
     private api: ApiService,
     private storage: AngularFireStorage
   ) {
+    this.people$ = new BehaviorSubject<Person[]>([]);
     this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
       map(this.transformSnapshotChanges),
     );
-    this.people$ = this.api.getDataFromCollection('people').pipe(
+    this.api.getDataFromCollection('people').pipe(
       map(this.transformPeople.bind(this)),
       map((people: Person[]) => people.sort(this.orderByName)),
-    );
+    ).subscribe((people) => {
+      this.people$.next(people);
+    });
     this.achievements$ = combineLatest([
       this.api.getDataFromCollection('achievements'),
       this.people$,
@@ -50,6 +53,13 @@ export class DataService {
 
   getPeople(): Observable<Person[]> {
     return this.people$;
+  }
+
+
+  getPersonById(id: string): Observable<Person> {
+    return this.people$.pipe(
+      map((people) => people.find(person => person.id === id)),
+    );
   }
 
 

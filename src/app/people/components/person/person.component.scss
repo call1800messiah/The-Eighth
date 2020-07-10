@@ -1,0 +1,43 @@
+@import "../../../../scss/variables.scss";
+
+.person {
+  position: relative;
+}
+
+#btn-edit {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.image {
+  font-size: 4rem;
+  height: 250px;
+  line-height: 250px;
+  margin: auto;
+  text-align: center;
+  width: 250px;
+}
+
+.info {
+  border: 1px solid $color-primary;
+  margin: $container-horizontal-padding 0;
+  padding: $item-padding;
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  display: inline-block;
+  font-weight: bold;
+  padding-right: $item-padding;
+  width: 100px;
+}
+
+dd {
+  display: inline-block;
+  margin: 0;
+  width: calc(100% - 100px);
+}
