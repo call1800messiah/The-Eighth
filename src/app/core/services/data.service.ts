@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
@@ -17,14 +18,15 @@ export class DataService {
   private readonly people$: Observable<Person[]>;
 
   constructor(
-    private api: ApiService
+    private api: ApiService,
+    private storage: AngularFireStorage
   ) {
     this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
       map(this.transformSnapshotChanges),
     );
     this.people$ = this.api.getDataFromCollection('people').pipe(
-      map(this.transformPeople),
-      map((people) => people.sort(this.orderByName)),
+      map(this.transformPeople.bind(this)),
+      map((people: Person[]) => people.sort(this.orderByName)),
     );
     this.achievements$ = combineLatest([
       this.api.getDataFromCollection('achievements'),
@@ -94,21 +96,27 @@ export class DataService {
 
   private transformPeople(people: any[]): Person[] {
     return people.reduce((all, entry) => {
-      const person = entry.payload.doc.data();
-      all.push({
+      const personData = entry.payload.doc.data();
+      const person = {
         id: entry.payload.doc.id,
-        name: person.name || '',
-        birthday: person.birthday || null,
-        birthyear: person.birthyear !== undefined ? person.birthyear : null,
-        culture: person.culture || null,
-        deathday: person.deathday || null,
-        height: person.height !== undefined ? person.height : null,
-        image: person.image || null,
-        profession: person.profession || null,
-        race: person.race || null,
-        title: person.title || null,
-        pc: person.pc || false,
-      });
+        name: personData.name || '',
+        birthday: personData.birthday || null,
+        birthyear: personData.birthyear !== undefined ? personData.birthyear : null,
+        culture: personData.culture || null,
+        deathday: personData.deathday || null,
+        height: personData.height !== undefined ? personData.height : null,
+        image: null,
+        profession: personData.profession || null,
+        race: personData.race || null,
+        title: personData.title || null,
+        pc: personData.pc || false,
+      };
+      if (personData.image && personData.image !== '') {
+        this.storage.ref(personData.image).getDownloadURL().subscribe((url) => {
+          person.image = url;
+        });
+      }
+      all.push(person);
       return all;
     }, []);
   }
