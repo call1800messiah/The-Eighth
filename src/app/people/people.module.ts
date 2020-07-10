@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ListComponent } from './components/list/list.component';
 import { PeopleRoutingModule } from './people-routing.module';
-import { PersonInfoComponent } from './components/person-info/person-info.component';
+import { PersonSummaryComponent } from './components/person-summary/person-summary.component';
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 
@@ -12,7 +12,7 @@ import { EditPersonComponent } from './components/edit-person/edit-person.compon
 @NgModule({
   declarations: [
     ListComponent,
-    PersonInfoComponent,
+    PersonSummaryComponent,
     EditPersonComponent,
   ],
   imports: [

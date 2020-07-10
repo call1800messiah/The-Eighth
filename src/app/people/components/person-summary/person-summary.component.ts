@@ -6,11 +6,11 @@ import { Person } from '../../../core/models/person.model';
 
 
 @Component({
-  selector: 'app-person-info',
-  templateUrl: './person-info.component.html',
-  styleUrls: ['./person-info.component.scss']
+  selector: 'app-person-summary',
+  templateUrl: './person-summary.component.html',
+  styleUrls: ['./person-summary.component.scss']
 })
-export class PersonInfoComponent implements OnInit {
+export class PersonSummaryComponent implements OnInit {
   @Input() person: Person;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
@@ -21,3 +21,4 @@ export class PersonInfoComponent implements OnInit {
   }
 
 }
+
