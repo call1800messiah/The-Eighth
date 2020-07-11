@@ -23,11 +23,11 @@ export class DataService {
   ) {
     this.people$ = new BehaviorSubject<Person[]>([]);
     this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
-      map(this.transformSnapshotChanges),
+      map(DataService.transformSnapshotChanges),
     );
     this.api.getDataFromCollection('people').pipe(
       map(this.transformPeople.bind(this)),
-      map((people: Person[]) => people.sort(this.orderByName)),
+      map((people: Person[]) => people.sort(DataService.orderByName)),
     ).subscribe((people) => {
       this.people$.next(people);
     });
@@ -36,8 +36,38 @@ export class DataService {
       this.people$,
     ]).pipe(
       map(([achievements, people]) => this.transformAchievements(achievements, people)),
-      map((achievements) => achievements.sort(this.orderByUnlocked)),
+      map((achievements) => achievements.sort(DataService.orderByUnlocked)),
     );
+  }
+
+
+  private static transformSnapshotChanges(changeList: any[]) {
+    return changeList.reduce((all, entry) => {
+      all.push(entry.payload.doc.data());
+      return all;
+    }, []);
+  }
+
+
+  private static orderByName(a: Person, b: Person) {
+    if (a.name > b.name) {
+      return 1;
+    }
+    if (a.name < b.name) {
+      return -1;
+    }
+    return 0;
+  }
+
+
+  private static orderByUnlocked(a: Achievement, b: Achievement) {
+    if (a.unlocked < b.unlocked) {
+      return 1;
+    }
+    if (a.unlocked > b.unlocked) {
+      return -1;
+    }
+    return 0;
   }
 
 
@@ -152,27 +182,5 @@ export class DataService {
       all.push(person);
       return all;
     }, []);
-  }
-
-
-  private transformSnapshotChanges(changeList: any[]) {
-    return changeList.reduce((all, entry) => {
-      all.push(entry.payload.doc.data());
-      return all;
-    }, []);
-  }
-
-
-  private orderByName(a: Person, b: Person) {
-    if (a.name > b.name) return 1;
-    if (a.name < b.name) return -1;
-    return 0;
-  }
-
-
-  private orderByUnlocked(a: Achievement, b: Achievement) {
-    if (a.unlocked < b.unlocked) return 1;
-    if (a.unlocked > b.unlocked) return -1;
-    return 0;
   }
 }
