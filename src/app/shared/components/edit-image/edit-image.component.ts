@@ -33,8 +33,8 @@ export class EditImageComponent implements OnInit, PopoverChild {
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.height = 100;
     this.cropperSettings.width = 100;
-    this.cropperSettings.croppedHeight = 250;
-    this.cropperSettings.croppedWidth = 250;
+    this.cropperSettings.croppedHeight = 500;
+    this.cropperSettings.croppedWidth = 500;
     this.cropperSettings.dynamicSizing = true;
     this.cropperSettings.fileType = 'image/jpeg';
     this.cropperSettings.noFileInput = true;
