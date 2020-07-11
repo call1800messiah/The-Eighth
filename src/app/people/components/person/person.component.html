@@ -10,6 +10,11 @@
 
   <div class="info">
     <dl>
+      <ng-container>
+        <dt>Name</dt>
+        <dd>{{person.name}}</dd>
+      </ng-container>
+
       <ng-container *ngIf="person.title">
         <dt>Titel</dt>
         <dd>{{person.title}}</dd>
