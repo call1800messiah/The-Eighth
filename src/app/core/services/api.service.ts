@@ -36,6 +36,6 @@ export class ApiService {
   }
 
   updateDocumentInCollection(documentID: string, collection: string, data: any) {
-    return this.afs.collection(collection).doc(documentID).set(data);
+    return this.afs.collection(collection).doc(documentID).set(data, { merge: true });
   }
 }
