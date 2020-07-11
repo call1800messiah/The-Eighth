@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
-import slugify from 'slugify';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
