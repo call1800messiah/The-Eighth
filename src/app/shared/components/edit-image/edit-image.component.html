@@ -1,7 +1,12 @@
 <div class="form-group">
-  <input type="file" id="image" accept=".png,.jpg,.gif" (change)="uploadImage($event)">
+  <input type="file" id="image" accept=".png,.jpg,.gif" (change)="selectedImageChanged($event)">
   <label for="image">Neues Bild</label>
+  <img-cropper #cropper [image]="croppedImageData" [settings]="cropperSettings" *ngIf="imageName"></img-cropper>
 </div>
+
+<button type="button" class="btn" (click)="saveImage()">
+  Speichern
+</button>
 
 <div class="form-group image" *ngIf="data.imageUrl">
   <img src="{{data.imageUrl}}" />

@@ -6,6 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AvatarComponent } from './components/avatar/avatar.component';
 import { PopoverModule } from '../popover/popover.module';
 import { EditImageComponent } from './components/edit-image/edit-image.component';
+import { ImageCropperModule } from 'ngx-img-cropper';
 
 
 
@@ -19,6 +20,7 @@ import { EditImageComponent } from './components/edit-image/edit-image.component
     FontAwesomeModule,
     ReactiveFormsModule,
     PopoverModule,
+    ImageCropperModule,
   ],
   exports: [
     AvatarComponent,

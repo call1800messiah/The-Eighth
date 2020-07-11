@@ -2,6 +2,9 @@
 
 .image {
   border: 1px solid $color-primary;
+  line-height: 0;
+  margin-top: 20px;
+  text-align: center;
 
   img {
     height: auto;

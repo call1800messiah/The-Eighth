@@ -118,8 +118,8 @@ export class DataService {
   }
 
 
-  uploadFile(file: File, bucket: string, updateRef?: { id: string, image: string }) {
-    const fileName = `${bucket}/${file.name}`;
+  uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: { id: string, image: string }) {
+    const fileName = `${bucket}/${name}`;
     const fileRef = this.storage.ref(fileName);
     const task = fileRef.put(file);
     task.percentageChanges().pipe(

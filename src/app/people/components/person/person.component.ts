@@ -10,6 +10,7 @@ import { PopoverService } from '../../../popover/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { DataService } from '../../../core/services/data.service';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';
+import { UtilService } from '../../../core/services/util.service';
 
 
 
@@ -28,6 +29,7 @@ export class PersonComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private navigation: NavigationService,
     private data: DataService,
+    private util: UtilService,
   ) { }
 
   ngOnInit(): void {
@@ -57,6 +59,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   showEditImageDialog() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: 'people',
+      imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,
       updateRef: this.person,
     });
