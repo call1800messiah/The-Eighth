@@ -3,7 +3,7 @@
     <fa-icon [fixedWidth]="true" [icon]="faUserEdit"></fa-icon>
   </button>
 
-  <div class="image">
+  <div class="image" (click)="showEditImageDialog()">
     <app-avatar [person]="person"></app-avatar>
   </div>
 

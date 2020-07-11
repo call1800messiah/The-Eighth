@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import { Person } from '../models/person.model';
@@ -85,6 +85,29 @@ export class DataService {
         });
       }
     });
+  }
+
+
+  uploadFile(file: File, bucket: string, updateRef?: { id: string, image: string }) {
+    const fileName = `${bucket}/${file.name}`;
+    const fileRef = this.storage.ref(fileName);
+    const task = fileRef.put(file);
+    task.percentageChanges().pipe(
+      finalize(() => {
+        if (updateRef) {
+          fileRef.getDownloadURL().subscribe(() => {
+            const update = Object.assign({}, updateRef, { image: fileName });
+            this.api.updateDocumentInCollection(update.id, bucket, update).then(() => {}).catch((error) => {
+              console.log(error);
+            });
+          });
+        }
+        console.log('Upload done', fileName);
+      })
+    ).subscribe((change) => {
+      console.log('Upload progress: ', fileName, change);
+    });
+    return task;
   }
 
 

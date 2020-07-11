@@ -1,0 +1,10 @@
+@import "../../../../scss/variables.scss";
+
+.image {
+  border: 1px solid $color-primary;
+
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+}
