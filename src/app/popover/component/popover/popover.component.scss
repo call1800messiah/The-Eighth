@@ -2,23 +2,23 @@
 
 .popover-wrapper {
   background-color: $color-dark;
-  display: none;
   height: 100%;
   left: 0;
-  opacity: 0;
   overflow: auto;
   position: fixed;
   right: 0;
   top: 100vh;
-  transition: opacity $animation-time, top $animation-time;
+  transition: top $animation-time;
   width: 100%;
   z-index: 10000;
 
   &.visible {
-    opacity: 1;
-    display: block;
     top: 0;
+
+    .page-header { display: block; }
   }
+
+  .page-header { display: none; }
 }
 
 #back-btn {
