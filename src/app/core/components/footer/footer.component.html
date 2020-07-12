@@ -1,0 +1,16 @@
+<footer class="page-footer">
+  <button id="menu-button" type="button" class="btn-icon borderless" (click)="toggleNavigation()" title="Menu">
+    <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
+</footer>
+
+<nav [ngClass]="{ 'open': navVisible$ | async }">
+  <ul class="unstyled-list">
+    <li *ngFor="let item of navigation">
+      <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
+        <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
+        {{item.label}}
+      </button>
+    </li>
+  </ul>
+</nav>
