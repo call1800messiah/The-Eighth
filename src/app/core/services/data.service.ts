@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
-import { AngularFireStorage } from '@angular/fire/storage';
+import { map } from 'rxjs/operators';
 
 import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
+import { StorageService } from './storage.service';
 
 
 
@@ -19,7 +19,7 @@ export class DataService {
 
   constructor(
     private api: ApiService,
-    private storage: AngularFireStorage
+    private storage: StorageService
   ) {
     this.people$ = new BehaviorSubject<Person[]>([]);
     this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
@@ -71,11 +71,6 @@ export class DataService {
   }
 
 
-  getAudioUrlForFile(fileName: string): Observable<string> {
-    return this.storage.ref(`audio/${fileName}`).getDownloadURL();
-  }
-
-
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
   }
@@ -123,29 +118,6 @@ export class DataService {
   }
 
 
-  uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: { id: string, image: string }) {
-    const fileName = `${bucket}/${name}`;
-    const fileRef = this.storage.ref(fileName);
-    const task = fileRef.put(file);
-    task.percentageChanges().pipe(
-      finalize(() => {
-        if (updateRef) {
-          fileRef.getDownloadURL().subscribe(() => {
-            const update = Object.assign({}, updateRef, { image: fileName });
-            this.api.updateDocumentInCollection(update.id, bucket, update).then(() => {}).catch((error) => {
-              console.log(error);
-            });
-          });
-        }
-        console.log('Upload done', fileName);
-      })
-    ).subscribe((change) => {
-      console.log('Upload progress: ', fileName, change);
-    });
-    return task;
-  }
-
-
   private transformAchievements(achievements: any[], people: Person[]): Achievement[] {
     return achievements.reduce((all, entry) => {
       const achieve = entry.payload.doc.data();
@@ -180,7 +152,7 @@ export class DataService {
         pc: personData.pc || false,
       };
       if (personData.image && personData.image !== '') {
-        this.storage.ref(personData.image).getDownloadURL().subscribe((url) => {
+        this.storage.getDownloadURL(personData.image).subscribe((url) => {
           person.image = url;
         });
       }

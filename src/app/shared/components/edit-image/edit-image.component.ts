@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
-import { DataService } from '../../../core/services/data.service';
 import { UtilService } from '../../../core/services/util.service';
+import { StorageService } from '../../../core/services/storage.service';
 
 
 
@@ -26,7 +26,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
   imageName: string;
 
   constructor(
-    private dataService: DataService,
+    private storage: StorageService,
     private util: UtilService,
   ) {
     this.cropperSettings = new CropperSettings();
@@ -54,7 +54,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
       imageName = this.data.updateRef.id;
     }
 
-    this.dataService.uploadFile(
+    this.storage.uploadFile(
       `${imageName}.jpg`,
       this.util.dataURLtoBlob(this.croppedImageData.image),
       this.data.bucket,

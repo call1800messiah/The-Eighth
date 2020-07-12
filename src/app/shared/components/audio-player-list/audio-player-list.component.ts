@@ -3,7 +3,7 @@ import { take } from 'rxjs/operators';
 import { faGuitar } from '@fortawesome/free-solid-svg-icons';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
-import { DataService } from '../../../core/services/data.service';
+import { StorageService } from '../../../core/services/storage.service';
 
 
 
@@ -19,19 +19,15 @@ export class AudioPlayerListComponent implements OnInit, PopoverChild {
   santanaUrl: string;
 
   constructor(
-    private dataService: DataService,
+    private storage: StorageService,
   ) {
-    this.dataService.getAudioUrlForFile('santana.mp3').pipe(
+    this.storage.getDownloadURL('audio/santana.mp3').pipe(
       take(1),
     ).subscribe((url) => {
-      console.log(url);
       this.santanaUrl = url;
     });
   }
 
   ngOnInit(): void {
   }
-
-
-
 }
