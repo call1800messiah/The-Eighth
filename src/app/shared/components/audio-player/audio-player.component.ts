@@ -10,15 +10,21 @@ export class AudioPlayerComponent implements OnInit {
   @Input() fileUrl: string;
   @Input() name: string;
   @Input() private icon: any;
-  private audio;
-  isPlaying = false;
   showIcon: any;
+  private audio;
+  private isPlaying = false;
 
   constructor() { }
 
   ngOnInit(): void {
     this.showIcon = this.icon;
     this.audio = new Audio(this.fileUrl);
+    this.audio.addEventListener('ended', () => {
+      this.showIcon = this.icon;
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.isPlaying = false;
+    });
   }
 
 
