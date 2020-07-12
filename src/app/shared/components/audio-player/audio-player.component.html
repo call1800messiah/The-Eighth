@@ -1,0 +1,7 @@
+<div class="audio" [ngClass]="{'playing': isPlaying}">
+  <button type="button" class="btn borderless" (click)="togglePlayback()">
+    <fa-icon [fixedWidth]="true" [icon]="showIcon"></fa-icon>
+
+    {{name}}
+  </button>
+</div>

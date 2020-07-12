@@ -7,6 +7,8 @@ import { AvatarComponent } from './components/avatar/avatar.component';
 import { PopoverModule } from '../popover/popover.module';
 import { EditImageComponent } from './components/edit-image/edit-image.component';
 import { ImageCropperModule } from 'ngx-img-cropper';
+import { AudioPlayerListComponent } from './components/audio-player-list/audio-player-list.component';
+import { AudioPlayerComponent } from './components/audio-player/audio-player.component';
 
 
 
@@ -14,6 +16,8 @@ import { ImageCropperModule } from 'ngx-img-cropper';
   declarations: [
     AvatarComponent,
     EditImageComponent,
+    AudioPlayerListComponent,
+    AudioPlayerComponent,
   ],
   imports: [
     CommonModule,
@@ -23,6 +27,7 @@ import { ImageCropperModule } from 'ngx-img-cropper';
     ImageCropperModule,
   ],
   exports: [
+    AudioPlayerListComponent,
     AvatarComponent,
     EditImageComponent,
     FontAwesomeModule,

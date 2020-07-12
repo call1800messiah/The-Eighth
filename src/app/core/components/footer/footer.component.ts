@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faMusic } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { NavigationService } from '../../services/navigation.service';
+import { PopoverService } from '../../../popover/services/popover.service';
+import { AudioPlayerListComponent } from '../../../shared/components/audio-player-list/audio-player-list.component';
 
 
 
@@ -12,11 +14,13 @@ import { NavigationService } from '../../services/navigation.service';
 })
 export class FooterComponent implements OnInit {
   faBars = faBars;
+  faMusic = faMusic;
   navigation: any[];
   navVisible$: Observable<boolean>;
 
   constructor(
     public nav: NavigationService,
+    private popover: PopoverService,
   ) {
     this.navVisible$ = this.nav.navVisible$;
     this.navigation = this.nav.getNavigation();
@@ -33,5 +37,10 @@ export class FooterComponent implements OnInit {
 
   toggleNavigation() {
     this.nav.toggleNavigation();
+  }
+
+
+  toggleAudio() {
+    this.popover.showPopover('Soundboard', AudioPlayerListComponent);
   }
 }

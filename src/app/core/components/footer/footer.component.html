@@ -2,6 +2,10 @@
   <button id="menu-button" type="button" class="btn-icon borderless" (click)="toggleNavigation()" title="Menu">
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
+
+  <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()">
+    <fa-icon [icon]="faMusic" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
 </footer>
 
 <nav [ngClass]="{ 'open': navVisible$ | async }">

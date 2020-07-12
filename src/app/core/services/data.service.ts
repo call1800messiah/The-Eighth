@@ -71,6 +71,11 @@ export class DataService {
   }
 
 
+  getAudioUrlForFile(fileName: string): Observable<string> {
+    return this.storage.ref(`audio/${fileName}`).getDownloadURL();
+  }
+
+
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
   }
