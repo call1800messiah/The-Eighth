@@ -54,7 +54,7 @@
 
   <div class="detail-info" *ngIf="infos$">
     <div class="info-block box" *ngFor="let infoList of infos$ | async | keyvalue">
-      <div class="title">{{infoTypes[infoList.key]}}</div>
+      <div class="heading">{{infoTypes[infoList.key]}}</div>
       <div class="detail" *ngFor="let info of infoList.value" (click)="editDetail(info)">
         {{info.content}}
       </div>
