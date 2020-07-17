@@ -125,3 +125,9 @@ body {
     width: 100%;
   }
 }
+
+.box {
+  border: 1px solid $color-primary;
+  box-shadow: 0 0 5px $color-primary;
+  padding: $item-padding;
+}
