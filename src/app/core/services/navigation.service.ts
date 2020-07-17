@@ -61,6 +61,12 @@ export class NavigationService {
   }
 
 
+  setNavigationVisible(visible: boolean) {
+    this.showNav = visible;
+    this.navVisible$.next(this.showNav);
+  }
+
+
   setPageLabel(title: string) {
     this.pageLabel$.next(title);
   }

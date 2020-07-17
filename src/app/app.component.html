@@ -4,6 +4,6 @@
   <router-outlet></router-outlet>
 </main>
 
-<app-footer></app-footer>
+<app-footer *ngIf="isLoggedIn$ | async"></app-footer>
 
 <app-popover></app-popover>

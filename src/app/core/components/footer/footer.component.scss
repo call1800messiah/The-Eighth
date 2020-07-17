@@ -17,10 +17,14 @@ footer {
   }
 }
 
-nav {
+.overlay {
+  align-content: flex-end;
+  align-items: flex-end;
   background-color: $color-dark;
   bottom: -100vh;
-  height: calc(100vh - #{$footer-height});
+  box-shadow: 0 -5px 5px $color-dark;
+  display: flex;
+  justify-content: stretch;
   left: 0;
   padding: $item-padding;
   position: fixed;
@@ -30,11 +34,14 @@ nav {
 
   button {
     display: block;
-    text-align: left;
     width: 100%;
   }
 
   &.open {
     bottom: $footer-height;
   }
+}
+
+nav {
+  width: 100%;
 }

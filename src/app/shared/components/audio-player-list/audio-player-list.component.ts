@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { faGuitar } from '@fortawesome/free-solid-svg-icons';
 
-import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { StorageService } from '../../../core/services/storage.service';
 
 
@@ -12,9 +11,7 @@ import { StorageService } from '../../../core/services/storage.service';
   templateUrl: './audio-player-list.component.html',
   styleUrls: ['./audio-player-list.component.scss']
 })
-export class AudioPlayerListComponent implements OnInit, PopoverChild {
-  @Input() data: any;
-  @Output() dismissPopover = new EventEmitter<boolean>();
+export class AudioPlayerListComponent implements OnInit {
   faGuitar = faGuitar;
   santanaUrl: string;
 

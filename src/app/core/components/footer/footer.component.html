@@ -8,13 +8,19 @@
   </button>
 </footer>
 
-<nav [ngClass]="{ 'open': navVisible$ | async }">
-  <ul class="unstyled-list">
-    <li *ngFor="let item of navigation">
-      <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
-        <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
-        {{item.label}}
-      </button>
-    </li>
-  </ul>
-</nav>
+<div class="overlay" [ngClass]="{ 'open': navVisible$ | async }">
+  <nav>
+    <ul class="unstyled-list">
+      <li *ngFor="let item of navigation">
+        <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
+          <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
+          {{item.label}}
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<div class="overlay" [ngClass]="{'open': audioVisible }">
+  <app-audio-player-list></app-audio-player-list>
+</div>
