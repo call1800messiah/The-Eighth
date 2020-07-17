@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faUserEdit } from '@fortawesome/free-solid-svg-icons';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { Person } from '../../../core/models/person.model';
@@ -11,6 +11,9 @@ import { NavigationService } from '../../../core/services/navigation.service';
 import { DataService } from '../../../core/services/data.service';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';
 import { UtilService } from '../../../core/services/util.service';
+import { Info } from '../../../core/models/info.model';
+import { InfoType } from '../../../core/enums/info-type.enum';
+import { ConfigService } from '../../../core/services/config.service';
 
 
 
@@ -22,6 +25,8 @@ import { UtilService } from '../../../core/services/util.service';
 export class PersonComponent implements OnInit, OnDestroy {
   person: Person;
   faUserEdit = faUserEdit;
+  infos$: Observable<Map<InfoType, Info[]>>;
+  infoTypes = ConfigService.infoTypes;
   private personSub: Subscription;
 
   constructor(
@@ -42,6 +47,7 @@ export class PersonComponent implements OnInit, OnDestroy {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
+        this.infos$ = this.data.getInfosByParentId(this.person.id);
       }
     });
   }
@@ -51,17 +57,18 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
-  showEditDialog() {
-    this.popover.showPopover(this.person.name, EditPersonComponent, this.person);
-  }
 
-
-  showEditImageDialog() {
+  editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: 'people',
       imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,
       updateRef: this.person,
     });
+  }
+
+
+  editPerson() {
+    this.popover.showPopover(this.person.name, EditPersonComponent, this.person);
   }
 }

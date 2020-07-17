@@ -6,6 +6,8 @@ import { Person } from '../models/person.model';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
 import { StorageService } from './storage.service';
+import { Info } from '../models/info.model';
+import { InfoType } from '../enums/info-type.enum';
 
 
 
@@ -93,6 +95,16 @@ export class DataService {
   }
 
 
+  getInfosByParentId(id: string): Observable<Map<InfoType, Info[]>>{
+    return this.api.getDataFromCollectionWhere(
+      'info',
+      (ref) => ref.where('parent', '==', id)
+    ).pipe(
+      map((infos) => this.transformInfos(infos)),
+    );
+  }
+
+
   store(item: any, collection: string): Promise<boolean> {
     return new Promise((resolve) => {
       if (item.id) {
@@ -131,6 +143,25 @@ export class DataService {
       ));
       return all;
     }, []);
+  }
+
+
+  private transformInfos(infos: any[]): Map<InfoType, Info[]> {
+    return infos.reduce((all, entry) => {
+      const infoData = entry.payload.doc.data();
+      let typeArray = all.get(infoData.type);
+      if (!typeArray) {
+        typeArray = [];
+        all.set(infoData.type, typeArray);
+      }
+      typeArray.push(new Info(
+        entry.payload.doc.id,
+        infoData.content,
+        infoData.parent,
+        infoData.type,
+      ));
+      return all;
+    }, new Map<InfoType, Info[]>());
   }
 
 
