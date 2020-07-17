@@ -15,7 +15,9 @@
     z-index: 1;
   }
 
-  input {
+  input,
+  select,
+  textarea {
     -webkit-appearance: none;
     appearance: none;
     background-color: $color-dark;
@@ -59,5 +61,12 @@
         content: 'X';
       }
     }
+  }
+
+  textarea {
+    line-height: $base-body-line-height;
+    min-height: 200px;
+    padding: 5px;
+    resize: vertical;
   }
 }

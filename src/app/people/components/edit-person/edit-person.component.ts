@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
 import { Person } from '../../../core/models/person.model';
-import { FormControl, FormGroup } from '@angular/forms';
 
 
 
@@ -40,7 +40,7 @@ export class EditPersonComponent implements OnInit, PopoverChild {
   }
 
 
-  savePerson() {
+  save() {
     const person: Person = {...this.personForm.value};
     if (this.data.id) {
       person.id = this.data.id;

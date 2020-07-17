@@ -1,9 +1,9 @@
 <div class="person" *ngIf="person">
-  <button type="button" id="btn-edit" class="btn-icon" (click)="showEditDialog()">
+  <button type="button" id="btn-edit" class="btn-icon" (click)="editPerson()">
     <fa-icon [fixedWidth]="true" [icon]="faUserEdit"></fa-icon>
   </button>
 
-  <div class="image" (click)="showEditImageDialog()">
+  <div class="image" (click)="editImage()">
     <app-avatar [person]="person"></app-avatar>
   </div>
 
@@ -55,7 +55,7 @@
   <div class="detail-info" *ngIf="infos$">
     <div class="info-block box" *ngFor="let infoList of infos$ | async | keyvalue">
       <div class="title">{{infoTypes[infoList.key]}}</div>
-      <div class="detail" *ngFor="let info of infoList.value">
+      <div class="detail" *ngFor="let info of infoList.value" (click)="editDetail(info)">
         {{info.content}}
       </div>
     </div>

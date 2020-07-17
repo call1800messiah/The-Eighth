@@ -13,6 +13,7 @@ import { EditImageComponent } from '../../../shared/components/edit-image/edit-i
 import { UtilService } from '../../../core/services/util.service';
 import { Info } from '../../../core/models/info.model';
 import { InfoType } from '../../../core/enums/info-type.enum';
+import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { ConfigService } from '../../../core/services/config.service';
 
 
@@ -56,6 +57,10 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.personSub.unsubscribe();
   }
 
+
+  editDetail(info: Info) {
+    this.popover.showPopover('Info editieren', EditInfoComponent, info);
+  }
 
 
   editImage() {
