@@ -93,17 +93,17 @@ export class DataService {
   }
 
 
-  storePerson(person): Promise<boolean> {
+  store(item: any, collection: string): Promise<boolean> {
     return new Promise((resolve) => {
-      if (person.id) {
-        this.api.updateDocumentInCollection(person.id, 'people', person).then(() => {
+      if (item.id) {
+        this.api.updateDocumentInCollection(item.id, collection, item).then(() => {
           resolve(true);
         }).catch((error) => {
           console.log(error);
           resolve(false);
         });
       } else {
-        this.api.addDocumentToCollection(person, 'people').then((reference) => {
+        this.api.addDocumentToCollection(item, collection).then((reference) => {
           if (reference) {
             resolve(true);
           } else {

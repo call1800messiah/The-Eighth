@@ -1,5 +1,5 @@
-<div class="add-person">
-  <form [formGroup]="personForm" (ngSubmit)="savePerson()">
+<div>
+  <form [formGroup]="personForm" (ngSubmit)="save()">
     <div class="form-group">
       <input type="checkbox" id="pc" formControlName="pc">
       <label for="pc">Spielercharakter</label>

@@ -45,7 +45,7 @@ export class EditPersonComponent implements OnInit, PopoverChild {
     if (this.data.id) {
       person.id = this.data.id;
     }
-    this.dataService.storePerson(person).then(() => {
+    this.dataService.store(person, 'people').then(() => {
       this.dismissPopover.emit(true);
     });
   }
