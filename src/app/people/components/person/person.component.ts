@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faUserEdit } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -25,7 +25,8 @@ import { ConfigService } from '../../../core/services/config.service';
 })
 export class PersonComponent implements OnInit, OnDestroy {
   person: Person;
-  faUserEdit = faUserEdit;
+  faPlus = faPlus;
+  faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
   infoTypes = ConfigService.infoTypes;
   private personSub: Subscription;
@@ -55,6 +56,12 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.personSub.unsubscribe();
+  }
+
+
+
+  addDetail() {
+    this.popover.showPopover('Neue Info', EditInfoComponent, { parent: this.person.id });
   }
 
 

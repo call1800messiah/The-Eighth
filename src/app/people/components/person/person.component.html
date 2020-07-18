@@ -1,6 +1,6 @@
 <div class="person" *ngIf="person">
-  <button type="button" id="btn-edit" class="btn-icon" (click)="editPerson()">
-    <fa-icon [fixedWidth]="true" [icon]="faUserEdit"></fa-icon>
+  <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
   </button>
 
   <div class="image" (click)="editImage()">
@@ -8,7 +8,7 @@
   </div>
 
 
-  <div class="info box">
+  <div class="info box" (click)="editPerson()">
     <dl>
       <ng-container>
         <dt>Name</dt>
