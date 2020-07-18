@@ -19,6 +19,10 @@ export class ApiService {
     return this.afs.collection(collection).add(document);
   }
 
+  deleteDocumentFromCollection(documentId: string, collection: string): Promise<void> {
+    return this.afs.collection(collection).doc(documentId).delete();
+  }
+
   getAuthState() {
     return this.afAuth.authState;
   }

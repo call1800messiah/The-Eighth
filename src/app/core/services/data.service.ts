@@ -73,6 +73,18 @@ export class DataService {
   }
 
 
+  delete(itemId: string, collection: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.api.deleteDocumentFromCollection(itemId, collection).then(() => {
+        resolve(true);
+      }).catch((error) => {
+        console.log(error);
+        resolve(false);
+      });
+    });
+  }
+
+
   getAchievements(): Observable<Achievement[]> {
     return this.achievements$;
   }

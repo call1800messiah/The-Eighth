@@ -1,5 +1,9 @@
 @import 'variables.scss';
 
+form button {
+  margin-bottom: $item-padding;
+}
+
 .form-group {
   margin-bottom: $item-padding;
   position: relative;
@@ -68,5 +72,16 @@
     min-height: 200px;
     padding: 5px;
     resize: vertical;
+  }
+}
+
+.locked-input {
+  padding-left: 50px;
+  position: relative;
+
+  .btn-icon {
+    left: 0;
+    position: absolute;
+    top: 0;
   }
 }

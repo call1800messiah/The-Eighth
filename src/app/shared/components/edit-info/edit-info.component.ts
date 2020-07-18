@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { Info } from '../../../core/models/info.model';
@@ -16,6 +17,8 @@ import { ConfigService } from '../../../core/services/config.service';
 export class EditInfoComponent implements OnInit, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
+  deleteDisabled = true;
+  faUnlock = faUnlock;
   infoForm = new FormGroup({
     content: new FormControl(''),
     type: new FormControl(0),
@@ -34,6 +37,16 @@ export class EditInfoComponent implements OnInit, PopoverChild {
   }
 
 
+
+  delete() {
+    if (this.data.id) {
+      this.dataService.delete(this.data.id, 'info').then(() => {
+        this.dismissPopover.emit(true);
+      });
+    }
+  }
+
+
   save() {
     const info: Info = {...this.infoForm.value};
     info.parent = this.data.parent;
@@ -45,4 +58,8 @@ export class EditInfoComponent implements OnInit, PopoverChild {
     });
   }
 
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
+  }
 }
