@@ -1,0 +1,20 @@
+@import "../../../../scss/variables.scss";
+
+button {
+  position: relative;
+}
+
+.result {
+  background: rgba(0, 0, 0, 0.6);
+  bottom: 0;
+  color: $color-primary;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  z-index: 1;
+
+  &.low { color: $color-low; }
+  &.high { color: $color-high; }
+}

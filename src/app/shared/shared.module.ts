@@ -10,6 +10,7 @@ import { ImageCropperModule } from 'ngx-img-cropper';
 import { AudioPlayerListComponent } from './components/audio-player-list/audio-player-list.component';
 import { AudioPlayerComponent } from './components/audio-player/audio-player.component';
 import { EditInfoComponent } from './components/edit-info/edit-info.component';
+import { DiceModule } from '../dice/dice.module';
 
 
 
@@ -27,10 +28,12 @@ import { EditInfoComponent } from './components/edit-info/edit-info.component';
     ReactiveFormsModule,
     PopoverModule,
     ImageCropperModule,
+    DiceModule,
   ],
   exports: [
     AudioPlayerListComponent,
     AvatarComponent,
+    DiceModule,
     EditImageComponent,
     EditInfoComponent,
     FontAwesomeModule,

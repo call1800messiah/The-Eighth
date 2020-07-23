@@ -6,6 +6,10 @@
   <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()">
     <fa-icon [icon]="faMusic" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
+
+  <button id="dice-button" type="button" class="btn-icon borderless" (click)="toggleDice()">
+    <fa-icon [icon]="faDice" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
 </footer>
 
 <div class="overlay" [ngClass]="{ 'open': navVisible$ | async }">
@@ -23,4 +27,8 @@
 
 <div class="overlay" [ngClass]="{'open': audioVisible }">
   <app-audio-player-list></app-audio-player-list>
+</div>
+
+<div class="overlay" [ngClass]="{'open': diceVisible }">
+  <app-quick-dice></app-quick-dice>
 </div>

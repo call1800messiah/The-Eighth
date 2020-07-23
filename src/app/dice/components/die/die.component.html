@@ -1,0 +1,9 @@
+<button type="button" class="btn-icon" (click)="onDieClicked()">
+  <fa-icon [icon]="dice[type]" [fixedWidth]="true" size="lg"></fa-icon>
+
+  <div *ngIf="currentNumber" class="result"
+       [ngClass]="{'low': currentNumber === 1, 'high': currentNumber === type}"
+  >
+    {{currentNumber}}
+  </div>
+</button>

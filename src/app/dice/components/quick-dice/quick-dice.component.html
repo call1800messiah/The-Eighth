@@ -1,0 +1,19 @@
+<div class="d6">
+  <app-die *ngFor="let die of d6$ | async; let i = index"
+           [type]="6"
+           [currentNumber]="die"
+           (rolled)="onD6Rolled(i)"
+  ></app-die>
+
+  <div class="total" *ngIf="d6Total">{{d6Total}}</div>
+</div>
+
+<div class="d20">
+  <app-die *ngFor="let die of d20; let i = index"
+           [type]="20"
+           [currentNumber]="die"
+           (rolled)="onD20Rolled(i)"
+  ></app-die>
+
+  <div class="total" *ngIf="d20Total">{{d20Total}}</div>
+</div>

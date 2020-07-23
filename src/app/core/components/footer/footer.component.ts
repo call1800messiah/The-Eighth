@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faMusic } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faDice, faMusic } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
 import { NavigationService } from '../../services/navigation.service';
@@ -13,7 +13,9 @@ import { NavigationService } from '../../services/navigation.service';
 })
 export class FooterComponent implements OnInit {
   audioVisible = false;
+  diceVisible = false;
   faBars = faBars;
+  faDice = faDice;
   faMusic = faMusic;
   navigation: any[];
   navVisible$: Observable<boolean>;
@@ -34,14 +36,23 @@ export class FooterComponent implements OnInit {
   }
 
 
+  toggleAudio() {
+    this.nav.setNavigationVisible(false);
+    this.diceVisible = false;
+    this.audioVisible = !this.audioVisible;
+  }
+
+
   toggleNavigation() {
     this.audioVisible = false;
+    this.diceVisible = false;
     this.nav.toggleNavigation();
   }
 
 
-  toggleAudio() {
+  toggleDice() {
     this.nav.setNavigationVisible(false);
-    this.audioVisible = !this.audioVisible;
+    this.audioVisible = false;
+    this.diceVisible = !this.diceVisible;
   }
 }
