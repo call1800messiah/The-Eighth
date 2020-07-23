@@ -15,8 +15,8 @@ import { InfoType } from '../enums/info-type.enum';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly achievements$: Observable<Achievement[]>;
-  private readonly campaignInfo$: Observable<any[]>;
+  private achievements$: Observable<Achievement[]>;
+  private campaignInfo$: Observable<any[]>;
   private readonly people$: BehaviorSubject<Person[]>;
 
   constructor(
@@ -24,22 +24,12 @@ export class DataService {
     private storage: StorageService
   ) {
     this.people$ = new BehaviorSubject<Person[]>([]);
-    this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
-      map(DataService.transformSnapshotChanges),
-    );
     this.api.getDataFromCollection('people').pipe(
       map(this.transformPeople.bind(this)),
       map((people: Person[]) => people.sort(DataService.orderByName)),
     ).subscribe((people) => {
       this.people$.next(people);
     });
-    this.achievements$ = combineLatest([
-      this.api.getDataFromCollection('achievements'),
-      this.people$,
-    ]).pipe(
-      map(([achievements, people]) => this.transformAchievements(achievements, people)),
-      map((achievements) => achievements.sort(DataService.orderByUnlocked)),
-    );
   }
 
 
@@ -86,11 +76,25 @@ export class DataService {
 
 
   getAchievements(): Observable<Achievement[]> {
+    if (!this.achievements$) {
+      this.achievements$ = combineLatest([
+        this.api.getDataFromCollection('achievements'),
+        this.people$,
+      ]).pipe(
+        map(([achievements, people]) => this.transformAchievements(achievements, people)),
+        map((achievements) => achievements.sort(DataService.orderByUnlocked)),
+      );
+    }
     return this.achievements$;
   }
 
 
   getCampaignInfo(): Observable<any[]> {
+    if (!this.campaignInfo$) {
+      this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
+        map(DataService.transformSnapshotChanges),
+      );
+    }
     return this.campaignInfo$;
   }
 
