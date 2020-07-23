@@ -17,20 +17,12 @@ import { InfoType } from '../enums/info-type.enum';
 export class DataService {
   private achievements$: Observable<Achievement[]>;
   private campaignInfo$: Observable<any[]>;
-  private readonly people$: BehaviorSubject<Person[]>;
+  private people$: BehaviorSubject<Person[]>;
 
   constructor(
     private api: ApiService,
     private storage: StorageService
-  ) {
-    this.people$ = new BehaviorSubject<Person[]>([]);
-    this.api.getDataFromCollection('people').pipe(
-      map(this.transformPeople.bind(this)),
-      map((people: Person[]) => people.sort(DataService.orderByName)),
-    ).subscribe((people) => {
-      this.people$.next(people);
-    });
-  }
+  ) {}
 
 
   private static transformSnapshotChanges(changeList: any[]) {
@@ -79,7 +71,7 @@ export class DataService {
     if (!this.achievements$) {
       this.achievements$ = combineLatest([
         this.api.getDataFromCollection('achievements'),
-        this.people$,
+        this.getPeople(),
       ]).pipe(
         map(([achievements, people]) => this.transformAchievements(achievements, people)),
         map((achievements) => achievements.sort(DataService.orderByUnlocked)),
@@ -100,12 +92,21 @@ export class DataService {
 
 
   getPeople(): Observable<Person[]> {
+    if (!this.people$) {
+      this.people$ = new BehaviorSubject<Person[]>([]);
+      this.api.getDataFromCollection('people').pipe(
+        map(this.transformPeople.bind(this)),
+        map((people: Person[]) => people.sort(DataService.orderByName)),
+      ).subscribe((people) => {
+        this.people$.next(people);
+      });
+    }
     return this.people$;
   }
 
 
   getPersonById(id: string): Observable<Person> {
-    return this.people$.pipe(
+    return this.getPeople().pipe(
       map((people) => people.find(person => person.id === id)),
     );
   }
