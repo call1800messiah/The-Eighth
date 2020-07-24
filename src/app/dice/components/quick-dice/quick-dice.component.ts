@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 import { DiceRollerService } from '../../services/dice-roller.service';
 import { Die } from '../../enums/die.enum';
-import { BehaviorSubject } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-quick-dice',
@@ -9,12 +11,10 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./quick-dice.component.scss']
 })
 export class QuickDiceComponent implements OnInit {
-  private d6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private d20 = [0, 0, 0];
+  d6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  d20 = [0, 0, 0];
   d6Total = 0;
   d20Total = 0;
-  d6$ = new BehaviorSubject(this.d6);
-  d20$ = new BehaviorSubject(this.d20);
 
   constructor(
     private diceRoller: DiceRollerService,
@@ -33,7 +33,6 @@ export class QuickDiceComponent implements OnInit {
       all.push(roll);
       return all;
     }, []);
-    this.d6$.next(this.d6);
   }
 
   onD20Rolled(index) {
@@ -46,6 +45,5 @@ export class QuickDiceComponent implements OnInit {
       all.push(roll);
       return all;
     }, []);
-    this.d20$.next(this.d20);
   }
 }

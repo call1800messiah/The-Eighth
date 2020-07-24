@@ -1,5 +1,5 @@
 <div class="d6">
-  <app-die *ngFor="let die of d6$ | async; let i = index"
+  <app-die *ngFor="let die of d6; let i = index"
            [type]="6"
            [currentNumber]="die"
            (rolled)="onD6Rolled(i)"
