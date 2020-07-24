@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { DiceRollerService } from '../../services/dice-roller.service';
 import { Die } from '../../enums/die.enum';
@@ -11,37 +11,30 @@ import { Die } from '../../enums/die.enum';
   styleUrls: ['./quick-dice.component.scss']
 })
 export class QuickDiceComponent implements OnInit {
-  d6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  d20 = [0, 0, 0];
-  d6Total = 0;
-  d20Total = 0;
+  @Input() amount: number;
+  @Input() type: Die;
+  rolls = [];
+  total = 0;
 
   constructor(
     private diceRoller: DiceRollerService,
   ) { }
 
   ngOnInit(): void {
+    for (let i = 0; i < this.amount; i++) {
+      this.rolls.push(0);
+    }
   }
 
-  onD6Rolled(index) {
+
+
+  onDiceRolled(index) {
     const result = this.diceRoller.rollMany(index + 1, Die.D6);
-    this.d6Total = 0;
+    this.total = 0;
 
-    this.d6 = this.d6.reduce((all: number[], entry: number, i: number) => {
+    this.rolls = this.rolls.reduce((all: number[], entry: number, i: number) => {
       const roll = result[i] ? result[i] : 0;
-      this.d6Total += roll;
-      all.push(roll);
-      return all;
-    }, []);
-  }
-
-  onD20Rolled(index) {
-    const result = this.diceRoller.rollMany(index + 1, Die.D20);
-    this.d20Total = 0;
-
-    this.d20 = this.d20.reduce((all: number[], entry: number, i: number) => {
-      const roll = result[i] ? result[i] : 0;
-      this.d20Total += roll;
+      this.total += roll;
       all.push(roll);
       return all;
     }, []);

@@ -1,3 +1,5 @@
+@import "../../../../scss/variables.scss";
+
 app-die {
   display: inline-block;
   margin-bottom: 5px;
@@ -6,5 +8,7 @@ app-die {
 
 .total {
   display: inline-block;
-  line-height: 40px;
+  line-height: $mobile-interactive-height;
+  text-align: center;
+  width: $mobile-interactive-height;
 }
