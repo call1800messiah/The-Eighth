@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
-import { Person } from '../../../core/models/person.model';
+import { Person } from '../../../core/interfaces/person.interface';
 
 
 

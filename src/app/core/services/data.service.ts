@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Person } from '../models/person.model';
+import { Person } from '../interfaces/person.interface';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
 import { StorageService } from './storage.service';

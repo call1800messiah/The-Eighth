@@ -4,7 +4,7 @@ import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Person } from '../../../core/models/person.model';
+import { Person } from '../../../core/interfaces/person.interface';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
