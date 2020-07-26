@@ -52,6 +52,12 @@
     </dl>
   </div>
 
+  <div *ngIf="values$ | async as values" class="values">
+    <div *ngIf="values.attributes" class="attributes">
+      <app-bar *ngFor="let bar of values.attributes" [type]="bar.type" [current]="bar.current" [max]="bar.max"></app-bar>
+    </div>
+  </div>
+
   <div class="detail-info" *ngIf="infos$">
     <div class="info-block box" *ngFor="let infoList of infos$ | async | keyvalue">
       <div class="heading">{{infoTypes[infoList.key]}}</div>

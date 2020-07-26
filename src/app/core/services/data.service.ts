@@ -8,6 +8,7 @@ import { Achievement } from '../models/achievements.model';
 import { StorageService } from './storage.service';
 import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
+import { Values } from '../interfaces/values.interface';
 
 
 
@@ -30,6 +31,23 @@ export class DataService {
       all.push(entry.payload.doc.data());
       return all;
     }, []);
+  }
+
+
+  private static transformValues(id: string, data: any): Values {
+    return {
+      person: id,
+      attributes: data.reduce((all, entry) => {
+        const attribute = entry.payload.doc.data();
+        all.push({
+          current: attribute.current,
+          max: attribute.max,
+          type: attribute.type,
+        });
+
+        return all;
+      }, []),
+    };
   }
 
 
@@ -108,6 +126,15 @@ export class DataService {
   getPersonById(id: string): Observable<Person> {
     return this.getPeople().pipe(
       map((people) => people.find(person => person.id === id)),
+    );
+  }
+
+
+  getPersonValues(id: string): Observable<Values> {
+    return this.api.getDataFromCollection(
+      `people/${id}/attributes`,
+    ).pipe(
+      map((values) => DataService.transformValues(id, values)),
     );
   }
 

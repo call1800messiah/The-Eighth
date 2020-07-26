@@ -15,6 +15,7 @@ import { Info } from '../../../core/models/info.model';
 import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { ConfigService } from '../../../core/services/config.service';
+import { Values } from '../../../core/interfaces/values.interface';
 
 
 
@@ -28,6 +29,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
+  values$: Observable<Values>;
   infoTypes = ConfigService.infoTypes;
   private personSub: Subscription;
 
@@ -50,6 +52,7 @@ export class PersonComponent implements OnInit, OnDestroy {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
         this.infos$ = this.data.getInfosByParentId(this.person.id);
+        this.values$ = this.data.getPersonValues(this.person.id);
       }
     });
   }

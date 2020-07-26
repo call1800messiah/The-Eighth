@@ -12,6 +12,7 @@ import { AudioPlayerComponent } from './components/audio-player/audio-player.com
 import { EditInfoComponent } from './components/edit-info/edit-info.component';
 import { DiceModule } from '../dice/dice.module';
 import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
+import { BarComponent } from './components/bar/bar.component';
 
 
 
@@ -22,6 +23,8 @@ import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
     EditInfoComponent,
     AudioPlayerListComponent,
     AudioPlayerComponent,
+    SelectOnFocusDirective,
+    BarComponent,
   ],
   imports: [
     CommonModule,
@@ -34,6 +37,7 @@ import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
   exports: [
     AudioPlayerListComponent,
     AvatarComponent,
+    BarComponent,
     DiceModule,
     EditImageComponent,
     EditInfoComponent,
