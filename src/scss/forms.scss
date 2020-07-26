@@ -36,6 +36,13 @@ form button {
     padding: 0 5px;
     width: 100%;
 
+    &:disabled {
+      border-color: $color-gray;
+      color: $color-gray;
+
+      + label { color: $color-gray; }
+    }
+
     &[type="checkbox"] {
       display: none;
 
