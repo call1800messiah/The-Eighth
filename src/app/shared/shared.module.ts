@@ -11,6 +11,7 @@ import { AudioPlayerListComponent } from './components/audio-player-list/audio-p
 import { AudioPlayerComponent } from './components/audio-player/audio-player.component';
 import { EditInfoComponent } from './components/edit-info/edit-info.component';
 import { DiceModule } from '../dice/dice.module';
+import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
 
 
 
@@ -36,6 +37,7 @@ import { DiceModule } from '../dice/dice.module';
     DiceModule,
     EditImageComponent,
     EditInfoComponent,
+    SelectOnFocusDirective,
     FontAwesomeModule,
     ReactiveFormsModule,
     PopoverModule,
