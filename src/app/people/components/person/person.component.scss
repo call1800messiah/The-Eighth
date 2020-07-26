@@ -23,6 +23,12 @@
   margin: $container-horizontal-padding 0;
 }
 
+.info-block {
+  margin-bottom: $item-padding;
+
+  &:last-of-type { margin-bottom: 0; }
+}
+
 .detail {
   border-bottom: 1px dotted darken($color-primary, 5a0);
   margin-bottom: $item-padding / 2;
