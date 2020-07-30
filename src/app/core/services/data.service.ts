@@ -40,6 +40,7 @@ export class DataService {
       attributes: data.reduce((all, entry) => {
         const attribute = entry.payload.doc.data();
         all.push({
+          id: entry.payload.doc.id,
           current: attribute.current,
           max: attribute.max,
           type: attribute.type,

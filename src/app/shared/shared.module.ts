@@ -13,12 +13,14 @@ import { EditInfoComponent } from './components/edit-info/edit-info.component';
 import { DiceModule } from '../dice/dice.module';
 import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
 import { BarComponent } from './components/bar/bar.component';
+import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 
 
 
 @NgModule({
   declarations: [
     AvatarComponent,
+    EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
     AudioPlayerListComponent,
@@ -39,6 +41,7 @@ import { BarComponent } from './components/bar/bar.component';
     AvatarComponent,
     BarComponent,
     DiceModule,
+    EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
     SelectOnFocusDirective,

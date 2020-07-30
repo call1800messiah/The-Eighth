@@ -1,4 +1,8 @@
-import { Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+
+import { PopoverService } from '../../../popover/services/popover.service';
+
+
 
 @Component({
   selector: 'app-bar',
@@ -9,9 +13,11 @@ export class BarComponent implements OnInit {
   @Input() current: number;
   @Input() type: string;
   @Input() max: number;
+  @Output() barClicked = new EventEmitter();
   @ViewChild('bar', {static: true}) bar: ElementRef;
 
   constructor(
+    private popover: PopoverService,
     private renderer: Renderer2,
   ) { }
 
@@ -21,5 +27,11 @@ export class BarComponent implements OnInit {
       'width',
       `${this.current / this.max * 100}%`,
     );
+  }
+
+
+
+  onBarClicked() {
+    this.barClicked.emit();
   }
 }

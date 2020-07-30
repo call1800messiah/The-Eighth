@@ -54,7 +54,12 @@
 
   <div *ngIf="values$ | async as values" class="values">
     <div *ngIf="values.attributes" class="attributes">
-      <app-bar *ngFor="let bar of values.attributes" [type]="bar.type" [current]="bar.current" [max]="bar.max"></app-bar>
+      <app-bar *ngFor="let bar of values.attributes"
+               [type]="bar.type"
+               [current]="bar.current"
+               [max]="bar.max"
+               (barClicked)="editAttribute(bar)"
+      ></app-bar>
     </div>
   </div>
 

@@ -16,6 +16,8 @@ import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { ConfigService } from '../../../core/services/config.service';
 import { Values } from '../../../core/interfaces/values.interface';
+import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 
 
 
@@ -65,6 +67,14 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   addDetail() {
     this.popover.showPopover('Neue Info', EditInfoComponent, { parent: this.person.id });
+  }
+
+
+  editAttribute(attribute: Attribute) {
+    this.popover.showPopover('Wert editieren', EditAttributeComponent, {
+      person: this.person.id,
+      attribute,
+    });
   }
 
 
