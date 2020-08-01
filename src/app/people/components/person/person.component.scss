@@ -23,6 +23,10 @@
   margin: $container-horizontal-padding 0;
 }
 
+.info-block {
+  margin-top: $item-padding;
+}
+
 .detail {
   border-bottom: 1px dotted darken($color-primary, 5a0);
   margin-bottom: $item-padding / 2;
