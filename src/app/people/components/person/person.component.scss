@@ -24,9 +24,7 @@
 }
 
 .info-block {
-  margin-bottom: $item-padding;
-
-  &:last-of-type { margin-bottom: 0; }
+  margin-top: $item-padding;
 }
 
 .detail {
