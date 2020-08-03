@@ -42,8 +42,7 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
     {...this.attributeForm.value}
     );
 
-    this.dataService.store(attribute, `person/${this.data.person}/attributes`).then((stuff) => {
-      console.log('Saved', stuff, attribute);
+    this.dataService.store(attribute, `people/${this.data.person}/attributes`).then((stuff) => {
       this.dismissPopover.emit(true);
     });
   }
