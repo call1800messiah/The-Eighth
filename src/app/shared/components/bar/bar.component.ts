@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 
 import { PopoverService } from '../../../popover/services/popover.service';
+import { Bar } from '../../../core/interfaces/bar.interface';
 
 
 
@@ -10,11 +11,9 @@ import { PopoverService } from '../../../popover/services/popover.service';
   styleUrls: ['./bar.component.scss']
 })
 export class BarComponent implements OnInit {
-  @Input() current: number;
-  @Input() type: string;
-  @Input() max: number;
+  @Input() bar: Bar;
   @Output() barClicked = new EventEmitter();
-  @ViewChild('bar', {static: true}) bar: ElementRef;
+  @ViewChild('barElement', {static: true}) barElement: ElementRef;
 
   constructor(
     private popover: PopoverService,
@@ -23,9 +22,9 @@ export class BarComponent implements OnInit {
 
   ngOnInit(): void {
     this.renderer.setStyle(
-      this.bar.nativeElement,
+      this.barElement.nativeElement,
       'width',
-      `${this.current / this.max * 100}%`,
+      `${this.bar.current / this.bar.max * 100}%`,
     );
   }
 
