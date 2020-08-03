@@ -204,6 +204,8 @@ export class DataService {
         infoData.content,
         infoData.parent,
         infoData.type,
+        infoData.created ? new Date(infoData.created.seconds * 1000) : null,
+        infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
       ));
       return all;
     }, new Map<InfoType, Info[]>());

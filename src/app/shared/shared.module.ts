@@ -14,6 +14,7 @@ import { DiceModule } from '../dice/dice.module';
 import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
 import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
+import { InfoBoxComponent } from './components/info-box/info-box.component';
 
 
 
@@ -27,6 +28,7 @@ import { EditAttributeComponent } from './components/edit-attribute/edit-attribu
     AudioPlayerComponent,
     SelectOnFocusDirective,
     BarComponent,
+    InfoBoxComponent,
   ],
   imports: [
     CommonModule,
@@ -44,6 +46,7 @@ import { EditAttributeComponent } from './components/edit-attribute/edit-attribu
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    InfoBoxComponent,
     SelectOnFocusDirective,
     FontAwesomeModule,
     ReactiveFormsModule,

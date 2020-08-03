@@ -6,5 +6,7 @@ export class Info {
     public content: string,
     public parent: string,
     public type: InfoType,
+    public created: Date,
+    public modified: Date,
   ) {}
 }

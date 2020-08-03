@@ -62,11 +62,10 @@
   </div>
 
   <div class="detail-info" *ngIf="infos$">
-    <div class="info-block box" *ngFor="let infoList of infos$ | async | keyvalue">
-      <div class="heading">{{infoTypes[infoList.key]}}</div>
-      <div class="detail" *ngFor="let info of infoList.value" (click)="editDetail(info)">
-        {{info.content}}
-      </div>
-    </div>
+    <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
+                  [key]="infoList.key"
+                  [infos]="infoList.value"
+                  (editDetail)="editDetail($event)"
+    ></app-info-box>
   </div>
 </div>

@@ -32,7 +32,6 @@ export class PersonComponent implements OnInit, OnDestroy {
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
   values$: Observable<Values>;
-  infoTypes = ConfigService.infoTypes;
   private personSub: Subscription;
 
   constructor(
