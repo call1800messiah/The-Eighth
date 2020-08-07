@@ -49,15 +49,13 @@ export class EditInfoComponent implements OnInit, PopoverChild {
 
   save() {
     const info: Info = {...this.infoForm.value};
-    if (this.data.id) {
-      info.id = this.data.id;
-    } else {
+    if (!this.data.id) {
       info.created = new Date();
     }
     info.parent = this.data.parent;
     info.modified = new Date();
 
-    this.dataService.store(info, 'info').then(() => {
+    this.dataService.store(info, 'info', this.data.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

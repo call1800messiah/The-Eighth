@@ -150,10 +150,10 @@ export class DataService {
   }
 
 
-  store(item: any, collection: string): Promise<boolean> {
+  store(item: any, collection: string, id?: string): Promise<boolean> {
     return new Promise((resolve) => {
-      if (item.id) {
-        this.api.updateDocumentInCollection(item.id, collection, item).then(() => {
+      if (id) {
+        this.api.updateDocumentInCollection(id, collection, item).then(() => {
           resolve(true);
         }).catch((error) => {
           console.log(error);
