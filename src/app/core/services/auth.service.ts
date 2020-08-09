@@ -41,7 +41,7 @@ export class AuthService {
       this.router.navigate([this.redirectUrl]);
       this.redirectUrl = '/';
     }).catch((error) => {
-      console.log(error);
+      console.error(error);
     });
   }
 

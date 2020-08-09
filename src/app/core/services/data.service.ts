@@ -79,7 +79,7 @@ export class DataService {
       this.api.deleteDocumentFromCollection(itemId, collection).then(() => {
         resolve(true);
       }).catch((error) => {
-        console.log(error);
+        console.error(error);
         resolve(false);
       });
     });
@@ -156,7 +156,7 @@ export class DataService {
         this.api.updateDocumentInCollection(id, collection, item).then(() => {
           resolve(true);
         }).catch((error) => {
-          console.log(error);
+          console.error(error);
           resolve(false);
         });
       } else {
@@ -167,7 +167,7 @@ export class DataService {
             resolve(false);
           }
         }).catch((error) => {
-          console.log(error);
+          console.error(error);
           resolve(false);
         });
       }
