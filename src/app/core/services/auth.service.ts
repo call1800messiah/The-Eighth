@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
+import { User } from '../interfaces/user.interface';
 
 
 
@@ -12,14 +13,17 @@ import { ApiService } from './api.service';
 })
 export class AuthService {
   redirectUrl = '/';
-  user$: Observable<any>;
+  user$: BehaviorSubject<User>;
+  private firebaseUser$: Observable<any>;
 
   constructor(
     private api: ApiService,
     private router: Router,
   ) {
-    this.user$ = this.api.getAuthState();
-    this.user$.subscribe(user => {
+    this.user$ = new BehaviorSubject<User>(null);
+    this.firebaseUser$ = this.api.getAuthState();
+    this.firebaseUser$.subscribe(user => {
+      this.user$.next(AuthService.transformUser(user));
       if (user){
         localStorage.setItem('user', JSON.stringify(user));
       } else {
@@ -29,8 +33,21 @@ export class AuthService {
   }
 
 
+
+  private static transformUser(firebaseUser): User {
+    if (!firebaseUser) {
+      return null;
+    }
+
+    return {
+      id: firebaseUser.uid,
+      email: firebaseUser.email,
+    };
+  }
+
+
   isLoggedIn(): Observable<boolean> {
-    return this.user$.pipe(
+    return this.firebaseUser$.pipe(
       map((user) => user !== null),
     );
   }

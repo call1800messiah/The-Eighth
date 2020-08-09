@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { faMask } from '@fortawesome/free-solid-svg-icons';
 
 import { Info } from '../../../core/models/info.model';
 import { ConfigService } from '../../../core/services/config.service';
@@ -14,6 +15,7 @@ export class InfoBoxComponent implements OnInit {
   @Input() key: string;
   @Input() infos: Info[];
   @Output() editDetail = new EventEmitter<Info>();
+  faMask = faMask;
   infoTypes = ConfigService.infoTypes;
 
   constructor() { }

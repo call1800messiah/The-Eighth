@@ -8,5 +8,7 @@ export class Info {
     public type: InfoType,
     public created: Date,
     public modified: Date,
+    public isPrivate: boolean,
+    public owner: string,
   ) {}
 }

@@ -9,6 +9,8 @@ import { StorageService } from './storage.service';
 import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
 import { Values } from '../interfaces/values.interface';
+import { ConfigService } from './config.service';
+import { AuthService } from './auth.service';
 
 
 
@@ -19,11 +21,17 @@ export class DataService {
   private achievements$: Observable<Achievement[]>;
   private campaignInfo$: Observable<any[]>;
   private people$: BehaviorSubject<Person[]>;
+  private userID: string;
 
   constructor(
     private api: ApiService,
+    private auth: AuthService,
     private storage: StorageService
-  ) {}
+  ) {
+    this.auth.user$.subscribe((user) => {
+      this.userID = user.id;
+    });
+  }
 
 
   private static transformSnapshotChanges(changeList: any[]) {
@@ -141,10 +149,17 @@ export class DataService {
 
 
   getInfosByParentId(id: string): Observable<Map<InfoType, Info[]>>{
-    return this.api.getDataFromCollectionWhere(
-      'info',
-      (ref) => ref.where('parent', '==', id)
-    ).pipe(
+    return combineLatest([
+      this.api.getDataFromCollectionWhere(
+        'info',
+        (ref) => ref.where('parent', '==', id)
+      ),
+      this.api.getDataFromCollectionWhere(
+        `info/${ConfigService.collections.personal}/${this.userID}`,
+        (ref) => ref.where('parent', '==', id)
+      ),
+    ]).pipe(
+      map(([pub, priv]) => pub.concat(...priv)),
       map((infos) => this.transformInfos(infos)),
     );
   }
@@ -154,6 +169,9 @@ export class DataService {
     return new Promise((resolve) => {
       if (id) {
         this.api.updateDocumentInCollection(id, collection, item).then(() => {
+          if (!item.isPrivate) {
+            this.delete(id, `${collection}/${ConfigService.collections.personal}/${this.userID}`);
+          }
           resolve(true);
         }).catch((error) => {
           console.error(error);
@@ -171,6 +189,24 @@ export class DataService {
           resolve(false);
         });
       }
+    });
+  }
+
+
+  storePrivate(item: any, collection: string, id?: string): Promise<boolean> {
+    if (this.userID === null) {
+      return new Promise<boolean>((resolve) => { resolve(false); });
+    }
+
+    return this.store(
+      item,
+      `${collection}/${ConfigService.collections.personal}/${this.userID}`,
+      id,
+    ).then((result) => {
+      if (id && result) {
+        this.delete(id, collection);
+      }
+      return result;
     });
   }
 
@@ -206,6 +242,8 @@ export class DataService {
         infoData.type,
         infoData.created ? new Date(infoData.created.seconds * 1000) : null,
         infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
+        infoData.isPrivate ? infoData.isPrivate : false,
+        infoData.owner ? infoData.owner : null,
       ));
       return all;
     }, new Map<InfoType, Info[]>());

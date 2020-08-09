@@ -4,6 +4,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ConfigService {
+  static collections = {
+    personal: '00-privateData',
+  };
+
   static infoTypes = {
     0: 'Erscheinungsbild',
     1: 'Hintergrund',
