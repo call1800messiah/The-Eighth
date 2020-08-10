@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
@@ -6,6 +6,8 @@ import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { Info } from '../../../core/models/info.model';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -14,20 +16,30 @@ import { ConfigService } from '../../../core/services/config.service';
   templateUrl: './edit-info.component.html',
   styleUrls: ['./edit-info.component.scss']
 })
-export class EditInfoComponent implements OnInit, PopoverChild {
+export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   faUnlock = faUnlock;
   infoForm = new FormGroup({
     content: new FormControl(''),
+    isPrivate: new FormControl(false),
     type: new FormControl(0),
   });
   infoTypes = Object.values(ConfigService.infoTypes);
+  userID: string;
+  private subscription = new Subscription();
 
   constructor(
+    private auth: AuthService,
     private dataService: DataService,
-  ) { }
+  ) {
+    this.subscription.add(
+      this.auth.user$.subscribe((user) => {
+        this.userID = user.id;
+      })
+    );
+  }
 
   ngOnInit(): void {
     if (this.data.info) {
@@ -36,6 +48,9 @@ export class EditInfoComponent implements OnInit, PopoverChild {
     }
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
 
   delete() {
@@ -54,6 +69,7 @@ export class EditInfoComponent implements OnInit, PopoverChild {
       id = this.data.info.id;
     } else {
       info.created = new Date();
+      info.owner = this.userID;
     }
     info.modified = new Date();
 

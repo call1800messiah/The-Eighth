@@ -9,6 +9,8 @@ import { StorageService } from './storage.service';
 import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
 import { Values } from '../interfaces/values.interface';
+import { ConfigService } from './config.service';
+import { AuthService } from './auth.service';
 
 
 
@@ -19,11 +21,17 @@ export class DataService {
   private achievements$: Observable<Achievement[]>;
   private campaignInfo$: Observable<any[]>;
   private people$: BehaviorSubject<Person[]>;
+  private userID: string;
 
   constructor(
     private api: ApiService,
+    private auth: AuthService,
     private storage: StorageService
-  ) {}
+  ) {
+    this.auth.user$.subscribe((user) => {
+      this.userID = user.id;
+    });
+  }
 
 
   private static transformSnapshotChanges(changeList: any[]) {
@@ -203,6 +211,8 @@ export class DataService {
         infoData.type,
         infoData.created ? new Date(infoData.created.seconds * 1000) : null,
         infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
+        infoData.isPrivate ? infoData.isPrivate : false,
+        infoData.owner ? infoData.owner : null,
       ));
       return all;
     }, new Map<InfoType, Info[]>());
