@@ -30,8 +30,8 @@ export class EditInfoComponent implements OnInit, PopoverChild {
   ) { }
 
   ngOnInit(): void {
-    if (this.data.id) {
-      const info = this.data as Info;
+    if (this.data.info) {
+      const info = this.data.info as Info;
       this.infoForm.patchValue(info);
     }
   }
@@ -39,8 +39,8 @@ export class EditInfoComponent implements OnInit, PopoverChild {
 
 
   delete() {
-    if (this.data.id) {
-      this.dataService.delete(this.data.id, 'info').then(() => {
+    if (this.data.info) {
+      this.dataService.delete(this.data.info.id, `people/${this.data.parent}/info`).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -48,14 +48,16 @@ export class EditInfoComponent implements OnInit, PopoverChild {
 
 
   save() {
+    let id;
     const info: Info = {...this.infoForm.value};
-    if (!this.data.id) {
+    if (this.data.info) {
+      id = this.data.info.id;
+    } else {
       info.created = new Date();
     }
-    info.parent = this.data.parent;
     info.modified = new Date();
 
-    this.dataService.store(info, 'info', this.data.id).then(() => {
+    this.dataService.store(info, `people/${this.data.parent}/info`, id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

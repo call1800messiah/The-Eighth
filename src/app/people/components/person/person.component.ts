@@ -51,7 +51,7 @@ export class PersonComponent implements OnInit, OnDestroy {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
-        this.infos$ = this.data.getInfosByParentId(this.person.id);
+        this.infos$ = this.data.getPersonInfos(this.person.id);
         this.values$ = this.data.getPersonValues(this.person.id);
       }
     });
@@ -77,7 +77,10 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   editDetail(info: Info) {
-    this.popover.showPopover('Info editieren', EditInfoComponent, info);
+    this.popover.showPopover('Info editieren', EditInfoComponent, {
+      info,
+      parent: this.person.id,
+    });
   }
 
 

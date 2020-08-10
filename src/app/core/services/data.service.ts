@@ -131,21 +131,18 @@ export class DataService {
   }
 
 
+  getPersonInfos(id: string): Observable<Map<InfoType, Info[]>> {
+    return this.api.getDataFromCollection(`people/${id}/info`).pipe(
+      map((infos) => this.transformInfos(infos)),
+    );
+  }
+
+
   getPersonValues(id: string): Observable<Values> {
     return this.api.getDataFromCollection(
       `people/${id}/attributes`,
     ).pipe(
       map((values) => DataService.transformValues(id, values)),
-    );
-  }
-
-
-  getInfosByParentId(id: string): Observable<Map<InfoType, Info[]>>{
-    return this.api.getDataFromCollectionWhere(
-      'info',
-      (ref) => ref.where('parent', '==', id)
-    ).pipe(
-      map((infos) => this.transformInfos(infos)),
     );
   }
 
