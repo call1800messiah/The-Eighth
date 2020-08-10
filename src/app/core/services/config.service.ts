@@ -12,6 +12,8 @@ export class ConfigService {
     0: 'Erscheinungsbild',
     1: 'Hintergrund',
     2: 'Notizen',
+    3: 'Charakter',
+    4: 'Ziele',
   };
 
   constructor() { }
