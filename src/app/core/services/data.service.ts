@@ -9,8 +9,8 @@ import { StorageService } from './storage.service';
 import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
 import { Values } from '../interfaces/values.interface';
-import { ConfigService } from './config.service';
 import { AuthService } from './auth.service';
+import { User } from '../interfaces/user.interface';
 
 
 
@@ -21,16 +21,14 @@ export class DataService {
   private achievements$: Observable<Achievement[]>;
   private campaignInfo$: Observable<any[]>;
   private people$: BehaviorSubject<Person[]>;
-  private userID: string;
+  private user: User;
 
   constructor(
     private api: ApiService,
     private auth: AuthService,
     private storage: StorageService
   ) {
-    this.auth.user$.subscribe((user) => {
-      this.userID = user.id;
-    });
+    this.user = this.auth.user;
   }
 
 
@@ -140,7 +138,19 @@ export class DataService {
 
 
   getPersonInfos(id: string): Observable<Map<InfoType, Info[]>> {
-    return this.api.getDataFromCollection(`people/${id}/info`).pipe(
+    return combineLatest([
+      this.api.getDataFromCollectionWhere(
+        `people/${id}/info`,
+        (ref) => ref
+          .where('owner', '==', this.user.id)
+          .where('isPrivate', '==', true),
+      ),
+      this.api.getDataFromCollectionWhere(
+        `people/${id}/info`,
+        (ref) => ref.where('isPrivate', '==', false),
+      )
+    ]).pipe(
+      map(([owned, pub]) => owned.concat(...pub)),
       map((infos) => this.transformInfos(infos)),
     );
   }

@@ -14,6 +14,7 @@ import { User } from '../interfaces/user.interface';
 export class AuthService {
   redirectUrl = '/';
   user$: BehaviorSubject<User>;
+  user: User;
   private firebaseUser$: Observable<any>;
 
   constructor(
@@ -23,7 +24,8 @@ export class AuthService {
     this.user$ = new BehaviorSubject<User>(null);
     this.firebaseUser$ = this.api.getAuthState();
     this.firebaseUser$.subscribe(user => {
-      this.user$.next(AuthService.transformUser(user));
+      this.user = AuthService.transformUser(user);
+      this.user$.next(this.user);
       if (user){
         localStorage.setItem('user', JSON.stringify(user));
       } else {
