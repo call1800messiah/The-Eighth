@@ -207,7 +207,6 @@ export class DataService {
       typeArray.push(new Info(
         entry.payload.doc.id,
         infoData.content,
-        infoData.parent,
         infoData.type,
         infoData.created ? new Date(infoData.created.seconds * 1000) : null,
         infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
