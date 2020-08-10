@@ -1,6 +1,6 @@
 <div>
   <form [formGroup]="infoForm" (ngSubmit)="save()">
-    <div *ngIf="!data.id || (data.owner && data.owner === userID)" class="form-group">
+    <div *ngIf="data.info.owner === userID" class="form-group">
       <input type="checkbox" id="isPrivate" formControlName="isPrivate">
       <label for="isPrivate">Privat</label>
     </div>
