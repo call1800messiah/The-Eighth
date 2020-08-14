@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
-import { faDharmachakra, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faDharmachakra, faFistRaised, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 
 
@@ -18,6 +18,11 @@ export class NavigationService {
       label: 'Isidas Hoffnung',
       icon: faDharmachakra,
       link: '/overview'
+    },
+    {
+      label: 'Kampf',
+      icon: faFistRaised,
+      link: '/combat'
     },
     {
       label: 'Personen',

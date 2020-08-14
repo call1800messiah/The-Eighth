@@ -1,0 +1,60 @@
+@import "../../../../scss/variables.scss";
+$circle-size : 50px;
+
+.combatant {
+  margin-bottom: $item-padding;
+  position: relative;
+
+  &.inactive {
+    .name,
+    .initiative,
+    .bars {
+      border-color: $color-gray;
+      color: $color-gray;
+    }
+  }
+}
+
+app-avatar {
+  display: inline-block;
+  left: 0;
+  line-height: $circle-size;
+  position: absolute;
+  top: 0;
+  width: $circle-size;
+  z-index: 2;
+}
+
+.name {
+  border-bottom: 1px solid $color-primary;
+  border-top: 1px solid $color-primary;
+  height: $circle-size;
+  line-height: 30px;
+  margin: 0 25px;
+  padding: 10px 35px;
+  position: relative;
+  z-index: 1;
+}
+
+.initiative {
+  border: 1px solid $color-primary;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  height: $circle-size;
+  line-height: $circle-size - 2px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: $circle-size;
+  z-index: 2;
+}
+
+.bars {
+  border: 1px solid $color-primary;
+  border-top: none;
+  margin-top: -$circle-size / 2;
+  min-height: 50px;
+  padding-top: $circle-size / 2;
+}

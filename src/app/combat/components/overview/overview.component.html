@@ -1,0 +1,15 @@
+<div *ngFor="let fighter of combatants$ | async" class="combatant"
+     [ngClass]="{'inactive': !fighter.active}"
+>
+  <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
+  <div class="initiative" (click)="setInitiative(fighter)">
+    {{fighter.active ? fighter.initiative : 'X'}}
+  </div>
+  <div class="name">
+    {{fighter.person ? fighter.person.name : fighter.name}}
+  </div>
+
+  <div class="bars">
+
+  </div>
+</div>
