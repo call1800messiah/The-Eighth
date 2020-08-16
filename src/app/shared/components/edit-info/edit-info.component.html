@@ -1,5 +1,10 @@
 <div>
   <form [formGroup]="infoForm" (ngSubmit)="save()">
+    <div *ngIf="!data.info || data.info.owner === userID" class="form-group">
+      <input type="checkbox" id="isPrivate" formControlName="isPrivate">
+      <label for="isPrivate">Privat</label>
+    </div>
+
     <div class="form-group">
       <textarea id="content" formControlName="content" required></textarea>
       <label for="content">Inhalt</label>
@@ -18,7 +23,7 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="data.id">
+    <div class="locked-input" *ngIf="data.info">
       <button type="button" class="btn-icon" (click)="toggleDelete()">
         <fa-icon [icon]="faUnlock" [fixedWidth]="true"></fa-icon>
       </button>

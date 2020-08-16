@@ -1,0 +1,34 @@
+<div class="top-bar clearfix">
+  <div class="form-group">
+    <input id="newCombatant" type="text" [(ngModel)]="newCombatant">
+    <label for="newCombatant">Kämpfername</label>
+  </div>
+
+  <button type="button" class="btn-icon btn-add" (click)="addCombatant()">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Kämpfer hinzufügen"></fa-icon>
+  </button>
+
+  <button type="button" class="btn-icon btn-people" (click)="showAddPersonDialog()">
+    <fa-icon [icon]="faUsers" [fixedWidth]="true"
+             title="Person als Kämpfer hinzufügen"></fa-icon>
+  </button>
+</div>
+
+
+<div *ngFor="let fighter of combatants$ | async" class="combatant"
+     [ngClass]="{'inactive': !fighter.active}"
+>
+  <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
+  <div *ngIf="!fighter.person" class="default-avatar">
+    <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
+  </div>
+
+  <div class="initiative" (click)="setInitiative(fighter)">
+    <span *ngIf="fighter.active">{{fighter.initiative}}</span>
+    <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
+  </div>
+  <div class="name" (click)="removeCombatant(fighter.id)">
+    {{fighter.person ? fighter.person.name : fighter.name}}
+  </div>
+</div>

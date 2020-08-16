@@ -1,0 +1,26 @@
+@import '../../../../scss/variables.scss';
+
+.bar-wrapper {
+  border: 1px solid $color-primary;
+  height: 25px;
+  position: relative;
+
+  &.lep .bar { background-color: $color-lep; }
+  &.aup .bar { background-color: $color-aup; }
+  &.asp .bar { background-color: $color-asp; }
+}
+
+.bar {
+  height: 100%;
+}
+
+.text {
+  color: $color-primary;
+  left: 0;
+  line-height: 25px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
+}

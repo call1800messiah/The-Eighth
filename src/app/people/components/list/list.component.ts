@@ -6,7 +6,7 @@ import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operato
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { DataService } from '../../../core/services/data.service';
-import { Person } from 'src/app/core/models/person.model';
+import { Person } from 'src/app/core/interfaces/person.interface';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 

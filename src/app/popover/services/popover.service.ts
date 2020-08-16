@@ -1,7 +1,5 @@
 import {ComponentFactoryResolver, Injectable} from '@angular/core';
-
 import { BehaviorSubject, Subject } from 'rxjs';
-import {PopoverChild} from '../interfaces/popover-child.model';
 
 
 

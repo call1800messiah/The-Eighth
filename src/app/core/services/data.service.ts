@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Person } from '../models/person.model';
+import { Person } from '../interfaces/person.interface';
 import { ApiService } from './api.service';
 import { Achievement } from '../models/achievements.model';
 import { StorageService } from './storage.service';
 import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
+import { Values } from '../interfaces/values.interface';
+import { AuthService } from './auth.service';
+import { User } from '../interfaces/user.interface';
 
 
 
@@ -15,31 +18,17 @@ import { InfoType } from '../enums/info-type.enum';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly achievements$: Observable<Achievement[]>;
-  private readonly campaignInfo$: Observable<any[]>;
-  private readonly people$: BehaviorSubject<Person[]>;
+  private achievements$: Observable<Achievement[]>;
+  private campaignInfo$: Observable<any[]>;
+  private people$: BehaviorSubject<Person[]>;
+  private user: User;
 
   constructor(
     private api: ApiService,
+    private auth: AuthService,
     private storage: StorageService
   ) {
-    this.people$ = new BehaviorSubject<Person[]>([]);
-    this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
-      map(DataService.transformSnapshotChanges),
-    );
-    this.api.getDataFromCollection('people').pipe(
-      map(this.transformPeople.bind(this)),
-      map((people: Person[]) => people.sort(DataService.orderByName)),
-    ).subscribe((people) => {
-      this.people$.next(people);
-    });
-    this.achievements$ = combineLatest([
-      this.api.getDataFromCollection('achievements'),
-      this.people$,
-    ]).pipe(
-      map(([achievements, people]) => this.transformAchievements(achievements, people)),
-      map((achievements) => achievements.sort(DataService.orderByUnlocked)),
-    );
+    this.user = this.auth.user;
   }
 
 
@@ -48,6 +37,24 @@ export class DataService {
       all.push(entry.payload.doc.data());
       return all;
     }, []);
+  }
+
+
+  private static transformValues(id: string, data: any): Values {
+    return {
+      person: id,
+      attributes: data.reduce((all, entry) => {
+        const attribute = entry.payload.doc.data();
+        all.push({
+          id: entry.payload.doc.id,
+          current: attribute.current,
+          max: attribute.max,
+          type: attribute.type,
+        });
+
+        return all;
+      }, []),
+    };
   }
 
 
@@ -78,7 +85,7 @@ export class DataService {
       this.api.deleteDocumentFromCollection(itemId, collection).then(() => {
         resolve(true);
       }).catch((error) => {
-        console.log(error);
+        console.error(error);
         resolve(false);
       });
     });
@@ -86,44 +93,85 @@ export class DataService {
 
 
   getAchievements(): Observable<Achievement[]> {
+    if (!this.achievements$) {
+      this.achievements$ = combineLatest([
+        this.api.getDataFromCollection('achievements'),
+        this.getPeople(),
+      ]).pipe(
+        map(([achievements, people]) => this.transformAchievements(achievements, people)),
+        map((achievements) => achievements.sort(DataService.orderByUnlocked)),
+      );
+    }
     return this.achievements$;
   }
 
 
   getCampaignInfo(): Observable<any[]> {
+    if (!this.campaignInfo$) {
+      this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
+        map(DataService.transformSnapshotChanges),
+      );
+    }
     return this.campaignInfo$;
   }
 
 
   getPeople(): Observable<Person[]> {
+    if (!this.people$) {
+      this.people$ = new BehaviorSubject<Person[]>([]);
+      this.api.getDataFromCollection('people').pipe(
+        map(this.transformPeople.bind(this)),
+        map((people: Person[]) => people.sort(DataService.orderByName)),
+      ).subscribe((people) => {
+        this.people$.next(people);
+      });
+    }
     return this.people$;
   }
 
 
   getPersonById(id: string): Observable<Person> {
-    return this.people$.pipe(
+    return this.getPeople().pipe(
       map((people) => people.find(person => person.id === id)),
     );
   }
 
 
-  getInfosByParentId(id: string): Observable<Map<InfoType, Info[]>>{
-    return this.api.getDataFromCollectionWhere(
-      'info',
-      (ref) => ref.where('parent', '==', id)
-    ).pipe(
+  getPersonInfos(id: string): Observable<Map<InfoType, Info[]>> {
+    return combineLatest([
+      this.api.getDataFromCollectionWhere(
+        `people/${id}/info`,
+        (ref) => ref
+          .where('owner', '==', this.user.id)
+          .where('isPrivate', '==', true),
+      ),
+      this.api.getDataFromCollectionWhere(
+        `people/${id}/info`,
+        (ref) => ref.where('isPrivate', '==', false),
+      )
+    ]).pipe(
+      map(([owned, pub]) => owned.concat(...pub)),
       map((infos) => this.transformInfos(infos)),
     );
   }
 
 
-  store(item: any, collection: string): Promise<boolean> {
+  getPersonValues(id: string): Observable<Values> {
+    return this.api.getDataFromCollection(
+      `people/${id}/attributes`,
+    ).pipe(
+      map((values) => DataService.transformValues(id, values)),
+    );
+  }
+
+
+  store(item: any, collection: string, id?: string): Promise<boolean> {
     return new Promise((resolve) => {
-      if (item.id) {
-        this.api.updateDocumentInCollection(item.id, collection, item).then(() => {
+      if (id) {
+        this.api.updateDocumentInCollection(id, collection, item).then(() => {
           resolve(true);
         }).catch((error) => {
-          console.log(error);
+          console.error(error);
           resolve(false);
         });
       } else {
@@ -134,7 +182,7 @@ export class DataService {
             resolve(false);
           }
         }).catch((error) => {
-          console.log(error);
+          console.error(error);
           resolve(false);
         });
       }
@@ -169,8 +217,11 @@ export class DataService {
       typeArray.push(new Info(
         entry.payload.doc.id,
         infoData.content,
-        infoData.parent,
         infoData.type,
+        infoData.created ? new Date(infoData.created.seconds * 1000) : null,
+        infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
+        infoData.isPrivate ? infoData.isPrivate : false,
+        infoData.owner ? infoData.owner : null,
       ));
       return all;
     }, new Map<InfoType, Info[]>());

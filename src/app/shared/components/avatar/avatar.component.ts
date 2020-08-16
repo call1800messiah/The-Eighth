@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from 'src/app/core/models/person.model';
+import { Person } from 'src/app/core/interfaces/person.interface';
 
 
 

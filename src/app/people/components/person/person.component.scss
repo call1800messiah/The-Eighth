@@ -23,19 +23,6 @@
   margin: $container-horizontal-padding 0;
 }
 
-.detail {
-  border-bottom: 1px dotted darken($color-primary, 5a0);
-  margin-bottom: $item-padding / 2;
-  padding-bottom: $item-padding / 2;
-  white-space: pre-line;
-
-  &:last-of-type {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-}
-
 dl {
   margin: 0;
 }

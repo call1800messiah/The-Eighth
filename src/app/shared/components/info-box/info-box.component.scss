@@ -1,0 +1,26 @@
+@import "../../../../scss/variables.scss";
+
+.info-block {
+  margin-top: $item-padding;
+}
+
+.detail {
+  border-bottom: 1px dotted darken($color-primary, 5a0);
+  margin-bottom: $item-padding / 2;
+  padding-bottom: $item-padding / 2;
+  white-space: pre-line;
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  &.private { opacity: 0.7; }
+}
+
+.status {
+  float: right;
+  margin-bottom: 5px;
+  margin-left: 5px;
+}

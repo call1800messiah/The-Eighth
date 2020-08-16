@@ -1,0 +1,10 @@
+<div class="info-block box">
+  <div class="heading">{{infoTypes[key]}}</div>
+  <div class="detail" *ngFor="let info of infos" (click)="detailClicked(info)" [ngClass]="{'private' : info.isPrivate}">
+    <div class="status">
+      <fa-icon *ngIf="info.isPrivate" [icon]="faMask" [fixedWidth]="true"></fa-icon>
+    </div>
+
+    {{info.content}}
+  </div>
+</div>

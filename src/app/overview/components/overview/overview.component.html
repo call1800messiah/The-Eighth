@@ -2,7 +2,10 @@
   <dt>Aktuelles Datum</dt>
   <dd>{{campaign.date}}</dd>
   <dt>Ausdauer Malus</dt>
-  <dd>-{{campaign.staminaReduction}}</dd>
+  <dd>
+    <span *ngIf="campaign.staminaReduction > 0">-</span>
+    {{campaign.staminaReduction}}
+  </dd>
   <dt>Schiff</dt>
   <dd>{{campaign.ship}}</dd>
   <dt>Kapitän</dt>

@@ -32,7 +32,7 @@ export class StorageService {
           fileRef.getDownloadURL().subscribe(() => {
             const update = Object.assign({}, updateRef, { image: fileName });
             this.api.updateDocumentInCollection(update.id, bucket, update).then(() => {}).catch((error) => {
-              console.log(error);
+              console.error(error);
             });
           });
         }

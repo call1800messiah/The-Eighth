@@ -24,6 +24,7 @@ footer {
   bottom: -100vh;
   box-shadow: 0 -5px 5px $color-dark;
   display: flex;
+  flex-wrap: wrap;
   justify-content: stretch;
   left: 0;
   padding: $item-padding;

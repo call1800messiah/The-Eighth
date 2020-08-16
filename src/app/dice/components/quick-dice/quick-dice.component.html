@@ -1,0 +1,9 @@
+<div class="dice d{{type}}">
+  <app-die *ngFor="let die of rolls; let i = index"
+           [type]="type"
+           [currentNumber]="die"
+           (rolled)="onDiceRolled(i)"
+  ></app-die>
+
+  <div class="total" *ngIf="total">{{total}}</div>
+</div>

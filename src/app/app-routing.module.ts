@@ -16,6 +16,11 @@ const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
+    path: 'combat',
+    loadChildren: () => import('./combat/combat.module').then(m => m.CombatModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'people',
     loadChildren: () => import('./people/people.module').then(m => m.PeopleModule),
     canLoad: [AuthGuardService]

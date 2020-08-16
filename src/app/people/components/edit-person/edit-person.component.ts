@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
-import { Person } from '../../../core/models/person.model';
+import { Person } from '../../../core/interfaces/person.interface';
 
 
 
@@ -42,10 +42,7 @@ export class EditPersonComponent implements OnInit, PopoverChild {
 
   save() {
     const person: Person = {...this.personForm.value};
-    if (this.data.id) {
-      person.id = this.data.id;
-    }
-    this.dataService.store(person, 'people').then(() => {
+    this.dataService.store(person, 'people', this.data.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

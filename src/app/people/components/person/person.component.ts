@@ -4,7 +4,7 @@ import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Person } from '../../../core/models/person.model';
+import { Person } from '../../../core/interfaces/person.interface';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
@@ -14,7 +14,9 @@ import { UtilService } from '../../../core/services/util.service';
 import { Info } from '../../../core/models/info.model';
 import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
-import { ConfigService } from '../../../core/services/config.service';
+import { Values } from '../../../core/interfaces/values.interface';
+import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 
 
 
@@ -28,7 +30,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
-  infoTypes = ConfigService.infoTypes;
+  values$: Observable<Values>;
   private personSub: Subscription;
 
   constructor(
@@ -49,7 +51,8 @@ export class PersonComponent implements OnInit, OnDestroy {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
-        this.infos$ = this.data.getInfosByParentId(this.person.id);
+        this.infos$ = this.data.getPersonInfos(this.person.id);
+        this.values$ = this.data.getPersonValues(this.person.id);
       }
     });
   }
@@ -65,8 +68,19 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
+  editAttribute(attribute: Attribute) {
+    this.popover.showPopover('Wert editieren', EditAttributeComponent, {
+      person: this.person.id,
+      attribute,
+    });
+  }
+
+
   editDetail(info: Info) {
-    this.popover.showPopover('Info editieren', EditInfoComponent, info);
+    this.popover.showPopover('Info editieren', EditInfoComponent, {
+      info,
+      parent: this.person.id,
+    });
   }
 
 

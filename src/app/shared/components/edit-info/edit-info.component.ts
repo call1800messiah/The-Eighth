@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
@@ -6,6 +6,8 @@ import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { Info } from '../../../core/models/info.model';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -14,33 +16,46 @@ import { ConfigService } from '../../../core/services/config.service';
   templateUrl: './edit-info.component.html',
   styleUrls: ['./edit-info.component.scss']
 })
-export class EditInfoComponent implements OnInit, PopoverChild {
+export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   faUnlock = faUnlock;
   infoForm = new FormGroup({
     content: new FormControl(''),
+    isPrivate: new FormControl(false),
     type: new FormControl(0),
   });
   infoTypes = Object.values(ConfigService.infoTypes);
+  userID: string;
+  private subscription = new Subscription();
 
   constructor(
+    private auth: AuthService,
     private dataService: DataService,
-  ) { }
+  ) {
+    this.subscription.add(
+      this.auth.user$.subscribe((user) => {
+        this.userID = user.id;
+      })
+    );
+  }
 
   ngOnInit(): void {
-    if (this.data.id) {
-      const info = this.data as Info;
+    if (this.data.info) {
+      const info = this.data.info as Info;
       this.infoForm.patchValue(info);
     }
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
 
   delete() {
-    if (this.data.id) {
-      this.dataService.delete(this.data.id, 'info').then(() => {
+    if (this.data.info) {
+      this.dataService.delete(this.data.info.id, `people/${this.data.parent}/info`).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -48,12 +63,17 @@ export class EditInfoComponent implements OnInit, PopoverChild {
 
 
   save() {
+    let id;
     const info: Info = {...this.infoForm.value};
-    info.parent = this.data.parent;
-    if (this.data.id) {
-      info.id = this.data.id;
+    if (this.data.info) {
+      id = this.data.info.id;
+    } else {
+      info.created = new Date();
+      info.owner = this.userID;
     }
-    this.dataService.store(info, 'info').then(() => {
+    info.modified = new Date();
+
+    this.dataService.store(info, `people/${this.data.parent}/info`, id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

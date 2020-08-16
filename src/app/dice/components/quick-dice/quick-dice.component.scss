@@ -1,0 +1,14 @@
+@import "../../../../scss/variables.scss";
+
+app-die {
+  display: inline-block;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+.total {
+  display: inline-block;
+  line-height: $mobile-interactive-height;
+  text-align: center;
+  width: $mobile-interactive-height;
+}
