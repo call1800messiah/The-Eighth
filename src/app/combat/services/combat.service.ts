@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { Combatant } from '../../core/interfaces/combatant.interface';
 import { DataService } from '../../core/services/data.service';
@@ -14,6 +14,7 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class CombatService {
   private readonly combatants$: Observable<Combatant[]>;
+  private readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
 
   constructor(
     private api: ApiService,
@@ -21,7 +22,7 @@ export class CombatService {
   ) {
     this.combatants$ = combineLatest([
       this.dataService.getPeople(),
-      this.api.getDataFromCollection('combat/tKthlBKLy0JuVaPnXWzY/fighters')
+      this.api.getDataFromCollection(this.combatCollection),
     ]).pipe(
       map(([people, fighters]) => this.transformCombatants(people, fighters)),
     );
@@ -29,8 +30,14 @@ export class CombatService {
 
 
 
-  addCombatant(combatant: Combatant) {
-    // TODO
+  addCombatant(combatant: Person | string) {
+    let newFighter;
+    if (combatant.hasOwnProperty('id')) {
+      newFighter = { active: true, initiative: 0, person: (combatant as Person).id };
+    } else {
+      newFighter = { active: true, initiative: 0, name: combatant };
+    }
+    this.api.addDocumentToCollection(newFighter, this.combatCollection);
   }
 
 
@@ -46,10 +53,27 @@ export class CombatService {
   }
 
 
+  removeCombatant(id: string) {
+    this.api.deleteDocumentFromCollection(id, this.combatCollection);
+  }
+
+
+  removeCombatantByPersonId(id: string) {
+    this.combatants$.pipe(
+      take(1),
+      map((combatants) => {
+        return combatants.find((fighter) => fighter.person && fighter.person.id === id);
+      }),
+    ).subscribe((fighter) => {
+      this.removeCombatant(fighter.id);
+    });
+  }
+
+
   setInitiative(combatantId: string, initiative: number, active: boolean) {
     return this.api.updateDocumentInCollection(
       combatantId,
-      'combat/tKthlBKLy0JuVaPnXWzY/fighters',
+      this.combatCollection,
       {
         active,
         initiative,
@@ -70,6 +94,12 @@ export class CombatService {
       });
       return all;
     }, []).sort((a, b) => {
+      if (a.active && !b.active) {
+        return -1;
+      }
+      if (!a.active && b.active) {
+        return 1;
+      }
       if (a.initiative > b.initiative) {
         return -1;
       }

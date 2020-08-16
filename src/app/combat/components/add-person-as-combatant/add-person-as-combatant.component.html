@@ -1,0 +1,6 @@
+<div class="people">
+  <div class="form-group" *ngFor="let person of people">
+    <input type="checkbox" [(ngModel)]="selected[person.id]" id="person-{{person.id}}" (change)="selectionChanged($event, person)">
+    <label for="person-{{person.id}}">{{person.name}}</label>
+  </div>
+</div>

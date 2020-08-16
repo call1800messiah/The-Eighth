@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { combineLatest, Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { faDizzy, faPlus, faUserNinja, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import { Combatant } from '../../../core/interfaces/combatant.interface';
 import { CombatService } from '../../services/combat.service';
@@ -8,6 +9,7 @@ import { PopoverService } from '../../../popover/services/popover.service';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
 import { Person } from '../../../core/interfaces/person.interface';
 import { DataService } from '../../../core/services/data.service';
+import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
 
 
 
@@ -18,7 +20,11 @@ import { DataService } from '../../../core/services/data.service';
 })
 export class OverviewComponent implements OnInit {
   combatants$: Observable<Combatant[]>;
+  faDizzy = faDizzy;
   faPlus = faPlus;
+  faUserNinja = faUserNinja;
+  faUsers = faUsers;
+  newCombatant = '';
   people: Person[];
 
   constructor(
@@ -33,9 +39,24 @@ export class OverviewComponent implements OnInit {
 
 
 
+  addCombatant() {
+    if (this.newCombatant !== '') {
+      this.combatService.addCombatant(this.newCombatant);
+      this.newCombatant = '';
+    }
+  }
+
+
+  removeCombatant(id: string) {
+    if (window.confirm('Wirklich entfernen?')) {
+      this.combatService.removeCombatant(id);
+    }
+  }
+
+
   setInitiative(combatant: Combatant) {
     this.popover.showPopover(
-      `Ini ${combatant.person.name}`,
+      `Ini ${combatant.person ? combatant.person.name : combatant.name}`,
       EditInitiativeComponent,
       {
         active: combatant.active,
@@ -43,5 +64,22 @@ export class OverviewComponent implements OnInit {
         initiative: combatant.initiative
       },
     );
+  }
+
+
+  showAddPersonDialog() {
+    combineLatest([
+      this.dataService.getPeople(),
+      this.combatService.getIdsOfPeopleInFight(),
+    ]).pipe(
+      map(([people, selected]) => ({ people, selected })),
+      take(1),
+    ).subscribe((data) => {
+      this.popover.showPopover(
+        'Kämpfer hinzufügen',
+        AddPersonAsCombatantComponent,
+        data,
+      );
+    });
   }
 }

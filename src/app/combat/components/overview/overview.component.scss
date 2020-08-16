@@ -1,6 +1,20 @@
 @import "../../../../scss/variables.scss";
 $circle-size : 50px;
 
+.top-bar {
+  margin-bottom: $item-padding;
+  position: relative;
+  padding-right: 100px;
+
+  button {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &.btn-add { right: 50px; }
+  }
+}
+
 .combatant {
   margin-bottom: $item-padding;
   position: relative;
@@ -15,7 +29,8 @@ $circle-size : 50px;
   }
 }
 
-app-avatar {
+app-avatar,
+.default-avatar {
   display: inline-block;
   left: 0;
   line-height: $circle-size;
@@ -25,13 +40,26 @@ app-avatar {
   z-index: 2;
 }
 
+.default-avatar {
+  border: 1px solid $color-primary;
+  border-radius: 50%;
+  font-size: $circle-size * 0.75;
+  height: $circle-size;
+  overflow: hidden;
+  padding-top: 5px;
+  text-align: center;
+}
+
 .name {
+  align-items: center;
   border-bottom: 1px solid $color-primary;
   border-top: 1px solid $color-primary;
+  display: flex;
   height: $circle-size;
-  line-height: 30px;
+  line-height: 20px;
   margin: 0 25px;
-  padding: 10px 35px;
+  overflow: hidden;
+  padding: 5px 35px;
   position: relative;
   z-index: 1;
 }
@@ -39,6 +67,7 @@ app-avatar {
 .initiative {
   border: 1px solid $color-primary;
   border-radius: 50%;
+  cursor: pointer;
   font-size: 24px;
   font-weight: bold;
   height: $circle-size;
@@ -49,6 +78,11 @@ app-avatar {
   top: 0;
   width: $circle-size;
   z-index: 2;
+
+  &:hover {
+    background-color: $color-primary;
+    color: $color-dark;
+  }
 }
 
 .bars {

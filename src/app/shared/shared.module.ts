@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AvatarComponent } from './components/avatar/avatar.component';
@@ -33,6 +33,7 @@ import { InfoBoxComponent } from './components/info-box/info-box.component';
   imports: [
     CommonModule,
     FontAwesomeModule,
+    FormsModule,
     ReactiveFormsModule,
     PopoverModule,
     ImageCropperModule,
@@ -46,6 +47,7 @@ import { InfoBoxComponent } from './components/info-box/info-box.component';
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    FormsModule,
     InfoBoxComponent,
     SelectOnFocusDirective,
     FontAwesomeModule,
