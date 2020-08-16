@@ -7,7 +7,7 @@
     <div class="title" *ngIf="person.title">{{person.title}}</div>
     <div class="name">{{person.name}}</div>
     <div class="race" *ngIf="person.race">{{person.race}}</div>
-    <div class="birthday">{{person.birthday}} {{person.birthyear}} BF</div>
+    <div class="birthday">{{person.birthyear | estimatedAge}}</div>
     <div class="status">
       <fa-icon *ngIf="person.deathday" [icon]="faSkullCrossbones" [fixedWidth]="true"
         title="Gestorben am {{person.deathday}} BF"></fa-icon>

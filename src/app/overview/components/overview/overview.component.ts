@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { DataService } from '../../../core/services/data.service';
+import { CampaignData } from '../../../core/interfaces/campaign-data.interface';
 
 
 
@@ -11,7 +12,7 @@ import { DataService } from '../../../core/services/data.service';
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit {
-  campaignInfo$: Observable<any>;
+  campaignInfo$: Observable<CampaignData>;
 
   constructor(
     private data: DataService,

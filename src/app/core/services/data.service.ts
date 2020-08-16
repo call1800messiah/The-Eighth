@@ -11,6 +11,7 @@ import { InfoType } from '../enums/info-type.enum';
 import { Values } from '../interfaces/values.interface';
 import { AuthService } from './auth.service';
 import { User } from '../interfaces/user.interface';
+import { CampaignData } from '../interfaces/campaign-data.interface';
 
 
 
@@ -19,7 +20,7 @@ import { User } from '../interfaces/user.interface';
 })
 export class DataService {
   private achievements$: Observable<Achievement[]>;
-  private campaignInfo$: Observable<any[]>;
+  private campaignInfo$: Observable<CampaignData>;
   private people$: BehaviorSubject<Person[]>;
   private user: User;
 
@@ -29,6 +30,12 @@ export class DataService {
     private storage: StorageService
   ) {
     this.user = this.auth.user;
+  }
+
+
+
+  private static transformCampaign(campaignData: any[]): CampaignData {
+    return campaignData[0].payload.doc.data() as CampaignData;
   }
 
 
@@ -106,10 +113,10 @@ export class DataService {
   }
 
 
-  getCampaignInfo(): Observable<any[]> {
+  getCampaignInfo(): Observable<CampaignData> {
     if (!this.campaignInfo$) {
       this.campaignInfo$ = this.api.getDataFromCollection('campaign').pipe(
-        map(DataService.transformSnapshotChanges),
+        map(DataService.transformCampaign),
       );
     }
     return this.campaignInfo$;

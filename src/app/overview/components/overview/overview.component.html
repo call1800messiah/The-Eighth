@@ -1,6 +1,6 @@
-<dl *ngFor="let campaign of campaignInfo$ | async">
+<dl *ngIf="(campaignInfo$ | async) as campaign">
   <dt>Aktuelles Datum</dt>
-  <dd>{{campaign.date}}</dd>
+  <dd>{{campaign.date}} BF</dd>
   <dt>Ausdauer Malus</dt>
   <dd>
     <span *ngIf="campaign.staminaReduction > 0">-</span>
