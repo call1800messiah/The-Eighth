@@ -47,9 +47,11 @@ form button {
       display: none;
 
       + label {
-        display: block;
+        align-items: center;
+        display: flex;
         font-size: $base-body-font-size;
-        line-height: $mobile-interactive-height;
+        line-height: $mobile-interactive-height / 2;
+        min-height: $mobile-interactive-height;
         position: static;
         padding-left: $mobile-interactive-height + $item-padding;
         width: 100%;
