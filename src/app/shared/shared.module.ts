@@ -15,6 +15,7 @@ import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
 import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 import { InfoBoxComponent } from './components/info-box/info-box.component';
+import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
 
 
 
@@ -24,11 +25,13 @@ import { InfoBoxComponent } from './components/info-box/info-box.component';
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    EstimatedAgePipe,
     AudioPlayerListComponent,
     AudioPlayerComponent,
     SelectOnFocusDirective,
     BarComponent,
     InfoBoxComponent,
+    EstimatedAgePipe,
   ],
   imports: [
     CommonModule,
@@ -47,6 +50,7 @@ import { InfoBoxComponent } from './components/info-box/info-box.component';
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    EstimatedAgePipe,
     FormsModule,
     InfoBoxComponent,
     SelectOnFocusDirective,
