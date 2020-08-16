@@ -1,6 +1,7 @@
 <div class="top-bar clearfix">
   <div class="form-group">
-    <input type="text" [(ngModel)]="newCombatant">
+    <input id="newCombatant" type="text" [(ngModel)]="newCombatant">
+    <label for="newCombatant">Kämpfername</label>
   </div>
 
   <button type="button" class="btn-icon btn-add" (click)="addCombatant()">
