@@ -4,14 +4,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { ListComponent } from './components/list/list.component';
 import { AuthGuardService } from '../core/services/auth-guard.service';
 import { PersonComponent } from './components/person/person.component';
-import { PeopleDashboardComponent } from './components/people-dashboard/people-dashboard.component';
+import { DashboardComponent } from '../shared/components/dashboard/dashboard.component';
 
 
 
 const routes: Routes = [{
   canActivateChild: [AuthGuardService],
   path: '',
-  component: PeopleDashboardComponent,
+  component: DashboardComponent,
   children: [
     {
       path: ':id',
