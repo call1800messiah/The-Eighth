@@ -18,6 +18,7 @@ import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
+import { FocusOnInitDirective } from './directives/focus-on-init.directive';
 
 
 
@@ -29,6 +30,7 @@ import { RouterModule } from '@angular/router';
     EditImageComponent,
     EditInfoComponent,
     EstimatedAgePipe,
+    FocusOnInitDirective,
     AudioPlayerListComponent,
     AudioPlayerComponent,
     SelectOnFocusDirective,
@@ -56,6 +58,7 @@ import { RouterModule } from '@angular/router';
     EditImageComponent,
     EditInfoComponent,
     EstimatedAgePipe,
+    FocusOnInitDirective,
     FormsModule,
     InfoBoxComponent,
     SelectOnFocusDirective,
