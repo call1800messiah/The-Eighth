@@ -84,7 +84,9 @@ export class OverviewComponent implements OnInit {
 
   showAddPersonDialog() {
     combineLatest([
-      this.dataService.getPeople(),
+      this.dataService.getPeople().pipe(
+        map((people) => people.filter(person => !person.deathday)),
+      ),
       this.combatService.getIdsOfPeopleInFight(),
     ]).pipe(
       map(([people, selected]) => ({ people, selected })),
