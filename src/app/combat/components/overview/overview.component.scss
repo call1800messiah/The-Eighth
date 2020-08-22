@@ -19,14 +19,7 @@ $circle-size : 50px;
   margin-bottom: $item-padding;
   position: relative;
 
-  &.inactive {
-    .name,
-    .initiative {
-      border-color: $color-gray;
-      color: $color-gray;
-    }
-    .bars { filter: grayscale(0.7) brightness(0.7); }
-  }
+  &.inactive { filter: grayscale(1) brightness(0.8); }
 }
 
 app-avatar,
