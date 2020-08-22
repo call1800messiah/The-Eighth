@@ -10,6 +10,8 @@
   </button>
 </div>
 
-<app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person"
-  (click)="goToPerson(person)">
-</app-person-summary>
+<div class="people">
+  <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person"
+                      (click)="goToPerson(person)">
+  </app-person-summary>
+</div>
