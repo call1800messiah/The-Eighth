@@ -16,16 +16,21 @@ import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { RouterModule } from '@angular/router';
+import { FocusOnInitDirective } from './directives/focus-on-init.directive';
 
 
 
 @NgModule({
   declarations: [
     AvatarComponent,
+    DashboardComponent,
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
     EstimatedAgePipe,
+    FocusOnInitDirective,
     AudioPlayerListComponent,
     AudioPlayerComponent,
     SelectOnFocusDirective,
@@ -41,16 +46,19 @@ import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
     PopoverModule,
     ImageCropperModule,
     DiceModule,
+    RouterModule,
   ],
   exports: [
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
+    DashboardComponent,
     DiceModule,
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
     EstimatedAgePipe,
+    FocusOnInitDirective,
     FormsModule,
     InfoBoxComponent,
     SelectOnFocusDirective,

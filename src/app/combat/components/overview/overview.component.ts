@@ -10,6 +10,8 @@ import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.comp
 import { Person } from '../../../core/interfaces/person.interface';
 import { DataService } from '../../../core/services/data.service';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
+import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 
 
 
@@ -47,6 +49,19 @@ export class OverviewComponent implements OnInit {
   }
 
 
+  editAttribute(attribute: Attribute, fighter) {
+    const data = {
+      altCollection: null,
+      person: fighter.person ? fighter.person.id : fighter.id,
+      attribute,
+    };
+    if (!fighter.person) {
+      data.altCollection = this.combatService.combatCollection;
+    }
+    this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
+  }
+
+
   removeCombatant(id: string) {
     if (window.confirm('Wirklich entfernen?')) {
       this.combatService.removeCombatant(id);
@@ -69,7 +84,9 @@ export class OverviewComponent implements OnInit {
 
   showAddPersonDialog() {
     combineLatest([
-      this.dataService.getPeople(),
+      this.dataService.getPeople().pipe(
+        map((people) => people.filter(person => !person.deathday)),
+      ),
       this.combatService.getIdsOfPeopleInFight(),
     ]).pipe(
       map(([people, selected]) => ({ people, selected })),

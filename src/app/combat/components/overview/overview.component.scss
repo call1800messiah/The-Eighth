@@ -15,18 +15,17 @@ $circle-size : 50px;
   }
 }
 
+.combatants {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))
+}
+
 .combatant {
   margin-bottom: $item-padding;
   position: relative;
 
-  &.inactive {
-    .name,
-    .initiative,
-    .bars {
-      border-color: $color-gray;
-      color: $color-gray;
-    }
-  }
+  &.inactive { filter: grayscale(1) brightness(0.8); }
 }
 
 app-avatar,
@@ -65,6 +64,7 @@ app-avatar,
 }
 
 .initiative {
+  background-color: $color-dark;
   border: 1px solid $color-primary;
   border-radius: 50%;
   cursor: pointer;
@@ -86,9 +86,11 @@ app-avatar,
 }
 
 .bars {
-  border: 1px solid $color-primary;
-  border-top: none;
-  margin-top: -$circle-size / 2;
-  min-height: 50px;
-  padding-top: $circle-size / 2;
+  display: flex;
+  padding: 0 ($circle-size / 2);
+
+  app-bar {
+    display: block;
+    flex-grow: 1;
+  }
 }

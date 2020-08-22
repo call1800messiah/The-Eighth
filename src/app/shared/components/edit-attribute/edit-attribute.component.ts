@@ -36,13 +36,10 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
 
 
   save() {
-    const attribute: Attribute = Object.assign(
-      {},
-      this.data.attribute as Attribute,
-    {...this.attributeForm.value}
-    );
+    const attribute: Attribute = {...this.attributeForm.value};
 
-    this.dataService.store(attribute, `people/${this.data.person}/attributes`).then((stuff) => {
+    const collection = `${this.data.altCollection ? this.data.altCollection : 'people'}/${this.data.person}/attributes`;
+    this.dataService.store(attribute, collection, this.data.attribute.id).then((stuff) => {
       this.dismissPopover.emit(true);
     });
   }
