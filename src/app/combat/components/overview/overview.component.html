@@ -16,26 +16,28 @@
 </div>
 
 
-<div *ngFor="let fighter of combatants$ | async" class="combatant"
-     [ngClass]="{'inactive': !fighter.active}"
->
-  <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
-  <div *ngIf="!fighter.person" class="default-avatar">
-    <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
-  </div>
+<div class="combatants">
+  <div *ngFor="let fighter of combatants$ | async" class="combatant"
+       [ngClass]="{'inactive': !fighter.active}"
+  >
+    <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
+    <div *ngIf="!fighter.person" class="default-avatar">
+      <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
+    </div>
 
-  <div class="initiative" (click)="setInitiative(fighter)">
-    <span *ngIf="fighter.active">{{fighter.initiative}}</span>
-    <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
-  </div>
-  <div class="name" (click)="removeCombatant(fighter.id)">
-    {{fighter.person ? fighter.person.name : fighter.name}}
-  </div>
+    <div class="initiative" (click)="setInitiative(fighter)">
+      <span *ngIf="fighter.active">{{fighter.initiative}}</span>
+      <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
+    </div>
+    <div class="name" (click)="removeCombatant(fighter.id)">
+      {{fighter.person ? fighter.person.name : fighter.name}}
+    </div>
 
-  <div *ngIf="(fighter.attributes | async) as attributes" class="bars">
-    <app-bar *ngFor="let bar of attributes"
-             [bar]="bar"
-             (barClicked)="editAttribute(bar, fighter)"
-    ></app-bar>
+    <div *ngIf="(fighter.attributes | async) as attributes" class="bars">
+      <app-bar *ngFor="let bar of attributes"
+               [bar]="bar"
+               (barClicked)="editAttribute(bar, fighter)"
+      ></app-bar>
+    </div>
   </div>
 </div>
