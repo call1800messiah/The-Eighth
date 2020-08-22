@@ -10,6 +10,8 @@ import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.comp
 import { Person } from '../../../core/interfaces/person.interface';
 import { DataService } from '../../../core/services/data.service';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
+import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 
 
 
@@ -44,6 +46,19 @@ export class OverviewComponent implements OnInit {
       this.combatService.addCombatant(this.newCombatant);
       this.newCombatant = '';
     }
+  }
+
+
+  editAttribute(attribute: Attribute, fighter) {
+    const data = {
+      fighter: fighter.id,
+      person: null,
+      attribute,
+    };
+    if (fighter.person) {
+      data.person = fighter.person.id;
+    }
+    this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
   }
 
 

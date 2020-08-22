@@ -84,14 +84,21 @@ export class CombatService {
 
   private transformCombatants(people: Person[], fighters: any[]): Combatant[] {
     return fighters.reduce((all, data) => {
-      const fighter = data.payload.doc.data();
-      all.push({
+      const fighterData = data.payload.doc.data();
+      const fighter = {
         id: data.payload.doc.id,
-        active: fighter.active,
-        initiative: fighter.initiative,
-        name: fighter.name ? fighter.name : null,
-        person: people.find((person) => person.id === fighter.person),
-      });
+        active: fighterData.active,
+        attributes: null,
+        initiative: fighterData.initiative,
+        name: fighterData.name ? fighterData.name : null,
+        person: people.find((person) => person.id === fighterData.person),
+      };
+      if (fighter.person) {
+        fighter.attributes = this.dataService.getPersonValues(fighter.person.id).pipe(
+          map((values) => values.attributes),
+        );
+      }
+      all.push(fighter);
       return all;
     }, []).sort((a, b) => {
       if (a.active && !b.active) {

@@ -12,6 +12,7 @@ import { Values } from '../interfaces/values.interface';
 import { AuthService } from './auth.service';
 import { User } from '../interfaces/user.interface';
 import { CampaignData } from '../interfaces/campaign-data.interface';
+import { UtilService } from './util.service';
 
 
 
@@ -60,30 +61,8 @@ export class DataService {
         });
 
         return all;
-      }, []),
+      }, []).sort(UtilService.orderByType),
     };
-  }
-
-
-  private static orderByName(a: Person, b: Person) {
-    if (a.name > b.name) {
-      return 1;
-    }
-    if (a.name < b.name) {
-      return -1;
-    }
-    return 0;
-  }
-
-
-  private static orderByUnlocked(a: Achievement, b: Achievement) {
-    if (a.unlocked < b.unlocked) {
-      return 1;
-    }
-    if (a.unlocked > b.unlocked) {
-      return -1;
-    }
-    return 0;
   }
 
 
@@ -106,7 +85,7 @@ export class DataService {
         this.getPeople(),
       ]).pipe(
         map(([achievements, people]) => this.transformAchievements(achievements, people)),
-        map((achievements) => achievements.sort(DataService.orderByUnlocked)),
+        map((achievements) => achievements.sort(UtilService.orderByUnlocked)),
       );
     }
     return this.achievements$;
@@ -128,7 +107,7 @@ export class DataService {
       this.people$ = new BehaviorSubject<Person[]>([]);
       this.api.getDataFromCollection('people').pipe(
         map(this.transformPeople.bind(this)),
-        map((people: Person[]) => people.sort(DataService.orderByName)),
+        map((people: Person[]) => people.sort(UtilService.orderByName)),
       ).subscribe((people) => {
         this.people$.next(people);
       });

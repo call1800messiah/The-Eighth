@@ -21,11 +21,11 @@ $circle-size : 50px;
 
   &.inactive {
     .name,
-    .initiative,
-    .bars {
+    .initiative {
       border-color: $color-gray;
       color: $color-gray;
     }
+    .bars { filter: grayscale(0.7) brightness(0.7); }
   }
 }
 
@@ -86,9 +86,11 @@ app-avatar,
 }
 
 .bars {
-  border: 1px solid $color-primary;
-  border-top: none;
-  margin-top: -$circle-size / 2;
-  min-height: 50px;
-  padding-top: $circle-size / 2;
+  display: flex;
+  padding: 0 ($circle-size / 2);
+
+  app-bar {
+    display: block;
+    flex-grow: 1;
+  }
 }

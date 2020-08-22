@@ -31,4 +31,11 @@
   <div class="name" (click)="removeCombatant(fighter.id)">
     {{fighter.person ? fighter.person.name : fighter.name}}
   </div>
+
+  <div *ngIf="(fighter.attributes | async) as attributes" class="bars">
+    <app-bar *ngFor="let bar of attributes"
+             [bar]="bar"
+             (barClicked)="editAttribute(bar, fighter)"
+    ></app-bar>
+  </div>
 </div>

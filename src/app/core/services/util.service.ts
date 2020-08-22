@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import slugify from 'slugify';
 
+import { Person } from '../interfaces/person.interface';
+import { Achievement } from '../models/achievements.model';
+import { Attribute } from '../interfaces/attribute.interface';
+
 
 
 @Injectable({
@@ -9,6 +13,33 @@ import slugify from 'slugify';
 export class UtilService {
 
   constructor() { }
+
+
+
+  static orderByName(a: Person, b: Person) {
+    return UtilService.orderByObjectProperty(a, b, 'name', true);
+  }
+
+
+  static orderByType(a: Attribute, b: Attribute) {
+    return UtilService.orderByObjectProperty(a, b, 'type', false);
+  }
+
+
+  static orderByUnlocked(a: Achievement, b: Achievement) {
+    return UtilService.orderByObjectProperty(a, b, 'unlocked', false);
+  }
+
+
+  private static orderByObjectProperty(a, b, property: string, asc: boolean) {
+    if (a[property] < b[property]) {
+      return asc ? -1 : 1;
+    }
+    if (a[property] > b[property]) {
+      return asc ? 1 : -1;
+    }
+    return 0;
+  }
 
 
   dataURLtoBlob(dataurl) {
