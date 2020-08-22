@@ -142,9 +142,10 @@ export class DataService {
   }
 
 
-  getPersonValues(id: string): Observable<Values> {
+  getPersonValues(id: string, altCollection?: string): Observable<Values> {
+    const collection = `${altCollection ? altCollection : 'people'}/${id}/attributes`;
     return this.api.getDataFromCollection(
-      `people/${id}/attributes`,
+      collection,
     ).pipe(
       map((values) => DataService.transformValues(id, values)),
     );

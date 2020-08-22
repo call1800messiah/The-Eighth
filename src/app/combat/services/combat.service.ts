@@ -13,8 +13,8 @@ import { ApiService } from '../../core/services/api.service';
   providedIn: 'root',
 })
 export class CombatService {
+  readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
   private readonly combatants$: Observable<Combatant[]>;
-  private readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
 
   constructor(
     private api: ApiService,
@@ -37,7 +37,20 @@ export class CombatService {
     } else {
       newFighter = { active: true, initiative: 0, name: combatant };
     }
-    this.api.addDocumentToCollection(newFighter, this.combatCollection);
+    this.api.addDocumentToCollection(newFighter, this.combatCollection).then((ref) => {
+      if (!combatant.hasOwnProperty('id')) {
+        this.api.addDocumentToCollection({
+          current: 30,
+          max: 30,
+          type: 'lep',
+        }, `${this.combatCollection}/${ref.id}/attributes`);
+        this.api.addDocumentToCollection({
+          current: 30,
+          max: 30,
+          type: 'aup',
+        }, `${this.combatCollection}/${ref.id}/attributes`);
+      }
+    });
   }
 
 
@@ -95,6 +108,10 @@ export class CombatService {
       };
       if (fighter.person) {
         fighter.attributes = this.dataService.getPersonValues(fighter.person.id).pipe(
+          map((values) => values.attributes),
+        );
+      } else {
+        fighter.attributes = this.dataService.getPersonValues(fighter.id, this.combatCollection).pipe(
           map((values) => values.attributes),
         );
       }

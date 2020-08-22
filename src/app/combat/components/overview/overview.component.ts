@@ -51,12 +51,12 @@ export class OverviewComponent implements OnInit {
 
   editAttribute(attribute: Attribute, fighter) {
     const data = {
-      fighter: fighter.id,
-      person: null,
+      altCollection: null,
+      person: fighter.person ? fighter.person.id : fighter.id,
       attribute,
     };
-    if (fighter.person) {
-      data.person = fighter.person.id;
+    if (!fighter.person) {
+      data.altCollection = this.combatService.combatCollection;
     }
     this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
   }
