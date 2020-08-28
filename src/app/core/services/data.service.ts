@@ -13,6 +13,8 @@ import { AuthService } from './auth.service';
 import { User } from '../interfaces/user.interface';
 import { CampaignData } from '../interfaces/campaign-data.interface';
 import { UtilService } from './util.service';
+import { Timeline } from '../interfaces/timeline.interface';
+import { HistoricEvent } from '../interfaces/historic-event.interface';
 
 
 
@@ -102,6 +104,13 @@ export class DataService {
   }
 
 
+  getEvents(timelineId: string): Observable<HistoricEvent[]> {
+    return this.api.getDataFromCollection(`timelines/${timelineId}/events`).pipe(
+      map((events) => this.transformEvents(events)),
+    );
+  }
+
+
   getPeople(): Observable<Person[]> {
     if (!this.people$) {
       this.people$ = new BehaviorSubject<Person[]>([]);
@@ -152,6 +161,13 @@ export class DataService {
   }
 
 
+  getTimeline(id: string): Observable<Timeline> {
+    return this.api.getItemFromCollection(`timelines/${id}`).pipe(
+      map((timeline) => this.transformTimeline(timeline)),
+    );
+  }
+
+
   store(item: any, collection: string, id?: string): Promise<boolean> {
     return new Promise((resolve) => {
       if (id) {
@@ -190,6 +206,24 @@ export class DataService {
       ));
       return all;
     }, []);
+  }
+
+
+  private transformEvents(events: any[]): HistoricEvent[] {
+    return events.reduce((all, event) => {
+      const eventData = event.payload.doc.data();
+      all.push({
+        id: event.payload.doc.id,
+        content: eventData.content,
+        date: eventData.date,
+        created: eventData.created ? new Date(eventData.created.seconds * 1000) : null,
+        isPrivate: eventData.isPrivate ? eventData.isPrivate : false,
+        modified: eventData.modified ? new Date(eventData.modified.seconds * 1000) : null,
+        owner: eventData.owner ? eventData.owner : null,
+        type: eventData.type,
+      });
+      return all;
+    }, []).sort(UtilService.orderByCreated);
   }
 
 
@@ -240,5 +274,14 @@ export class DataService {
       all.push(person);
       return all;
     }, []);
+  }
+
+
+  private transformTimeline(data: any): Timeline {
+    return {
+      id: data.payload.id,
+      name: data.payload.data().name,
+      events: this.getEvents(data.payload.id),
+    };
   }
 }

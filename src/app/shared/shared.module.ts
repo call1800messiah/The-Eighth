@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ImageCropperModule } from 'ngx-img-cropper';
 
 import { AvatarComponent } from './components/avatar/avatar.component';
 import { PopoverModule } from '../popover/popover.module';
 import { EditImageComponent } from './components/edit-image/edit-image.component';
-import { ImageCropperModule } from 'ngx-img-cropper';
 import { AudioPlayerListComponent } from './components/audio-player-list/audio-player-list.component';
 import { AudioPlayerComponent } from './components/audio-player/audio-player.component';
 import { EditInfoComponent } from './components/edit-info/edit-info.component';
@@ -17,26 +18,28 @@ import { EditAttributeComponent } from './components/edit-attribute/edit-attribu
 import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { RouterModule } from '@angular/router';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
+import { TimelineComponent } from './components/timeline/timeline.component';
+import { EditEventComponent } from './components/edit-event/edit-event.component';
 
 
 
 @NgModule({
   declarations: [
+    AudioPlayerComponent,
+    AudioPlayerListComponent,
     AvatarComponent,
+    BarComponent,
     DashboardComponent,
     EditAttributeComponent,
+    EditEventComponent,
     EditImageComponent,
     EditInfoComponent,
     EstimatedAgePipe,
     FocusOnInitDirective,
-    AudioPlayerListComponent,
-    AudioPlayerComponent,
-    SelectOnFocusDirective,
-    BarComponent,
     InfoBoxComponent,
-    EstimatedAgePipe,
+    SelectOnFocusDirective,
+    TimelineComponent,
   ],
   imports: [
     CommonModule,
@@ -59,12 +62,13 @@ import { FocusOnInitDirective } from './directives/focus-on-init.directive';
     EditInfoComponent,
     EstimatedAgePipe,
     FocusOnInitDirective,
+    FontAwesomeModule,
     FormsModule,
     InfoBoxComponent,
-    SelectOnFocusDirective,
-    FontAwesomeModule,
-    ReactiveFormsModule,
     PopoverModule,
+    ReactiveFormsModule,
+    SelectOnFocusDirective,
+    TimelineComponent,
   ]
 })
 export class SharedModule { }

@@ -1,0 +1,29 @@
+@import '../../../../scss/variables.scss';
+
+.timeline {
+  position: relative;
+}
+
+.btn-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.title {
+  font-size: $item-title-font-size;
+  line-height: $item-title-line-height;
+}
+
+dl {
+  dt {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  dd {
+    line-height: 1.5;
+    margin-left: 2rem;
+    white-space: pre-line;
+  }
+}

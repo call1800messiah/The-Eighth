@@ -1,0 +1,17 @@
+<div class="timeline" *ngIf="(timeline$ | async) as timeline">
+  <div class="title">{{timeline.name}}</div>
+
+  <button type="button" class="btn-icon" (click)="showAddDialog(timeline.id)">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Ereignis hinzufügen"></fa-icon>
+  </button>
+
+  <ul class="events unstyled-list">
+    <li class="event" *ngFor="let event of timeline.events | async" (click)="editEvent(event, timeline.id)">
+      <dl>
+        <dt>{{event.date}} BF</dt>
+        <dd>{{event.content}}</dd>
+      </dl>
+    </li>
+  </ul>
+</div>

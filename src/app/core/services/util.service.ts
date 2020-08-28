@@ -15,6 +15,10 @@ export class UtilService {
   constructor() { }
 
 
+  static orderByCreated(a: any, b: any) {
+    return UtilService.orderByObjectProperty(a, b, 'created', false);
+  }
+
 
   static orderByName(a: Person, b: Person) {
     return UtilService.orderByObjectProperty(a, b, 'name', true);
