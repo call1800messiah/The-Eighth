@@ -16,22 +16,24 @@
 }
 
 .text {
-  margin-bottom: $item-padding;
   position: relative;
   width: calc(100% - #{$item-image-size} - #{$item-padding});
 }
 
 .name {
-  font-size: 2rem;
+  font-size: $item-title-font-size;
   font-weight: bold;
-  line-height: 2.8rem;
+  line-height: $item-title-line-height;
+  margin-bottom: 0.5rem;
   padding-top: $detail-text-line-height;
 }
 
 .title {
   font-size: $detail-text-font-size;
+  height: $detail-text-line-height;
   line-height: $detail-text-line-height;
   left: 0;
+  overflow: hidden;
   position: absolute;
   text-transform: uppercase;
   top: 0;

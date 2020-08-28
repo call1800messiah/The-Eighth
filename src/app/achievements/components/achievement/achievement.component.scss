@@ -27,6 +27,8 @@ $avatar-size:             2.8rem;
 }
 
 .meta {
+  line-height: 0;
+  min-height: $avatar-size;
   position: relative;
   width: 100%;
 
