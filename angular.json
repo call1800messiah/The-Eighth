@@ -29,6 +29,7 @@
             ],
             "styles": [
               "src/scss/variables.scss",
+              "src/scss/mixins.scss",
               "src/scss/forms.scss",
               "src/scss/styles.scss"
             ],
@@ -95,6 +96,7 @@
             ],
             "styles": [
               "src/scss/variables.scss",
+              "src/scss/mixins.scss",
               "src/scss/form.scss",
               "src/scss/styles.scss"
             ],

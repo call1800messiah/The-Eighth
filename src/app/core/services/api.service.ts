@@ -35,6 +35,10 @@ export class ApiService {
     return this.afs.collection(collection, where).snapshotChanges();
   }
 
+  getItemFromCollection(path: string): Observable<any> {
+    return this.afs.doc(path).snapshotChanges();
+  }
+
   login(email: string, password: string) {
     return this.afAuth.signInWithEmailAndPassword(email, password);
   }

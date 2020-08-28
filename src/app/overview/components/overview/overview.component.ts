@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { DataService } from '../../../core/services/data.service';
 import { CampaignData } from '../../../core/interfaces/campaign-data.interface';
+import { Timeline } from '../../../core/interfaces/timeline.interface';
 
 
 
@@ -13,11 +14,13 @@ import { CampaignData } from '../../../core/interfaces/campaign-data.interface';
 })
 export class OverviewComponent implements OnInit {
   campaignInfo$: Observable<CampaignData>;
+  timeline$: Observable<Timeline>;
 
   constructor(
     private data: DataService,
   ) {
     this.campaignInfo$ = this.data.getCampaignInfo();
+    this.timeline$ = this.data.getTimeline('vbxJs3tgWLUJv2UZMPh4');
   }
 
   ngOnInit(): void {

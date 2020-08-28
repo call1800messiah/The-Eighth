@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import "mixins.scss";
 @import "forms.scss";
 
 * {
@@ -22,10 +23,8 @@ body {
   padding: $header-height 0 $footer-height;
 }
 
-.clearfix:after {
-  clear: both;
-  content: "";
-  display: table;
+.clearfix {
+  @include clearfix;
 }
 
 .float-right { float: right; }
@@ -97,9 +96,7 @@ body {
 }
 
 .unstyled-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  @include unstyled-list;
 }
 
 .page-header {

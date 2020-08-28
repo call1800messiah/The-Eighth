@@ -3,6 +3,7 @@ import { finalize } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
+import { ConfigService } from './config.service';
 
 
 @Injectable({
@@ -25,7 +26,7 @@ export class StorageService {
   uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: { id: string, image: string }) {
     const fileName = `${bucket}/${name}`;
     const fileRef = this.storage.ref(fileName);
-    const task = fileRef.put(file);
+    const task = fileRef.put(file, ConfigService.fileMetadata);
     task.percentageChanges().pipe(
       finalize(() => {
         if (updateRef) {
