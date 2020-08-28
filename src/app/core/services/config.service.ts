@@ -4,6 +4,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ConfigService {
+  static fileMetadata = {
+    cacheControl: 'public,max-age=259200', // One month
+  };
+
   static infoTypes = {
     0: 'Erscheinungsbild',
     1: 'Hintergrund',
