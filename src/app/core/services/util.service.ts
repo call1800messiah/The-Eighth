@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import slugify from 'slugify';
 
-import { Person } from '../interfaces/person.interface';
-import { Achievement } from '../models/achievements.model';
-import { Attribute } from '../interfaces/attribute.interface';
-
 
 
 @Injectable({
@@ -15,22 +11,22 @@ export class UtilService {
   constructor() { }
 
 
-  static orderByCreated(a: any, b: any) {
+  static orderByCreated(a: { created: string }, b: { created: string }) {
     return UtilService.orderByObjectProperty(a, b, 'created', false);
   }
 
 
-  static orderByName(a: Person, b: Person) {
+  static orderByName(a: { name: string }, b: { name: string }) {
     return UtilService.orderByObjectProperty(a, b, 'name', true);
   }
 
 
-  static orderByType(a: Attribute, b: Attribute) {
+  static orderByType(a: { type: string }, b: { type: string }) {
     return UtilService.orderByObjectProperty(a, b, 'type', false);
   }
 
 
-  static orderByUnlocked(a: Achievement, b: Achievement) {
+  static orderByUnlocked(a: { unlocked: string }, b: { unlocked: string }) {
     return UtilService.orderByObjectProperty(a, b, 'unlocked', false);
   }
 
