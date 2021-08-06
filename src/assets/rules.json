@@ -1,0 +1,596 @@
+{
+  "states": [
+    {
+      "name": "Liegend",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": 3
+        },
+        {
+          "target": "PA",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "name": "Knieend",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": 1
+        },
+        {
+          "target": "PA",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "Brennend",
+      "modifiers": [
+        {
+          "target": "LeP",
+          "value": "-1W6 pro KR"
+        }
+      ]
+    },
+    {
+      "name": "Kopfwunde 1",
+      "modifiers": [
+        {
+          "target": "MU",
+          "value": -2
+        },
+        {
+          "target": "KL",
+          "value": -2
+        },
+        {
+          "target": "IN",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": "-2W6"
+        }
+      ]
+    },
+    {
+      "name": "Kopfwunde 2",
+      "modifiers": [
+        {
+          "target": "MU",
+          "value": -2
+        },
+        {
+          "target": "KL",
+          "value": -2
+        },
+        {
+          "target": "IN",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": "-2W6"
+        }
+      ]
+    },
+    {
+      "name": "Kopfwunde 3",
+      "modifiers": [
+        {
+          "target": "MU",
+          "value": -2
+        },
+        {
+          "target": "KL",
+          "value": -2
+        },
+        {
+          "target": "IN",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": "-2W6"
+        },
+        {
+          "target": "LeP",
+          "value": "-2W6, -1 pro KR"
+        },
+        {
+          "target": "Kampfunfähig",
+          "value": ""
+        },
+        {
+          "target": "Bewusstlos",
+          "value": "1W20 KR"
+        }
+      ]
+    },
+    {
+      "name": "Brustwunde 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6"
+        }
+      ]
+    },
+    {
+      "name": "Brustwunde 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6"
+        }
+      ]
+    },
+    {
+      "name": "Brustwunde 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6, -1 pro KR"
+        },
+        {
+          "target": "Kampfunfähig",
+          "value": ""
+        },
+        {
+          "target": "Bewusstlos",
+          "value": "1W20 KR"
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Links 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Links 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Links 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        },
+        {
+          "target": "Arm unbrauchbar",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Rechts 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Rechts 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        }
+      ]
+    },
+    {
+      "name": "Armwunde Rechts 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "KK",
+          "value": -2
+        },
+        {
+          "target": "FF",
+          "value": -2
+        },
+        {
+          "target": "Arm unbrauchbar",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Bauchwunde 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "GS",
+          "value": -1
+        },
+        {
+          "target": "IB",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6"
+        }
+      ]
+    },
+    {
+      "name": "Bauchwunde 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "GS",
+          "value": -1
+        },
+        {
+          "target": "IB",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6"
+        }
+      ]
+    },
+    {
+      "name": "Bauchwunde 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "PA",
+          "value": -1
+        },
+        {
+          "target": "KO",
+          "value": -1
+        },
+        {
+          "target": "KK",
+          "value": -1
+        },
+        {
+          "target": "GS",
+          "value": -1
+        },
+        {
+          "target": "IB",
+          "value": -1
+        },
+        {
+          "target": "LeP",
+          "value": "-1W6, -1 pro KR"
+        },
+        {
+          "target": "Kampfunfähig",
+          "value": ""
+        },
+        {
+          "target": "Bewusstlos",
+          "value": "1W20 KR"
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Links 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Links 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Links 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        },
+        {
+          "target": "Sturz",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Rechts 1",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Rechts 2",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "Beinwunde Rechts 3",
+      "modifiers": [
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "PA",
+          "value": -2
+        },
+        {
+          "target": "GE",
+          "value": -2
+        },
+        {
+          "target": "IB",
+          "value": -2
+        },
+        {
+          "target": "GS",
+          "value": -1
+        },
+        {
+          "target": "Sturz",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}
