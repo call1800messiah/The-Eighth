@@ -76,6 +76,13 @@ form button {
     }
   }
 
+  select{
+    &[multiple] {
+      height: $mobile-interactive-height * 4;
+      overflow-y: auto;
+    }
+  }
+
   textarea {
     line-height: $base-body-line-height;
     min-height: 200px;

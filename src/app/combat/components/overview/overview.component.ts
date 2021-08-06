@@ -12,6 +12,7 @@ import { DataService } from '../../../core/services/data.service';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
 import { Attribute } from '../../../core/interfaces/attribute.interface';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
+import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
 
 
 
@@ -62,13 +63,6 @@ export class OverviewComponent implements OnInit {
   }
 
 
-  removeCombatant(id: string) {
-    if (window.confirm('Wirklich entfernen?')) {
-      this.combatService.removeCombatant(id);
-    }
-  }
-
-
   setInitiative(combatant: Combatant) {
     this.popover.showPopover(
       `Ini ${combatant.person ? combatant.person.name : combatant.name}`,
@@ -98,5 +92,10 @@ export class OverviewComponent implements OnInit {
         data,
       );
     });
+  }
+
+
+  showMenu(combatant: Combatant) {
+    this.popover.showPopover(combatant.name, CombatantMenuComponent, combatant);
   }
 }

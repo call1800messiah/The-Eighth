@@ -94,3 +94,14 @@ app-avatar,
     flex-grow: 1;
   }
 }
+
+.states {
+  font-size: $detail-text-font-size;
+  line-height: $detail-text-line-height;
+  margin-top: $item-padding;
+  padding: 0 ($circle-size / 2);
+
+  .state-name {
+    font-weight: bold;
+  }
+}

@@ -6,6 +6,7 @@ import { Combatant } from '../../core/interfaces/combatant.interface';
 import { DataService } from '../../core/services/data.service';
 import { Person } from '../../core/interfaces/person.interface';
 import { ApiService } from '../../core/services/api.service';
+import { CombatState } from '../../core/interfaces/combat-state.interface';
 
 
 
@@ -95,6 +96,17 @@ export class CombatService {
   }
 
 
+  setStates(combatantId: string, states: CombatState[]) {
+    return this.api.updateDocumentInCollection(
+      combatantId,
+      this.combatCollection,
+      {
+        states
+      }
+    );
+  }
+
+
   private transformCombatants(people: Person[], fighters: any[]): Combatant[] {
     return fighters.reduce((all, data) => {
       const fighterData = data.payload.doc.data();
@@ -105,6 +117,7 @@ export class CombatService {
         initiative: fighterData.initiative,
         name: fighterData.name ? fighterData.name : null,
         person: people.find((person) => person.id === fighterData.person),
+        states: fighterData.states ? fighterData.states : null,
       };
       if (fighter.person) {
         fighter.attributes = this.dataService.getPersonValues(fighter.person.id).pipe(

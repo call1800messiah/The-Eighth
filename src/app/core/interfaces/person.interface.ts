@@ -1,3 +1,5 @@
+import { CombatState } from './combat-state.interface';
+
 export interface Person{
   id: string;
   name: string;
@@ -11,4 +13,5 @@ export interface Person{
   race: string;
   title: string;
   pc: boolean;
+  states: CombatState[];
 }

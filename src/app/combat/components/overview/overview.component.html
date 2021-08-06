@@ -29,7 +29,7 @@
       <span *ngIf="fighter.active">{{fighter.initiative}}</span>
       <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
     </div>
-    <div class="name" (click)="removeCombatant(fighter.id)">
+    <div class="name" (click)="showMenu(fighter)">
       {{fighter.person ? fighter.person.name : fighter.name}}
     </div>
 
@@ -38,6 +38,15 @@
                [bar]="bar"
                (barClicked)="editAttribute(bar, fighter)"
       ></app-bar>
+    </div>
+
+    <div *ngIf="fighter.states" class="states" (click)="showMenu(fighter)">
+      <div *ngFor="let state of fighter.states" class="state">
+        <span [innerHTML]="state.name" class="state-name"></span>
+        <span *ngFor="let mod of state.modifiers">
+          | {{mod.target}} {{mod.value}}
+        </span>
+      </div>
     </div>
   </div>
 </div>

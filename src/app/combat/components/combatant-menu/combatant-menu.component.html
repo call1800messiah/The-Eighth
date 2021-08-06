@@ -1,0 +1,19 @@
+<div class="combatant-menu">
+  <div class="form-group" *ngIf="states">
+    <select (ngModelChange)="setCombatantStates($event)" [compareWith]="compareStates" [ngModel]="data.states" multiple>
+      <option [ngValue]="state" *ngFor="let state of states">
+        {{state.name}}
+      </option>
+    </select>
+  </div>
+
+  <div class="locked-input">
+    <button type="button" class="btn-icon" (click)="toggleDelete()">
+      <fa-icon [icon]="faUnlock" [fixedWidth]="true"></fa-icon>
+    </button>
+
+    <button type="button" class="btn" (click)="removeCombatant()" [disabled]="deleteDisabled">
+      Löschen
+    </button>
+  </div>
+</div>

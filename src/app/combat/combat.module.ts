@@ -6,6 +6,7 @@ import { CombatRoutingModule } from './combat-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { AddPersonAsCombatantComponent } from './components/add-person-as-combatant/add-person-as-combatant.component';
 import { EditInitiativeComponent } from './components/edit-initiative/edit-initiative.component';
+import { CombatantMenuComponent } from './components/combatant-menu/combatant-menu.component';
 
 
 
@@ -13,7 +14,8 @@ import { EditInitiativeComponent } from './components/edit-initiative/edit-initi
   declarations: [
     OverviewComponent,
     AddPersonAsCombatantComponent,
-    EditInitiativeComponent
+    EditInitiativeComponent,
+    CombatantMenuComponent
   ],
   imports: [
     CommonModule,
