@@ -11,7 +11,7 @@ export class UtilService {
   constructor() { }
 
 
-  static orderByCreated(a: { created: string }, b: { created: string }) {
+  static orderByCreated(a: { created: Date }, b: { created: Date }) {
     return UtilService.orderByObjectProperty(a, b, 'created', false);
   }
 
@@ -26,7 +26,7 @@ export class UtilService {
   }
 
 
-  static orderByUnlocked(a: { unlocked: string }, b: { unlocked: string }) {
+  static orderByUnlocked(a: { unlocked: Date }, b: { unlocked: Date }) {
     return UtilService.orderByObjectProperty(a, b, 'unlocked', false);
   }
 

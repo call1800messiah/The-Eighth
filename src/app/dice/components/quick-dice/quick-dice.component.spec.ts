@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { QuickDiceComponent } from './quick-dice.component';
 
@@ -6,7 +6,7 @@ describe('QuickDiceComponent', () => {
   let component: QuickDiceComponent;
   let fixture: ComponentFixture<QuickDiceComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ QuickDiceComponent ]
     })
