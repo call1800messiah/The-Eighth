@@ -1,9 +1,7 @@
 <div>
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
     <div class="locked-input" *ngIf="data.attribute">
-      <button type="button" class="btn-icon" (click)="toggleMax()">
-        <fa-icon [icon]="faUnlock" [fixedWidth]="true"></fa-icon>
-      </button>
+      <app-unlock-button (toggle)="toggleMax()"></app-unlock-button>
 
       <div class="form-group">
         <input type="number" min="1" step="1" [max]="data.attribute.max" id="max" formControlName="max" required appSelectOnFocus>

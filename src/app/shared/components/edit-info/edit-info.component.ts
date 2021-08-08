@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { Info } from '../../../core/models/info.model';
@@ -20,7 +19,6 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
-  faUnlock = faUnlock;
   infoForm = new FormGroup({
     content: new FormControl(''),
     isPrivate: new FormControl(false),

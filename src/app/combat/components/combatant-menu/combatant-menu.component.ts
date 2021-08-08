@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { CombatService } from '../../services/combat.service';
@@ -19,7 +18,6 @@ export class CombatantMenuComponent implements OnInit, PopoverChild {
   @Input() data: Combatant;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
-  faUnlock = faUnlock;
   states: CombatState[] = [];
 
   constructor(

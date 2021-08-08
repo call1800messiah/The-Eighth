@@ -21,6 +21,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
+import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
 
 
 
@@ -40,6 +41,7 @@ import { EditEventComponent } from './components/edit-event/edit-event.component
     InfoBoxComponent,
     SelectOnFocusDirective,
     TimelineComponent,
+    UnlockButtonComponent,
   ],
   imports: [
     CommonModule,
@@ -69,6 +71,7 @@ import { EditEventComponent } from './components/edit-event/edit-event.component
     ReactiveFormsModule,
     SelectOnFocusDirective,
     TimelineComponent,
+    UnlockButtonComponent,
   ]
 })
 export class SharedModule { }

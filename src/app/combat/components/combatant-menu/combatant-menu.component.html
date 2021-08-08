@@ -8,9 +8,7 @@
   </div>
 
   <div class="locked-input">
-    <button type="button" class="btn-icon" (click)="toggleDelete()">
-      <fa-icon [icon]="faUnlock" [fixedWidth]="true"></fa-icon>
-    </button>
+    <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
 
     <button type="button" class="btn" (click)="removeCombatant()" [disabled]="deleteDisabled">
       Löschen

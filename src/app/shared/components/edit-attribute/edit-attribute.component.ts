@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
@@ -20,7 +19,6 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
     current: new FormControl(0),
     max: new FormControl({ value: 0, disabled: true }),
   });
-  faUnlock = faUnlock;
 
   constructor(
     private dataService: DataService,
