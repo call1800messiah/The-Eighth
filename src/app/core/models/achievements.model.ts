@@ -5,6 +5,8 @@ export class Achievement {
     public description: string,
     public unlocked: Date,
     public icon: string,
-    public people: any[]
+    public people: any[],
+    public isPrivate: boolean,
+    public owner: string
   ) {}
 }

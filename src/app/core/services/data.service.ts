@@ -15,6 +15,8 @@ import { CampaignData } from '../interfaces/campaign-data.interface';
 import { UtilService } from './util.service';
 import { Timeline } from '../interfaces/timeline.interface';
 import { HistoricEvent } from '../interfaces/historic-event.interface';
+import { UserService } from './user.service';
+import { User } from '../interfaces/user.interface';
 
 
 
@@ -31,9 +33,13 @@ export class DataService {
   constructor(
     private api: ApiService,
     private auth: AuthService,
-    private storage: StorageService
+    private storage: StorageService,
+    private userService: UserService,
   ) {
     this.user = this.auth.user;
+    this.userService.getUsers().subscribe(users => {
+      this.users = users;
+    });
   }
 
 
@@ -134,19 +140,11 @@ export class DataService {
 
 
   getPersonInfos(id: string): Observable<Map<InfoType, Info[]>> {
-    return combineLatest([
-      this.api.getDataFromCollectionWhere(
-        `people/${id}/info`,
-        (ref) => ref
-          .where('owner', '==', this.user.id)
-          .where('isPrivate', '==', true),
-      ),
-      this.api.getDataFromCollectionWhere(
-        `people/${id}/info`,
-        (ref) => ref.where('isPrivate', '==', false),
-      )
-    ]).pipe(
-      map(([owned, pub]) => owned.concat(...pub)),
+    return this.api.getDataFromCollectionWhere(
+      `people/${id}/info`,
+      (ref) => ref
+        .where('access', 'array-contains', this.user.id)
+    ).pipe(
       map((infos) => this.transformInfos(infos)),
     );
   }
@@ -170,16 +168,21 @@ export class DataService {
 
 
   store(item: any, collection: string, id?: string): Promise<boolean> {
+    const storeItem = { ...item };
+    if (item.owner) {
+      storeItem.access = this.getDocumentPermissionIds(item.owner, item.isPrivate);
+    }
+
     return new Promise((resolve) => {
       if (id) {
-        this.api.updateDocumentInCollection(id, collection, item).then(() => {
+        this.api.updateDocumentInCollection(id, collection, storeItem).then(() => {
           resolve(true);
         }).catch((error) => {
           console.error(error);
           resolve(false);
         });
       } else {
-        this.api.addDocumentToCollection(item, collection).then((reference) => {
+        this.api.addDocumentToCollection(storeItem, collection).then((reference) => {
           if (reference) {
             resolve(true);
           } else {
@@ -194,6 +197,16 @@ export class DataService {
   }
 
 
+  private getDocumentPermissionIds(creatorID: string, isPrivate: boolean = true): string[] {
+    return this.users.reduce((all, user) => {
+      if (!isPrivate || user.id === creatorID || user.isGM) {
+        all.push(user.id);
+      }
+      return all;
+    }, []);
+  }
+
+
   private transformAchievements(achievements: any[], people: Person[]): Achievement[] {
     return achievements.reduce((all, entry) => {
       const achieve = entry.payload.doc.data();
@@ -204,6 +217,8 @@ export class DataService {
         new Date(achieve.unlocked.seconds * 1000),
         achieve.icon,
         people.filter((person) => achieve.people.indexOf(person.id) !== -1),
+        achieve.isPrivate,
+        achieve.owner
       ));
       return all;
     }, []);

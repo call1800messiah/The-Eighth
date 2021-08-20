@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
 import { Person } from '../../../core/interfaces/person.interface';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -12,7 +14,7 @@ import { Person } from '../../../core/interfaces/person.interface';
   templateUrl: './edit-person.component.html',
   styleUrls: ['./edit-person.component.scss']
 })
-export class EditPersonComponent implements OnInit, PopoverChild {
+export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() data: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new FormGroup({
@@ -27,10 +29,19 @@ export class EditPersonComponent implements OnInit, PopoverChild {
     deathday: new FormControl(''),
     pc: new FormControl(false),
   });
+  private subscription = new Subscription();
+  private userID: string;
 
   constructor(
     private dataService: DataService,
-  ) { }
+    private auth: AuthService,
+  ) {
+    this.subscription.add(
+      this.auth.user$.subscribe((user) => {
+        this.userID = user.id;
+      })
+    );
+  }
 
   ngOnInit(): void {
     if (this.data.id) {
@@ -39,9 +50,22 @@ export class EditPersonComponent implements OnInit, PopoverChild {
     }
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
 
   save() {
-    const person: Person = {...this.personForm.value};
+    const person: Person = {
+      ...this.personForm.value
+    };
+    if (this.data.id) {
+      person.owner = this.data.owner;
+      person.isPrivate = this.data.isPrivate;
+    } else {
+      person.owner = this.userID;
+      person.isPrivate = false;
+    }
     this.dataService.store(person, 'people', this.data.id).then(() => {
       this.dismissPopover.emit(true);
     });

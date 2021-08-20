@@ -1,6 +1,6 @@
 import { CombatState } from './combat-state.interface';
 
-export interface Person{
+export interface Person {
   id: string;
   name: string;
   birthday: string;
@@ -14,4 +14,6 @@ export interface Person{
   title: string;
   pc: boolean;
   states: CombatState[];
+  owner?: string;
+  isPrivate?: boolean;
 }

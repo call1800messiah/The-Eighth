@@ -65,6 +65,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
     const info: Info = {...this.infoForm.value};
     if (this.data.info) {
       id = this.data.info.id;
+      info.owner = this.data.info.owner;
     } else {
       info.created = new Date();
       info.owner = this.userID;
