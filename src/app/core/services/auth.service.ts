@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
-import { User } from '../interfaces/user.interface';
+import { AuthUser } from '../interfaces/auth-user.interface';
 
 
 
@@ -13,15 +13,15 @@ import { User } from '../interfaces/user.interface';
 })
 export class AuthService {
   redirectUrl = '/';
-  user$: BehaviorSubject<User>;
-  user: User;
+  user$: BehaviorSubject<AuthUser>;
+  user: AuthUser;
   private firebaseUser$: Observable<any>;
 
   constructor(
     private api: ApiService,
     private router: Router,
   ) {
-    this.user$ = new BehaviorSubject<User>(null);
+    this.user$ = new BehaviorSubject<AuthUser>(null);
     this.firebaseUser$ = this.api.getAuthState();
     this.firebaseUser$.subscribe(user => {
       this.user = AuthService.transformUser(user);
@@ -36,7 +36,7 @@ export class AuthService {
 
 
 
-  private static transformUser(firebaseUser): User {
+  private static transformUser(firebaseUser): AuthUser {
     if (!firebaseUser) {
       return null;
     }

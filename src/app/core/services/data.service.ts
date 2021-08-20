@@ -10,7 +10,7 @@ import { Info } from '../models/info.model';
 import { InfoType } from '../enums/info-type.enum';
 import { Values } from '../interfaces/values.interface';
 import { AuthService } from './auth.service';
-import { User } from '../interfaces/user.interface';
+import { AuthUser } from '../interfaces/auth-user.interface';
 import { CampaignData } from '../interfaces/campaign-data.interface';
 import { UtilService } from './util.service';
 import { Timeline } from '../interfaces/timeline.interface';
@@ -25,7 +25,8 @@ export class DataService {
   private achievements$: Observable<Achievement[]>;
   private campaignInfo$: Observable<CampaignData>;
   private people$: BehaviorSubject<Person[]>;
-  private user: User;
+  private user: AuthUser;
+  private users: User[];
 
   constructor(
     private api: ApiService,
