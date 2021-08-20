@@ -90,7 +90,11 @@ export class DataService {
   getAchievements(): Observable<Achievement[]> {
     if (!this.achievements$) {
       this.achievements$ = combineLatest([
-        this.api.getDataFromCollection('achievements'),
+        this.api.getDataFromCollectionWhere(
+          'achievements',
+          (ref) => ref
+            .where('access', 'array-contains', this.user.id)
+        ),
         this.getPeople(),
       ]).pipe(
         map(([achievements, people]) => this.transformAchievements(achievements, people)),
@@ -112,7 +116,11 @@ export class DataService {
 
 
   getEvents(timelineId: string): Observable<HistoricEvent[]> {
-    return this.api.getDataFromCollection(`timelines/${timelineId}/events`).pipe(
+    return this.api.getDataFromCollectionWhere(
+      `timelines/${timelineId}/events`,
+      (ref) => ref
+        .where('access', 'array-contains', this.user.id)
+    ).pipe(
       map((events) => this.transformEvents(events)),
     );
   }
@@ -121,7 +129,11 @@ export class DataService {
   getPeople(): Observable<Person[]> {
     if (!this.people$) {
       this.people$ = new BehaviorSubject<Person[]>([]);
-      this.api.getDataFromCollection('people').pipe(
+      this.api.getDataFromCollectionWhere(
+        'people',
+        (ref) => ref
+          .where('access', 'array-contains', this.user.id)
+      ).pipe(
         map(this.transformPeople.bind(this)),
         map((people: Person[]) => people.sort(UtilService.orderByName)),
       ).subscribe((people) => {
