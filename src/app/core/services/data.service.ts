@@ -293,6 +293,8 @@ export class DataService {
         race: personData.race || null,
         title: personData.title || null,
         pc: personData.pc || false,
+        owner: personData.owner,
+        isPrivate: personData.isPrivate
       };
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {

@@ -28,6 +28,7 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     height: new FormControl(0),
     deathday: new FormControl(''),
     pc: new FormControl(false),
+    isPrivate: new FormControl(false)
   });
   private subscription = new Subscription();
   private userID: string;
@@ -61,10 +62,8 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     };
     if (this.data.id) {
       person.owner = this.data.owner;
-      person.isPrivate = this.data.isPrivate;
     } else {
       person.owner = this.userID;
-      person.isPrivate = false;
     }
     this.dataService.store(person, 'people', this.data.id).then(() => {
       this.dismissPopover.emit(true);
