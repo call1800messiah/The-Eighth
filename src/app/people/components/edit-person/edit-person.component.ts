@@ -30,8 +30,8 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     pc: new FormControl(false),
     isPrivate: new FormControl(false)
   });
+  userID: string;
   private subscription = new Subscription();
-  private userID: string;
 
   constructor(
     private dataService: DataService,

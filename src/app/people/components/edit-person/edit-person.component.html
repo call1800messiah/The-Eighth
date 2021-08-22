@@ -4,7 +4,7 @@
       <input type="checkbox" id="pc" formControlName="pc">
       <label for="pc">Spielercharakter</label>
     </div>
-    <div class="form-group">
+    <div class="form-group" *ngIf="!data.id || data.owner === userID">
       <input type="checkbox" id="isPrivate" formControlName="isPrivate">
       <label for="isPrivate">Verborgen</label>
     </div>
