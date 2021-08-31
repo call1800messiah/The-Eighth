@@ -1,4 +1,4 @@
-<div class="wrapper box">
+<div class="wrapper box" [ngClass]="{'private' : person.isPrivate}">
   <div class="image">
     <app-avatar [person]="person"></app-avatar>
   </div>
@@ -13,6 +13,8 @@
         title="Gestorben am {{person.deathday}} BF"></fa-icon>
       <fa-icon *ngIf="person.pc" [icon]="faUser" [fixedWidth]="true"
         title="Spielercharakter"></fa-icon>
+      <fa-icon *ngIf="person.isPrivate" [icon]="faMask" [fixedWidth]="true"
+         title="Verborgen"></fa-icon>
     </div>
   </div>
 </div>

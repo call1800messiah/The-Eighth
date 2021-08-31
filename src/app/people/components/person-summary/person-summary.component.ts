@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faMask, faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { Person } from '../../../core/interfaces/person.interface';
 
@@ -12,6 +12,7 @@ import { Person } from '../../../core/interfaces/person.interface';
 })
 export class PersonSummaryComponent implements OnInit {
   @Input() person: Person;
+  faMask = faMask;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
 
