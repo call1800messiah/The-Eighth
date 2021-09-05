@@ -4,6 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { DataService } from '../../../core/services/data.service';
 import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { PeopleService } from '../../../people/services/people.service';
 
 
 
@@ -36,7 +37,7 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
   save() {
     const attribute: Attribute = {...this.attributeForm.value};
 
-    const collection = `${this.props.altCollection ? this.props.altCollection : 'people'}/${this.props.person}/attributes`;
+    const collection = `${this.props.altCollection ? this.props.altCollection : PeopleService.collection}/${this.props.person}/attributes`;
     this.dataService.store(attribute, collection, this.props.attribute.id).then((stuff) => {
       this.dismissPopover.emit(true);
     });

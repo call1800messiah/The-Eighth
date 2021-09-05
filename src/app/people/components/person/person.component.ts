@@ -18,6 +18,7 @@ import { Values } from '../../../core/interfaces/values.interface';
 import { Attribute } from '../../../core/interfaces/attribute.interface';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { ConfigService } from '../../../core/services/config.service';
+import { PeopleService } from '../../services/people.service';
 
 
 
@@ -32,14 +33,14 @@ export class PersonComponent implements OnInit, OnDestroy {
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
   values$: Observable<Values>;
-  private readonly collection = 'people';
   private personSub: Subscription;
 
   constructor(
+    private data: DataService,
+    private navigation: NavigationService,
+    private peopleService: PeopleService,
     private popover: PopoverService,
     private route: ActivatedRoute,
-    private navigation: NavigationService,
-    private data: DataService,
     private util: UtilService,
   ) { }
 
@@ -47,14 +48,14 @@ export class PersonComponent implements OnInit, OnDestroy {
     // TODO: Check if the person can be loaded by a resolver as an observable
     this.personSub = this.route.paramMap.pipe(
       switchMap(params => {
-        return this.data.getPersonById(params.get('id'));
+        return this.peopleService.getPersonById(params.get('id'));
       }),
     ).subscribe((person) => {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
-        this.infos$ = this.data.getInfos(this.person.id, this.collection);
-        this.values$ = this.data.getPersonValues(this.person.id);
+        this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
+        this.values$ = this.peopleService.getPersonValues(this.person.id);
       }
     });
   }
@@ -67,7 +68,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   addDetail() {
     this.popover.showPopover('Neue Info', EditInfoComponent, {
-      collection: this.collection,
+      collection: PeopleService.collection,
       parentId: this.person.id
     });
   }
@@ -83,7 +84,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   editDetail(info: Info) {
     this.popover.showPopover('Info editieren', EditInfoComponent, {
-      collection: this.collection,
+      collection: PeopleService.collection,
       info,
       parentId: this.person.id,
     });
@@ -92,7 +93,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
-      bucket: this.collection,
+      bucket: PeopleService.collection,
       cropperSettings: ConfigService.imageSettings.person,
       imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,

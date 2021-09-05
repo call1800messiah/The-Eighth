@@ -8,11 +8,11 @@ import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
 import { Person } from '../../../core/interfaces/person.interface';
-import { DataService } from '../../../core/services/data.service';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
 import { Attribute } from '../../../core/interfaces/attribute.interface';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
+import { PeopleService } from '../../../people/services/people.service';
 
 
 
@@ -32,7 +32,7 @@ export class OverviewComponent implements OnInit {
 
   constructor(
     private combatService: CombatService,
-    private dataService: DataService,
+    private peopleService: PeopleService,
     private popover: PopoverService,
   ) {
     this.combatants$ = this.combatService.getCombatants();
@@ -78,7 +78,7 @@ export class OverviewComponent implements OnInit {
 
   showAddPersonDialog() {
     combineLatest([
-      this.dataService.getPeople().pipe(
+      this.peopleService.getPeople().pipe(
         map((people) => people.filter(person => !person.deathday)),
       ),
       this.combatService.getIdsOfPeopleInFight(),

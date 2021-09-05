@@ -1,6 +1,9 @@
 import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { DataService } from '../../core/services/data.service';
 import { Subscription } from 'rxjs';
+
+import { CampaignService } from '../../overview/services/campaign.service';
+
+
 
 @Pipe({
   name: 'estimatedAge',
@@ -11,10 +14,10 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
   private date: number;
 
   constructor(
-    private dataService: DataService
+    private campaignService: CampaignService
   ) {
     this.subscription.add(
-      this.dataService.getCampaignInfo().subscribe((data) => {
+      this.campaignService.getCampaignInfo().subscribe((data) => {
         const dateSplit = data.date.split(' ');
         this.date = parseInt(dateSplit[dateSplit.length - 1], 10);
       })

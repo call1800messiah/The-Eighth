@@ -3,10 +3,10 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { Combatant } from '../../core/interfaces/combatant.interface';
-import { DataService } from '../../core/services/data.service';
 import { Person } from '../../core/interfaces/person.interface';
 import { ApiService } from '../../core/services/api.service';
 import { CombatState } from '../../core/interfaces/combat-state.interface';
+import { PeopleService } from '../../people/services/people.service';
 
 
 
@@ -19,10 +19,10 @@ export class CombatService {
 
   constructor(
     private api: ApiService,
-    private dataService: DataService,
+    private peopleService: PeopleService,
   ) {
     this.combatants$ = combineLatest([
-      this.dataService.getPeople(),
+      this.peopleService.getPeople(),
       this.api.getDataFromCollection(this.combatCollection),
     ]).pipe(
       map(([people, fighters]) => this.transformCombatants(people, fighters)),
@@ -120,11 +120,11 @@ export class CombatService {
         states: fighterData.states ? fighterData.states : null,
       };
       if (fighter.person) {
-        fighter.attributes = this.dataService.getPersonValues(fighter.person.id).pipe(
+        fighter.attributes = this.peopleService.getPersonValues(fighter.person.id).pipe(
           map((values) => values.attributes),
         );
       } else {
-        fighter.attributes = this.dataService.getPersonValues(fighter.id, this.combatCollection).pipe(
+        fighter.attributes = this.peopleService.getPersonValues(fighter.id, this.combatCollection).pipe(
           map((values) => values.attributes),
         );
       }

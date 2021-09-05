@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
-import { DataService } from '../../../core/services/data.service';
 import { Person } from '../../../core/interfaces/person.interface';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { PeopleService } from '../../services/people.service';
 
 
 
@@ -34,7 +34,7 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   private subscription = new Subscription();
 
   constructor(
-    private dataService: DataService,
+    private peopleService: PeopleService,
     private auth: AuthService,
   ) {
     this.subscription.add(
@@ -65,7 +65,7 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     } else {
       person.owner = this.userID;
     }
-    this.dataService.store(person, 'people', this.props.id).then(() => {
+    this.peopleService.store(person, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

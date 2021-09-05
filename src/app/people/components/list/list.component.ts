@@ -5,10 +5,10 @@ import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { DataService } from '../../../core/services/data.service';
 import { Person } from 'src/app/core/interfaces/person.interface';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
+import { PeopleService } from '../../services/people.service';
 
 
 
@@ -23,13 +23,13 @@ export class ListComponent implements OnInit {
   textFilter: FormControl;
 
   constructor(
-    private data: DataService,
+    private peopleService: PeopleService,
     private popover: PopoverService,
     private router: Router,
   ) {
     this.textFilter = new FormControl('');
     this.filteredPeople$ = combineLatest([
-      this.data.getPeople(),
+      this.peopleService.getPeople(),
       this.textFilter.valueChanges.pipe(
         startWith(''),
         debounceTime(300),

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { DataService } from '../../../core/services/data.service';
 import { CampaignData } from '../../../core/interfaces/campaign-data.interface';
 import { Timeline } from '../../../core/interfaces/timeline.interface';
+import { CampaignService } from '../../services/campaign.service';
+import { TimelineService } from '../../services/timeline.service';
 
 
 
@@ -17,10 +18,11 @@ export class OverviewComponent implements OnInit {
   timeline$: Observable<Timeline>;
 
   constructor(
-    private data: DataService,
+    private campaignService: CampaignService,
+    private timelineService: TimelineService,
   ) {
-    this.campaignInfo$ = this.data.getCampaignInfo();
-    this.timeline$ = this.data.getTimeline('vbxJs3tgWLUJv2UZMPh4');
+    this.campaignInfo$ = this.campaignService.getCampaignInfo();
+    this.timeline$ = this.timelineService.getTimeline('vbxJs3tgWLUJv2UZMPh4');
   }
 
   ngOnInit(): void {
