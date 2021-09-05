@@ -21,6 +21,15 @@ export class ConfigService {
     4: 'Ziele',
   };
 
+  static placeTypes = {
+    city: 'Stadt',
+    island: 'Insel',
+    landmass: 'Landmasse',
+    ocean: 'Gewässer',
+    place: 'Ort',
+    state: 'Staat'
+  };
+
   static imageSettings: Record<string, ICropperSettings> = {
     person: {
       croppedHeight: 500,
@@ -28,6 +37,10 @@ export class ConfigService {
       height: 100,
       width: 100,
     },
+    place: {
+      keepAspect: false,
+      preserveSize: true,
+    }
   };
 
   constructor() { }

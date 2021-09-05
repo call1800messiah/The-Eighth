@@ -26,6 +26,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'places',
+    loadChildren: () => import('./places/places.module').then(m => m.PlacesModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: '',
     redirectTo: '/overview',
     pathMatch: 'full'

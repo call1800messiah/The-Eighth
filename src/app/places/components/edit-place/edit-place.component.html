@@ -1,0 +1,33 @@
+<div>
+  <form [formGroup]="placeForm" (ngSubmit)="save()">
+    <div class="form-group" *ngIf="!props.id || props.owner === userID">
+      <input type="checkbox" id="isPrivate" formControlName="isPrivate">
+      <label for="isPrivate">Verborgen</label>
+    </div>
+    <div class="form-group">
+      <select id="type" formControlName="type" required>
+        <option [ngValue]="type.key" *ngFor="let type of placeTypes; let i = index">
+          {{type.value}}
+        </option>
+      </select>
+      <label for="type">Art *</label>
+    </div>
+    <div class="form-group">
+      <input type="text" id="name" formControlName="name" required>
+      <label for="name">Name *</label>
+    </div>
+    <div class="form-group">
+      <select id="parentId" formControlName="parentId">
+        <option>Nichts</option>
+        <option [ngValue]="place.id" *ngFor="let place of places$ | async">
+          {{place.name}}
+        </option>
+      </select>
+      <label for="parentId">Teil von</label>
+    </div>
+
+    <button type="submit" class="btn" [disabled]="!placeForm.valid">
+      Speichern
+    </button>
+  </form>
+</div>

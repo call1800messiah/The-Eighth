@@ -1,0 +1,43 @@
+@import "../../../../scss/variables.scss";
+
+.place {
+  position: relative;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    margin-left: $item-padding;
+  }
+}
+
+.image {
+ img {
+   height: auto;
+   width: 100%;
+ }
+}
+
+.info {
+  margin: $container-horizontal-padding 0;
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  display: inline-block;
+  font-weight: bold;
+  padding-right: $item-padding;
+  vertical-align: top;
+  width: 100px;
+}
+
+dd {
+  display: inline-block;
+  margin: 0;
+  width: calc(100% - 100px);
+}

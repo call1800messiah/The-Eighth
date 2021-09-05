@@ -1,0 +1,17 @@
+<div class="top-bar clearfix">
+  <div class="form-group">
+    <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name">
+    <label for="filterText">Filter</label>
+  </div>
+
+  <button type="button" class="btn-icon" (click)="showAddDialog()">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Ort hinzufügen"></fa-icon>
+  </button>
+</div>
+
+<div class="places">
+  <app-place-summary *ngFor="let place of filteredPlaces$ | async" [place]="place"
+                     (click)="goToPlace(place)">
+  </app-place-summary>
+</div>

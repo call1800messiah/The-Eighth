@@ -1,0 +1,24 @@
+@import "../../../../scss/variables.scss";
+
+.top-bar {
+  margin-bottom: $item-padding;
+  padding-right: $mobile-interactive-height + $item-padding;
+  position: relative;
+
+  button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.places {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-rows: auto;
+}
+
+app-place-summary {
+  display: block;
+}
