@@ -151,9 +151,9 @@ export class DataService {
   }
 
 
-  getPersonInfos(id: string): Observable<Map<InfoType, Info[]>> {
+  getInfos(id: string, collection: string): Observable<Map<InfoType, Info[]>> {
     return this.api.getDataFromCollectionWhere(
-      `people/${id}/info`,
+      `${collection}/${id}/info`,
       (ref) => ref
         .where('access', 'array-contains', this.user.id)
     ).pipe(

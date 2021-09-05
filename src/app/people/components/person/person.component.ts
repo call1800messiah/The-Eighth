@@ -51,7 +51,7 @@ export class PersonComponent implements OnInit, OnDestroy {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
-        this.infos$ = this.data.getPersonInfos(this.person.id);
+        this.infos$ = this.data.getInfos(this.person.id, 'people');
         this.values$ = this.data.getPersonValues(this.person.id);
       }
     });
