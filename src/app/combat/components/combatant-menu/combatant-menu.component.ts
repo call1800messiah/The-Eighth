@@ -15,7 +15,7 @@ import { UtilService } from '../../../core/services/util.service';
   styleUrls: ['./combatant-menu.component.scss']
 })
 export class CombatantMenuComponent implements OnInit, PopoverChild {
-  @Input() data: Combatant;
+  @Input() props: Combatant;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   states: CombatState[] = [];
@@ -39,13 +39,13 @@ export class CombatantMenuComponent implements OnInit, PopoverChild {
 
 
   removeCombatant() {
-    this.combatService.removeCombatant(this.data.id);
+    this.combatService.removeCombatant(this.props.id);
     this.dismissPopover.emit(true);
   }
 
 
   setCombatantStates(states) {
-    this.combatService.setStates(this.data.id, states);
+    this.combatService.setStates(this.props.id, states);
   }
 
 

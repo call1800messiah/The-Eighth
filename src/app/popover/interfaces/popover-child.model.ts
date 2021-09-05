@@ -1,4 +1,4 @@
 export interface PopoverChild {
-  data: any;
+  props: any;
   dismissPopover: any;
 }

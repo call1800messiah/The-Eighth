@@ -23,7 +23,7 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="data.event">
+    <div class="locked-input" *ngIf="props.event">
       <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
 
       <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">

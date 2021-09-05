@@ -16,7 +16,7 @@ import { HistoricEvent } from '../../../core/interfaces/historic-event.interface
   styleUrls: ['./edit-event.component.scss']
 })
 export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() data: any;
+  @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   eventForm = new FormGroup({
@@ -40,8 +40,8 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
   ngOnInit(): void {
-    if (this.data.event) {
-      const event = this.data.event as HistoricEvent;
+    if (this.props.event) {
+      const event = this.props.event as HistoricEvent;
       this.eventForm.patchValue(event);
     }
   }
@@ -52,8 +52,8 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   delete() {
-    if (this.data.event) {
-      this.dataService.delete(this.data.event.id, `timelines/${this.data.parent}/events`).then(() => {
+    if (this.props.event) {
+      this.dataService.delete(this.props.event.id, `timelines/${this.props.parent}/events`).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -63,10 +63,10 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   save() {
     let id;
     const event: HistoricEvent = {...this.eventForm.value};
-    if (this.data.event) {
-      id = this.data.event.id;
-      event.owner = this.data.event.owner;
-      event.isPrivate = this.data.event.isPrivate;
+    if (this.props.event) {
+      id = this.props.event.id;
+      event.owner = this.props.event.owner;
+      event.isPrivate = this.props.event.isPrivate;
     } else {
       event.created = new Date();
       event.owner = this.userID;
@@ -74,7 +74,7 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
     }
     event.modified = new Date();
 
-    this.dataService.store(event, `timelines/${this.data.parent}/events`, id).then(() => {
+    this.dataService.store(event, `timelines/${this.props.parent}/events`, id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

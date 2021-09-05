@@ -4,6 +4,7 @@ import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
 import { UtilService } from '../../../core/services/util.service';
 import { StorageService } from '../../../core/services/storage.service';
+import { EditImageProps } from '../../types/types';
 
 
 
@@ -13,12 +14,7 @@ import { StorageService } from '../../../core/services/storage.service';
   styleUrls: ['./edit-image.component.scss']
 })
 export class EditImageComponent implements OnInit, PopoverChild {
-  @Input() data: {
-    bucket?: string,
-    imageName?: string,
-    imageUrl?: string,
-    updateRef?: { id: string, image: string },
-  };
+  @Input() props: EditImageProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   @ViewChild('cropper') cropper: ImageCropperComponent;
   croppedImageData: any = {};
@@ -46,19 +42,19 @@ export class EditImageComponent implements OnInit, PopoverChild {
 
   saveImage() {
     let imageName = new Date().toString();
-    if (this.data.imageName) {
-      imageName = this.data.imageName;
+    if (this.props.imageName) {
+      imageName = this.props.imageName;
     } else if (this.imageName) {
       imageName = this.util.slugify(this.imageName);
-    } else if (this.data.updateRef) {
-      imageName = this.data.updateRef.id;
+    } else if (this.props.updateRef) {
+      imageName = this.props.updateRef.id;
     }
 
     this.storage.uploadFile(
       `${imageName}.jpg`,
       this.util.dataURLtoBlob(this.croppedImageData.image),
-      this.data.bucket,
-      this.data.updateRef
+      this.props.bucket,
+      this.props.updateRef
     ).then(() => {
       this.dismissPopover.emit(true);
     }, () => {

@@ -1,6 +1,6 @@
 <div class="combatant-menu">
   <div class="form-group" *ngIf="states">
-    <select (ngModelChange)="setCombatantStates($event)" [compareWith]="compareStates" [ngModel]="data.states" multiple>
+    <select (ngModelChange)="setCombatantStates($event)" [compareWith]="compareStates" [ngModel]="props.states" multiple>
       <option [ngValue]="state" *ngFor="let state of states">
         {{state.name}}
       </option>

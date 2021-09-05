@@ -12,7 +12,7 @@ import { CombatService } from '../../services/combat.service';
   styleUrls: ['./add-person-as-combatant.component.scss']
 })
 export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
-  @Input() data: any;
+  @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   people: Person[];
   selected: {[id: number]: boolean};
@@ -22,7 +22,7 @@ export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
   ) { }
 
   ngOnInit(): void {
-    this.people = this.data.people;
+    this.people = this.props.people;
     this.selected = this.people.reduce((all, person) => {
       all[person.id] = this.isSelected(person);
       return all;
@@ -41,6 +41,6 @@ export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
 
 
   private isSelected(person: Person) {
-    return this.data.selected.indexOf(person.id) !== -1;
+    return this.props.selected.indexOf(person.id) !== -1;
   }
 }

@@ -13,7 +13,7 @@ import { Attribute } from '../../../core/interfaces/attribute.interface';
   styleUrls: ['./edit-attribute.component.scss']
 })
 export class EditAttributeComponent implements OnInit, PopoverChild {
-  @Input() data: any;
+  @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   attributeForm = new FormGroup({
     current: new FormControl(0),
@@ -25,8 +25,8 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
   ) { }
 
   ngOnInit(): void {
-    if (this.data.attribute) {
-      const attribute = this.data.attribute as Attribute;
+    if (this.props.attribute) {
+      const attribute = this.props.attribute as Attribute;
       this.attributeForm.patchValue(attribute);
     }
   }
@@ -36,8 +36,8 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
   save() {
     const attribute: Attribute = {...this.attributeForm.value};
 
-    const collection = `${this.data.altCollection ? this.data.altCollection : 'people'}/${this.data.person}/attributes`;
-    this.dataService.store(attribute, collection, this.data.attribute.id).then((stuff) => {
+    const collection = `${this.props.altCollection ? this.props.altCollection : 'people'}/${this.props.person}/attributes`;
+    this.dataService.store(attribute, collection, this.props.attribute.id).then((stuff) => {
       this.dismissPopover.emit(true);
     });
   }

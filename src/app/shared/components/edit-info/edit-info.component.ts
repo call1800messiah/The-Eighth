@@ -7,6 +7,7 @@ import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
+import { EditInfoComponentProps } from '../../types/types';
 
 
 
@@ -16,7 +17,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./edit-info.component.scss']
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() data: any;
+  @Input() props: EditInfoComponentProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   infoForm = new FormGroup({
@@ -40,8 +41,8 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
   ngOnInit(): void {
-    if (this.data.info) {
-      const info = this.data.info as Info;
+    if (this.props.info) {
+      const info = this.props.info as Info;
       this.infoForm.patchValue(info);
     }
   }
@@ -52,8 +53,8 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   delete() {
-    if (this.data.info) {
-      this.dataService.delete(this.data.info.id, `people/${this.data.parent}/info`).then(() => {
+    if (this.props.info) {
+      this.dataService.delete(this.props.info.id, `${this.props.collection}/${this.props.parentId}/info`).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -63,16 +64,16 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   save() {
     let id;
     const info: Info = {...this.infoForm.value};
-    if (this.data.info) {
-      id = this.data.info.id;
-      info.owner = this.data.info.owner;
+    if (this.props.info) {
+      id = this.props.info.id;
+      info.owner = this.props.info.owner;
     } else {
       info.created = new Date();
       info.owner = this.userID;
     }
     info.modified = new Date();
 
-    this.dataService.store(info, `people/${this.data.parent}/info`, id).then(() => {
+    this.dataService.store(info, `${this.props.collection}/${this.props.parentId}/info`, id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

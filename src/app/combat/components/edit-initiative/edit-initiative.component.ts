@@ -12,7 +12,7 @@ import { CombatService } from '../../services/combat.service';
   styleUrls: ['./edit-initiative.component.scss']
 })
 export class EditInitiativeComponent implements OnInit, PopoverChild {
-  @Input() data: any;
+  @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   initiativeForm = new FormGroup({
     active: new FormControl(false),
@@ -24,10 +24,10 @@ export class EditInitiativeComponent implements OnInit, PopoverChild {
   ) { }
 
   ngOnInit(): void {
-    if (this.data.initiative !== undefined && this.data.active !== undefined) {
+    if (this.props.initiative !== undefined && this.props.active !== undefined) {
       this.initiativeForm.patchValue({
-        active: this.data.active,
-        initiative: this.data.initiative,
+        active: this.props.active,
+        initiative: this.props.initiative,
       });
     }
   }
@@ -35,7 +35,7 @@ export class EditInitiativeComponent implements OnInit, PopoverChild {
 
   save() {
     this.combat.setInitiative(
-      this.data.combatantId,
+      this.props.combatantId,
       this.initiativeForm.value.initiative,
       this.initiativeForm.value.active
     ).then(() => {

@@ -1,10 +1,10 @@
 <div>
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
-    <div class="locked-input" *ngIf="data.attribute">
+    <div class="locked-input" *ngIf="props.attribute">
       <app-unlock-button (toggle)="toggleMax()"></app-unlock-button>
 
       <div class="form-group">
-        <input type="number" min="1" step="1" [max]="data.attribute.max" id="max" formControlName="max" required appSelectOnFocus>
+        <input type="number" min="1" step="1" [max]="props.attribute.max" id="max" formControlName="max" required appSelectOnFocus>
         <label for="max">Maximum</label>
       </div>
     </div>

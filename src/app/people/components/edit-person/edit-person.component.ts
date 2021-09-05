@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./edit-person.component.scss']
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() data: any;
+  @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new FormGroup({
     name: new FormControl(''),
@@ -45,8 +45,8 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
   ngOnInit(): void {
-    if (this.data.id) {
-      const person = this.data as Person;
+    if (this.props.id) {
+      const person = this.props as Person;
       this.personForm.patchValue(person);
     }
   }
@@ -60,12 +60,12 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     const person: Person = {
       ...this.personForm.value
     };
-    if (this.data.id) {
-      person.owner = this.data.owner;
+    if (this.props.id) {
+      person.owner = this.props.owner;
     } else {
       person.owner = this.userID;
     }
-    this.dataService.store(person, 'people', this.data.id).then(() => {
+    this.dataService.store(person, 'people', this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

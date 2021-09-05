@@ -31,6 +31,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
   values$: Observable<Values>;
+  private readonly collection = 'people';
   private personSub: Subscription;
 
   constructor(
@@ -64,7 +65,10 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   addDetail() {
-    this.popover.showPopover('Neue Info', EditInfoComponent, { parent: this.person.id });
+    this.popover.showPopover('Neue Info', EditInfoComponent, {
+      collection: this.collection,
+      parentId: this.person.id
+    });
   }
 
 
@@ -78,8 +82,9 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   editDetail(info: Info) {
     this.popover.showPopover('Info editieren', EditInfoComponent, {
+      collection: this.collection,
       info,
-      parent: this.person.id,
+      parentId: this.person.id,
     });
   }
 

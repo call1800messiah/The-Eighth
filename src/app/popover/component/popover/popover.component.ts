@@ -44,7 +44,7 @@ export class PopoverComponent implements OnInit {
   private initializeChildComponent(componentResolver, data) {
     this.appPopoverHost.clear();
     this.componentRef = this.appPopoverHost.createComponent(componentResolver);
-    (this.componentRef.instance as PopoverChild).data = data;
+    (this.componentRef.instance as PopoverChild).props = data;
     (this.componentRef.instance as PopoverChild).dismissPopover.subscribe(() => {
       this.dismissPopover();
     });
