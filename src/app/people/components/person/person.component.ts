@@ -17,6 +17,7 @@ import { EditInfoComponent } from '../../../shared/components/edit-info/edit-inf
 import { Values } from '../../../core/interfaces/values.interface';
 import { Attribute } from '../../../core/interfaces/attribute.interface';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
+import { ConfigService } from '../../../core/services/config.service';
 
 
 
@@ -52,7 +53,7 @@ export class PersonComponent implements OnInit, OnDestroy {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.person.name);
-        this.infos$ = this.data.getInfos(this.person.id, 'people');
+        this.infos$ = this.data.getInfos(this.person.id, this.collection);
         this.values$ = this.data.getPersonValues(this.person.id);
       }
     });
