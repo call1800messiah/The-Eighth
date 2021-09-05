@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ICropperSettings } from 'ngx-img-cropper';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,15 @@ export class ConfigService {
     2: 'Notizen',
     3: 'Charakter',
     4: 'Ziele',
+  };
+
+  static imageSettings: Record<string, ICropperSettings> = {
+    person: {
+      croppedHeight: 500,
+      croppedWidth: 500,
+      height: 100,
+      width: 100,
+    },
   };
 
   constructor() { }

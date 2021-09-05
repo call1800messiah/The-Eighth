@@ -91,7 +91,8 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
-      bucket: 'people',
+      bucket: this.collection,
+      cropperSettings: ConfigService.imageSettings.person,
       imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,
       updateRef: this.person,

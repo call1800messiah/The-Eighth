@@ -26,10 +26,6 @@ export class EditImageComponent implements OnInit, PopoverChild {
     private util: UtilService,
   ) {
     this.cropperSettings = new CropperSettings();
-    this.cropperSettings.height = 100;
-    this.cropperSettings.width = 100;
-    this.cropperSettings.croppedHeight = 500;
-    this.cropperSettings.croppedWidth = 500;
     this.cropperSettings.dynamicSizing = true;
     this.cropperSettings.fileType = 'image/jpeg';
     this.cropperSettings.noFileInput = true;
@@ -37,6 +33,11 @@ export class EditImageComponent implements OnInit, PopoverChild {
   }
 
   ngOnInit(): void {
+    if (this.props.cropperSettings) {
+      Object.entries(this.props.cropperSettings).forEach(([key, value]) => {
+        this.cropperSettings[key] = value;
+      });
+    }
   }
 
 
