@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { CampaignData } from '../../core/interfaces/campaign-data.interface';
+import { CampaignData } from '../models/campaign-data';
 import { ApiService } from '../../core/services/api.service';
 
 

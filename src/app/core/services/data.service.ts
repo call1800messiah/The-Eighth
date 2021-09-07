@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
-import { Info } from '../models/info.model';
+import { Info } from '../../shared/models/info';
 import { InfoType } from '../enums/info-type.enum';
 import { AuthService } from './auth.service';
-import { AuthUser } from '../interfaces/auth-user.interface';
+import { AuthUser } from '../../auth/models/auth-user';
 import { UserService } from './user.service';
-import { User } from '../interfaces/user.interface';
+import { User } from '../models/user';
 
 
 
@@ -113,15 +113,15 @@ export class DataService {
         typeArray = [];
         all.set(infoData.type, typeArray);
       }
-      typeArray.push(new Info(
-        entry.payload.doc.id,
-        infoData.content,
-        infoData.type,
-        infoData.created ? new Date(infoData.created.seconds * 1000) : null,
-        infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
-        infoData.isPrivate ? infoData.isPrivate : false,
-        infoData.owner ? infoData.owner : null,
-      ));
+      typeArray.push({
+        content: infoData.content,
+        created: infoData.created ? new Date(infoData.created.seconds * 1000) : null,
+        id: entry.payload.doc.id,
+        isPrivate: infoData.isPrivate ? infoData.isPrivate : false,
+        modified: infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
+        owner: infoData.owner ? infoData.owner : null,
+        type: infoData.type,
+      });
       return all;
     }, new Map<InfoType, Info[]>());
   }

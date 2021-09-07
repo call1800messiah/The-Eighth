@@ -1,7 +1,7 @@
-import { Person } from './person.interface';
-import { Attribute } from './attribute.interface';
+import { Person } from '../../people/models/person';
+import { Attribute } from '../../shared/models/attribute';
 import { Observable } from 'rxjs';
-import { CombatState } from './combat-state.interface';
+import { CombatState } from './combat-state';
 
 export interface Combatant {
   id: string;

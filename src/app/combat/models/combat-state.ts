@@ -1,4 +1,4 @@
-import { Modifier } from './modifier.interface';
+import { Modifier } from '../../shared/models/modifier';
 
 export interface CombatState {
   name: string;

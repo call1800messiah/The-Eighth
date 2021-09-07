@@ -10,7 +10,7 @@ import { UtilService } from '../../../core/services/util.service';
 import { PlaceService } from '../../services/place.service';
 import { Place } from '../../models/place';
 import { InfoType } from '../../../core/enums/info-type.enum';
-import { Info } from '../../../core/models/info.model';
+import { Info } from '../../../shared/models/info';
 import { ConfigService } from '../../../core/services/config.service';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';

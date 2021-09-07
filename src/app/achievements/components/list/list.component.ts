@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Achievement } from 'src/app/core/models/achievements.model';
+import { Achievement } from 'src/app/achievements/models/achievement';
 import { AchievementService } from '../../services/achievement.service';
 
 

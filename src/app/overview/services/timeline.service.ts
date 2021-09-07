@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Timeline } from '../../core/interfaces/timeline.interface';
+import { Timeline } from '../models/timeline';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from '../../core/services/api.service';
-import { HistoricEvent } from '../../core/interfaces/historic-event.interface';
+import { HistoricEvent } from '../models/historic-event';
 import { UtilService } from '../../core/services/util.service';
-import { AuthUser } from '../../core/interfaces/auth-user.interface';
+import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
 
 

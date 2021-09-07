@@ -1,4 +1,4 @@
-import { CombatState } from './combat-state.interface';
+import { CombatState } from '../../combat/models/combat-state';
 
 export interface Person {
   id: string;

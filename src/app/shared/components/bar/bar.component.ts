@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 
 import { PopoverService } from '../../../popover/services/popover.service';
-import { Bar } from '../../../core/interfaces/bar.interface';
+import { Bar } from '../../models/bar';
 
 
 

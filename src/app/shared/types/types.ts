@@ -1,5 +1,5 @@
 import { ICropperSettings } from 'ngx-img-cropper';
-import { Info } from '../../core/models/info.model';
+import { Info } from '../models/info';
 
 export interface EditImageProps {
   bucket: string;

@@ -1,4 +1,4 @@
-import { HistoricEvent } from './historic-event.interface';
+import { HistoricEvent } from './historic-event';
 import { Observable } from 'rxjs';
 
 export interface Timeline {

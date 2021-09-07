@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
-import { AuthUser } from '../interfaces/auth-user.interface';
+import { AuthUser } from '../../auth/models/auth-user';
 
 
 

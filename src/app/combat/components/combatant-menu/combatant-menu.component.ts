@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
+import { PopoverChild } from '../../../popover/models/popover-child';
 import { CombatService } from '../../services/combat.service';
 import { RulesService } from '../../../core/services/rules.service';
-import { Combatant } from '../../../core/interfaces/combatant.interface';
-import { CombatState } from '../../../core/interfaces/combat-state.interface';
+import { Combatant } from '../../models/combatant';
+import { CombatState } from '../../models/combat-state';
 import { UtilService } from '../../../core/services/util.service';
 
 

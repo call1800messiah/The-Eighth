@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Combatant } from '../../core/interfaces/combatant.interface';
-import { Person } from '../../core/interfaces/person.interface';
+import { Combatant } from '../models/combatant';
+import { Person } from '../../people/models/person';
 import { ApiService } from '../../core/services/api.service';
-import { CombatState } from '../../core/interfaces/combat-state.interface';
+import { CombatState } from '../models/combat-state';
 import { PeopleService } from '../../people/services/people.service';
 
 

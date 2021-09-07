@@ -6,10 +6,10 @@ import { Place } from '../models/place';
 import { UtilService } from '../../core/services/util.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ApiService } from '../../core/services/api.service';
-import { AuthUser } from '../../core/interfaces/auth-user.interface';
+import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
-import { Info } from '../../core/models/info.model';
+import { Info } from '../../shared/models/info';
 import { InfoType } from '../../core/enums/info-type.enum';
 
 

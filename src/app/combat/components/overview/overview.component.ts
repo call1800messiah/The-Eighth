@@ -3,13 +3,13 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { faDizzy, faPlus, faUserNinja, faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { Combatant } from '../../../core/interfaces/combatant.interface';
+import { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
-import { Person } from '../../../core/interfaces/person.interface';
+import { Person } from '../../../people/models/person';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
-import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
 import { PeopleService } from '../../../people/services/people.service';

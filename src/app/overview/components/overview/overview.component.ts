@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { CampaignData } from '../../../core/interfaces/campaign-data.interface';
-import { Timeline } from '../../../core/interfaces/timeline.interface';
+import { CampaignData } from '../../models/campaign-data';
+import { Timeline } from '../../models/timeline';
 import { CampaignService } from '../../services/campaign.service';
 import { TimelineService } from '../../services/timeline.service';
 

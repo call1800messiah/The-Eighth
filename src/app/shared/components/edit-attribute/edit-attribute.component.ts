@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
+import { PopoverChild } from '../../../popover/models/popover-child';
 import { DataService } from '../../../core/services/data.service';
-import { Attribute } from '../../../core/interfaces/attribute.interface';
+import { Attribute } from '../../models/attribute';
 import { PeopleService } from '../../../people/services/people.service';
 
 

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { faMask } from '@fortawesome/free-solid-svg-icons';
 
-import { Info } from '../../../core/models/info.model';
+import { Info } from '../../models/info';
 import { ConfigService } from '../../../core/services/config.service';
 
 

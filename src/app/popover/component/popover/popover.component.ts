@@ -3,7 +3,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
 import { PopoverService } from '../../services/popover.service';
-import { PopoverChild } from '../../interfaces/popover-child.model';
+import { PopoverChild } from '../../models/popover-child';
 
 
 

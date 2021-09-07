@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { faTrophy, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
-import { Achievement } from 'src/app/core/models/achievements.model';
+import { Achievement } from 'src/app/achievements/models/achievement';
 
 
 

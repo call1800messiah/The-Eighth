@@ -1,4 +1,4 @@
-import { HistoricEventType } from '../enums/historic-event-type.enum';
+import { HistoricEventType } from '../../core/enums/historic-event-type.enum';
 
 export interface HistoricEvent {
   id: string;

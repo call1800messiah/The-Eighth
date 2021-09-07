@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Achievement } from '../../core/models/achievements.model';
+import { Achievement } from '../models/achievement';
 import { UtilService } from '../../core/services/util.service';
 import { ApiService } from '../../core/services/api.service';
 import { PeopleService } from '../../people/services/people.service';
-import { Person } from '../../core/interfaces/person.interface';
-import { AuthUser } from '../../core/interfaces/auth-user.interface';
+import { Person } from '../../people/models/person';
+import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
 
 
@@ -52,16 +52,16 @@ export class AchievementService {
   private transformAchievements(achievements: any[], people: Person[]): Achievement[] {
     return achievements.reduce((all, entry) => {
       const achieve = entry.payload.doc.data();
-      all.push(new Achievement(
-        entry.payload.doc.id,
-        achieve.name,
-        achieve.description,
-        new Date(achieve.unlocked.seconds * 1000),
-        achieve.icon,
-        people.filter((person) => achieve.people.indexOf(person.id) !== -1),
-        achieve.isPrivate,
-        achieve.owner
-      ));
+      all.push({
+        id: entry.payload.doc.id,
+        name: achieve.name,
+        description: achieve.description,
+        unlocked: new Date(achieve.unlocked.seconds * 1000),
+        icon: achieve.icon,
+        people: people.filter((person) => achieve.people.indexOf(person.id) !== -1),
+        isPrivate: achieve.isPrivate,
+        owner: achieve.owner
+      });
       return all;
     }, []);
   }

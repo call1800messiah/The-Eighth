@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { faMask, faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from '../../../core/interfaces/person.interface';
+import { Person } from '../../models/person';
 
 
 

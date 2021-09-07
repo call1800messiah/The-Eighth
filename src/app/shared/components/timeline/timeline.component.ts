@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { Timeline } from '../../../core/interfaces/timeline.interface';
+import { Timeline } from '../../../overview/models/timeline';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditEventComponent } from '../edit-event/edit-event.component';
 

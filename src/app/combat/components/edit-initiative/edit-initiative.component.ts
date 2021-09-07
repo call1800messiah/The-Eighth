@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
+import { PopoverChild } from '../../../popover/models/popover-child';
 import { CombatService } from '../../services/combat.service';
 
 

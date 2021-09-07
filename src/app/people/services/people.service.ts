@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Person } from '../../core/interfaces/person.interface';
+import { Person } from '../models/person';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
-import { Values } from '../../core/interfaces/values.interface';
+import { Values } from '../../shared/models/values.interface';
 import { DataService } from '../../core/services/data.service';
-import { AuthUser } from '../../core/interfaces/auth-user.interface';
+import { AuthUser } from '../../auth/models/auth-user';
 
 
 

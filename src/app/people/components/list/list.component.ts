@@ -5,7 +5,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from 'src/app/core/interfaces/person.interface';
+import { Person } from 'src/app/people/models/person';
 import { PopoverService } from '../../../popover/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';

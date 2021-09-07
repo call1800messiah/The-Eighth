@@ -1,4 +1,4 @@
-import { Attribute } from './attribute.interface';
+import { Attribute } from './attribute';
 
 export interface Values {
   person: string;

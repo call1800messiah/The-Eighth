@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { PopoverChild } from '../../../popover/interfaces/popover-child.model';
-import { Person } from '../../../core/interfaces/person.interface';
+import { PopoverChild } from '../../../popover/models/popover-child';
+import { Person } from '../../models/person';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { PeopleService } from '../../services/people.service';
