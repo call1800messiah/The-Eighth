@@ -11,27 +11,27 @@ export class UtilService {
   constructor() { }
 
 
-  static orderByCreated(a: { created: Date }, b: { created: Date }) {
+  static orderByCreated(a: { created: Date }, b: { created: Date }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'created', false);
   }
 
 
-  static orderByName(a: { name: string }, b: { name: string }) {
+  static orderByName(a: { name: string }, b: { name: string }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'name', true);
   }
 
 
-  static orderByType(a: { type: string }, b: { type: string }) {
+  static orderByType(a: { type: string }, b: { type: string }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'type', false);
   }
 
 
-  static orderByUnlocked(a: { unlocked: Date }, b: { unlocked: Date }) {
+  static orderByUnlocked(a: { unlocked: Date }, b: { unlocked: Date }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'unlocked', false);
   }
 
 
-  private static orderByObjectProperty(a, b, property: string, asc: boolean) {
+  private static orderByObjectProperty(a, b, property: string, asc: boolean): 1 | -1 | 0 {
     if (a[property] < b[property]) {
       return asc ? -1 : 1;
     }
@@ -42,7 +42,7 @@ export class UtilService {
   }
 
 
-  dataURLtoBlob(dataurl) {
+  dataURLtoBlob(dataurl: string): Blob {
     const arr = dataurl.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
@@ -55,7 +55,7 @@ export class UtilService {
   }
 
 
-  slugify(text: string) {
+  slugify(text: string): string {
     return slugify(text, {
       lower: true,
       strict: true,

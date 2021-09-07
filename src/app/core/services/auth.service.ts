@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import firebase from 'firebase';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
@@ -15,7 +16,7 @@ export class AuthService {
   redirectUrl = '/';
   user$: BehaviorSubject<AuthUser>;
   user: AuthUser;
-  private firebaseUser$: Observable<any>;
+  private firebaseUser$: Observable<firebase.User>;
 
   constructor(
     private api: ApiService,
@@ -55,7 +56,7 @@ export class AuthService {
   }
 
 
-  login(email, password) {
+  login(email, password): void {
     this.api.login(email, password).then(() => {
       this.router.navigate([this.redirectUrl]);
       this.redirectUrl = '/';
@@ -65,7 +66,7 @@ export class AuthService {
   }
 
 
-  logout() {
+  logout(): void {
     this.api.logout().then(() => {
       this.router.navigate(['auth']);
     });

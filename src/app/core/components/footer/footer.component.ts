@@ -3,6 +3,7 @@ import { faBars, faDice, faMusic } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
 import { NavigationService } from '../../services/navigation.service';
+import { NavEntry } from '../../models/nav-entry';
 
 
 
@@ -17,7 +18,7 @@ export class FooterComponent implements OnInit {
   faBars = faBars;
   faDice = faDice;
   faMusic = faMusic;
-  navigation: any[];
+  navigation: NavEntry[];
   navVisible$: Observable<boolean>;
 
   constructor(
@@ -31,26 +32,26 @@ export class FooterComponent implements OnInit {
   }
 
 
-  navigateTo(target: string) {
+  navigateTo(target: string): void {
     this.nav.navigateTo(target);
   }
 
 
-  toggleAudio() {
+  toggleAudio(): void {
     this.nav.setNavigationVisible(false);
     this.diceVisible = false;
     this.audioVisible = !this.audioVisible;
   }
 
 
-  toggleNavigation() {
+  toggleNavigation(): void {
     this.audioVisible = false;
     this.diceVisible = false;
     this.nav.toggleNavigation();
   }
 
 
-  toggleDice() {
+  toggleDice(): void {
     this.nav.setNavigationVisible(false);
     this.audioVisible = false;
     this.diceVisible = !this.diceVisible;

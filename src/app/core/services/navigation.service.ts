@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { faCompass, faDharmachakra, faFistRaised, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
+import { NavEntry } from '../models/nav-entry';
 
 
 
@@ -12,8 +13,8 @@ export class NavigationService {
   public navVisible$: BehaviorSubject<boolean>;
   public pageLabel$: BehaviorSubject<string>;
   private showNav = false;
-  private activeNavigation: any;
-  private navigation = [
+  private activeNavigation: NavEntry;
+  private navigation: NavEntry[] = [
     {
       label: 'Isidas Hoffnung',
       icon: faDharmachakra,
@@ -60,29 +61,29 @@ export class NavigationService {
 
 
 
-  getNavigation() {
+  getNavigation(): NavEntry[] {
     return this.navigation;
   }
 
 
-  navigateTo(target: string) {
+  navigateTo(target: string): void {
     this.router.navigate([target]);
     this.toggleNavigation();
   }
 
 
-  setNavigationVisible(visible: boolean) {
+  setNavigationVisible(visible: boolean): void {
     this.showNav = visible;
     this.navVisible$.next(this.showNav);
   }
 
 
-  setPageLabel(title: string) {
+  setPageLabel(title: string): void {
     this.pageLabel$.next(title);
   }
 
 
-  toggleNavigation() {
+  toggleNavigation(): void {
     this.showNav = !this.showNav;
     this.navVisible$.next(this.showNav);
   }

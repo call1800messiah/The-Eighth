@@ -5,7 +5,7 @@ import { Die } from '../enums/die.enum';
   providedIn: 'root'
 })
 export class DiceRollerService {
-  private stats = {};
+  private stats: Record<number, Record<number, number>> = {};
 
   constructor() { }
 
@@ -69,7 +69,7 @@ export class DiceRollerService {
   }
 
 
-  private addRollToStats(type: Die, roll: number) {
+  private addRollToStats(type: Die, roll: number): void {
     if (!this.stats[type]) {
       this.stats[type] = {};
     }

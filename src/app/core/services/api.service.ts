@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
+import firebase from 'firebase';
 
 
 
@@ -23,7 +24,7 @@ export class ApiService {
     return this.afs.collection(collection).doc(documentId).delete();
   }
 
-  getAuthState() {
+  getAuthState(): Observable<firebase.User> {
     return this.afAuth.authState;
   }
 
