@@ -31,6 +31,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'projects',
+    loadChildren: () => import('./projects/projects.module').then(m => m.ProjectsModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: '',
     redirectTo: '/overview',
     pathMatch: 'full'

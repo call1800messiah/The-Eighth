@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
-import { faCompass, faDharmachakra, faFistRaised, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faCompass, faDharmachakra, faFistRaised, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 import { NavEntry } from '../models/nav-entry';
 
@@ -34,6 +34,11 @@ export class NavigationService {
       label: 'Personen',
       icon: faUsers,
       link: '/people'
+    },
+    {
+      label: 'Projekte',
+      icon: faChartBar,
+      link: '/projects'
     },
     {
       label: 'Achievements',

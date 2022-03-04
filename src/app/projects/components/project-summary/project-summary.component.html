@@ -1,0 +1,24 @@
+<div class="wrapper box" [ngClass]="{'private' : project.isPrivate}" (click)="editProject(project)">
+  <div class="name">{{project.name}}</div>
+  <app-progress-bar [percentage]="percentage" [markers]="markers"></app-progress-bar>
+  <div class="milestones">
+    <div class="milestone"
+         *ngFor="let milestone of project.milestones; let i = index"
+         [ngClass]="{'open': currentPoints < milestone.requiredPoints}"
+    >
+      <fa-icon [icon]="faStar" [fixedWidth]="true"></fa-icon>
+      <div class="index">{{i+1}}</div>
+      {{milestone.description}}
+    </div>
+    <div class="milestone" [ngClass]="{'open': currentPoints < requiredPoints}">
+      <fa-icon [icon]="faAward" [fixedWidth]="true"></fa-icon>
+      {{project.benefit}}
+    </div>
+  </div>
+  <div class="requirements" *ngIf="project.requirements.length > 0">
+    Interval: {{project.interval}}
+    <div class="requirement" *ngFor="let requirement of project.requirements">
+      {{requirement.skill}}: {{requirement.currentPoints}} / {{requirement.requiredPoints}} TaP
+    </div>
+  </div>
+</div>
