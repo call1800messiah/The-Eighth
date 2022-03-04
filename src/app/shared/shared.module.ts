@@ -22,6 +22,7 @@ import { FocusOnInitDirective } from './directives/focus-on-init.directive';
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 
 
 
@@ -42,6 +43,7 @@ import { UnlockButtonComponent } from './components/unlock-button/unlock-button.
     SelectOnFocusDirective,
     TimelineComponent,
     UnlockButtonComponent,
+    ProgressBarComponent,
   ],
   imports: [
     CommonModule,
@@ -68,6 +70,7 @@ import { UnlockButtonComponent } from './components/unlock-button/unlock-button.
     FormsModule,
     InfoBoxComponent,
     PopoverModule,
+    ProgressBarComponent,
     ReactiveFormsModule,
     SelectOnFocusDirective,
     TimelineComponent,
