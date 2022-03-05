@@ -7,6 +7,8 @@ import { Project } from '../models/project';
 import { AuthUser } from '../../auth/models/auth-user';
 import { DataService } from '../../core/services/data.service';
 import { UtilService } from '../../core/services/util.service';
+import { ProjectRequirement } from '../models/project-requirement';
+import { ProjectMilestone } from '../models/project-milestone';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +49,7 @@ export class ProjectService {
   private transformProjects(projects: any[]): Project[] {
     return projects.reduce((all, entry) => {
       const projectData = entry.payload.doc.data();
-      const milestones = !projectData.mDesc || !projectData.mReq
+      const milestones: ProjectMilestone[] = !projectData.mDesc || !projectData.mReq
         ? []
         : Object.entries(projectData.mDesc).reduce((allM, [id, description]) => {
         if (projectData.mReq[id]) {
@@ -60,7 +62,7 @@ export class ProjectService {
         return allM;
       }, []).sort(UtilService.orderByRequiredPoints);
 
-      const requirements = !projectData.rSkill || !projectData.rCur || !projectData.rReq
+      const requirements: ProjectRequirement[] = !projectData.rSkill || !projectData.rCur || !projectData.rReq
         ? []
         : Object.entries(projectData.rSkill).reduce((allR, [id, skill]) => {
         if (projectData.rCur[id] && projectData.rReq[id]) {
@@ -74,7 +76,7 @@ export class ProjectService {
         return allR;
       }, []).sort(UtilService.orderBySkill);
 
-      const project = {
+      const project: Project = {
         id: entry.payload.doc.id,
         benefit: projectData.benefit,
         interval: projectData.interval,
