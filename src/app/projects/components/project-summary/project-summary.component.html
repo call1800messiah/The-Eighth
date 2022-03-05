@@ -15,10 +15,10 @@
       {{project.benefit}}
     </div>
   </div>
-  <div class="requirements" *ngIf="project.requirements.length > 0">
-    Interval: {{project.interval}}
+  <div class="requirements">
     <div class="requirement" *ngFor="let requirement of project.requirements">
       {{requirement.skill}}: {{requirement.currentPoints}} / {{requirement.requiredPoints}} TaP
     </div>
+    Interval: {{project.interval}}
   </div>
 </div>

@@ -21,6 +21,16 @@ export class UtilService {
   }
 
 
+  static orderByRequiredPoints(a: { requiredPoints: number }, b: { requiredPoints: number }): 1 | -1 | 0 {
+    return UtilService.orderByObjectProperty(a, b, 'requiredPoints', true);
+  }
+
+
+  static orderBySkill(a: { skill: string }, b: { skill: string }): 1 | -1 | 0 {
+    return UtilService.orderByObjectProperty(a, b, 'skill', true);
+  }
+
+
   static orderByType(a: { type: string }, b: { type: string }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'type', false);
   }

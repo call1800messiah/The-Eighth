@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../models/project';
 import { AuthUser } from '../../auth/models/auth-user';
 import { DataService } from '../../core/services/data.service';
+import { UtilService } from '../../core/services/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -57,7 +58,7 @@ export class ProjectService {
           });
         }
         return allM;
-      }, []);
+      }, []).sort(UtilService.orderByRequiredPoints);
 
       const requirements = !projectData.rSkill || !projectData.rCur || !projectData.rReq
         ? []
@@ -71,7 +72,7 @@ export class ProjectService {
           });
         }
         return allR;
-      }, []);
+      }, []).sort(UtilService.orderBySkill);
 
       const project = {
         id: entry.payload.doc.id,
