@@ -16,6 +16,76 @@
       <input type="text" id="interval" formControlName="interval" required>
       <label for="interval">Interval *</label>
     </div>
+    <div class="form-optionals">
+      <div class="form-optional-heading">
+        Notwendige Talente
+        <button type="button" (click)="addRequirement()" class="btn-icon">
+          <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+      <div class="form-group multiple-inputs" *ngFor="let requirement of requirements">
+        <input
+          class="flex-width"
+          type="text"
+          id="req-{{requirement.id}}-skill"
+          formControlName="req-{{requirement.id}}-skill"
+          required
+        >
+        <input
+          class="fixed-width"
+          type="number"
+          id="req-{{requirement.id}}-cur"
+          formControlName="req-{{requirement.id}}-cur"
+          min="1"
+          step="1"
+          appSelectOnFocus
+          required
+        >
+        <input
+          class="fixed-width"
+          type="number"
+          id="req-{{requirement.id}}-req"
+          formControlName="req-{{requirement.id}}-req"
+          min="1"
+          step="1"
+          appSelectOnFocus
+          required
+        >
+        <button type="button" (click)="removeRequirement(requirement)" class="btn-icon">
+          <fa-icon [icon]="faMinus" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+    </div>
+    <div class="form-optionals">
+      <div class="form-optional-heading">
+        Meilensteine
+        <button type="button" (click)="addMilestone()" class="btn-icon">
+          <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+      <div class="form-group multiple-inputs" *ngFor="let milestone of milestones">
+        <input
+          class="flex-width"
+          type="text"
+          id="mile-{{milestone.id}}-desc"
+          formControlName="mile-{{milestone.id}}-desc"
+          required
+        >
+        <input
+          class="fixed-width"
+          type="number"
+          id="mile-{{milestone.id}}-req"
+          formControlName="mile-{{milestone.id}}-req"
+          min="1"
+          step="1"
+          appSelectOnFocus
+          required
+        >
+        <button type="button" (click)="removeMilestone(milestone)" class="btn-icon">
+          <fa-icon [icon]="faMinus" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+    </div>
     <button type="submit" class="btn" [disabled]="!projectForm.valid">
       Speichern
     </button>

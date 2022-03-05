@@ -1,4 +1,5 @@
 @import 'variables.scss';
+@import 'mixins.scss';
 
 form button {
   margin-bottom: $item-padding;
@@ -88,6 +89,41 @@ form button {
     min-height: 200px;
     padding: 5px;
     resize: vertical;
+  }
+
+  &.multiple-inputs {
+    display: flex;
+    gap: $item-padding;
+
+    .fixed-width {
+      flex: 0;
+      width: $mobile-interactive-height;
+    }
+  }
+}
+
+.form-optionals {
+  margin-bottom: $item-padding * 2;
+
+  .form-optional-heading {
+    font-weight: bold;
+    height: $mobile-interactive-height;
+    line-height: $mobile-interactive-height;
+    margin-bottom: 0.5rem;
+    padding-right: $mobile-interactive-height + $item-padding;
+    position: relative;
+
+    button {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  }
+
+  .form-group {
+    margin-bottom: $item-padding / 2;
+
+    .btn-icon { margin-bottom: 0 }
   }
 }
 

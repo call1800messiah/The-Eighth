@@ -1,10 +1,14 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { nanoid } from 'nanoid';
 
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Project } from '../../models/project';
+import { ProjectRequirement } from '../../models/project-requirement';
+import { ProjectMilestone } from '../../models/project-milestone';
 
 
 
@@ -14,14 +18,19 @@ import { Project } from '../../models/project';
   styleUrls: ['./edit-project.component.scss']
 })
 export class EditProjectComponent implements OnInit, OnDestroy {
-  @Input() props: any;
+  @Input() props: Project;
   @Output() dismissPopover = new EventEmitter<boolean>();
+  faMinus = faMinus;
+  faPlus = faPlus;
+  milestones: ProjectMilestone[];
+  // TODO: Add form validation to check for at least one requirement
   projectForm = new FormGroup({
     benefit: new FormControl(''),
     interval: new FormControl(''),
     name: new FormControl(''),
     isPrivate: new FormControl(false)
   });
+  requirements: ProjectRequirement[];
   userID: string;
   private subscription = new Subscription();
 
@@ -39,7 +48,18 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.props.id) {
       const project = this.props as Project;
+      this.milestones = [...this.props.milestones];
+      this.requirements = [...this.props.requirements];
       this.projectForm.patchValue(project);
+      this.requirements.forEach((requirement) => {
+        this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
+        this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
+        this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
+      });
+      this.milestones.forEach((milestone) => {
+        this.projectForm.addControl(`mile-${milestone.id}-desc`, new FormControl(milestone.description));
+        this.projectForm.addControl(`mile-${milestone.id}-req`, new FormControl(milestone.requiredPoints));
+      });
     }
   }
 
@@ -47,6 +67,55 @@ export class EditProjectComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+
+
+  addMilestone() {
+    const milestone = {
+      id: nanoid(10),
+      description: '',
+      requiredPoints: 1
+    };
+    this.milestones.push(milestone);
+    this.projectForm.addControl(`mile-${milestone.id}-desc`, new FormControl(milestone.description));
+    this.projectForm.addControl(`mile-${milestone.id}-req`, new FormControl(milestone.requiredPoints));
+    // TODO: Fix broken change detection after adding new required inputs
+  }
+
+
+  addRequirement() {
+    const requirement = {
+      id: nanoid(10),
+      skill: '',
+      currentPoints: 0,
+      requiredPoints: 1
+    };
+    this.requirements.push(requirement);
+    this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
+    this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
+    this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
+    // TODO: Fix broken change detection after adding new required inputs
+  }
+
+
+  removeMilestone(milestone: ProjectMilestone) {
+    const index = this.milestones.findIndex((mile) => mile.id === milestone.id);
+    if (index !== -1) {
+      this.milestones.splice(index, 1);
+      this.projectForm.removeControl(`mile-${milestone.id}-desc`);
+      this.projectForm.removeControl(`mile-${milestone.id}-req`);
+    }
+  }
+
+
+  removeRequirement(requirement: ProjectRequirement) {
+    const index = this.requirements.findIndex((req) => req.id === requirement.id);
+    if (index !== -1) {
+      this.requirements.splice(index, 1);
+      this.projectForm.removeControl(`req-${requirement.id}-skill`);
+      this.projectForm.removeControl(`req-${requirement.id}-cur`);
+      this.projectForm.removeControl(`req-${requirement.id}-req`);
+    }
+  }
 
 
   save() {

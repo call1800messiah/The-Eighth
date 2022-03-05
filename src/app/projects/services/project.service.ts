@@ -42,8 +42,10 @@ export class ProjectService {
     return this.projects$;
   }
 
-  store(project: Partial<Project>, projectId?: string) {
-    return this.data.store(project, ProjectService.collection, projectId);
+  store(project: Partial<Project>, projectId?: string): Promise<boolean> {
+    console.log(projectId, project);
+    return Promise.resolve(true);
+    // return this.data.store(project, ProjectService.collection, projectId);
   }
 
   private transformProjects(projects: any[]): Project[] {
