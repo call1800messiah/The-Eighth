@@ -44,18 +44,44 @@ export class ProjectService {
   }
 
   private transformProjects(projects: any[]): Project[] {
-    // TODO: Implement milestones and requirements
     return projects.reduce((all, entry) => {
       const projectData = entry.payload.doc.data();
+      const milestones = !projectData.mDesc || !projectData.mReq
+        ? []
+        : Object.entries(projectData.mDesc).reduce((allM, [id, description]) => {
+        if (projectData.mReq[id]) {
+          allM.push({
+            id,
+            description,
+            requiredPoints: projectData.mReq[id]
+          });
+        }
+        return allM;
+      }, []);
+
+      const requirements = !projectData.rSkill || !projectData.rCur || !projectData.rReq
+        ? []
+        : Object.entries(projectData.rSkill).reduce((allR, [id, skill]) => {
+        if (projectData.rCur[id] && projectData.rReq[id]) {
+          allR.push({
+            id,
+            skill,
+            currentPoints: projectData.rCur[id],
+            requiredPoints: projectData.rReq[id],
+          });
+        }
+        return allR;
+      }, []);
+
       const project = {
         id: entry.payload.doc.id,
         benefit: projectData.benefit,
         interval: projectData.interval,
         isPrivate: projectData.isPrivate,
-        milestones: [],
+        milestones,
         name: projectData.name,
         owner: projectData.owner,
-        requirements: []
+        requirements,
       };
       all.push(project);
       return all;
