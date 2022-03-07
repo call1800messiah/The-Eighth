@@ -2,13 +2,13 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { nanoid } from 'nanoid';
 
 import { ProjectService } from '../../services/project.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Project } from '../../models/project';
 import { ProjectRequirement } from '../../models/project-requirement';
 import { ProjectMilestone } from '../../models/project-milestone';
+import { ConfigService } from '../../../core/services/config.service';
 
 
 
@@ -71,7 +71,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
   addMilestone() {
     const milestone = {
-      id: nanoid(10),
+      id: ConfigService.nanoid(),
       description: '',
       requiredPoints: 1
     };
@@ -84,7 +84,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
   addRequirement() {
     const requirement = {
-      id: nanoid(10),
+      id: ConfigService.nanoid(),
       skill: '',
       currentPoints: 0,
       requiredPoints: 1
