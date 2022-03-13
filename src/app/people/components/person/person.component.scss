@@ -12,11 +12,11 @@
 
 .image {
   font-size: 4rem;
-  height: 250px;
-  line-height: 250px;
+  height: $avatar-large;
+  line-height: $avatar-large;
   margin: auto;
   text-align: center;
-  width: 250px;
+  width: $avatar-large;
 }
 
 .info {

@@ -123,7 +123,10 @@ form button {
   .form-group {
     margin-bottom: $item-padding / 2;
 
-    .btn-icon { margin-bottom: 0 }
+    .btn-icon {
+      flex: 1 0 auto;
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -135,5 +138,17 @@ form button {
     left: 0;
     position: absolute;
     top: 0;
+  }
+}
+
+
+
+@media(min-width: $break-sm) {
+  .form-group {
+    &.multiple-inputs {
+      .fixed-width {
+        width: $mobile-interactive-height * 2;
+      }
+    }
   }
 }

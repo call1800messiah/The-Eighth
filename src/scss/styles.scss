@@ -86,12 +86,22 @@ body {
   &.borderless {
     border: none;
     line-height: $mobile-interactive-height;
+
+    &:hover {
+      background-color: $color-dark;
+      color: $color-primary;
+    }
   }
 
   &:disabled {
     border-color: $color-gray;
     color: $color-gray;
     cursor: not-allowed;
+  }
+
+  &:hover {
+    background-color: $color-primary;
+    color: $color-dark;
   }
 }
 

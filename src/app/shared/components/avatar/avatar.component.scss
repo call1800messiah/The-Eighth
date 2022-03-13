@@ -1,6 +1,7 @@
 @import '../../../../scss/variables.scss';
 
 .wrapper {
+  background-color: $color-dark;
   border: 1px solid $color-primary;
   border-radius: 50%;
   cursor: pointer;
