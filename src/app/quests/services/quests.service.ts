@@ -41,10 +41,10 @@ export class QuestsService {
         id: entry.payload.doc.id,
         completed: questData.completed || false,
         description: questData.description || '',
+        isPrivate: questData.isPrivate,
         name: questData.name || '',
-        type: questData.type || null,
         owner: questData.owner,
-        isPrivate: questData.isPrivate
+        type: questData.type || null
       };
       if (questData.parentId) {
         quest.parent = { id: questData.parentId };

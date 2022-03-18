@@ -4,12 +4,12 @@ export interface Quest {
   id: string;
   completed: boolean;
   description: string;
+  isPrivate?: boolean;
   name: string;
-  type: QuestType;
   owner?: string;
   parent?: {
     id: string;
     name?: string;
   };
-  isPrivate?: boolean;
+  type: QuestType;
 }

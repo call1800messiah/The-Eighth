@@ -1,15 +1,87 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Observable, Subscription } from 'rxjs';
+
+import { QuestsService } from '../../services/quests.service';
+import { PopoverChild } from '../../../popover/models/popover-child';
+import { Quest } from '../../models/quest';
+import { AuthService } from '../../../core/services/auth.service';
+
+
 
 @Component({
   selector: 'app-edit-quest',
   templateUrl: './edit-quest.component.html',
   styleUrls: ['./edit-quest.component.scss']
 })
-export class EditQuestComponent implements OnInit {
+export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
+  @Input() props: Quest;
+  @Output() dismissPopover = new EventEmitter<boolean>();
+  deleteDisabled = true;
+  questTypes: Record<string, string>[] = Object.entries(QuestsService.questTypes).reduce((all, [key, value]) => {
+    all.push({ key, value });
+    return all;
+  }, []);
+  questForm = new FormGroup({
+    name: new FormControl(''),
+    isPrivate: new FormControl(true),
+    parentId: new FormControl(),
+    type: new FormControl(this.questTypes[0]),
+    description: new FormControl(''),
+    completed: new FormControl(false)
+  });
+  quests$: Observable<Quest[]>;
+  userID: string;
+  private subscription = new Subscription();
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor(
+    private auth: AuthService,
+    private questService: QuestsService,
+  ) {
+    this.quests$ = this.questService.getQuests();
+    this.subscription.add(
+      this.auth.user$.subscribe((user) => {
+        this.userID = user.id;
+      })
+    );
   }
 
+  ngOnInit(): void {
+    if (this.props.id) {
+      const quest = this.props;
+      this.questForm.patchValue(quest);
+
+      if (this.props.parent) {
+        this.questForm.patchValue({ parentId: this.props.parent.id });
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+
+
+  isSelectedParent(parentId: string): boolean {
+    return this.props.id && this.props.parent && this.props.parent.id === parentId;
+  }
+
+  save() {
+    const quest: Partial<Quest> = {
+      ...this.questForm.value
+    };
+    if (this.props.id) {
+      quest.owner = this.props.owner;
+    } else {
+      quest.owner = this.userID;
+    }
+    this.questService.store(quest, this.props.id).then(() => {
+      this.dismissPopover.emit(true);
+    });
+  }
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
+  }
 }
