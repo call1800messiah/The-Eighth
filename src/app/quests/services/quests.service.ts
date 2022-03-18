@@ -16,6 +16,11 @@ import { DataService } from '../../core/services/data.service';
 })
 export class QuestsService {
   static readonly collection = 'quests';
+  static questTypes = {
+    main: 'Hauptqueste',
+    sub: 'Subquest',
+    task: 'Aufgabe',
+  };
   private quests$: BehaviorSubject<Quest[]>;
   private user: AuthUser;
 
@@ -32,14 +37,18 @@ export class QuestsService {
   private static transformQuests(quests: any[]): Quest[] {
     return quests.reduce((all, entry) => {
       const questData = entry.payload.doc.data();
-      const quest = {
+      const quest: Quest = {
         id: entry.payload.doc.id,
+        completed: questData.completed || false,
         description: questData.description || '',
         name: questData.name || '',
         type: questData.type || null,
         owner: questData.owner,
         isPrivate: questData.isPrivate
       };
+      if (questData.parentId) {
+        quest.parent = { id: questData.parentId };
+      }
       all.push(quest);
       return all;
     }, []);
@@ -63,6 +72,7 @@ export class QuestsService {
           .where('access', 'array-contains', this.user.id)
       ).pipe(
         map(QuestsService.transformQuests),
+        map(this.resolveParents),
         map((quests: Quest[]) => quests.sort(UtilService.orderByName)),
       ).subscribe((quests) => {
         this.quests$.next(quests);
@@ -74,5 +84,19 @@ export class QuestsService {
 
   store(quest: Partial<Quest>, questId?: string) {
     return this.data.store(quest, QuestsService.collection, questId);
+  }
+
+
+
+  private resolveParents(quests: Quest[]): Quest[] {
+    return quests.map(quest => {
+      if (quest.parent) {
+        const parent = quests.find(parentCandidate => quest.parent.id === parentCandidate.id);
+        if (parent) {
+          quest.parent.name = parent.name;
+        }
+      }
+      return quest;
+    });
   }
 }

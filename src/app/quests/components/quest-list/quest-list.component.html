@@ -1,1 +1,19 @@
-<p>quest-list works!</p>
+<div class="top-bar clearfix">
+  <div class="form-group filter">
+    <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name, Typ">
+    <label for="filterText">Filter</label>
+  </div>
+
+  <button type="button" class="btn-icon" (click)="showAddDialog()">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Queste hinzufügen"></fa-icon>
+  </button>
+</div>
+
+<div class="grid quests">
+  <app-quest-summary
+    *ngFor="let quest of filteredQuests$ | async"
+    [quest]="quest"
+    (click)="goToQuest(quest)"
+  ></app-quest-summary>
+</div>

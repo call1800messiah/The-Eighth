@@ -4,6 +4,8 @@ import { QuestListComponent } from './components/quest-list/quest-list.component
 import { QuestComponent } from './components/quest/quest.component';
 import { QuestsRoutingModule } from './quests-routing.module';
 import { EditQuestComponent } from './components/edit-quest/edit-quest.component';
+import { SharedModule } from '../shared/shared.module';
+import { QuestSummaryComponent } from './components/quest-summary/quest-summary.component';
 
 
 
@@ -11,10 +13,12 @@ import { EditQuestComponent } from './components/edit-quest/edit-quest.component
   declarations: [
     QuestListComponent,
     QuestComponent,
-    EditQuestComponent
+    EditQuestComponent,
+    QuestSummaryComponent
   ],
   imports: [
     CommonModule,
+    SharedModule,
     QuestsRoutingModule
   ]
 })
