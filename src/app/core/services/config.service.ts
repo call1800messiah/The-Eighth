@@ -20,6 +20,7 @@ export class ConfigService {
     2: 'Notizen',
     3: 'Charakter',
     4: 'Ziele',
+    5: 'Belohnung'
   };
 
   static nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_', 10);

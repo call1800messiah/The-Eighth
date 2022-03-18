@@ -1,0 +1,21 @@
+@import '../../../../scss/variables.scss';
+@import '../../../../scss/mixins.scss';
+
+.info {
+  margin-bottom: $container-horizontal-padding;
+}
+
+.type {
+  @include text-label;
+}
+
+.header {
+  min-height: $mobile-interactive-height;
+  position: relative;
+
+  button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}

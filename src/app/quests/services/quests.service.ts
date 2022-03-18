@@ -18,6 +18,7 @@ export class QuestsService {
   static readonly collection = 'quests';
   static questTypes = {
     main: 'Hauptqueste',
+    scene: 'Szene',
     sub: 'Subquest',
     task: 'Aufgabe',
   };

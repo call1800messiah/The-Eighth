@@ -4,4 +4,5 @@ export enum InfoType {
   Note = 2,
   Character = 3,
   Goals = 4,
+  Reward = 5,
 }

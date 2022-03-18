@@ -1,1 +1,28 @@
-<p>quest works!</p>
+<div class="quest" *ngIf="quest">
+  <div class="info box" (click)="editQuest()">
+    <div class="type">
+      {{questTypes[quest.type]}}
+    </div>
+    <div class="description" *ngIf="quest.description">
+      {{quest.description}}
+    </div>
+  </div>
+
+  <div class="details">
+    <div class="header">
+      <h2>Details</h2>
+
+      <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
+        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-info" *ngIf="infos$">
+    <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
+                  [key]="infoList.key"
+                  [infos]="infoList.value"
+                  (editDetail)="editDetail($event)"
+    ></app-info-box>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { faMask } from '@fortawesome/free-solid-svg-icons';
 
 import { Info } from '../../models/info';
 import { ConfigService } from '../../../core/services/config.service';
+import { InfoType } from '../../../core/enums/info-type.enum';
 
 
 
@@ -12,7 +13,7 @@ import { ConfigService } from '../../../core/services/config.service';
   styleUrls: ['./info-box.component.scss']
 })
 export class InfoBoxComponent implements OnInit {
-  @Input() key: string;
+  @Input() key: InfoType;
   @Input() infos: Info[];
   @Output() editDetail = new EventEmitter<Info>();
   faMask = faMask;

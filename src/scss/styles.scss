@@ -23,6 +23,18 @@ body {
   padding: $header-height 0 $footer-height;
 }
 
+h1 {
+  font-size: 2.4rem;
+  font-weight: normal;
+  margin: 0;
+}
+
+h2 {
+  font-size: 2.2rem;
+  font-weight: normal;
+  margin: 0;
+}
+
 .clearfix {
   @include clearfix;
 }
@@ -121,11 +133,8 @@ body {
   z-index: 90;
 
   h1 {
-    font-size: 2.4rem;
-    font-weight: normal;
     height: 100%;
     line-height: $header-height;
-    margin: 0;
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
