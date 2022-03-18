@@ -18,7 +18,9 @@ import { EditQuestComponent } from '../edit-quest/edit-quest.component';
   styleUrls: ['./quest-list.component.scss']
 })
 export class QuestListComponent implements OnInit {
+  completedQuests$: Observable<Quest[]>;
   filteredQuests$: Observable<Quest[]>;
+  openQuests$: Observable<Quest[]>;
   faPlus = faPlus;
   textFilter: FormControl;
 
@@ -28,6 +30,9 @@ export class QuestListComponent implements OnInit {
     private router: Router,
   ) {
     this.textFilter = new FormControl('');
+    this.completedQuests$ = this.questsService.getQuests().pipe(
+      map((quests) => quests.filter((quest) => quest.completed === true))
+    );
     this.filteredQuests$ = combineLatest([
       this.questsService.getQuests(),
       this.textFilter.valueChanges.pipe(
@@ -37,6 +42,9 @@ export class QuestListComponent implements OnInit {
       ),
     ]).pipe(
       map(this.filterQuestsByText)
+    );
+    this.openQuests$ = this.questsService.getQuests().pipe(
+      map((quests) => quests.filter((quest) => quest.completed === false))
     );
   }
 

@@ -10,7 +10,28 @@
   </button>
 </div>
 
-<div class="grid quests">
+<div class="quests" *ngIf="textFilter.value === ''">
+  <h2 class="list-title">Aktive Questen</h2>
+  <div class="grid">
+    <app-quest-summary
+      *ngFor="let quest of openQuests$ | async"
+      [quest]="quest"
+      (click)="goToQuest(quest)"
+    ></app-quest-summary>
+  </div>
+
+  <h2 class="list-title">Beendete Questen</h2>
+  <div class="grid">
+    <app-quest-summary
+      *ngFor="let quest of completedQuests$ | async"
+      [quest]="quest"
+      (click)="goToQuest(quest)"
+    ></app-quest-summary>
+  </div>
+</div>
+
+
+<div class="grid filtered-quests" *ngIf="textFilter.value !== ''">
   <app-quest-summary
     *ngFor="let quest of filteredQuests$ | async"
     [quest]="quest"
