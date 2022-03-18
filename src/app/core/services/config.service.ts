@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ICropperSettings } from 'ngx-img-cropper';
+import { customAlphabet } from 'nanoid';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,8 @@ export class ConfigService {
     3: 'Charakter',
     4: 'Ziele',
   };
+
+  static nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_', 10);
 
   static placeTypes = {
     city: 'Stadt',

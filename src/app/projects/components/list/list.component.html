@@ -1,0 +1,16 @@
+<div class="top-bar clearfix">
+  <div class="form-group">
+    <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name, Interval, Talent, Meilenstein">
+    <label for="filterText">Filter</label>
+  </div>
+
+  <button type="button" class="btn-icon" (click)="showAddDialog()">
+    <fa-icon [icon]="faPlus" [fixedWidth]="true"
+             title="Person hinzufügen"></fa-icon>
+  </button>
+</div>
+
+<div class="projects">
+  <app-project-summary *ngFor="let project of filteredProjects$ | async" [project]="project">
+  </app-project-summary>
+</div>

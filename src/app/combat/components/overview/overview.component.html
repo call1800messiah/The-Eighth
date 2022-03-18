@@ -40,7 +40,7 @@
       ></app-bar>
     </div>
 
-    <div *ngIf="fighter.states" class="states" (click)="showMenu(fighter)">
+    <div *ngIf="fighter.states && fighter.states.length > 0" class="states" (click)="showMenu(fighter)">
       <div *ngFor="let state of fighter.states" class="state">
         <span [innerHTML]="state.name" class="state-name"></span>
         <span *ngFor="let mod of state.modifiers">

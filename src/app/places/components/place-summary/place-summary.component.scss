@@ -1,4 +1,5 @@
 @import '../../../../scss/variables.scss';
+@import '../../../../scss/mixins.scss';
 
 .wrapper {
   display: flex;
@@ -23,12 +24,10 @@
 }
 
 .type {
-  font-size: $detail-text-font-size;
+  @include text-label;
   height: $detail-text-line-height;
-  line-height: $detail-text-line-height;
   left: 0;
   overflow: hidden;
   position: absolute;
-  text-transform: uppercase;
   top: 0;
 }

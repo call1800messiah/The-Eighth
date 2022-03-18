@@ -64,9 +64,10 @@ app-avatar,
 }
 
 .initiative {
-  background-color: $color-dark;
+  background-color: $color-primary;
   border: 1px solid $color-primary;
   border-radius: 50%;
+  color: $color-dark;
   cursor: pointer;
   font-size: 24px;
   font-weight: bold;
@@ -103,5 +104,66 @@ app-avatar,
 
   .state-name {
     font-weight: bold;
+  }
+}
+
+
+
+@media (min-width: $break-sm) {
+  .combatants {
+    grid-gap: 3rem;
+  }
+
+  .combatant {
+    padding-top: $circle-size / 2;
+  }
+
+  app-avatar,
+  .default-avatar {
+    left: 50%;
+    line-height: $avatar-medium;
+    position: relative;
+    transform: translateX(-50%);
+    width: $avatar-medium;
+  }
+
+  .default-avatar {
+    background-color: $color-dark;
+    font-size: $avatar-medium * 0.75;
+    height: $avatar-medium;
+  }
+
+  .name {
+    border: 1px solid $color-primary;
+    border-top-left-radius: $circle-size / 2;
+    border-top-right-radius: $circle-size / 2;
+    justify-content: center;
+    margin: -15px 0 0;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .initiative {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  .bars {
+    flex-wrap: wrap;
+    padding: 0;
+
+    app-bar {
+      width: 100%;
+    }
+  }
+
+  .states {
+    background-color: $color-primary;
+    border: 1px solid $color-primary;
+    border-bottom-left-radius: $circle-size / 2;
+    border-bottom-right-radius: $circle-size / 2;
+    color: $color-dark;
+    margin-top: 0;
+    padding: 1rem 2rem;
   }
 }
