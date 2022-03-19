@@ -9,6 +9,10 @@
   @include text-label;
 }
 
+.parent {
+  margin-bottom: $item-padding;
+}
+
 .header {
   min-height: $mobile-interactive-height;
   position: relative;
@@ -18,4 +22,12 @@
     right: 0;
     top: 0;
   }
+}
+
+.description {
+  margin-top: $item-padding;
+}
+
+.subquests {
+  margin-bottom: $container-horizontal-padding;
 }

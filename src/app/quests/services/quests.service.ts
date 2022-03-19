@@ -83,6 +83,13 @@ export class QuestsService {
   }
 
 
+  getSubQuestsByParentId(id: string): Observable<Quest[]> {
+    return this.getQuests().pipe(
+      map((quests) => quests.filter((quest) => quest.parent && quest.parent.id === id))
+    );
+  }
+
+
   store(quest: Partial<Quest>, questId?: string) {
     return this.data.store(quest, QuestsService.collection, questId);
   }

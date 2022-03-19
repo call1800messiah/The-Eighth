@@ -1,12 +1,24 @@
 <div class="quest" *ngIf="quest">
-  <div class="info box" (click)="editQuest()">
-    <div class="type">
+  <div class="info box">
+    <div class="type" (click)="editQuest()">
       {{questTypes[quest.type]}}
+    </div>
+    <div class="parent" *ngIf="quest.parent && quest.parent.name" (click)="goTo(quest.parent.id)">
+      Teil von: {{quest.parent.name}}
     </div>
     <div class="description" *ngIf="quest.description">
       {{quest.description}}
     </div>
   </div>
+
+  <ng-container *ngIf="(subQuests$ | async) as subQuests">
+    <div class="subquests box" *ngIf="subQuests.length > 0">
+      <div class="heading">Subquests</div>
+      <div class="subquest" *ngFor="let subQuest of subQuests" (click)="goTo(subQuest.id)">
+        {{subQuest.name}}
+      </div>
+    </div>
+  </ng-container>
 
   <div class="details">
     <div class="header">

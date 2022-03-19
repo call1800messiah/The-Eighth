@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -25,6 +25,7 @@ export class QuestComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
+  subQuests$: Observable<Quest[]>;
   quest: Quest;
   questSub: Subscription;
   questTypes = QuestsService.questTypes;
@@ -35,7 +36,9 @@ export class QuestComponent implements OnInit, OnDestroy {
     private popover: PopoverService,
     private questService: QuestsService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {
+    // TODO: Check if the quest can be loaded by a resolver as an observable
     this.questSub = this.route.paramMap.pipe(
       switchMap(params => {
         return this.questService.getQuestById(params.get('id'));
@@ -45,6 +48,7 @@ export class QuestComponent implements OnInit, OnDestroy {
         this.quest = quest;
         this.navigation.setPageLabel(this.quest.name);
         this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
+        this.subQuests$ = this.questService.getSubQuestsByParentId(this.quest.id);
       }
     });
   }
@@ -77,5 +81,10 @@ export class QuestComponent implements OnInit, OnDestroy {
 
   editQuest() {
     this.popover.showPopover(this.quest.name, EditQuestComponent, this.quest);
+  }
+
+
+  goTo(id: string) {
+    this.router.navigate([`quests/${id}`]);
   }
 }
