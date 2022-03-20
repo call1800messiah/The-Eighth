@@ -1,1 +1,15 @@
-<app-achievement *ngFor="let achievement of achievements$ | async" [achievement]="achievement"></app-achievement>
+<app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
+  <ng-container *ngIf="(user$ | async) as user">
+    <button type="button" class="btn-icon" (click)="showAddDialog()" *ngIf="user.isGM">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Achievement hinzufügen"></fa-icon>
+    </button>
+  </ng-container>
+</app-top-bar-filter>
+
+<div class="achievements">
+  <app-achievement
+    *ngFor="let achievement of filteredAchievements$ | async"
+    [achievement]="achievement"
+  ></app-achievement>
+</div>

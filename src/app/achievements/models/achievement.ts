@@ -1,3 +1,5 @@
+import { Person } from '../../people/models/person';
+
 export interface Achievement {
   description: string;
   icon: string;
@@ -5,6 +7,6 @@ export interface Achievement {
   isPrivate: boolean;
   name: string;
   owner: string;
-  people: any[];
+  people: Person[];
   unlocked: Date;
 }

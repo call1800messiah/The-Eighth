@@ -9,6 +9,7 @@ import { PeopleService } from '../../people/services/people.service';
 import { Person } from '../../people/models/person';
 import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
+import { DataService } from '../../core/services/data.service';
 
 
 
@@ -16,12 +17,14 @@ import { AuthService } from '../../core/services/auth.service';
   providedIn: 'root'
 })
 export class AchievementService {
+  static readonly collection = 'achievements';
   private achievements$: Observable<Achievement[]>;
   private user: AuthUser;
 
   constructor(
     private api: ApiService,
     private auth: AuthService,
+    private data: DataService,
     private peopleService: PeopleService,
   ) {
     this.user = this.auth.user;
@@ -29,12 +32,11 @@ export class AchievementService {
 
 
 
-
   getAchievements(): Observable<Achievement[]> {
     if (!this.achievements$) {
       this.achievements$ = combineLatest([
         this.api.getDataFromCollectionWhere(
-          'achievements',
+          AchievementService.collection,
           (ref) => ref
             .where('access', 'array-contains', this.user.id)
         ),
@@ -47,6 +49,10 @@ export class AchievementService {
     return this.achievements$;
   }
 
+
+  store(achievement: Partial<Achievement>, achievementId?: string) {
+    return this.data.store(achievement, AchievementService.collection, achievementId);
+  }
 
 
   private transformAchievements(achievements: any[], people: Person[]): Achievement[] {

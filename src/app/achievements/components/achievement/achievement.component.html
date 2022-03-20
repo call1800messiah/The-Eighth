@@ -4,7 +4,7 @@
     <fa-icon *ngIf="!achievement.icon" [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>
   </div>
   <div class="text">
-    <div class="title">{{achievement.name}}</div>
+    <div class="title" (click)="showEditDialog()">{{achievement.name}}</div>
     {{achievement.description}}
   </div>
   <div class="meta clearfix">
