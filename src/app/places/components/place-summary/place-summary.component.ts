@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { Place } from '../../models/place';
-import { ConfigService } from '../../../core/services/config.service';
+import { PlaceService } from '../../services/place.service';
 
 
 
@@ -12,7 +12,7 @@ import { ConfigService } from '../../../core/services/config.service';
 })
 export class PlaceSummaryComponent implements OnInit {
   @Input() place: Place;
-  placeTypes = ConfigService.placeTypes;
+  placeTypes = PlaceService.placeTypes;
 
   constructor() { }
 

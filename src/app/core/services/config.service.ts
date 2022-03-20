@@ -25,15 +25,6 @@ export class ConfigService {
 
   static nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_', 10);
 
-  static placeTypes = {
-    city: 'Stadt',
-    island: 'Insel',
-    landmass: 'Landmasse',
-    ocean: 'Gewässer',
-    place: 'Ort',
-    state: 'Staat'
-  };
-
   static imageSettings: Record<string, ICropperSettings> = {
     person: {
       croppedHeight: 500,

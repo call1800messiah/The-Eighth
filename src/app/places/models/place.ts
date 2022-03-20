@@ -1,4 +1,4 @@
-import { PlaceTypeEnum } from '../../core/enums/place-type.enum';
+import { PlaceType } from './place-type.enum';
 
 export interface Place {
   id: string;
@@ -10,5 +10,5 @@ export interface Place {
     id: string,
     name?: string,
   };
-  type: PlaceTypeEnum;
+  type: PlaceType;
 }

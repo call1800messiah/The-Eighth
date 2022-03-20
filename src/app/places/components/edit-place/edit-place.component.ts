@@ -3,7 +3,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
 import { PopoverChild } from '../../../popover/models/popover-child';
-import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Place } from '../../models/place';
 import { PlaceService } from '../../services/place.service';
@@ -19,7 +18,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
-  placeTypes: Record<string, string>[] = Object.entries(ConfigService.placeTypes).reduce((all, [key, value]) => {
+  placeTypes: Record<string, string>[] = Object.entries(PlaceService.placeTypes).reduce((all, [key, value]) => {
     all.push({ key, value });
     return all;
   }, []);

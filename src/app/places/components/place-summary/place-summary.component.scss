@@ -1,11 +1,7 @@
 @import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
-.wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  height: 100%;
-
+.box {
   &.private {
     box-shadow: none;
     opacity: 0.5;
@@ -13,21 +9,19 @@
 }
 
 .text {
-  position: relative;
+  align-items: center;
+  display: flex;
 }
 
 .name {
   font-size: $item-title-font-size;
   font-weight: bold;
   line-height: $item-title-line-height;
-  padding-top: $detail-text-line-height;
 }
 
 .type {
   @include text-label;
   height: $detail-text-line-height;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
+  flex: 0 0 auto;
+  width: 100px;
 }

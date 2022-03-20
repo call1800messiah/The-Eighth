@@ -29,7 +29,7 @@ export class PlaceComponent implements OnInit, OnDestroy {
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
   place: Place;
-  placeTypes = ConfigService.placeTypes;
+  placeTypes = PlaceService.placeTypes;
   private subscription: Subscription;
 
   constructor(
