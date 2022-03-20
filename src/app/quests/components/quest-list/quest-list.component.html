@@ -1,16 +1,11 @@
-<div class="top-bar clearfix">
-  <div class="form-group filter">
-    <input type="search" id="filterText" [formControl]="textFilter" placeholder="z.B. Name, Beschreibung">
-    <label for="filterText">Filter</label>
-  </div>
-
+<app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
   <button type="button" class="btn-icon" (click)="showAddDialog()">
     <fa-icon [icon]="faPlus" [fixedWidth]="true"
              title="Queste hinzufügen"></fa-icon>
   </button>
-</div>
+</app-top-bar-filter>
 
-<div class="quests" *ngIf="textFilter.value === ''">
+<div class="quests" *ngIf="filterText.value === ''">
   <h2 class="list-title">Aktive Questen</h2>
   <app-box-grid class="grid">
     <app-quest-summary
@@ -31,7 +26,7 @@
 </div>
 
 
-<app-box-grid class="filtered-quests" *ngIf="textFilter.value !== ''">
+<app-box-grid class="filtered-quests" *ngIf="filterText.value !== ''">
   <app-quest-summary
     *ngFor="let quest of filteredQuests$ | async"
     [quest]="quest"

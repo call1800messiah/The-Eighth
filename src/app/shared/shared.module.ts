@@ -24,6 +24,7 @@ import { EditEventComponent } from './components/edit-event/edit-event.component
 import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { BoxGridComponent } from './components/box-grid/box-grid.component';
+import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filter.component';
 
 
 
@@ -33,6 +34,7 @@ import { BoxGridComponent } from './components/box-grid/box-grid.component';
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
+    BoxGridComponent,
     DashboardComponent,
     EditAttributeComponent,
     EditEventComponent,
@@ -45,7 +47,7 @@ import { BoxGridComponent } from './components/box-grid/box-grid.component';
     TimelineComponent,
     UnlockButtonComponent,
     ProgressBarComponent,
-    BoxGridComponent,
+    TopBarFilterComponent,
   ],
   imports: [
     CommonModule,
@@ -77,7 +79,8 @@ import { BoxGridComponent } from './components/box-grid/box-grid.component';
     ReactiveFormsModule,
     SelectOnFocusDirective,
     TimelineComponent,
+    TopBarFilterComponent,
     UnlockButtonComponent,
-  ]
+  ],
 })
 export class SharedModule { }

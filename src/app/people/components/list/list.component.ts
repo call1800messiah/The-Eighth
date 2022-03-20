@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Person } from 'src/app/people/models/person';
@@ -20,21 +19,17 @@ import { PeopleService } from '../../services/people.service';
 export class ListComponent implements OnInit {
   filteredPeople$: Observable<Person[]>;
   faPlus = faPlus;
-  textFilter: FormControl;
+  filterText: BehaviorSubject<string>;
 
   constructor(
     private peopleService: PeopleService,
     private popover: PopoverService,
     private router: Router,
   ) {
-    this.textFilter = new FormControl('');
+    this.filterText = new BehaviorSubject<string>('');
     this.filteredPeople$ = combineLatest([
       this.peopleService.getPeople(),
-      this.textFilter.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-      ),
+      this.filterText,
     ]).pipe(
       map(this.filterPeopleByText),
     );
@@ -44,8 +39,14 @@ export class ListComponent implements OnInit {
   }
 
 
+
   goToPerson(person: Person) {
     this.router.navigate([`people/${person.id}`]);
+  }
+
+
+  onFilterChanged(text: string) {
+    this.filterText.next(text);
   }
 
 

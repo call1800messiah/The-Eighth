@@ -1,19 +1,5 @@
 @import "../../../../scss/variables.scss";
 
-.top-bar {
-  display: flex;
-  margin-bottom: $item-padding;
-
-  .filter {
-    flex: 1 1 auto;
-  }
-
-  button {
-    flex: 0 0 auto;
-    margin-left: $item-padding;
-  }
-}
-
 .list-title {
   margin: $container-horizontal-padding 0;
 }

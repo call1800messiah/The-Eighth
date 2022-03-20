@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestsService } from '../../services/quests.service';
@@ -22,24 +21,20 @@ export class QuestListComponent implements OnInit {
   filteredQuests$: Observable<Quest[]>;
   openQuests$: Observable<Quest[]>;
   faPlus = faPlus;
-  textFilter: FormControl;
+  filterText: BehaviorSubject<string>;
 
   constructor(
     private questsService: QuestsService,
     private popover: PopoverService,
     private router: Router,
   ) {
-    this.textFilter = new FormControl('');
+    this.filterText = new BehaviorSubject<string>('');
     this.completedQuests$ = this.questsService.getQuests().pipe(
       map((quests) => quests.filter((quest) => quest.completed === true))
     );
     this.filteredQuests$ = combineLatest([
       this.questsService.getQuests(),
-      this.textFilter.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-      ),
+      this.filterText,
     ]).pipe(
       map(this.filterQuestsByText)
     );
@@ -51,8 +46,15 @@ export class QuestListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+
+
   goToQuest(quest: Quest) {
     this.router.navigate([`quests/${quest.id}`]);
+  }
+
+
+  onFilterChanged(text: string) {
+    this.filterText.next(text);
   }
 
 

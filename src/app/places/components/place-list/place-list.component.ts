@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl } from '@angular/forms';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Place } from '../../models/place';
@@ -20,21 +19,17 @@ import { PlaceService } from '../../services/place.service';
 export class PlaceListComponent implements OnInit {
   filteredPlaces$: Observable<Place[]>;
   faPlus = faPlus;
-  textFilter: FormControl;
+  filterText: BehaviorSubject<string>;
 
   constructor(
     private placeService: PlaceService,
     private popover: PopoverService,
     private router: Router,
   ) {
-    this.textFilter = new FormControl('');
+    this.filterText = new BehaviorSubject<string>('');
     this.filteredPlaces$ = combineLatest([
       this.placeService.getPlaces(),
-      this.textFilter.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-      ),
+      this.filterText,
     ]).pipe(
       map(this.filterPlacesByText),
     );
@@ -44,6 +39,7 @@ export class PlaceListComponent implements OnInit {
   }
 
 
+
   editPlace(place: Place) {
     this.popover.showPopover('Ort editieren', EditPlaceComponent, place);
   }
@@ -51,6 +47,11 @@ export class PlaceListComponent implements OnInit {
 
   goToPlace(place: Place) {
     this.router.navigate([`places/${place.id}`]);
+  }
+
+
+  onFilterChanged(text: string) {
+    this.filterText.next(text);
   }
 
 

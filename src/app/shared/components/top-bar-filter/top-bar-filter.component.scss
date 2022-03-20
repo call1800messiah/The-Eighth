@@ -1,0 +1,23 @@
+@import "../../../../scss/variables.scss";
+
+.top-bar {
+  display: flex;
+  margin-bottom: $container-horizontal-padding;
+
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .filter {
+    flex: 1 1 auto;
+  }
+
+  .buttons {
+    display: flex;
+  }
+}
+
+:host ::ng-deep button {
+  flex: 0 0 auto;
+  margin-left: $item-padding;
+}

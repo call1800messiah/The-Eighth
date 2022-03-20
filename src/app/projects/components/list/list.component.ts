@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
@@ -19,20 +18,16 @@ import { EditProjectComponent } from '../edit-project/edit-project.component';
 export class ListComponent implements OnInit {
   filteredProjects$: Observable<Project[]>;
   faPlus = faPlus;
-  textFilter: FormControl;
+  filterText: BehaviorSubject<string>;
 
   constructor(
     private projectsService: ProjectService,
     private popover: PopoverService
   ) {
-    this.textFilter = new FormControl('');
+    this.filterText = new BehaviorSubject<string>('');
     this.filteredProjects$ = combineLatest([
       this.projectsService.getProjects(),
-      this.textFilter.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        distinctUntilChanged(),
-      ),
+      this.filterText,
     ]).pipe(
       map(this.filterProjectsByText)
     );
@@ -41,6 +36,11 @@ export class ListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+
+
+  onFilterChanged(text: string) {
+    this.filterText.next(text);
+  }
 
 
   showAddDialog() {

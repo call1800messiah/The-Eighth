@@ -1,0 +1,10 @@
+<div class="top-bar clearfix">
+  <div class="form-group filter">
+    <input type="search" id="filterText" [formControl]="textFilter" placeholder="{{placeholder}}">
+    <label for="filterText">Filter</label>
+  </div>
+
+  <div class="buttons">
+    <ng-content></ng-content>
+  </div>
+</div>
