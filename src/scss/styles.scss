@@ -151,4 +151,9 @@ h2 {
     font-weight: bold;
     margin-bottom: $item-padding;
   }
+
+  &.private {
+    box-shadow: none;
+    opacity: 0.5;
+  }
 }

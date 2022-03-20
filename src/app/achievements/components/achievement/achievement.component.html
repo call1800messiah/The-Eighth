@@ -1,4 +1,4 @@
-<div class="wrapper box">
+<div class="box" [ngClass]="{'private': achievement.isPrivate}">
   <div class="image">
     <img *ngIf="achievement.icon" src="{{achievement.icon}}" alt="{{achievement.name}}" />
     <fa-icon *ngIf="!achievement.icon" [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>

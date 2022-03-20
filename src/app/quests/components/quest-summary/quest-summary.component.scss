@@ -1,13 +1,6 @@
 @import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
-.box {
-  &.private {
-    box-shadow: none;
-    opacity: 0.5;
-  }
-}
-
 .text {
   align-items: center;
   display: flex;
