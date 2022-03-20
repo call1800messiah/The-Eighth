@@ -10,8 +10,8 @@
   </button>
 </div>
 
-<div class="places">
+<app-box-grid>
   <app-place-summary *ngFor="let place of filteredPlaces$ | async" [place]="place"
                      (click)="goToPlace(place)">
   </app-place-summary>
-</div>
+</app-box-grid>

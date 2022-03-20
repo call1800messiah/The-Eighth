@@ -16,7 +16,7 @@
 </div>
 
 
-<div class="combatants">
+<app-box-grid>
   <div *ngFor="let fighter of combatants$ | async" class="combatant"
        [ngClass]="{'inactive': !fighter.active}"
   >
@@ -49,4 +49,4 @@
       </div>
     </div>
   </div>
-</div>
+</app-box-grid>

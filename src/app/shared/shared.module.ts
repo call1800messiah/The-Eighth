@@ -23,6 +23,7 @@ import { TimelineComponent } from './components/timeline/timeline.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
+import { BoxGridComponent } from './components/box-grid/box-grid.component';
 
 
 
@@ -44,6 +45,7 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
     TimelineComponent,
     UnlockButtonComponent,
     ProgressBarComponent,
+    BoxGridComponent,
   ],
   imports: [
     CommonModule,
@@ -59,6 +61,7 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
+    BoxGridComponent,
     DashboardComponent,
     DiceModule,
     EditAttributeComponent,

@@ -10,7 +10,7 @@
   </button>
 </div>
 
-<div class="projects">
+<app-box-grid>
   <app-project-summary *ngFor="let project of filteredProjects$ | async" [project]="project">
   </app-project-summary>
-</div>
+</app-box-grid>

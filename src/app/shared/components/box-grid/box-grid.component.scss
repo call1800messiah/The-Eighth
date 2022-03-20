@@ -1,0 +1,15 @@
+@import "../../../../scss/variables.scss";
+.box-grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-rows: auto;
+}
+
+
+
+@media (min-width: $break-sm) {
+  .box-grid {
+    grid-gap: 3rem;
+  }
+}
