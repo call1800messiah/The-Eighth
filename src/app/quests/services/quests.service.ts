@@ -67,7 +67,7 @@ export class QuestsService {
   getQuests(): Observable<Quest[]> {
     if (!this.quests$) {
       this.quests$ = new BehaviorSubject<Quest[]>([]);
-      this.api.getDataFromCollectionWhere(
+      this.api.getDataFromCollection(
         QuestsService.collection,
         (ref) => ref
           .where('access', 'array-contains', this.user.id)

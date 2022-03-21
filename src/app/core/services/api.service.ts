@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentReference, QueryFn } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import firebase from 'firebase';
@@ -28,12 +28,8 @@ export class ApiService {
     return this.afAuth.authState;
   }
 
-  getDataFromCollection(collection: string): Observable<any> {
-    return this.afs.collection(collection).snapshotChanges();
-  }
-
-  getDataFromCollectionWhere(collection: string, where): Observable<any> {
-    return this.afs.collection(collection, where).snapshotChanges();
+  getDataFromCollection(collection: string, queryFunction?: QueryFn<firebase.firestore.DocumentData>): Observable<any> {
+    return this.afs.collection(collection, queryFunction).snapshotChanges();
   }
 
   getItemFromCollection(path: string): Observable<any> {

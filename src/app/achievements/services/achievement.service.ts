@@ -35,7 +35,7 @@ export class AchievementService {
   getAchievements(): Observable<Achievement[]> {
     if (!this.achievements$) {
       this.achievements$ = combineLatest([
-        this.api.getDataFromCollectionWhere(
+        this.api.getDataFromCollection(
           AchievementService.collection,
           (ref) => ref
             .where('access', 'array-contains', this.user.id)

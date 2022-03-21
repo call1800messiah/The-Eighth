@@ -28,7 +28,7 @@ export class TimelineService {
 
 
   getEvents(timelineId: string): Observable<HistoricEvent[]> {
-    return this.api.getDataFromCollectionWhere(
+    return this.api.getDataFromCollection(
       `${TimelineService.collection}/${timelineId}/events`,
       (ref) => ref
         .where('access', 'array-contains', this.user.id)

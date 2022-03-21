@@ -55,7 +55,7 @@ export class DataService {
 
 
   getInfos(id: string, collection: string): Observable<Map<InfoType, Info[]>> {
-    return this.api.getDataFromCollectionWhere(
+    return this.api.getDataFromCollection(
       `${collection}/${id}/info`,
       (ref) => ref
         .where('access', 'array-contains', this.user.id)
