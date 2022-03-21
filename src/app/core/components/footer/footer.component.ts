@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faDice, faMusic } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCommentAlt, faDice, faMusic } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
 import { NavigationService } from '../../services/navigation.service';
@@ -16,8 +16,10 @@ export class FooterComponent implements OnInit {
   audioVisible = false;
   diceVisible = false;
   faBars = faBars;
+  faCommentAlt = faCommentAlt;
   faDice = faDice;
   faMusic = faMusic;
+  messagesVisible = true;
   navigation: NavEntry[];
   navVisible$: Observable<boolean>;
 
@@ -41,13 +43,7 @@ export class FooterComponent implements OnInit {
     this.nav.setNavigationVisible(false);
     this.diceVisible = false;
     this.audioVisible = !this.audioVisible;
-  }
-
-
-  toggleNavigation(): void {
-    this.audioVisible = false;
-    this.diceVisible = false;
-    this.nav.toggleNavigation();
+    this.messagesVisible = false;
   }
 
 
@@ -55,5 +51,23 @@ export class FooterComponent implements OnInit {
     this.nav.setNavigationVisible(false);
     this.audioVisible = false;
     this.diceVisible = !this.diceVisible;
+    this.messagesVisible = false;
   }
+
+
+  toggleMessages(): void {
+    this.nav.setNavigationVisible(false);
+    this.audioVisible = false;
+    this.diceVisible = false;
+    this.messagesVisible = !this.messagesVisible;
+  }
+
+
+  toggleNavigation(): void {
+    this.audioVisible = false;
+    this.diceVisible = false;
+    this.messagesVisible = false;
+    this.nav.toggleNavigation();
+  }
+
 }

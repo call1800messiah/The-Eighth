@@ -27,6 +27,8 @@ footer {
   flex-wrap: wrap;
   justify-content: stretch;
   left: 0;
+  max-height: calc(100vh - #{$footer-height});
+  overflow-y: auto;
   padding: $item-padding;
   position: fixed;
   right: 0;
@@ -41,6 +43,8 @@ footer {
   &.open {
     bottom: $footer-height;
   }
+
+  // TODO: Fix scrolling not working in long overlay content
 }
 
 nav {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Die } from '../enums/die.enum';
 import { AttributeRoll, DamageRoll, DiceRoll, Roll, SkillRoll } from '../models/roll';
@@ -35,6 +36,8 @@ export class DiceRollerService {
         (ref) => ref
           .where('access', 'array-contains', this.user.id)
           .limit(limit)
+      ).pipe(
+        map(this.transformRolls),
       );
     }
 
@@ -164,5 +167,35 @@ export class DiceRollerService {
 
   private store(roll: AttributeRoll | DamageRoll | DiceRoll | SkillRoll) {
     this.data.store(roll, DiceRollerService.collection);
+  }
+
+
+  private transformRolls(data): Roll[] {
+    return data.reduce((all, entry) => {
+      const rollData = entry.payload.doc.data();
+      let roll: Roll | AttributeRoll | DamageRoll | DiceRoll | SkillRoll = {
+        created: new Date(rollData.created.seconds * 1000),
+        isPrivate: rollData.isPrivate,
+        owner: rollData.owner,
+        type: rollData.type,
+      };
+      switch (rollData.type) {
+        case RollType.Dice:
+          roll = {
+            ...roll,
+            diceType: rollData.diceType,
+            rolls: rollData.rolls,
+          };
+          break;
+          // TODO: Implement other roll types
+        case RollType.Attribute:
+        case RollType.Damage:
+        case RollType.Skill:
+        default:
+          break;
+      }
+      all.push(roll);
+      return all;
+    }, []);
   }
 }

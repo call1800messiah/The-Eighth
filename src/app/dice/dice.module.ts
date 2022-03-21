@@ -5,6 +5,7 @@ import { QuickDiceComponent } from './components/quick-dice/quick-dice.component
 import { DieComponent } from './components/die/die.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HitLocationDieComponent } from './components/hit-location-die/hit-location-die.component';
+import { RecentRollsComponent } from './components/recent-rolls/recent-rolls.component';
 
 
 
@@ -13,11 +14,13 @@ import { HitLocationDieComponent } from './components/hit-location-die/hit-locat
     DieComponent,
     HitLocationDieComponent,
     QuickDiceComponent,
+    RecentRollsComponent,
   ],
   exports: [
     DieComponent,
     HitLocationDieComponent,
     QuickDiceComponent,
+    RecentRollsComponent,
   ],
   imports: [
     CommonModule,

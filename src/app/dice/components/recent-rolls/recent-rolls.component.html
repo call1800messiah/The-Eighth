@@ -1,0 +1,13 @@
+<div *ngIf="rolls$">
+  <div class="box" *ngFor="let roll of rolls$ | async" [ngSwitch]="roll.type">
+    <div class="user">
+      {{roll.user}}
+    </div>
+
+    <div *ngSwitchCase="'dice'">
+      hat
+      {{roll.rolls.length}} W{{roll.diceType}} gewürfelt: {{roll.rolls.join(', ')}}
+    </div>
+    <!-- TODO: Implement other roll types -->
+  </div>
+</div>

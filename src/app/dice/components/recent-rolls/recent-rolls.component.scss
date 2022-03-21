@@ -1,0 +1,10 @@
+@import '../../../../scss/variables.scss';
+@import '../../../../scss/mixins.scss';
+
+.box {
+  margin-bottom: $item-padding;
+}
+
+.user {
+  @include text-label;
+}
