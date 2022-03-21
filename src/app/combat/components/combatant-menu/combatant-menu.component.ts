@@ -4,7 +4,7 @@ import { PopoverChild } from '../../../popover/models/popover-child';
 import { CombatService } from '../../services/combat.service';
 import { RulesService } from '../../../core/services/rules.service';
 import { Combatant } from '../../models/combatant';
-import { CombatState } from '../../models/combat-state';
+import { CombatState } from '../../../shared/models/combat-state';
 import { UtilService } from '../../../core/services/util.service';
 
 

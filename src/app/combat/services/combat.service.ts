@@ -5,7 +5,7 @@ import { map, take } from 'rxjs/operators';
 import { Combatant } from '../models/combatant';
 import { Person } from '../../people/models/person';
 import { ApiService } from '../../core/services/api.service';
-import { CombatState } from '../models/combat-state';
+import { CombatState } from '../../shared/models/combat-state';
 import { PeopleService } from '../../people/services/people.service';
 
 

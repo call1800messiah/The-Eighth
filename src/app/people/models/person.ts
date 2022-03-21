@@ -1,4 +1,4 @@
-import { CombatState } from '../../combat/models/combat-state';
+import { CombatState } from '../../shared/models/combat-state';
 
 export interface Person {
   id: string;
