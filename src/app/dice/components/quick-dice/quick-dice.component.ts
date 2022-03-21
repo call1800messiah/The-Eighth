@@ -29,7 +29,7 @@ export class QuickDiceComponent implements OnInit {
 
 
   onDiceRolled(index) {
-    const result = this.diceRoller.rollMany(index + 1, this.type);
+    const result = this.diceRoller.rollDice(index + 1, this.type);
     this.total = 0;
 
     this.rolls = this.rolls.reduce((all: number[], entry: number, i: number) => {

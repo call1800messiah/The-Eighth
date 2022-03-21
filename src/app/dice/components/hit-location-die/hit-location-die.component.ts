@@ -28,7 +28,7 @@ export class HitLocationDieComponent implements OnInit {
   }
 
   rollHitLocationDie() {
-    this.currentNumber = this.dice.roll(Die.D20);
+    this.currentNumber = this.dice.rollDice(1, Die.D20)[0];
     this.hit = this.locations[this.currentNumber];
   }
 }
