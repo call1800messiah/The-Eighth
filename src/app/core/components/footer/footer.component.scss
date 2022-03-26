@@ -43,10 +43,12 @@ footer {
   &.open {
     bottom: $footer-height;
   }
-
-  // TODO: Fix scrolling not working in long overlay content
 }
 
 nav {
   width: 100%;
+}
+
+.messages {
+  display: block;
 }

@@ -2,9 +2,42 @@
 @import '../../../../scss/mixins.scss';
 
 .box {
+  border-radius: 0 $item-padding $item-padding 0;
   margin-bottom: $item-padding;
+  margin-right: $item-padding * 4;
+  position: relative;
+
+  &.own {
+    border-radius: $item-padding 0 0 $item-padding;
+    margin-left: $item-padding * 4;
+    margin-right: 0;
+  }
 }
 
 .user {
   @include text-label;
+}
+
+.created {
+  @include text-label;
+  position: absolute;
+  right: $item-padding;
+  top: $item-padding;
+}
+
+.success {
+  color: $color-low;
+  font-weight: bold;
+}
+
+.failure {
+  color: $color-high;
+  font-weight: bold;
+}
+
+.details {
+  @include text-label;
+  bottom: $item-padding;
+  position: absolute;
+  right: $item-padding;
 }

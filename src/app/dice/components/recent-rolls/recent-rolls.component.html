@@ -1,13 +1,82 @@
-<div *ngIf="rolls$">
-  <div class="box" *ngFor="let roll of rolls$ | async" [ngSwitch]="roll.type">
+<ng-container *ngIf="rolls$">
+  <div class="box" *ngFor="let roll of rolls$ | async" [ngSwitch]="roll.type" [ngClass]="{'own': roll.owner === userId}">
     <div class="user">
       {{roll.user}}
     </div>
 
+    <div class="created">
+      {{roll.created | date : 'short' : undefined : 'de-DE' }}
+    </div>
+
+
+    <div *ngSwitchCase="'attribute'">
+      hat eine {{roll.name ? roll.name : 'Attribut'}}-Probe
+      <span *ngIf="roll.modifier !== 0">(<span *ngIf="roll.modifier > 0">+</span>{{roll.modifier}})</span>
+      gewürfelt:<br>
+      <ng-container [ngSwitch]="roll.roll">
+        <ng-container *ngSwitchCase="1">
+          <span class="success">Meisterlich!</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="20">
+          <span class="failure">Patzer!</span>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <ng-container *ngIf="roll.roll + roll.modifier <= roll.attribute; then success; else failure"></ng-container>
+        </ng-container>
+      </ng-container>
+      <div class="details">
+        ({{roll.attribute - (roll.roll + roll.modifier)}} | {{roll.roll}}/{{roll.attribute}})
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'damage'">
+      hat {{roll.rolls.length}} W{{roll.diceType}}
+      <span *ngIf="roll.modifier !== 0"><span *ngIf="roll.modifier > 0">+</span>{{roll.modifier}}</span>
+      Schaden gewürfelt:<br>
+      {{total(roll.rolls, roll.modifier)}}
+      <div class="details">
+        ({{roll.rolls.join(', ')}})
+      </div>
+    </div>
+
     <div *ngSwitchCase="'dice'">
       hat
-      {{roll.rolls.length}} W{{roll.diceType}} gewürfelt: {{roll.rolls.join(', ')}}
+      {{roll.rolls.length}} W{{roll.diceType}}
+      gewürfelt:<br>
+      {{total(roll.rolls)}}
+      <div class="details">
+        {{roll.rolls.join(', ')}}
+      </div>
     </div>
-    <!-- TODO: Implement other roll types -->
+
+    <div *ngSwitchCase="'skill'">
+      hat eine {{roll.name ? roll.name : 'Talent'}}-Probe
+      <span *ngIf="roll.modifier !== 0">(<span *ngIf="roll.modifier > 0">+</span>{{roll.modifier}})</span>
+      gewürfelt:<br>
+      <ng-container *appTplVar="validateSkillCheck(roll) as netSkill" [ngSwitch]="getSkillCheckResultType(roll)">
+        <ng-container *ngSwitchCase="1">
+          <span class="success">Meisterlich!</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="-1">
+          <span class="failure">Patzer!</span>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <ng-container *ngIf="validateSkillCheck(roll) > 0; then success; else failure"></ng-container>
+        </ng-container>
+        <div class="details">
+          ({{netSkill}}/{{roll.skillPoints}} | {{roll.rolls[0]}}/{{roll.attributes[0]}}, {{roll.rolls[1]}}/{{roll.attributes[1]}}, {{roll.rolls[2]}}/{{roll.attributes[2]}})
+        </div>
+      </ng-container>
+    </div>
   </div>
-</div>
+</ng-container>
+
+
+
+<ng-template #success>
+  <span class="success">Erfolg!</span>
+</ng-template>
+
+<ng-template #failure>
+  <span class="failure">Verkackt!</span>
+</ng-template>

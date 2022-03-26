@@ -102,45 +102,58 @@ export class DiceRollerService {
     skill: number,
     modifier: number = 0,
   ): number {
-    console.log('Skill check', first, second, third, skill, modifier);
-    const results = this.rollDice(3, Die.D20);
-    console.log('Rolls', ...results);
-    const effectiveSkill = skill - modifier;
-    let netSkill = effectiveSkill;
-    let attributes;
-
-    if (effectiveSkill < 0) {
-      attributes = [first + effectiveSkill, second + effectiveSkill, third + effectiveSkill];
-      if (attributes[0] > results[0] && attributes[1] > results[1] && attributes[2] > results[2]) {
-        netSkill = 1;
-      }
-    } else {
-      attributes = [first, second, third];
-      for (let i = 0; i < 3; i++) {
-        if (results[i] > attributes[i]) {
-          netSkill -= results[i] - attributes[i];
-        }
-      }
-    }
-
-    if (netSkill > skill) {
-      netSkill = skill;
-    }
-    if (netSkill === 0) {
-      netSkill = 1;
-    }
-    console.log('Remaining', netSkill);
-
-    this.store({
+    const roll: SkillRoll = {
       attributes: [first, second, third],
       created: new Date(),
       isPrivate: false,
       modifier,
       owner: this.user.id,
-      rolls: results,
+      rolls: this.rollDice(3, Die.D20) as [number, number, number],
       skillPoints: skill,
       type: RollType.Skill,
-    });
+    };
+    this.store(roll);
+    return this.validateSkillCheck(roll);
+  }
+
+
+  validateSkillCheck(roll: Partial<SkillRoll>): number {
+    const effectiveSkill = roll.skillPoints - roll.modifier;
+    let netSkill = effectiveSkill;
+    let effectiveAttributes: [number, number, number];
+
+    if (effectiveSkill < 0) {
+      effectiveAttributes = [
+        roll.attributes[0] + effectiveSkill,
+        roll.attributes[1] + effectiveSkill,
+        roll.attributes[2] + effectiveSkill
+      ];
+      if (effectiveAttributes[0] > roll.rolls[0] && effectiveAttributes[1] > roll.rolls[1] && effectiveAttributes[2] > roll.rolls[2]) {
+        netSkill = 1;
+      } else {
+        netSkill = 0;
+        for (let i = 0; i < 3; i++) {
+          if (roll.rolls[i] > effectiveAttributes[i]) {
+            netSkill -= roll.rolls[i] - effectiveAttributes[i];
+          }
+        }
+      }
+    } else {
+      effectiveAttributes = roll.attributes;
+      for (let i = 0; i < 3; i++) {
+        if (roll.rolls[i] > effectiveAttributes[i]) {
+          netSkill -= roll.rolls[i] - effectiveAttributes[i];
+        }
+      }
+    }
+
+    if (netSkill > roll.skillPoints) {
+      netSkill = roll.skillPoints;
+    }
+    if (netSkill === 0) {
+      netSkill = 1;
+    }
+
     return netSkill;
   }
 
@@ -160,7 +173,6 @@ export class DiceRollerService {
   private roll(type: Die): number {
     const roll = Math.ceil(Math.random() * type);
     this.addRollToStats(type, roll);
-    console.log(roll);
     return roll;
   }
 
@@ -180,6 +192,23 @@ export class DiceRollerService {
         type: rollData.type,
       };
       switch (rollData.type) {
+        case RollType.Attribute:
+          roll = {
+            ...roll,
+            attribute: rollData.attribute,
+            modifier: rollData.modifier,
+            name: rollData.name,
+            roll: rollData.roll,
+          };
+          break;
+        case RollType.Damage:
+          roll = {
+            ...roll,
+            rolls: rollData.rolls,
+            diceType: rollData.diceType,
+            modifier: rollData.modifier,
+          };
+          break;
         case RollType.Dice:
           roll = {
             ...roll,
@@ -187,10 +216,16 @@ export class DiceRollerService {
             rolls: rollData.rolls,
           };
           break;
-          // TODO: Implement other roll types
-        case RollType.Attribute:
-        case RollType.Damage:
         case RollType.Skill:
+          roll = {
+            ...roll,
+            attributes: rollData.attributes,
+            modifier: rollData.modifier,
+            name: rollData.name,
+            rolls: rollData.rolls,
+            skillPoints: rollData.skillPoints,
+          };
+          break;
         default:
           break;
       }

@@ -19,7 +19,7 @@ export class FooterComponent implements OnInit {
   faCommentAlt = faCommentAlt;
   faDice = faDice;
   faMusic = faMusic;
-  messagesVisible = true;
+  messagesVisible = false;
   navigation: NavEntry[];
   navVisible$: Observable<boolean>;
 

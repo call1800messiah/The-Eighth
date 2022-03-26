@@ -11,6 +11,7 @@ export interface Roll {
 export interface AttributeRoll extends Roll {
   attribute: number;
   modifier: number;
+  name?: string;
   roll: number;
 }
 
@@ -26,8 +27,9 @@ export interface DiceRoll extends Roll {
 }
 
 export interface SkillRoll extends Roll {
-  attributes: number[];
+  attributes: [number, number, number];
   modifier: number;
-  rolls: number[];
+  name?: string;
+  rolls: [number, number, number];
   skillPoints: number;
 }
