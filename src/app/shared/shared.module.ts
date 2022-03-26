@@ -25,6 +25,7 @@ import { UnlockButtonComponent } from './components/unlock-button/unlock-button.
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { BoxGridComponent } from './components/box-grid/box-grid.component';
 import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filter.component';
+import { TplVarDirective } from './directives/tpl-var.directive';
 
 
 
@@ -48,6 +49,7 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
     UnlockButtonComponent,
     ProgressBarComponent,
     TopBarFilterComponent,
+    TplVarDirective,
   ],
   imports: [
     CommonModule,
@@ -78,6 +80,7 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
     SelectOnFocusDirective,
     TimelineComponent,
     TopBarFilterComponent,
+    TplVarDirective,
     UnlockButtonComponent,
   ],
 })
