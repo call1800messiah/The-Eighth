@@ -56,7 +56,6 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
     ReactiveFormsModule,
     PopoverModule,
     ImageCropperModule,
-    DiceModule,
     RouterModule,
   ],
   exports: [
@@ -65,7 +64,6 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
     BarComponent,
     BoxGridComponent,
     DashboardComponent,
-    DiceModule,
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
