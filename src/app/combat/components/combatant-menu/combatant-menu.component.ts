@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { PopoverChild } from '../../../popover/models/popover-child';
+import { PopoverChild } from '../../../shared/models/popover-child';
 import { CombatService } from '../../services/combat.service';
 import { RulesService } from '../../../core/services/rules.service';
 import { Combatant } from '../../models/combatant';

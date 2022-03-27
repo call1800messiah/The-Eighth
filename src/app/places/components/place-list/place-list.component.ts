@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Place } from '../../models/place';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditPlaceComponent } from '../edit-place/edit-place.component';
 import { PlaceService } from '../../services/place.service';
 

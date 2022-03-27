@@ -9,7 +9,7 @@ import { InfoType } from '../../../core/enums/info-type.enum';
 import { Info } from '../../../shared/models/info';
 import { DataService } from '../../../core/services/data.service';
 import { NavigationService } from '../../../core/services/navigation.service';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { QuestsService } from '../../services/quests.service';
 import { EditQuestComponent } from '../edit-quest/edit-quest.component';

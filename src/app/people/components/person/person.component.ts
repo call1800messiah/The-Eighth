@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Person } from '../../models/person';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { DataService } from '../../../core/services/data.service';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';

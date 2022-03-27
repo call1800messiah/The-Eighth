@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { PopoverChild } from '../../../popover/models/popover-child';
+import { PopoverChild } from '../../models/popover-child';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';

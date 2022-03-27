@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { PopoverChild } from '../../../popover/models/popover-child';
+import { PopoverChild } from '../../models/popover-child';
 import { Info } from '../../models/info';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';

@@ -4,7 +4,7 @@ import { faTrophy, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 import { Achievement } from 'src/app/achievements/models/achievement';
 import { EditAchievementComponent } from '../edit-achievement/edit-achievement.component';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/user';
 

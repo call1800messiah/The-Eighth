@@ -5,7 +5,7 @@ import { faDizzy, faPlus, faUserNinja, faUsers } from '@fortawesome/free-solid-s
 
 import { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
 import { Person } from '../../../people/models/person';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';

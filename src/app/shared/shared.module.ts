@@ -6,12 +6,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ImageCropperModule } from 'ngx-img-cropper';
 
 import { AvatarComponent } from './components/avatar/avatar.component';
-import { PopoverModule } from '../popover/popover.module';
 import { EditImageComponent } from './components/edit-image/edit-image.component';
 import { AudioPlayerListComponent } from './components/audio-player-list/audio-player-list.component';
 import { AudioPlayerComponent } from './components/audio-player/audio-player.component';
 import { EditInfoComponent } from './components/edit-info/edit-info.component';
-import { DiceModule } from '../dice/dice.module';
 import { SelectOnFocusDirective } from './directives/select-on-focus.directive';
 import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
@@ -26,6 +24,8 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
 import { BoxGridComponent } from './components/box-grid/box-grid.component';
 import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filter.component';
 import { TplVarDirective } from './directives/tpl-var.directive';
+import { ContainerComponent } from './components/container/container.component';
+import { PopoverComponent } from './components/popover/popover.component';
 
 
 
@@ -36,6 +36,7 @@ import { TplVarDirective } from './directives/tpl-var.directive';
     AvatarComponent,
     BarComponent,
     BoxGridComponent,
+    ContainerComponent,
     DashboardComponent,
     EditAttributeComponent,
     EditEventComponent,
@@ -44,19 +45,19 @@ import { TplVarDirective } from './directives/tpl-var.directive';
     EstimatedAgePipe,
     FocusOnInitDirective,
     InfoBoxComponent,
+    PopoverComponent,
+    ProgressBarComponent,
     SelectOnFocusDirective,
     TimelineComponent,
-    UnlockButtonComponent,
-    ProgressBarComponent,
     TopBarFilterComponent,
     TplVarDirective,
+    UnlockButtonComponent,
   ],
   imports: [
     CommonModule,
     FontAwesomeModule,
     FormsModule,
     ReactiveFormsModule,
-    PopoverModule,
     ImageCropperModule,
     RouterModule,
   ],
@@ -65,6 +66,7 @@ import { TplVarDirective } from './directives/tpl-var.directive';
     AvatarComponent,
     BarComponent,
     BoxGridComponent,
+    ContainerComponent,
     DashboardComponent,
     EditAttributeComponent,
     EditImageComponent,
@@ -74,7 +76,7 @@ import { TplVarDirective } from './directives/tpl-var.directive';
     FontAwesomeModule,
     FormsModule,
     InfoBoxComponent,
-    PopoverModule,
+    PopoverComponent,
     ProgressBarComponent,
     ReactiveFormsModule,
     SelectOnFocusDirective,

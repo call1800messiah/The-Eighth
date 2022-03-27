@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { faImage, faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { UtilService } from '../../../core/services/util.service';
 import { PlaceService } from '../../services/place.service';

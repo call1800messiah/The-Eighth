@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DateTime } from 'luxon';
 
-import { PopoverChild } from '../../../popover/models/popover-child';
+import { PopoverChild } from '../../../shared/models/popover-child';
 import { Achievement } from '../../models/achievement';
 import { AuthService } from '../../../core/services/auth.service';
 import { AchievementService } from '../../services/achievement.service';

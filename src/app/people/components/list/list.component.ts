@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Person } from 'src/app/people/models/person';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
 

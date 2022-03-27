@@ -6,7 +6,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestsService } from '../../services/quests.service';
 import { Quest } from '../../models/quest';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditQuestComponent } from '../edit-quest/edit-quest.component';
 
 
