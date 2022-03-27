@@ -14,7 +14,7 @@ import { UtilService } from '../../../core/services/util.service';
 import { Info } from '../../../shared/models/info';
 import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
-import { Values } from '../../../shared/models/values.interface';
+import { Values } from '../../../shared/models/values';
 import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { ConfigService } from '../../../core/services/config.service';
