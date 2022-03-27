@@ -4,7 +4,7 @@ import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 import { PopoverChild } from '../../../popover/models/popover-child';
 import { UtilService } from '../../../core/services/util.service';
 import { StorageService } from '../../../core/services/storage.service';
-import { EditImageProps } from '../../types/types';
+import { EditImageProps } from '../../models/edit-image-props';
 
 
 

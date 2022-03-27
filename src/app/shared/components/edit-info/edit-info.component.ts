@@ -7,7 +7,7 @@ import { Info } from '../../models/info';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { EditInfoComponentProps } from '../../types/types';
+import { EditInfoComponentProps } from '../../models/edit-info-component-props';
 
 
 
