@@ -1,4 +1,26 @@
 {
+  "hitLocations": {
+    "1": "Linkes Bein",
+    "2": "Rechtes Bein",
+    "3": "Linkes Bein",
+    "4": "Rechtes Bein",
+    "5": "Linkes Bein",
+    "6": "Rechtes Bein",
+    "7": "Bauch",
+    "8": "Bauch",
+    "9": "Schildarm",
+    "10": "Schwertarm",
+    "11": "Schildarm",
+    "12": "Schwertarm",
+    "13": "Schildarm",
+    "14": "Schwertarm",
+    "15": "Brust",
+    "16": "Brust",
+    "17": "Brust",
+    "18": "Brust",
+    "19": "Kopf",
+    "20": "Kopf"
+  },
   "states": [
     {
       "name": "Liegend",

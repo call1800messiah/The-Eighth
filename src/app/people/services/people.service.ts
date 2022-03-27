@@ -53,7 +53,7 @@ export class PeopleService {
   getPeople(): Observable<Person[]> {
     if (!this.people$) {
       this.people$ = new BehaviorSubject<Person[]>([]);
-      this.api.getDataFromCollectionWhere(
+      this.api.getDataFromCollection(
         PeopleService.collection,
         (ref) => ref
           .where('access', 'array-contains', this.user.id)

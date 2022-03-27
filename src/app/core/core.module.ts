@@ -11,6 +11,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
 import { environment } from '../../environments/environment';
 import { SharedModule } from '../shared/shared.module';
 import { FooterComponent } from './components/footer/footer.component';
+import { DiceModule } from '../dice/dice.module';
 
 
 
@@ -27,6 +28,7 @@ import { FooterComponent } from './components/footer/footer.component';
   ],
   imports: [
     CommonModule,
+    DiceModule,
     HttpClientModule,
     RouterModule,
     SharedModule,

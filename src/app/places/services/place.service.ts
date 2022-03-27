@@ -56,7 +56,7 @@ export class PlaceService {
   getPlaces(): Observable<Place[]> {
     if (!this.places$) {
       this.places$ = new BehaviorSubject<Place[]>([]);
-      this.api.getDataFromCollectionWhere(
+      this.api.getDataFromCollection(
         PlaceService.collection,
         (ref) => ref
           .where('access', 'array-contains', this.user.id)

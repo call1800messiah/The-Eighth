@@ -37,7 +37,7 @@ export class ProjectService {
   getProjects(): Observable<Project[]> {
     if (!this.projects$) {
       this.projects$ = new BehaviorSubject<Project[]>([]);
-      this.api.getDataFromCollectionWhere(
+      this.api.getDataFromCollection(
         ProjectService.collection,
         (ref) => ref.
           where('access', 'array-contains', this.user.id)

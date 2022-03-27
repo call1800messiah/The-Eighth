@@ -1,0 +1,12 @@
+<div>
+  <button class="btn-icon" type="button" (click)="rollHitLocationDie()">
+    <fa-icon [icon]="faMale" [fixedWidth]="true" size="lg"></fa-icon>
+
+    <div *ngIf="currentNumber" class="result">
+      {{currentNumber}}
+    </div>
+  </button>
+  <div class="hit" *ngIf="hit !== ''">
+    {{hit}}
+  </div>
+</div>

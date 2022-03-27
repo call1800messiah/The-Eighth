@@ -10,6 +10,10 @@
   <button id="dice-button" type="button" class="btn-icon borderless" (click)="toggleDice()">
     <fa-icon [icon]="faDice" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
+
+  <button id="message-button" type="button" class="btn-icon borderless" (click)="toggleMessages()">
+    <fa-icon [icon]="faCommentAlt" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
 </footer>
 
 <div class="overlay" [ngClass]="{ 'open': navVisible$ | async }">
@@ -32,4 +36,9 @@
 <div class="overlay" [ngClass]="{'open': diceVisible }">
   <app-quick-dice [type]="6" [amount]="10"></app-quick-dice>
   <app-quick-dice [type]="20" [amount]="3"></app-quick-dice>
+  <app-hit-location-die></app-hit-location-die>
+</div>
+
+<div class="overlay messages" [ngClass]="{'open': messagesVisible}">
+  <app-recent-rolls></app-recent-rolls>
 </div>
