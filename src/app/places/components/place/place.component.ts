@@ -51,7 +51,7 @@ export class PlaceComponent implements OnInit, OnDestroy {
       ).subscribe((place) => {
         if (place) {
           this.place = place;
-          this.navigation.setPageLabel(this.place.name);
+          this.navigation.setPageLabel(this.place.name, '/places');
           this.infos$ = this.placeService.getPlaceInfos(this.place.id);
         }
       })

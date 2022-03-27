@@ -46,7 +46,7 @@ export class QuestComponent implements OnInit, OnDestroy {
     ).subscribe((quest) => {
       if (quest) {
         this.quest = quest;
-        this.navigation.setPageLabel(this.quest.name);
+        this.navigation.setPageLabel(this.quest.name, '/quests');
         this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
         this.subQuests$ = this.questService.getSubQuestsByParentId(this.quest.id);
       }
