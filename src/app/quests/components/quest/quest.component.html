@@ -1,4 +1,4 @@
-<div class="quest" *ngIf="quest">
+<app-container width="medium" class="quest" *ngIf="quest">
   <div class="info box">
     <div class="type" (click)="editQuest()">
       {{questTypes[quest.type]}}
@@ -37,4 +37,4 @@
                   (editDetail)="editDetail($event)"
     ></app-info-box>
   </div>
-</div>
+</app-container>

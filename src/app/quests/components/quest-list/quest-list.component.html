@@ -1,35 +1,37 @@
-<app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
-  <button type="button" class="btn-icon" (click)="showAddDialog()">
-    <fa-icon [icon]="faPlus" [fixedWidth]="true"
-             title="Queste hinzufügen"></fa-icon>
-  </button>
-</app-top-bar-filter>
+<app-container width="medium">
+  <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
+    <button type="button" class="btn-icon" (click)="showAddDialog()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Queste hinzufügen"></fa-icon>
+    </button>
+  </app-top-bar-filter>
 
-<div class="quests" *ngIf="filterText.value === ''">
-  <h2 class="list-title">Aktive Questen</h2>
-  <app-box-grid class="grid">
+  <div class="quests" *ngIf="filterText.value === ''">
+    <h2 class="list-title">Aktive Questen</h2>
+    <app-box-grid class="grid">
+      <app-quest-summary
+        *ngFor="let quest of openQuests$ | async"
+        [quest]="quest"
+        (click)="goToQuest(quest)"
+      ></app-quest-summary>
+    </app-box-grid>
+
+    <h2 class="list-title">Beendete Questen</h2>
+    <app-box-grid>
+      <app-quest-summary
+        *ngFor="let quest of completedQuests$ | async"
+        [quest]="quest"
+        (click)="goToQuest(quest)"
+      ></app-quest-summary>
+    </app-box-grid>
+  </div>
+
+
+  <app-box-grid class="filtered-quests" *ngIf="filterText.value !== ''">
     <app-quest-summary
-      *ngFor="let quest of openQuests$ | async"
+      *ngFor="let quest of filteredQuests$ | async"
       [quest]="quest"
       (click)="goToQuest(quest)"
     ></app-quest-summary>
   </app-box-grid>
-
-  <h2 class="list-title">Beendete Questen</h2>
-  <app-box-grid>
-    <app-quest-summary
-      *ngFor="let quest of completedQuests$ | async"
-      [quest]="quest"
-      (click)="goToQuest(quest)"
-    ></app-quest-summary>
-  </app-box-grid>
-</div>
-
-
-<app-box-grid class="filtered-quests" *ngIf="filterText.value !== ''">
-  <app-quest-summary
-    *ngFor="let quest of filteredQuests$ | async"
-    [quest]="quest"
-    (click)="goToQuest(quest)"
-  ></app-quest-summary>
-</app-box-grid>
+</app-container>
