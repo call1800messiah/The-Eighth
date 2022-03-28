@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Place } from '../../models/place';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditPlaceComponent } from '../edit-place/edit-place.component';
 import { PlaceService } from '../../services/place.service';
 
@@ -20,11 +19,11 @@ export class PlaceListComponent implements OnInit {
   filteredPlaces$: Observable<Place[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
+  places$: Observable<Place[]>;
 
   constructor(
     private placeService: PlaceService,
     private popover: PopoverService,
-    private router: Router,
   ) {
     this.filterText = new BehaviorSubject<string>('');
     this.filteredPlaces$ = combineLatest([
@@ -32,6 +31,9 @@ export class PlaceListComponent implements OnInit {
       this.filterText,
     ]).pipe(
       map(this.filterPlacesByText),
+    );
+    this.places$ = this.placeService.getPlaces().pipe(
+      map((places) => places.filter((place) => !place.parent))
     );
   }
 
@@ -42,11 +44,6 @@ export class PlaceListComponent implements OnInit {
 
   editPlace(place: Place) {
     this.popover.showPopover('Ort editieren', EditPlaceComponent, place);
-  }
-
-
-  goToPlace(place: Place) {
-    this.router.navigate([`places/${place.id}`]);
   }
 
 

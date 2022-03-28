@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { faChartBar, faCompass, faDharmachakra, faFistRaised, faMeteor, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
+
 import { NavEntry } from '../models/nav-entry';
 
 
@@ -12,8 +13,10 @@ import { NavEntry } from '../models/nav-entry';
 export class NavigationService {
   public navVisible$: BehaviorSubject<boolean>;
   public pageLabel$: BehaviorSubject<string>;
+  public showBackButton$: BehaviorSubject<boolean>;
   private showNav = false;
   private activeNavigation: NavEntry;
+  private currentBackLink: string;
   private navigation: NavEntry[] = [
     {
       label: 'Isidas Hoffnung',
@@ -58,8 +61,12 @@ export class NavigationService {
     this.navVisible$ = new BehaviorSubject(this.showNav);
     this.activeNavigation = this.navigation[0];
     this.pageLabel$ = new BehaviorSubject(this.activeNavigation.label);
+    this.showBackButton$ = new BehaviorSubject<boolean>(false);
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
+        if (!this.currentBackLink) {
+          this.showBackButton$.next(false);
+        }
         const active = this.navigation.find((page) => page.link === event.url);
         if (active) {
           this.activeNavigation = active;
@@ -76,9 +83,15 @@ export class NavigationService {
   }
 
 
+  navigateBack() {
+    this.navigateTo(this.currentBackLink);
+    this.showBackButton$.next(false);
+  }
+
+
   navigateTo(target: string): void {
     this.router.navigate([target]);
-    this.toggleNavigation();
+    this.currentBackLink = '';
   }
 
 
@@ -88,8 +101,14 @@ export class NavigationService {
   }
 
 
-  setPageLabel(title: string): void {
+  setPageLabel(title: string, backLink?: string): void {
     this.pageLabel$.next(title);
+    if (backLink) {
+      this.showBackButton$.next(true);
+      this.currentBackLink = backLink;
+    } else {
+      this.currentBackLink = '';
+    }
   }
 
 

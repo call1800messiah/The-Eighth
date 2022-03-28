@@ -10,5 +10,6 @@ export interface Place {
     id: string,
     name?: string,
   };
+  parts?: Place[];
   type: PlaceType;
 }

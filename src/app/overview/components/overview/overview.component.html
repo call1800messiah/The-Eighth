@@ -1,18 +1,20 @@
-<dl *ngIf="(campaignInfo$ | async) as campaign">
-  <dt>Aktuelles Datum</dt>
-  <dd>{{campaign.date}} BF</dd>
-  <dt>Ausdauer Malus</dt>
-  <dd>
-    <span *ngIf="campaign.staminaReduction > 0">-</span>
-    {{campaign.staminaReduction}}
-  </dd>
-  <dt>Schiff</dt>
-  <dd>{{campaign.ship}}</dd>
-  <dt>Kapitän</dt>
-  <dd>{{campaign.captain}}</dd>
-  <dt>Besatzung</dt>
-  <dd>{{campaign.crewcount}}</dd>
-</dl>
+<app-container width="medium">
+  <dl *ngIf="(campaignInfo$ | async) as campaign">
+    <dt>Aktuelles Datum</dt>
+    <dd>{{campaign.date}} BF</dd>
+    <dt>Ausdauer Malus</dt>
+    <dd>
+      <span *ngIf="campaign.staminaReduction > 0">-</span>
+      {{campaign.staminaReduction}}
+    </dd>
+    <dt>Schiff</dt>
+    <dd>{{campaign.ship}}</dd>
+    <dt>Kapitän</dt>
+    <dd>{{campaign.captain}}</dd>
+    <dt>Besatzung</dt>
+    <dd>{{campaign.crewcount}}</dd>
+  </dl>
 
 
-<app-timeline [timeline$]="timeline$"></app-timeline>
+  <app-timeline [timeline$]="timeline$"></app-timeline>
+</app-container>

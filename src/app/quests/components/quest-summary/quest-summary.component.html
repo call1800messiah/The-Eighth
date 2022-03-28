@@ -1,9 +1,19 @@
-<div class="box">
-  <div class="text">
-    <div class="type">{{questTypes[quest.type]}}</div>
-    <div class="details">
-      <div class="name">{{quest.name}}</div>
-      <div class="description">{{quest.description}}</div>
-    </div>
+<li class="quest"
+    [ngClass]="quest.type.concat(quest.isPrivate ? ' private' : '', quest.completed ? ' completed' : '')"
+    *ngIf="showCompleted || !quest.completed"
+>
+  <div class="type">{{questTypes[quest.type]}}</div>
+  <div class="details" (click)="goToQuest()">
+    <div class="name">{{quest.name}}</div>
+    <div class="description">{{quest.description}}</div>
   </div>
-</div>
+
+  <ul class="subquests unstyled-list" *ngIf="quest.subQuests && showSubQuests">
+    <app-quest-summary
+      *ngFor="let subQuest of quest.subQuests"
+      [quest]="subQuest"
+      [showCompleted]="showCompleted"
+      [showSubQuests]="showSubQuests"
+    ></app-quest-summary>
+  </ul>
+</li>

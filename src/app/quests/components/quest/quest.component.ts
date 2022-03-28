@@ -9,7 +9,7 @@ import { InfoType } from '../../../core/enums/info-type.enum';
 import { Info } from '../../../shared/models/info';
 import { DataService } from '../../../core/services/data.service';
 import { NavigationService } from '../../../core/services/navigation.service';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { QuestsService } from '../../services/quests.service';
 import { EditQuestComponent } from '../edit-quest/edit-quest.component';
@@ -25,7 +25,6 @@ export class QuestComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
-  subQuests$: Observable<Quest[]>;
   quest: Quest;
   questSub: Subscription;
   questTypes = QuestsService.questTypes;
@@ -46,9 +45,8 @@ export class QuestComponent implements OnInit, OnDestroy {
     ).subscribe((quest) => {
       if (quest) {
         this.quest = quest;
-        this.navigation.setPageLabel(this.quest.name);
+        this.navigation.setPageLabel(this.quest.name, '/quests');
         this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
-        this.subQuests$ = this.questService.getSubQuestsByParentId(this.quest.id);
       }
     });
   }

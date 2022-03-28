@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { faAward, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditProjectComponent } from '../edit-project/edit-project.component';
 
 

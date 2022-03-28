@@ -5,7 +5,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
 import { ProjectService } from '../../services/project.service';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditProjectComponent } from '../edit-project/edit-project.component';
 
 

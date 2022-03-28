@@ -1,6 +1,14 @@
-<div class="box" [ngClass]="{'private' : place.isPrivate}">
-  <div class="text">
-    <div class="type">{{placeTypes[place.type]}}</div>
-    <div class="name">{{place.name}}</div>
+<li class="place" [ngClass]="{'private' : place.isPrivate}">
+  <div class="type">{{placeTypes[place.type]}}</div>
+  <div class="name" (click)="goToPlace()">
+    {{place.name}}
   </div>
-</div>
+
+  <ul class="parts unstyled-list" *ngIf="place.parts && showParts">
+    <app-place-summary
+      *ngFor="let part of place.parts"
+      [place]="part"
+      [showParts]="showParts"
+    ></app-place-summary>
+  </ul>
+</li>

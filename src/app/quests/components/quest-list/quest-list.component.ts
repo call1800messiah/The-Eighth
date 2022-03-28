@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestsService } from '../../services/quests.service';
 import { Quest } from '../../models/quest';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditQuestComponent } from '../edit-quest/edit-quest.component';
 
 
@@ -17,40 +16,32 @@ import { EditQuestComponent } from '../edit-quest/edit-quest.component';
   styleUrls: ['./quest-list.component.scss']
 })
 export class QuestListComponent implements OnInit {
-  completedQuests$: Observable<Quest[]>;
-  filteredQuests$: Observable<Quest[]>;
-  openQuests$: Observable<Quest[]>;
   faPlus = faPlus;
+  showCompleted: boolean;
+  filteredQuests$: Observable<Quest[]>;
   filterText: BehaviorSubject<string>;
+  quests$: Observable<Quest[]>;
 
   constructor(
     private questsService: QuestsService,
     private popover: PopoverService,
-    private router: Router,
   ) {
+    this.showCompleted = false;
     this.filterText = new BehaviorSubject<string>('');
-    this.completedQuests$ = this.questsService.getQuests().pipe(
-      map((quests) => quests.filter((quest) => quest.completed === true))
-    );
     this.filteredQuests$ = combineLatest([
       this.questsService.getQuests(),
       this.filterText,
     ]).pipe(
       map(this.filterQuestsByText)
     );
-    this.openQuests$ = this.questsService.getQuests().pipe(
-      map((quests) => quests.filter((quest) => quest.completed === false))
+    this.quests$ = this.questsService.getQuests().pipe(
+      map((quests) => quests.filter((quest) => quest.parent.id === 'Nichts')),
     );
   }
 
   ngOnInit(): void {
   }
 
-
-
-  goToQuest(quest: Quest) {
-    this.router.navigate([`quests/${quest.id}`]);
-  }
 
 
   onFilterChanged(text: string) {

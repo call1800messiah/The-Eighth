@@ -1,4 +1,4 @@
-<div class="person" *ngIf="person">
+<app-container width="medium" class="person" *ngIf="person">
   <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
     <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
   </button>
@@ -68,4 +68,4 @@
                   (editDetail)="editDetail($event)"
     ></app-info-box>
   </div>
-</div>
+</app-container>

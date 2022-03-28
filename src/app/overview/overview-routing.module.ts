@@ -8,14 +8,14 @@ import { AuthGuardService } from '../core/services/auth-guard.service';
 
 const routes: Routes = [{
   canActivateChild: [AuthGuardService],
-  path: 'overview',
+  path: '',
   children: [
     { path: '', component: OverviewComponent },
   ]
 }];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class OverviewRoutingModule { }

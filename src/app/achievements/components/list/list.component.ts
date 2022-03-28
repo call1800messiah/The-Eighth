@@ -6,7 +6,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Achievement } from 'src/app/achievements/models/achievement';
 import { AchievementService } from '../../services/achievement.service';
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { EditAchievementComponent } from '../edit-achievement/edit-achievement.component';
 import { User } from '../../../core/models/user';
 import { UserService } from '../../../core/services/user.service';

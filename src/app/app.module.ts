@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { OverviewModule } from './overview/overview.module';
-import { PopoverModule } from './popover/popover.module';
+import { SharedModule } from './shared/shared.module';
 
 
 // Locales
@@ -20,12 +20,12 @@ registerLocaleData(localeDE, 'de');
     AppComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     CoreModule,
     OverviewModule,
-    AppRoutingModule,
     FontAwesomeModule,
-    PopoverModule,
+    SharedModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de' },

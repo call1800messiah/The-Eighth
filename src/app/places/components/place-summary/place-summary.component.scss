@@ -1,20 +1,42 @@
 @import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
-.text {
-  align-items: center;
-  display: flex;
+.place {
+  border-bottom: 1px dotted $color-primary;
+  margin-bottom: $item-padding;
+  margin-top: $item-padding;
+  padding-bottom: $item-padding;
+  position: relative;
+
+  :host .parts & {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  &.private {
+    opacity: 0.5;
+  }
 }
 
 .name {
+  cursor: pointer;
   font-size: $item-title-font-size;
   font-weight: bold;
   line-height: $item-title-line-height;
+  padding-right: 100px;
 }
 
 .type {
   @include text-label;
-  height: $detail-text-line-height;
-  flex: 0 0 auto;
+  height: $item-title-line-height;
+  line-height: $item-title-line-height;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
   width: 100px;
+}
+
+.parts {
+  padding-left: $item-padding;
 }

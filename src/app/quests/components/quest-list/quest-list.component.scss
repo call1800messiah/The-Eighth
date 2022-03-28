@@ -1,5 +1,5 @@
 @import "../../../../scss/variables.scss";
 
 .list-title {
-  margin: $container-horizontal-padding 0;
+  margin: ($container-horizontal-padding * 2) 0 $container-horizontal-padding;
 }

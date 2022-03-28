@@ -24,7 +24,7 @@ export class FooterComponent implements OnInit {
   navVisible$: Observable<boolean>;
 
   constructor(
-    public nav: NavigationService,
+    private nav: NavigationService,
   ) {
     this.navVisible$ = this.nav.navVisible$;
     this.navigation = this.nav.getNavigation();
@@ -36,6 +36,7 @@ export class FooterComponent implements OnInit {
 
   navigateTo(target: string): void {
     this.nav.navigateTo(target);
+    this.nav.toggleNavigation();
   }
 
 

@@ -3,38 +3,40 @@
     <img src="{{place.image}}" alt="{{place.name}}" />
   </div>
 
-  <div class="action-buttons">
-    <button type="button" id="btn-add-image" class="btn-icon" (click)="editImage()" *ngIf="!place.image">
-      <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faImage" transform="shrink-8"></fa-icon>
-    </button>
+  <app-container width="medium">
+    <div class="action-buttons">
+      <button type="button" id="btn-add-image" class="btn-icon" (click)="editImage()" *ngIf="!place.image">
+        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faImage" transform="shrink-8"></fa-icon>
+      </button>
 
-    <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
-      <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
-    </button>
-  </div>
+      <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
+        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+      </button>
+    </div>
 
-  <div class="info box" (click)="editPlace()">
-    <dl>
-      <ng-container>
-        <dt>Art</dt>
-        <dd>{{placeTypes[place.type]}}</dd>
-      </ng-container>
-      <ng-container>
-        <dt>Name</dt>
-        <dd>{{place.name}}</dd>
-      </ng-container>
-      <ng-container *ngIf="place.parent && place.parent.name">
-        <dt>Teil von</dt>
-        <dd>{{place.parent.name}}</dd>
-      </ng-container>
-    </dl>
-  </div>
+    <div class="info box" (click)="editPlace()">
+      <dl>
+        <ng-container>
+          <dt>Art</dt>
+          <dd>{{placeTypes[place.type]}}</dd>
+        </ng-container>
+        <ng-container>
+          <dt>Name</dt>
+          <dd>{{place.name}}</dd>
+        </ng-container>
+        <ng-container *ngIf="place.parent && place.parent.name">
+          <dt>Teil von</dt>
+          <dd>{{place.parent.name}}</dd>
+        </ng-container>
+      </dl>
+    </div>
 
-  <div class="detail-info" *ngIf="infos$">
-    <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
-                  [key]="infoList.key"
-                  [infos]="infoList.value"
-                  (editDetail)="editDetail($event)"
-    ></app-info-box>
-  </div>
+    <div class="detail-info" *ngIf="infos$">
+      <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
+                    [key]="infoList.key"
+                    [infos]="infoList.value"
+                    (editDetail)="editDetail($event)"
+      ></app-info-box>
+    </div>
+  </app-container>
 </div>

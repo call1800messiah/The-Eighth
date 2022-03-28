@@ -7,7 +7,7 @@ import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
-import { Values } from '../../shared/models/values.interface';
+import { Values } from '../../shared/models/values';
 import { DataService } from '../../core/services/data.service';
 import { AuthUser } from '../../auth/models/auth-user';
 

@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { faImage, faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
-import { PopoverService } from '../../../popover/services/popover.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { UtilService } from '../../../core/services/util.service';
 import { PlaceService } from '../../services/place.service';
@@ -51,7 +51,7 @@ export class PlaceComponent implements OnInit, OnDestroy {
       ).subscribe((place) => {
         if (place) {
           this.place = place;
-          this.navigation.setPageLabel(this.place.name);
+          this.navigation.setPageLabel(this.place.name, '/places');
           this.infos$ = this.placeService.getPlaceInfos(this.place.id);
         }
       })
