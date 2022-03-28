@@ -64,6 +64,7 @@ export class PlaceService {
         map(this.transformPlaces.bind(this)),
         map(this.resolveParents),
         map((places: Place[]) => places.sort(UtilService.orderByName)),
+        map(this.createPlaceTree)
       ).subscribe(places => {
         this.places$.next(places);
       });
@@ -105,6 +106,34 @@ export class PlaceService {
       all.push(place);
       return all;
     }, []);
+  }
+
+
+  private createPlaceTree(places: Place[]): Place[] {
+    const placeMap: Record<string, Place> = {};
+    const placeGroupMap: Record<string, Place[]> = {
+      none: []
+    };
+
+    places.forEach((place) => {
+      placeMap[place.id] = place;
+      if (place.parent) {
+        if (!placeGroupMap[place.parent.id]) {
+          placeGroupMap[place.parent.id] = [];
+        }
+        placeGroupMap[place.parent.id].push(place);
+      } else {
+        placeGroupMap.none.push(place);
+      }
+    });
+
+    Object.entries(placeGroupMap).forEach(([placeId, placeList]) => {
+      if (placeId !== 'none' && placeMap[placeId]) {
+        placeMap[placeId].parts = placeList;
+      }
+    });
+
+    return places;
   }
 
 

@@ -6,9 +6,19 @@
     </button>
   </app-top-bar-filter>
 
-  <app-box-grid>
-    <app-place-summary *ngFor="let place of filteredPlaces$ | async" [place]="place"
-                       (click)="goToPlace(place)">
-    </app-place-summary>
-  </app-box-grid>
+  <ul class="places unstyled-list" *ngIf="filterText.value === ''">
+    <app-place-summary
+      *ngFor="let place of places$ | async"
+      [place]="place"
+      [showParts]="true"
+    ></app-place-summary>
+  </ul>
+
+  <ul class="filterted-places unstyled-list" *ngIf="filterText.value !== ''">
+    <app-place-summary
+      *ngFor="let place of filteredPlaces$ | async"
+      [place]="place"
+      [showParts]="false"
+    ></app-place-summary>
+  </ul>
 </app-container>
