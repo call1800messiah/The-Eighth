@@ -95,6 +95,7 @@ export class QuestsService {
     const questGroupMap: Record<string, Quest[]> = {
       Nichts: []
     };
+    // TODO: Fix quests without a parent having multiple representations in the database
 
     quests.forEach((quest) => {
       questMap[quest.id] = quest;

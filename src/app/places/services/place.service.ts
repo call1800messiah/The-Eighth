@@ -114,6 +114,7 @@ export class PlaceService {
     const placeGroupMap: Record<string, Place[]> = {
       none: []
     };
+    // TODO: Fix places without a parent having multiple representations in the database
 
     places.forEach((place) => {
       placeMap[place.id] = place;
