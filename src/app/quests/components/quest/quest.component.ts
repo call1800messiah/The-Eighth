@@ -25,7 +25,6 @@ export class QuestComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   infos$: Observable<Map<InfoType, Info[]>>;
-  subQuests$: Observable<Quest[]>;
   quest: Quest;
   questSub: Subscription;
   questTypes = QuestsService.questTypes;
@@ -48,7 +47,6 @@ export class QuestComponent implements OnInit, OnDestroy {
         this.quest = quest;
         this.navigation.setPageLabel(this.quest.name, '/quests');
         this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
-        this.subQuests$ = this.questService.getSubQuestsByParentId(this.quest.id);
       }
     });
   }
