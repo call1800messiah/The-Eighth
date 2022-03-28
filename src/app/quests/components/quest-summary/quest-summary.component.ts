@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Quest } from '../../models/quest';
 import { QuestsService } from '../../services/quests.service';
@@ -12,10 +13,19 @@ import { QuestsService } from '../../services/quests.service';
 })
 export class QuestSummaryComponent implements OnInit {
   @Input() quest: Quest;
+  @Input() showCompleted = false;
+  @Input() showSubQuests = true;
   questTypes = QuestsService.questTypes;
 
-  constructor() { }
+  constructor(
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
+  }
+
+
+  goToQuest() {
+    this.router.navigate([`quests/${this.quest.id}`]);
   }
 }

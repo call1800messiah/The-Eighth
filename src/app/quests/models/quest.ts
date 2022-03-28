@@ -11,5 +11,6 @@ export interface Quest {
     id: string;
     name?: string;
   };
+  subQuests?: Quest[];
   type: QuestType;
 }

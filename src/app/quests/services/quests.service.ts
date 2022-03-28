@@ -75,6 +75,7 @@ export class QuestsService {
         map(QuestsService.transformQuests),
         map(this.resolveParents),
         map((quests: Quest[]) => quests.sort(UtilService.orderByName)),
+        map(this.createQuestTree)
       ).subscribe((quests) => {
         this.quests$.next(quests);
       });
@@ -94,6 +95,30 @@ export class QuestsService {
     return this.data.store(quest, QuestsService.collection, questId);
   }
 
+
+
+  private createQuestTree(quests: Quest[]): Quest[] {
+    const questMap: Record<string, Quest> = {};
+    const questGroupMap: Record<string, Quest[]> = {
+      Nichts: []
+    };
+
+    quests.forEach((quest) => {
+      questMap[quest.id] = quest;
+      if (!questGroupMap[quest.parent.id]) {
+        questGroupMap[quest.parent.id] = [];
+      }
+      questGroupMap[quest.parent.id].push(quest);
+    });
+
+    Object.entries(questGroupMap).forEach(([questId, questList]) => {
+      if (questId !== 'Nichts' && questMap[questId]) {
+        questMap[questId].subQuests = questList;
+      }
+    });
+
+    return quests;
+  }
 
 
   private resolveParents(quests: Quest[]): Quest[] {
