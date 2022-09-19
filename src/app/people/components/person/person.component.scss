@@ -7,16 +7,17 @@
 #btn-add-detail {
   position: absolute;
   right: 0;
-  top: 210px;
+  bottom: 0;
 }
 
 .image {
   font-size: 4rem;
-  height: $avatar-large;
+  max-height: $avatar-large;
   line-height: $avatar-large;
   margin: auto;
+  position: relative;
   text-align: center;
-  width: $avatar-large;
+  max-width: $avatar-large;
 }
 
 .info {

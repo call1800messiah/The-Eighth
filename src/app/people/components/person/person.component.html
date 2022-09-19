@@ -1,10 +1,10 @@
 <app-container width="medium" class="person" *ngIf="person">
-  <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
-    <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
-  </button>
-
   <div class="image" (click)="editImage()">
     <app-avatar [person]="person"></app-avatar>
+
+    <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
+      <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+    </button>
   </div>
 
 
