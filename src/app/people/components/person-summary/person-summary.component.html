@@ -17,4 +17,8 @@
          title="Verborgen"></fa-icon>
     </div>
   </div>
+
+  <div class="tags" *ngIf="person.tags && person.tags.length > 0">
+    <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+  </div>
 </div>

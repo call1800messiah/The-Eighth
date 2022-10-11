@@ -144,6 +144,7 @@ h2 {
 }
 
 .box {
+  background-color: rgba($color-primary, 0.15);
   border: 1px solid $color-primary;
   box-shadow: 0 0 5px $color-primary;
   padding: $item-padding;
@@ -156,5 +157,22 @@ h2 {
   &.private {
     box-shadow: none;
     opacity: 0.5;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: $item-padding;
+
+  .tag {
+    background-color: $color-secondary;
+    border-radius: 2px;
+    display: inline-block;
+    font-size: 1.3rem;
+    height: $base-body-font-size;
+    line-height: $base-body-font-size - 0.2rem;
+    padding: 0.1rem 0.3rem;
   }
 }
