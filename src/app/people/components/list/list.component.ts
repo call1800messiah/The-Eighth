@@ -58,11 +58,13 @@ export class ListComponent implements OnInit {
   private filterPeopleByText(data): Person[] {
     const [people, text] = data;
     return people.filter((person) => {
+      const lowText = text.toLowerCase();
       return text === ''
-        || person.name.toLowerCase().indexOf(text.toLowerCase()) !== -1
-        || (person.title && person.title.toLowerCase().indexOf(text.toLowerCase()) !== -1)
-        || (person.race && person.race.toLowerCase().indexOf(text.toLowerCase()) !== -1)
-        || (person.culture && person.culture.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+        || person.name.toLowerCase().indexOf(lowText) !== -1
+        || (person.title && person.title.toLowerCase().indexOf(lowText) !== -1)
+        || (person.race && person.race.toLowerCase().indexOf(lowText) !== -1)
+        || (person.culture && person.culture.toLowerCase().indexOf(lowText) !== -1)
+        || (person.tags && person.tags.find((tag) => tag.toLowerCase().indexOf(lowText) !== -1) !== undefined);
     });
   }
 }
