@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
@@ -19,17 +20,23 @@ export class ListComponent implements OnInit {
   filteredProjects$: Observable<Project[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
+  showCompleted: FormControl;
 
   constructor(
     private projectsService: ProjectService,
     private popover: PopoverService
   ) {
     this.filterText = new BehaviorSubject<string>('');
+    this.showCompleted = new FormControl(false);
     this.filteredProjects$ = combineLatest([
       this.projectsService.getProjects(),
       this.filterText,
+      this.showCompleted.valueChanges.pipe(
+        startWith(false),
+      ),
     ]).pipe(
-      map(this.filterProjectsByText)
+      map(this.filterProjectsByText),
+      map(this.filterProjectsByCompleted),
     );
   }
 
@@ -49,15 +56,30 @@ export class ListComponent implements OnInit {
 
 
 
-  private filterProjectsByText(data): Project[] {
-    const [projects, text] = data;
-    return projects.filter((project) => {
+  private filterProjectsByText(data): [Project[], boolean] {
+    const [projects, text, showCompleted] = data;
+    return [projects.filter((project) => {
       return text === ''
         || project.name.toLowerCase().indexOf(text.toLowerCase()) !== -1
         || project.interval.toLowerCase().indexOf(text.toLowerCase()) !== -1
         || project.benefit.toLowerCase().indexOf(text.toLowerCase()) !== -1
         || project.requirements.some((requirement) => requirement.skill.toLowerCase().indexOf(text.toLowerCase()) !== -1)
         || project.milestones.some((milestone) => milestone.description.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+    }), showCompleted];
+  }
+
+
+  private filterProjectsByCompleted(data): Project[] {
+    const [projects , showCompleted] = data;
+
+    return projects.filter((project) => {
+      const completed = project.requirements.reduce((acc, req) => {
+        if (req.currentPoints < req.requiredPoints) {
+          acc = false;
+        }
+        return acc;
+      }, true);
+      return showCompleted ? completed : !completed;
     });
   }
 }

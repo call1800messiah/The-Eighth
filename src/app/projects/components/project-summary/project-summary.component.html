@@ -1,4 +1,8 @@
-<div class="wrapper box" [ngClass]="{'private' : project.isPrivate}" (click)="editProject(project)">
+<div
+  class="wrapper box"
+  [ngClass]="{'private' : project.isPrivate, 'completed': currentPoints >= requiredPoints}"
+  (click)="editProject(project)"
+>
   <div class="name">{{project.name}}</div>
   <app-progress-bar [percentage]="percentage" [markers]="markers"></app-progress-bar>
   <div class="milestones">

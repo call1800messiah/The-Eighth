@@ -5,7 +5,15 @@
   </button>
 </app-top-bar-filter>
 
+<div class="form-group">
+  <input type="checkbox" id="showCompleted" [formControl]="showCompleted">
+  <label for="showCompleted">Abgeschlossene Projekte anzeigen</label>
+</div>
+
 <app-box-grid>
-  <app-project-summary *ngFor="let project of filteredProjects$ | async" [project]="project">
+  <app-project-summary
+    *ngFor="let project of filteredProjects$ | async"
+    [project]="project"
+  >
   </app-project-summary>
 </app-box-grid>

@@ -50,7 +50,6 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       const project = this.props as Project;
       this.milestones = [...this.props.milestones];
       this.requirements = [...this.props.requirements];
-      console.log(this.requirements);
       this.projectForm.patchValue(project);
       this.requirements.forEach((requirement) => {
         this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
