@@ -2,7 +2,10 @@
 @import '../../../../scss/mixins.scss';
 
 .wrapper {
+  align-content: space-between;
   cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
   position: relative;
   min-height: calc(#{$item-image-size} + (#{$item-padding} * 2));
 }
@@ -36,6 +39,7 @@
 .text {
   padding-left: calc(#{$item-image-size} + #{$item-padding});
   position: relative;
+  width: 100%;
 }
 
 .name {
@@ -58,4 +62,9 @@
   right: -3px;
   text-align: right;
   top: -3px;
+}
+
+.tags {
+  margin-top: $item-padding;
+  width: 100%;
 }
