@@ -61,6 +61,10 @@
     </div>
   </div>
 
+  <div class="tags" *ngIf="person.tags">
+    <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+  </div>
+
   <div class="detail-info" *ngIf="infos$">
     <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
                   [key]="infoList.key"
