@@ -13,8 +13,10 @@
     <dd>{{campaign.captain}}</dd>
     <dt>Besatzung</dt>
     <dd>{{campaign.crewcount}}</dd>
-    <dt>Vermögen</dt>
-    <dd>{{money$ | async | number}} Dukaten</dd>
+    <ng-container *ngIf="(money$ | async) as money">
+      <dt>Vermögen</dt>
+      <dd>{{money | number}} Dukaten</dd>
+    </ng-container>
   </dl>
 
 
