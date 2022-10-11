@@ -105,6 +105,7 @@ export class PeopleService {
         image: null,
         profession: personData.profession || null,
         race: personData.race || null,
+        tags: personData.tags || [],
         title: personData.title || null,
         pc: personData.pc || false,
         owner: personData.owner,

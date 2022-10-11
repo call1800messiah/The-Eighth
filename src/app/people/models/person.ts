@@ -14,6 +14,7 @@ export interface Person {
   title: string;
   pc: boolean;
   states: CombatState[];
+  tags?: string[];
   owner?: string;
   isPrivate?: boolean;
 }
