@@ -50,6 +50,10 @@
         <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
       </ng-container>
     </dl>
+
+    <div class="tags" *ngIf="person.tags">
+      <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+    </div>
   </div>
 
   <div *ngIf="values$ | async as values" class="values">
@@ -59,10 +63,6 @@
                (barClicked)="editAttribute(bar)"
       ></app-bar>
     </div>
-  </div>
-
-  <div class="tags" *ngIf="person.tags">
-    <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
   </div>
 
   <div class="detail-info" *ngIf="infos$">

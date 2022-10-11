@@ -41,3 +41,8 @@ dd {
   margin: 0;
   width: calc(100% - 100px);
 }
+
+.tags {
+  margin-top: $item-padding;
+  justify-content: flex-end;
+}
