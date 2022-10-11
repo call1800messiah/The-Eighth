@@ -17,7 +17,7 @@
   </div>
   <div class="requirements">
     <div class="requirement" *ngFor="let requirement of project.requirements">
-      {{requirement.skill}}: {{requirement.currentPoints}} / {{requirement.requiredPoints}} TaP
+      {{getRequirementString(requirement)}}
     </div>
     Interval: {{project.interval}}
   </div>

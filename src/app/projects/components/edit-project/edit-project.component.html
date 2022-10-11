@@ -34,6 +34,15 @@
         <input
           class="fixed-width"
           type="number"
+          id="req-{{requirement.id}}-thr"
+          formControlName="req-{{requirement.id}}-thr"
+          step="1"
+          appSelectOnFocus
+          required
+        >
+        <input
+          class="fixed-width"
+          type="number"
           id="req-{{requirement.id}}-cur"
           formControlName="req-{{requirement.id}}-cur"
           min="0"
@@ -46,7 +55,7 @@
           type="number"
           id="req-{{requirement.id}}-req"
           formControlName="req-{{requirement.id}}-req"
-          min="1"
+          min="0"
           step="1"
           appSelectOnFocus
           required

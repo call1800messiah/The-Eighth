@@ -63,6 +63,7 @@ export class ProjectService {
     const rCur: Record<string, number | FieldValue> = {};
     const rReq: Record<string, number | FieldValue> = {};
     const rSkill: Record<string, string | FieldValue> = {};
+    const rThresh: Record<string, number | FieldValue> = {};
 
     Object.entries(project).forEach(([key, value]) => {
       const split = key.split('-');
@@ -81,6 +82,9 @@ export class ProjectService {
       if (split[0] === 'req' && split[2] === 'skill') {
         rSkill[split[1]] = value as unknown as string;
       }
+      if (split[0] === 'req' && split[2] === 'thr') {
+        rThresh[split[1]] = value as unknown as number;
+      }
     });
 
     if (projectID) {
@@ -97,6 +101,7 @@ export class ProjectService {
           });
           currentProject.requirements.forEach((requirement) => {
             if (!rSkill[requirement.id]) {
+              rThresh[requirement.id] = FieldValue.delete();
               rSkill[requirement.id] = FieldValue.delete();
               rReq[requirement.id] = FieldValue.delete();
               rCur[requirement.id] = FieldValue.delete();
@@ -116,7 +121,8 @@ export class ProjectService {
       owner: project.owner,
       rCur,
       rReq,
-      rSkill
+      rSkill,
+      rThresh,
     };
   }
 
@@ -137,15 +143,16 @@ export class ProjectService {
         return allM;
       }, []).sort(UtilService.orderByRequiredPoints);
 
-      const requirements: ProjectRequirement[] = !projectData.rSkill || !projectData.rCur || !projectData.rReq
+      const requirements: ProjectRequirement[] = !projectData.rSkill || !projectData.rCur || !projectData.rReq || !projectData.rThresh
         ? []
         : Object.entries(projectData.rSkill).reduce((allR, [id, skill]) => {
-        if (projectData.rCur[id] !== undefined && projectData.rReq[id]) {
+        if (projectData.rCur[id] !== undefined) {
           allR.push({
             id,
             skill,
             currentPoints: projectData.rCur[id],
             requiredPoints: projectData.rReq[id],
+            threshold: projectData.rThresh[id],
           });
         }
         return allR;

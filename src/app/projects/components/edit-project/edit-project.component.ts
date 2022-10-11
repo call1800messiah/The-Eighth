@@ -50,11 +50,13 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       const project = this.props as Project;
       this.milestones = [...this.props.milestones];
       this.requirements = [...this.props.requirements];
+      console.log(this.requirements);
       this.projectForm.patchValue(project);
       this.requirements.forEach((requirement) => {
         this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
         this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
         this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
+        this.projectForm.addControl(`req-${requirement.id}-thr`, new FormControl(requirement.threshold));
       });
       this.milestones.forEach((milestone) => {
         this.projectForm.addControl(`mile-${milestone.id}-desc`, new FormControl(milestone.description));
@@ -87,12 +89,14 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       id: ConfigService.nanoid(),
       skill: '',
       currentPoints: 0,
-      requiredPoints: 1
+      requiredPoints: 0,
+      threshold: 0
     };
     this.requirements.push(requirement);
     this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
     this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
     this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
+    this.projectForm.addControl(`req-${requirement.id}-thr`, new FormControl(requirement.threshold));
     // TODO: Fix broken change detection after adding new required inputs
   }
 
@@ -114,6 +118,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       this.projectForm.removeControl(`req-${requirement.id}-skill`);
       this.projectForm.removeControl(`req-${requirement.id}-cur`);
       this.projectForm.removeControl(`req-${requirement.id}-req`);
+      this.projectForm.removeControl(`req-${requirement.id}-thr`);
     }
   }
 

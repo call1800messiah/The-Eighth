@@ -12,4 +12,5 @@ export interface ProjectDB {
   rCur: Record<string, number | FieldValue>;
   rReq: Record<string, number | FieldValue>;
   rSkill: Record<string, string | FieldValue>;
+  rThresh: Record<string, number | FieldValue>;
 }

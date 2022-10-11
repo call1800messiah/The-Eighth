@@ -4,6 +4,7 @@ import { faAward, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Project } from '../../models/project';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditProjectComponent } from '../edit-project/edit-project.component';
+import { ProjectRequirement } from '../../models/project-requirement';
 
 
 
@@ -44,5 +45,16 @@ export class ProjectSummaryComponent implements OnInit {
 
   editProject(project: Project) {
     this.popover.showPopover('Projekt bearbeiten', EditProjectComponent, project);
+  }
+
+
+  getRequirementString(requirement: ProjectRequirement): string {
+    if (requirement.requiredPoints === 0) {
+      return `${requirement.skill}: TaW ${requirement.threshold}`;
+    }
+
+    const prefix = requirement.threshold > 0 ? '+' : '';
+    const threshold = requirement.threshold !== 0 ? ` (${prefix}${requirement.threshold})` : '';
+    return `${requirement.skill}${threshold}: ${requirement.currentPoints} / ${requirement.requiredPoints} TaP`;
   }
 }
