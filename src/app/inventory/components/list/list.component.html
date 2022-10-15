@@ -1,0 +1,16 @@
+<app-container width="medium">
+  <app-top-bar-filter placeholder="z.B. Bezeichnung, Besitzer" (filterChanged)="onFilterChanged($event)">
+    <button type="button" class="btn-icon" (click)="showAddDialog()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Gegenstand hinzufügen"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <div class="inventory">
+    <div class="item box" *ngFor="let item of filteredItems$ | async">
+      <div class="amount">{{item.amount}}</div>
+      <div class="name">{{item.name}}</div>
+      <div class="owner">{{item.character}}</div>
+    </div>
+  </div>
+</app-container>

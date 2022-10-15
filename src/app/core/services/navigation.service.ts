@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
-import { faChartBar, faCompass, faDharmachakra, faFistRaised, faMeteor, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faCompass, faDharmachakra, faFistRaised, faMeteor, faShoppingBag, faTrophy, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject } from 'rxjs';
 
 import { NavEntry } from '../models/nav-entry';
@@ -52,6 +52,11 @@ export class NavigationService {
       label: 'Abenteuer',
       icon: faMeteor,
       link: '/quests'
+    },
+    {
+      label: 'Inventar',
+      icon: faShoppingBag,
+      link: '/inventory'
     },
   ];
 

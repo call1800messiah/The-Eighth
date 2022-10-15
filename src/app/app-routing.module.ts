@@ -21,6 +21,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'inventory',
+    loadChildren: () => import('./inventory/inventory.module').then(m => m.InventoryModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'overview',
     loadChildren: () => import('./overview/overview.module').then(m => m.OverviewModule),
     canLoad: [AuthGuardService]

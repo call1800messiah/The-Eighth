@@ -1,0 +1,19 @@
+@import "./../../../../scss/variables";
+
+.item {
+  display: flex;
+  margin-bottom: $item-padding;
+}
+
+.amount {
+  width: 50px;
+}
+
+.name {
+  padding: 0 $item-padding;
+  width: 100%;
+}
+
+.owner {
+  width: 100px;
+}
