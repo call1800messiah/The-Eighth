@@ -7,7 +7,7 @@
   </app-top-bar-filter>
 
   <div class="inventory">
-    <div class="item box" *ngFor="let item of filteredItems$ | async">
+    <div class="item box" *ngFor="let item of filteredItems$ | async" (click)="showEditDialog(item)">
       <div class="amount">{{item.amount}}</div>
       <div class="name">{{item.name}}</div>
       <div class="owner">{{item.character}}</div>

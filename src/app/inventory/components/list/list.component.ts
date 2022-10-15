@@ -47,6 +47,11 @@ export class ListComponent implements OnInit {
   }
 
 
+  showEditDialog(item: InventoryItem) {
+    this.popover.showPopover('Gegenstand bearbeiten', EditItemComponent, item);
+  }
+
+
   private filterItems(data): InventoryItem[] {
     const [items, text] = data;
     return items.filter((item: InventoryItem) => {
