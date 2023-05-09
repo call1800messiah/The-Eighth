@@ -134,5 +134,7 @@
       }
     }
   },
-  "defaultProject": "The-Eighth"
+  "cli": {
+    "analytics": false
+  }
 }

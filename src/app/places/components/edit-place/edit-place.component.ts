@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -22,11 +22,11 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
     all.push({ key, value });
     return all;
   }, []);
-  placeForm = new FormGroup({
-    name: new FormControl(''),
-    isPrivate: new FormControl(false),
-    parentId: new FormControl(),
-    type: new FormControl(this.placeTypes[0])
+  placeForm = new UntypedFormGroup({
+    name: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(false),
+    parentId: new UntypedFormControl(),
+    type: new UntypedFormControl(this.placeTypes[0])
   });
   places$: Observable<Place[]>;
   userID: string;

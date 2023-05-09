@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -20,14 +20,14 @@ export class ListComponent implements OnInit {
   filteredProjects$: Observable<Project[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
-  showCompleted: FormControl;
+  showCompleted: UntypedFormControl;
 
   constructor(
     private projectsService: ProjectService,
     private popover: PopoverService
   ) {
     this.filterText = new BehaviorSubject<string>('');
-    this.showCompleted = new FormControl(false);
+    this.showCompleted = new UntypedFormControl(false);
     this.filteredProjects$ = combineLatest([
       this.projectsService.getProjects(),
       this.filterText,

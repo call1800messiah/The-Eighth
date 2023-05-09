@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { CombatService } from '../../services/combat.service';
@@ -14,9 +14,9 @@ import { CombatService } from '../../services/combat.service';
 export class EditInitiativeComponent implements OnInit, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
-  initiativeForm = new FormGroup({
-    active: new FormControl(false),
-    initiative: new FormControl(0),
+  initiativeForm = new UntypedFormGroup({
+    active: new UntypedFormControl(false),
+    initiative: new UntypedFormControl(0),
   });
 
   constructor(

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../models/popover-child';
 import { DataService } from '../../../core/services/data.service';
@@ -16,9 +16,9 @@ import { PeopleService } from '../../../people/services/people.service';
 export class EditAttributeComponent implements OnInit, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
-  attributeForm = new FormGroup({
-    current: new FormControl(0),
-    max: new FormControl({ value: 0, disabled: true }),
+  attributeForm = new UntypedFormGroup({
+    current: new UntypedFormControl(0),
+    max: new UntypedFormControl({ value: 0, disabled: true }),
   });
 
   constructor(

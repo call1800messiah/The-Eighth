@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -17,11 +17,11 @@ import { InventoryItem } from '../../models/inventory-item';
 export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
-  itemForm = new FormGroup({
-    amount: new FormControl(1),
-    character: new FormControl(''),
-    name: new FormControl(''),
-    isPrivate: new FormControl(false),
+  itemForm = new UntypedFormGroup({
+    amount: new UntypedFormControl(1),
+    character: new UntypedFormControl(''),
+    name: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(false),
   });
   userID: string;
   private subscription = new Subscription();

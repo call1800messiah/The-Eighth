@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
 import { QuestsService } from '../../services/quests.service';
@@ -22,13 +22,13 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
     all.push({ key, value });
     return all;
   }, []);
-  questForm = new FormGroup({
-    name: new FormControl(''),
-    isPrivate: new FormControl(true),
-    parentId: new FormControl(),
-    type: new FormControl(this.questTypes[0]),
-    description: new FormControl(''),
-    completed: new FormControl(false)
+  questForm = new UntypedFormGroup({
+    name: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(true),
+    parentId: new UntypedFormControl(),
+    type: new UntypedFormControl(this.questTypes[0]),
+    description: new UntypedFormControl(''),
+    completed: new UntypedFormControl(false)
   });
   quests$: Observable<Quest[]>;
   userID: string;

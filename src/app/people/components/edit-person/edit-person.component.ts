@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { Person } from '../../models/person';
@@ -17,18 +17,18 @@ import { PeopleService } from '../../services/people.service';
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
-  personForm = new FormGroup({
-    name: new FormControl(''),
-    title: new FormControl(''),
-    race: new FormControl(''),
-    culture: new FormControl(''),
-    profession: new FormControl(''),
-    birthday: new FormControl(''),
-    birthyear: new FormControl(1000),
-    height: new FormControl(0),
-    deathday: new FormControl(''),
-    pc: new FormControl(false),
-    isPrivate: new FormControl(false)
+  personForm = new UntypedFormGroup({
+    name: new UntypedFormControl(''),
+    title: new UntypedFormControl(''),
+    race: new UntypedFormControl(''),
+    culture: new UntypedFormControl(''),
+    profession: new UntypedFormControl(''),
+    birthday: new UntypedFormControl(''),
+    birthyear: new UntypedFormControl(1000),
+    height: new UntypedFormControl(0),
+    deathday: new UntypedFormControl(''),
+    pc: new UntypedFormControl(false),
+    isPrivate: new UntypedFormControl(false)
   });
   userID: string;
   private subscription = new Subscription();

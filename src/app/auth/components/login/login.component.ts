@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { NavigationService } from '../../../core/services/navigation.service';
@@ -12,9 +12,9 @@ import { NavigationService } from '../../../core/services/navigation.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm = new FormGroup({
-    email: new FormControl(''),
-    password: new FormControl(''),
+  loginForm = new UntypedFormGroup({
+    email: new UntypedFormControl(''),
+    password: new UntypedFormControl(''),
   });
 
   constructor(

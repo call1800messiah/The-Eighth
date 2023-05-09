@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DateTime } from 'luxon';
@@ -21,12 +21,12 @@ import { Person } from '../../../people/models/person';
 export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: Achievement;
   @Output() dismissPopover = new EventEmitter<boolean>();
-  achievementForm = new FormGroup({
-    description: new FormControl(''),
-    isPrivate: new FormControl(false),
-    name: new FormControl(''),
-    people: new FormControl([]),
-    unlocked: new FormControl(new Date())
+  achievementForm = new UntypedFormGroup({
+    description: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(false),
+    name: new UntypedFormControl(''),
+    people: new UntypedFormControl([]),
+    unlocked: new UntypedFormControl(new Date())
   });
   userID: string;
   playerCharacter$: Observable<Person[]>;

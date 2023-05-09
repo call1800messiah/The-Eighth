@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -24,11 +24,11 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   milestones: ProjectMilestone[];
   // TODO: Add form validation to check for at least one requirement
-  projectForm = new FormGroup({
-    benefit: new FormControl(''),
-    interval: new FormControl(''),
-    name: new FormControl(''),
-    isPrivate: new FormControl(false)
+  projectForm = new UntypedFormGroup({
+    benefit: new UntypedFormControl(''),
+    interval: new UntypedFormControl(''),
+    name: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(false)
   });
   requirements: ProjectRequirement[];
   userID: string;
@@ -52,14 +52,14 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       this.requirements = [...this.props.requirements];
       this.projectForm.patchValue(project);
       this.requirements.forEach((requirement) => {
-        this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
-        this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
-        this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
-        this.projectForm.addControl(`req-${requirement.id}-thr`, new FormControl(requirement.threshold));
+        this.projectForm.addControl(`req-${requirement.id}-skill`, new UntypedFormControl(requirement.skill));
+        this.projectForm.addControl(`req-${requirement.id}-cur`, new UntypedFormControl(requirement.currentPoints));
+        this.projectForm.addControl(`req-${requirement.id}-req`, new UntypedFormControl(requirement.requiredPoints));
+        this.projectForm.addControl(`req-${requirement.id}-thr`, new UntypedFormControl(requirement.threshold));
       });
       this.milestones.forEach((milestone) => {
-        this.projectForm.addControl(`mile-${milestone.id}-desc`, new FormControl(milestone.description));
-        this.projectForm.addControl(`mile-${milestone.id}-req`, new FormControl(milestone.requiredPoints));
+        this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
+        this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
       });
     }
   }
@@ -77,8 +77,8 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       requiredPoints: 1
     };
     this.milestones.push(milestone);
-    this.projectForm.addControl(`mile-${milestone.id}-desc`, new FormControl(milestone.description));
-    this.projectForm.addControl(`mile-${milestone.id}-req`, new FormControl(milestone.requiredPoints));
+    this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
+    this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
     // TODO: Fix broken change detection after adding new required inputs
   }
 
@@ -92,10 +92,10 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       threshold: 0
     };
     this.requirements.push(requirement);
-    this.projectForm.addControl(`req-${requirement.id}-skill`, new FormControl(requirement.skill));
-    this.projectForm.addControl(`req-${requirement.id}-cur`, new FormControl(requirement.currentPoints));
-    this.projectForm.addControl(`req-${requirement.id}-req`, new FormControl(requirement.requiredPoints));
-    this.projectForm.addControl(`req-${requirement.id}-thr`, new FormControl(requirement.threshold));
+    this.projectForm.addControl(`req-${requirement.id}-skill`, new UntypedFormControl(requirement.skill));
+    this.projectForm.addControl(`req-${requirement.id}-cur`, new UntypedFormControl(requirement.currentPoints));
+    this.projectForm.addControl(`req-${requirement.id}-req`, new UntypedFormControl(requirement.requiredPoints));
+    this.projectForm.addControl(`req-${requirement.id}-thr`, new UntypedFormControl(requirement.threshold));
     // TODO: Fix broken change detection after adding new required inputs
   }
 

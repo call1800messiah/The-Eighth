@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
@@ -13,11 +13,11 @@ import { Subscription } from 'rxjs';
 export class TopBarFilterComponent implements OnInit, OnDestroy {
   @Input() placeholder: string;
   @Output() filterChanged = new EventEmitter<string>();
-  textFilter: FormControl;
+  textFilter: UntypedFormControl;
   subscription = new Subscription();
 
   constructor() {
-    this.textFilter = new FormControl('');
+    this.textFilter = new UntypedFormControl('');
     this.subscription.add(
       this.textFilter.valueChanges.pipe(
         startWith(''),

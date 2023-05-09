@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { PopoverChild } from '../../models/popover-child';
@@ -20,10 +20,10 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: EditInfoComponentProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
-  infoForm = new FormGroup({
-    content: new FormControl(''),
-    isPrivate: new FormControl(false),
-    type: new FormControl(0),
+  infoForm = new UntypedFormGroup({
+    content: new UntypedFormControl(''),
+    isPrivate: new UntypedFormControl(false),
+    type: new UntypedFormControl(0),
   });
   infoTypes = Object.values(ConfigService.infoTypes);
   userID: string;

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../models/popover-child';
 import { DataService } from '../../../core/services/data.service';
@@ -19,10 +19,10 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
-  eventForm = new FormGroup({
-    content: new FormControl(''),
-    date: new FormControl(''),
-    type: new FormControl(0),
+  eventForm = new UntypedFormGroup({
+    content: new UntypedFormControl(''),
+    date: new UntypedFormControl(''),
+    type: new UntypedFormControl(0),
   });
   eventTypes = Object.values(ConfigService.eventTypes);
   userID: string;
