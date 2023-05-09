@@ -43,6 +43,8 @@ testem.log
 /typings
 /api
 /src/environments
+/.angular
+/.firebase
 
 # System Files
 .DS_Store
