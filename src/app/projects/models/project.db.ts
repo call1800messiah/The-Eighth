@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import FieldValue = firebase.firestore.FieldValue;
 
 export interface ProjectDB {

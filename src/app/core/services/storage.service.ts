@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { finalize } from 'rxjs/operators';
-import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
+import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { ConfigService } from './config.service';

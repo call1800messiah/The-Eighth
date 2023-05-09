@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
 import FieldValue = firebase.firestore.FieldValue;
 
 import { ApiService } from '../../core/services/api.service';

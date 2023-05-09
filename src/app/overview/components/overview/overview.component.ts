@@ -34,7 +34,7 @@ export class OverviewComponent implements OnInit {
   }
 
   getMoney() {
-    GSheetReader(
+    GSheetReader.default(
       {
         apiKey: environment.googleSheets.apiKey,
         sheetId: environment.googleSheets.financeSheet,
@@ -49,6 +49,6 @@ export class OverviewComponent implements OnInit {
         console.error(error);
         this.money$.next(0);
       }
-    );
+    ).then();
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
