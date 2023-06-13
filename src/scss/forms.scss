@@ -33,7 +33,7 @@ form button {
     font-family: $base-body-font-family;
     font-size: $base-body-font-size;
     height: $mobile-interactive-height;
-    line-height: $mobile-interactive-height - 2px;
+    line-height: calc(#{$mobile-interactive-height} - 2px);
     padding: 0 5px;
     width: 100%;
 
@@ -51,10 +51,10 @@ form button {
         align-items: center;
         display: flex;
         font-size: $base-body-font-size;
-        line-height: $mobile-interactive-height / 2;
+        line-height: calc(#{$mobile-interactive-height} / 2);
         min-height: $mobile-interactive-height;
         position: static;
-        padding-left: $mobile-interactive-height + $item-padding;
+        padding-left: calc(#{$mobile-interactive-height} + #{$item-padding});
         width: 100%;
 
         &:before {
@@ -63,7 +63,7 @@ form button {
           display: block;
           height: $mobile-interactive-height;
           left: 0;
-          line-height: $mobile-interactive-height - 2px;
+          line-height: calc(#{$mobile-interactive-height} - 2px);
           position: absolute;
           text-align: center;
           top: 0;
@@ -79,7 +79,7 @@ form button {
 
   select{
     &[multiple] {
-      height: $mobile-interactive-height * 4;
+      height: calc(#{$mobile-interactive-height} * 4);
       overflow-y: auto;
     }
   }
@@ -103,14 +103,14 @@ form button {
 }
 
 .form-optionals {
-  margin-bottom: $item-padding * 2;
+  margin-bottom: calc(#{$item-padding} * 2);
 
   .form-optional-heading {
     font-weight: bold;
     height: $mobile-interactive-height;
     line-height: $mobile-interactive-height;
     margin-bottom: 0.5rem;
-    padding-right: $mobile-interactive-height + $item-padding;
+    padding-right: calc(#{$mobile-interactive-height} + #{$item-padding});
     position: relative;
 
     button {
@@ -121,7 +121,7 @@ form button {
   }
 
   .form-group {
-    margin-bottom: $item-padding / 2;
+    margin-bottom: calc(#{$item-padding} / 2);
 
     .btn-icon {
       flex: 1 0 auto;
@@ -147,7 +147,7 @@ form button {
   .form-group {
     &.multiple-inputs {
       .fixed-width {
-        width: $mobile-interactive-height * 2;
+        width: calc(#{$mobile-interactive-height} * 2);
       }
     }
   }
