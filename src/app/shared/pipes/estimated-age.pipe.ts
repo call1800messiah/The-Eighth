@@ -34,6 +34,9 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
     }
     const age = this.date - value;
 
+    if (age > 10000) {
+      return 'unermeßlich alt';
+    }
     if (age > 2000) {
       return 'mehrere tausend Jahre';
     }
