@@ -1,11 +1,10 @@
-@import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
 .place {
-  border-bottom: 1px dotted $color-primary;
-  margin-bottom: $item-padding;
-  margin-top: $item-padding;
-  padding-bottom: $item-padding;
+  border-bottom: 1px dotted var(--color-primary);
+  margin-bottom: var(--item-padding);
+  margin-top: var(--item-padding);
+  padding-bottom: var(--item-padding);
   position: relative;
 
   :host .parts & {
@@ -20,16 +19,16 @@
 
 .name {
   cursor: pointer;
-  font-size: $item-title-font-size;
+  font-size: var(--item-title-font-size);
   font-weight: bold;
-  line-height: $item-title-line-height;
+  line-height: var(--item-title-line-height);
   padding-right: 100px;
 }
 
 .type {
   @include text-label;
-  height: $item-title-line-height;
-  line-height: $item-title-line-height;
+  height: var(--item-title-line-height);
+  line-height: var(--item-title-line-height);
   position: absolute;
   right: 0;
   text-align: right;
@@ -38,5 +37,5 @@
 }
 
 .parts {
-  padding-left: $item-padding;
+  padding-left: var(--item-padding);
 }

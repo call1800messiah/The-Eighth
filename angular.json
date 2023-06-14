@@ -27,7 +27,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/scss/styles.scss"
+              "src/scss/styles.scss",
+              "src/scss/the-eighth.scss"
             ],
             "scripts": [],
             "vendorChunk": true,
@@ -97,7 +98,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/scss/styles.scss"
+              "src/scss/styles.scss",
+              "src/scss/the-eighth.scss"
             ],
             "scripts": []
           }

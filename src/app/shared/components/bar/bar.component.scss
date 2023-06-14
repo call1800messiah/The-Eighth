@@ -1,13 +1,13 @@
 @import '../../../../scss/variables.scss';
 
 .bar-wrapper {
-  border: 1px solid $color-primary;
+  border: 1px solid var(--color-primary);
   height: 25px;
   position: relative;
 
-  &.lep .bar { background-color: $color-lep; }
-  &.aup .bar { background-color: $color-aup; }
-  &.asp .bar { background-color: $color-asp; }
+  &.lep .bar { background-color: var(--color-lep); }
+  &.aup .bar { background-color: var(--color-aup); }
+  &.asp .bar { background-color: var(--color-asp); }
 }
 
 .bar {
@@ -15,7 +15,7 @@
 }
 
 .text {
-  color: $color-primary;
+  color: var(--color-primary);
   left: 0;
   line-height: 25px;
   position: absolute;

@@ -1,8 +1,10 @@
 @import "../../../../scss/variables.scss";
-$circle-size : 50px;
+:host {
+  --circle-size : 50px;
+}
 
 .top-bar {
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
   position: relative;
   padding-right: 100px;
 
@@ -16,7 +18,7 @@ $circle-size : 50px;
 }
 
 .combatant {
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
   position: relative;
 
   &.inactive { filter: grayscale(1) brightness(0.8); }
@@ -26,18 +28,18 @@ app-avatar,
 .default-avatar {
   display: inline-block;
   left: 0;
-  line-height: $circle-size;
+  line-height: var(--circle-size);
   position: absolute;
   top: 0;
-  width: $circle-size;
+  width: var(--circle-size);
   z-index: 2;
 }
 
 .default-avatar {
-  border: 1px solid $color-primary;
+  border: 1px solid var(--color-primary);
   border-radius: 50%;
-  font-size: calc(#{$circle-size} * 0.75);
-  height: $circle-size;
+  font-size: calc(var(--circle-size) * 0.75);
+  height: var(--circle-size);
   overflow: hidden;
   padding-top: 5px;
   text-align: center;
@@ -45,10 +47,10 @@ app-avatar,
 
 .name {
   align-items: center;
-  border-bottom: 1px solid $color-primary;
-  border-top: 1px solid $color-primary;
+  border-bottom: 1px solid var(--color-primary);
+  border-top: 1px solid var(--color-primary);
   display: flex;
-  height: $circle-size;
+  height: var(--circle-size);
   line-height: 20px;
   margin: 0 25px;
   overflow: hidden;
@@ -58,31 +60,31 @@ app-avatar,
 }
 
 .initiative {
-  background-color: $color-primary;
-  border: 1px solid $color-primary;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
   border-radius: 50%;
-  color: $color-dark;
+  color: var(--color-dark);
   cursor: pointer;
   font-size: 24px;
   font-weight: bold;
-  height: $circle-size;
-  line-height: $circle-size - 2px;
+  height: var(--circle-size);
+  line-height: calc(var(--circle-size) - 2px);
   position: absolute;
   right: 0;
   text-align: center;
   top: 0;
-  width: $circle-size;
+  width: var(--circle-size);
   z-index: 2;
 
   &:hover {
-    background-color: $color-primary;
-    color: $color-dark;
+    background-color: var(--color-primary);
+    color: var(--color-dark);
   }
 }
 
 .bars {
   display: flex;
-  padding: 0 calc(#{$circle-size} / 2);
+  padding: 0 calc(var(--circle-size) / 2);
 
   app-bar {
     display: block;
@@ -91,10 +93,10 @@ app-avatar,
 }
 
 .states {
-  font-size: $detail-text-font-size;
-  line-height: $detail-text-line-height;
-  margin-top: $item-padding;
-  padding: 0 calc(#{$circle-size} / 2);
+  font-size: var(--detail-text-font-size);
+  line-height: var(--detail-text-line-height);
+  margin-top: var(--item-padding);
+  padding: 0 calc(var(--circle-size) / 2);
 
   .state-name {
     font-weight: bold;
@@ -109,28 +111,28 @@ app-avatar,
   }
 
   .combatant {
-    padding-top: calc(#{$circle-size} / 2);
+    padding-top: calc(var(--circle-size) / 2);
   }
 
   app-avatar,
   .default-avatar {
     left: 50%;
-    line-height: $avatar-medium;
+    line-height: var(--avatar-medium);
     position: relative;
     transform: translateX(-50%);
-    width: $avatar-medium;
+    width: var(--avatar-medium);
   }
 
   .default-avatar {
-    background-color: $color-dark;
-    font-size: calc(#{$avatar-medium} * 0.75);
-    height: $avatar-medium;
+    background-color: var(--color-dark);
+    font-size: calc(var(--avatar-medium) * 0.75);
+    height: var(--avatar-medium);
   }
 
   .name {
-    border: 1px solid $color-primary;
-    border-top-left-radius: calc(#{$circle-size} / 2);
-    border-top-right-radius: calc(#{$circle-size} / 2);
+    border: 1px solid var(--color-primary);
+    border-top-left-radius: calc(var(--circle-size) / 2);
+    border-top-right-radius: calc(var(--circle-size) / 2);
     justify-content: center;
     margin: -15px 0 0;
     padding-left: 2rem;
@@ -152,11 +154,11 @@ app-avatar,
   }
 
   .states {
-    background-color: $color-primary;
-    border: 1px solid $color-primary;
-    border-bottom-left-radius: calc(#{$circle-size} / 2);
-    border-bottom-right-radius:calc(#{$circle-size} / 2);
-    color: $color-dark;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-bottom-left-radius: calc(var(--circle-size) / 2);
+    border-bottom-right-radius:calc(var(--circle-size) / 2);
+    color: var(--color-dark);
     margin-top: 0;
     padding: 1rem 2rem;
   }

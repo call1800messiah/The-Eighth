@@ -1,14 +1,12 @@
-@import 'src/scss/variables';
-
 .popover-wrapper {
-  background-color: $color-dark;
+  background-color: var(--color-dark);
   height: 100%;
   left: 0;
   overflow: auto;
   position: fixed;
   right: 0;
   top: 100vh;
-  transition: top $animation-time;
+  transition: top var(--animation-time);
   width: 100%;
   z-index: 10000;
 
@@ -28,5 +26,5 @@
 }
 
 .wrapper {
-  padding: calc(#{$header-height} + #{$container-horizontal-padding}) $container-horizontal-padding $container-horizontal-padding;
+  padding: calc(var(--header-height) + var(--container-horizontal-padding)) var(--container-horizontal-padding) var(--container-horizontal-padding);
 }

@@ -1,8 +1,7 @@
-@import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
 .info {
-  margin-bottom: $container-horizontal-padding;
+  margin-bottom: var(--container-horizontal-padding);
 }
 
 .type {
@@ -10,11 +9,11 @@
 }
 
 .parent {
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
 }
 
 .header {
-  min-height: $mobile-interactive-height;
+  min-height: var(--mobile-interactive-height);
   position: relative;
 
   button {
@@ -25,9 +24,9 @@
 }
 
 .description {
-  margin-top: $item-padding;
+  margin-top: var(--item-padding);
 }
 
 .subquests {
-  margin-bottom: $container-horizontal-padding;
+  margin-bottom: var(--container-horizontal-padding);
 }

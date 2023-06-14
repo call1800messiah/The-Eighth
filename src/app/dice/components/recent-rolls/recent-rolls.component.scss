@@ -1,15 +1,14 @@
-@import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
 .box {
-  border-radius: 0 $item-padding $item-padding 0;
-  margin-bottom: $item-padding;
-  margin-right: $item-padding * 4;
+  border-radius: 0 var(--item-padding) var(--item-padding) 0;
+  margin-bottom: var(--item-padding);
+  margin-right: calc(var(--item-padding) * 4);
   position: relative;
 
   &.own {
-    border-radius: $item-padding 0 0 $item-padding;
-    margin-left: $item-padding * 4;
+    border-radius: var(--item-padding) 0 0 var(--item-padding);
+    margin-left: calc(var(--item-padding) * 4);
     margin-right: 0;
   }
 }
@@ -21,23 +20,23 @@
 .created {
   @include text-label;
   position: absolute;
-  right: $item-padding;
-  top: $item-padding;
+  right: var(--item-padding);
+  top: var(--item-padding);
 }
 
 .success {
-  color: $color-low;
+  color: var(--color-low);
   font-weight: bold;
 }
 
 .failure {
-  color: $color-high;
+  color: var(--color-high);
   font-weight: bold;
 }
 
 .details {
   @include text-label;
-  bottom: $item-padding;
+  bottom: var(--item-padding);
   position: absolute;
-  right: $item-padding;
+  right: var(--item-padding);
 }

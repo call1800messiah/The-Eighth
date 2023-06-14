@@ -1,15 +1,13 @@
-@import '../../../../scss/variables.scss';
-
 .progress-bar {
-  border-left: 0.2rem solid $color-primary;
-  border-right: 0.2rem solid $color-primary;
+  border-left: 0.2rem solid var(--color-primary);
+  border-right: 0.2rem solid var(--color-primary);
   height: 2rem;
   position: relative;
   width: 100%;
 }
 
 .bar {
-  background-color: $color-primary;
+  background-color: var(--color-primary);
   height: 0.4rem;
   left: 0;
   position: absolute;
@@ -17,7 +15,7 @@
 }
 
 .marker {
-  background-color: $color-primary;
+  background-color: var(--color-primary);
   height: 1.2rem;
   position: absolute;
   top: 0.4rem;

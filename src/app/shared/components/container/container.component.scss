@@ -1,14 +1,12 @@
-@import "../../../../scss/variables.scss";
-
 .container {
   position: relative;
   margin: auto;
 
   &.small {
-    max-width: $container-width-small;
+    max-width: var(--container-width-small);
   }
 
   &.medium {
-    max-width: $container-width-medium;
+    max-width: var(--container-width-medium);
   }
 }

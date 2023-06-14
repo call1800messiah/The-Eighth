@@ -15,7 +15,7 @@
 }
 
 @mixin text-label {
-  font-size: $detail-text-font-size;
-  line-height: $detail-text-line-height;
+  font-size: var(--detail-text-font-size);
+  line-height: var(--detail-text-line-height);
   text-transform: uppercase;
 }

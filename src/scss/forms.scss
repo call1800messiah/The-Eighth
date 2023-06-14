@@ -2,18 +2,18 @@
 @import './mixins.scss';
 
 form button {
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
 }
 
 .form-group {
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
   position: relative;
 
   label {
-    background: $color-dark;
-    font-size: $detail-text-font-size;
+    background: var(--color-dark);
+    font-size: var(--detail-text-font-size);
     left: 10px;
-    line-height: $detail-text-line-height;
+    line-height: var(--detail-text-line-height);
     padding: 0 5px;
     position: absolute;
     top: -8px;
@@ -25,23 +25,23 @@ form button {
   textarea {
     -webkit-appearance: none;
     appearance: none;
-    background-color: $color-dark;
-    border: 1px solid $color-primary;
+    background-color: var(--color-dark);
+    border: 1px solid var(--color-primary);
     border-radius: 0;
     box-shadow: none;
-    color: $color-primary;
-    font-family: $base-body-font-family;
-    font-size: $base-body-font-size;
-    height: $mobile-interactive-height;
-    line-height: calc(#{$mobile-interactive-height} - 2px);
+    color: var(--color-primary);
+    font-family: var(--base-body-font-family);
+    font-size: var(--base-body-font-size);
+    height: var(--mobile-interactive-height);
+    line-height: calc(#{var(--mobile-interactive-height)} - 2px);
     padding: 0 5px;
     width: 100%;
 
     &:disabled {
-      border-color: $color-gray;
-      color: $color-gray;
+      border-color: var(--color-gray);
+      color: var(--color-gray);
 
-      + label { color: $color-gray; }
+      + label { color: var(--color-gray); }
     }
 
     &[type="checkbox"] {
@@ -50,24 +50,24 @@ form button {
       + label {
         align-items: center;
         display: flex;
-        font-size: $base-body-font-size;
-        line-height: calc(#{$mobile-interactive-height} / 2);
-        min-height: $mobile-interactive-height;
+        font-size: var(--base-body-font-size);
+        line-height: calc(#{var(--mobile-interactive-height)} / 2);
+        min-height: var(--mobile-interactive-height);
         position: static;
-        padding-left: calc(#{$mobile-interactive-height} + #{$item-padding});
+        padding-left: calc(#{var(--mobile-interactive-height)} + #{var(--item-padding)});
         width: 100%;
 
         &:before {
-          border: 1px solid $color-primary;
+          border: 1px solid var(--color-primary);
           content: '';
           display: block;
-          height: $mobile-interactive-height;
+          height: var(--mobile-interactive-height);
           left: 0;
-          line-height: calc(#{$mobile-interactive-height} - 2px);
+          line-height: calc(#{var(--mobile-interactive-height)} - 2px);
           position: absolute;
           text-align: center;
           top: 0;
-          width: $mobile-interactive-height;
+          width: var(--mobile-interactive-height);
         }
       }
 
@@ -79,13 +79,13 @@ form button {
 
   select{
     &[multiple] {
-      height: calc(#{$mobile-interactive-height} * 4);
+      height: calc(#{var(--mobile-interactive-height)} * 4);
       overflow-y: auto;
     }
   }
 
   textarea {
-    line-height: $base-body-line-height;
+    line-height: var(--base-body-line-height);
     min-height: 200px;
     padding: 5px;
     resize: vertical;
@@ -93,24 +93,24 @@ form button {
 
   &.multiple-inputs {
     display: flex;
-    gap: $item-padding;
+    gap: var(--item-padding);
 
     .fixed-width {
       flex: 0;
-      width: $mobile-interactive-height;
+      width: var(--mobile-interactive-height);
     }
   }
 }
 
 .form-optionals {
-  margin-bottom: calc(#{$item-padding} * 2);
+  margin-bottom: calc(#{var(--item-padding)} * 2);
 
   .form-optional-heading {
     font-weight: bold;
-    height: $mobile-interactive-height;
-    line-height: $mobile-interactive-height;
+    height: var(--mobile-interactive-height);
+    line-height: var(--mobile-interactive-height);
     margin-bottom: 0.5rem;
-    padding-right: calc(#{$mobile-interactive-height} + #{$item-padding});
+    padding-right: calc(#{var(--mobile-interactive-height)} + #{var(--item-padding)});
     position: relative;
 
     button {
@@ -121,7 +121,7 @@ form button {
   }
 
   .form-group {
-    margin-bottom: calc(#{$item-padding} / 2);
+    margin-bottom: calc(#{var(--item-padding)} / 2);
 
     .btn-icon {
       flex: 1 0 auto;
@@ -147,7 +147,7 @@ form button {
   .form-group {
     &.multiple-inputs {
       .fixed-width {
-        width: calc(#{$mobile-interactive-height} * 2);
+        width: calc(#{var(--mobile-interactive-height)} * 2);
       }
     }
   }

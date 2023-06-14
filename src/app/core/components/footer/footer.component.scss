@@ -1,10 +1,8 @@
-@import '../../../../scss/variables.scss';
-
 footer {
-  background-color: $color-dark;
-  border-top: 1px solid $color-primary;
+  background-color: var(--color-dark);
+  border-top: 1px solid var(--color-primary);
   bottom: 0;
-  height: $footer-height;
+  height: var(--footer-height);
   left: 0;
   padding: 5px 0;
   position: fixed;
@@ -18,16 +16,16 @@ footer {
 }
 
 .overlay {
-  background-color: $color-dark;
+  background-color: var(--color-dark);
   bottom: -100vh;
-  box-shadow: 0 -5px 5px $color-dark;
+  box-shadow: 0 -5px 5px var(--color-dark);
   left: 0;
-  max-height: calc(100vh - #{$footer-height});
+  max-height: calc(100vh - #{var(--footer-height)});
   overflow-y: auto;
-  padding: $item-padding;
+  padding: var(--item-padding);
   position: fixed;
   right: 0;
-  transition: bottom $animation-time;
+  transition: bottom var(--animation-time);
   z-index: 95;
 
   button {
@@ -36,7 +34,7 @@ footer {
   }
 
   &.open {
-    bottom: $footer-height;
+    bottom: var(--footer-height);
   }
 }
 

@@ -1,4 +1,3 @@
-@import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
 .wrapper {
@@ -7,52 +6,52 @@
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  min-height: calc(#{$item-image-size} + (#{$item-padding} * 2));
+  min-height: calc(var(--item-image-size) + (var(--item-padding) * 2));
 }
 
 .image {
   font-size: 4rem;
-  height: $item-image-size;
+  height: var(--item-image-size);
   left: 0;
-  line-height: $item-image-size;
-  margin-right: $item-padding;
+  line-height: var(--item-image-size);
+  margin-right: var(--item-padding);
   position: absolute;
   text-align: center;
   top: 0;
-  transform: translate($item-padding, $item-padding);
+  transform: translate(var(--item-padding), var(--item-padding));
   transition: height 0.2s, left 0.2s, transform 0.2s, width 0.2s;
-  width: $item-image-size;
+  width: var(--item-image-size);
   z-index: 10;
 
   &:hover {
     height: auto;
-    max-height: $avatar-large;
-    max-width: $avatar-large;
+    max-height: var(--avatar-large);
+    max-width: var(--avatar-large);
     left: 50%;
     transform: translate(-50%, -35%);
-    transition: height $animation-time 0.3s, left $animation-time 0.3s, transform $animation-time 0.3s, width $animation-time 0.3s;
+    transition: height var(--animation-time) 0.3s, left var(--animation-time) 0.3s, transform var(--animation-time) 0.3s, width var(--animation-time) 0.3s;
     width: 90%;
     z-index: 11;
   }
 }
 
 .text {
-  padding-left: calc(#{$item-image-size} + #{$item-padding});
+  padding-left: calc(var(--item-image-size) + var(--item-padding));
   position: relative;
   width: 100%;
 }
 
 .name {
-  font-size: $item-title-font-size;
+  font-size: var(--item-title-font-size);
   font-weight: bold;
-  line-height: $item-title-line-height;
+  line-height: var(--item-title-line-height);
   margin-bottom: 0.5rem;
-  padding-top: $detail-text-line-height;
+  padding-top: var(--detail-text-line-height);
 }
 
 .title {
   @include text-label;
-  height: $detail-text-line-height;
+  height: var(--detail-text-line-height);
   overflow: hidden;
   position: absolute;
 }
@@ -66,6 +65,6 @@
 
 .tags {
   justify-content: flex-end;
-  margin-top: $item-padding;
+  margin-top: var(--item-padding);
   width: 100%;
 }

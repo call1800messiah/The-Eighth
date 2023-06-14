@@ -1,8 +1,6 @@
-@import "../../../../scss/variables.scss";
-
 .top-bar {
   display: flex;
-  margin-bottom: $container-horizontal-padding;
+  margin-bottom: var(--container-horizontal-padding);
 
   .form-group {
     margin-bottom: 0;
@@ -19,5 +17,5 @@
 
 :host ::ng-deep button {
   flex: 0 0 auto;
-  margin-left: $item-padding;
+  margin-left: var(--item-padding);
 }

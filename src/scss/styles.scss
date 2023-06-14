@@ -7,31 +7,31 @@
 }
 
 html {
-  font-size: $base-font-size;
+  font-size: var(--base-font-size);
   margin: 0;
   padding: 0;
 }
 
 body {
-  background-color: $color-dark;
-  color: $color-primary;
-  font-family: $base-body-font-family;
-  font-size: $base-body-font-size;
-  line-height: $base-body-line-height;
+  background-color: var(--color-dark);
+  color: var(--color-primary);
+  font-family: var(--base-body-font-family);
+  font-size: var(--base-body-font-size);
+  line-height: var(--base-body-line-height);
   margin: 0;
   min-height: 100vh;
   min-width: 320px;
-  padding: $header-height 0 $footer-height;
+  padding: var(--header-height) 0 var(--footer-height);
 }
 
 h1 {
-  font-size: $headline-huge;
+  font-size: var(--headline-huge);
   font-weight: normal;
   margin: 0;
 }
 
 h2 {
-  font-size: $headline-large;
+  font-size: var(--headline-large);
   font-weight: normal;
   margin: 0;
 }
@@ -46,26 +46,26 @@ h2 {
 .btn {
   -webkit-appearance: none;
   appearance: none;
-  background-color: $color-dark;
-  border: 1px solid $color-primary;
+  background-color: var(--color-dark);
+  border: 1px solid var(--color-primary);
   border-radius: 0;
   box-shadow: none;
-  color: $color-primary;
+  color: var(--color-primary);
   cursor: pointer;
   display: block;
-  font-family: $base-body-font-family;
-  font-size: $base-body-font-size;
-  height: $mobile-interactive-height;
-  line-height: $mobile-interactive-height - 2px;
+  font-family: var(--base-body-font-family);
+  font-size: var(--base-body-font-size);
+  height: var(--mobile-interactive-height);
+  line-height: calc(var(--mobile-interactive-height) - 2px);
   padding: 0 5px;
   text-transform: uppercase;
-  transition: all $animation-time;
+  transition: all var(--animation-time);
   width: 100%;
 
   &:active,
   &:hover {
-    background-color: $color-primary;
-    color: $color-dark;
+    background-color: var(--color-primary);
+    color: var(--color-dark);
   }
 
   &.borderless {
@@ -73,8 +73,8 @@ h2 {
   }
 
   &:disabled {
-    border-color: $color-gray;
-    color: $color-gray;
+    border-color: var(--color-gray);
+    color: var(--color-gray);
     cursor: not-allowed;
   }
 }
@@ -82,39 +82,39 @@ h2 {
 .btn-icon {
   -webkit-appearance: none;
   appearance: none;
-  background-color: $color-dark;
-  border: 1px solid $color-primary;
+  background-color: var(--color-dark);
+  border: 1px solid var(--color-primary);
   border-radius: 0;
   box-shadow: none;
-  color: $color-primary;
+  color: var(--color-primary);
   cursor: pointer;
   display: inline-block;
-  font-size: $base-body-font-size;
-  height: $mobile-interactive-height;
-  line-height: $mobile-interactive-height - 2px;
+  font-size: var(--base-body-font-size);
+  height: var(--mobile-interactive-height);
+  line-height: calc(var(--mobile-interactive-height) - 2px);
   padding: 0;
   text-align: center;
-  width: $mobile-interactive-height;
+  width: var(--mobile-interactive-height);
 
   &.borderless {
     border: none;
-    line-height: $mobile-interactive-height;
+    line-height: var(--mobile-interactive-height);
 
     &:hover {
-      background-color: $color-dark;
-      color: $color-primary;
+      background-color: var(--color-dark);
+      color: var(--color-primary);
     }
   }
 
   &:disabled {
-    border-color: $color-gray;
-    color: $color-gray;
+    border-color: var(--color-gray);
+    color: var(--color-gray);
     cursor: not-allowed;
   }
 
   &:hover {
-    background-color: $color-primary;
-    color: $color-dark;
+    background-color: var(--color-primary);
+    color: var(--color-dark);
   }
 }
 
@@ -123,9 +123,9 @@ h2 {
 }
 
 .page-header {
-  background-color: $color-dark;
+  background-color: var(--color-dark);
   box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
-  height: $header-height;
+  height: var(--header-height);
   left: 0;
   padding: 0 6rem;
   position: fixed;
@@ -135,7 +135,7 @@ h2 {
 
   h1 {
     height: 100%;
-    line-height: $header-height;
+    line-height: var(--header-height);
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
@@ -144,15 +144,15 @@ h2 {
 }
 
 .box {
-  background-color: rgba($color-primary, 0.15);
-  border: 1px solid $color-primary;
-  box-shadow: 0 0 5px $color-primary;
+  // background-color: var(--color-primary); // TODO: Reduce color opacity to 15%
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 5px var(--color-primary);
   height: 100%;
-  padding: $item-padding;
+  padding: var(--item-padding);
 
   .heading {
     font-weight: bold;
-    margin-bottom: $item-padding;
+    margin-bottom: var(--item-padding);
   }
 
   &.private {
@@ -166,12 +166,12 @@ h2 {
   flex-wrap: wrap;
 
   .tag {
-    background-color: $color-secondary;
+    background-color: var(--color-secondary);
     border-radius: 2px;
     display: inline-block;
     font-size: 1.3rem;
-    height: $base-body-font-size;
-    line-height: $base-body-font-size - 0.2rem;
+    height: var(--base-body-font-size);
+    line-height: calc(var(--base-body-font-size) - 0.2rem);
     padding: 0.1rem 0.3rem;
 
     + .tag {
