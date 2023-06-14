@@ -18,8 +18,10 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
   ) {
     this.subscription.add(
       this.campaignService.getCampaignInfo().subscribe((data) => {
-        const dateSplit = data.date.split(' ');
-        this.date = parseInt(dateSplit[dateSplit.length - 1], 10);
+        if (data?.date) {
+          const dateSplit = data.date.split(' ');
+          this.date = parseInt(dateSplit[dateSplit.length - 1], 10);
+        }
       })
     );
   }
