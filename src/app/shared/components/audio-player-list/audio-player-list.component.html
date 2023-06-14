@@ -1,2 +1,2 @@
-<app-audio-player *ngIf="santanaUrl" [name]="'Santana'" [fileUrl]="santanaUrl" [icon]="faGuitar">
+<app-audio-player *ngFor="let url of audioFiles" [name]="'Santana'" [fileUrl]="url" [icon]="faGuitar">
 </app-audio-player>

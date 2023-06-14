@@ -3,7 +3,7 @@
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
 
-  <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()">
+  <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()" *ngIf="hasAudio">
     <fa-icon [icon]="faMusic" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
 
@@ -31,7 +31,7 @@
   </app-container>
 </div>
 
-<div class="overlay" [ngClass]="{'open': audioVisible }">
+<div class="overlay" [ngClass]="{'open': audioVisible }" *ngIf="hasAudio">
   <app-container width="small">
     <app-audio-player-list></app-audio-player-list>
   </app-container>
