@@ -1,18 +1,26 @@
 <app-container width="medium">
-  <dl *ngIf="(campaignInfo$ | async) as campaign">
+  <dl *ngIf="campaignInfo as campaign">
     <dt>Aktuelles Datum</dt>
     <dd>{{campaign.date}} BF</dd>
-    <dt>Ausdauer Malus</dt>
-    <dd>
-      <span *ngIf="campaign.staminaReduction > 0">-</span>
-      {{campaign.staminaReduction}}
-    </dd>
-    <dt>Schiff</dt>
-    <dd>{{campaign.ship}}</dd>
-    <dt>Kapitän</dt>
-    <dd>{{campaign.captain}}</dd>
-    <dt>Besatzung</dt>
-    <dd>{{campaign.crewcount}}</dd>
+    <ng-container *ngIf="campaign.staminaReduction">
+      <dt>Ausdauer Malus</dt>
+      <dd>
+        <span *ngIf="campaign.staminaReduction > 0">-</span>
+        {{campaign.staminaReduction}}
+      </dd>
+    </ng-container>
+    <ng-container *ngIf="campaign.ship">
+      <dt>Schiff</dt>
+      <dd>{{campaign.ship}}</dd>
+    </ng-container>
+    <ng-container *ngIf="campaign.captain">
+      <dt>Kapitän</dt>
+      <dd>{{campaign.captain}}</dd>
+    </ng-container>
+    <ng-container *ngIf="campaign.crewcount">
+      <dt>Besatzung</dt>
+      <dd>{{campaign.crewcount}}</dd>
+    </ng-container>
     <ng-container *ngIf="(money$ | async) as money">
       <dt>Vermögen</dt>
       <dd>{{money | number}} Dukaten</dd>

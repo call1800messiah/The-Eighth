@@ -7,6 +7,7 @@ import { Timeline } from '../../models/timeline';
 import { CampaignService } from '../../services/campaign.service';
 import { TimelineService } from '../../services/timeline.service';
 import { environment } from '../../../../environments/environment';
+import { NavigationService } from '../../../core/services/navigation.service';
 
 
 
@@ -16,16 +17,26 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit {
-  campaignInfo$: Observable<CampaignData>;
+  campaignInfo: CampaignData;
   timeline$: Observable<Timeline>;
   money$: Subject<number>;
 
   constructor(
     private campaignService: CampaignService,
+    private navService: NavigationService,
     private timelineService: TimelineService,
   ) {
-    this.campaignInfo$ = this.campaignService.getCampaignInfo();
-    this.timeline$ = this.timelineService.getTimeline('vbxJs3tgWLUJv2UZMPh4');
+    this.campaignService.getCampaignInfo().subscribe((campaignInfo) => {
+      if (!campaignInfo) {
+        return;
+      }
+      this.campaignInfo = campaignInfo;
+      this.navService.setPageLabel(campaignInfo.name);
+      if (campaignInfo.timelineId) {
+        this.timeline$ = this.timelineService.getTimeline(campaignInfo.timelineId);
+      }
+    });
+
     this.money$ = new Subject<number>();
   }
 
@@ -34,10 +45,17 @@ export class OverviewComponent implements OnInit {
   }
 
   getMoney() {
+    if (
+      !environment.tenantData[environment.tenant].googleSheets?.apiKey
+      || !environment.tenantData[environment.tenant].googleSheets?.financeSheet
+    ) {
+      return;
+    }
+
     GSheetReader.default(
       {
-        apiKey: environment.googleSheets.apiKey,
-        sheetId: environment.googleSheets.financeSheet,
+        apiKey: environment.tenantData[environment.tenant].googleSheets.apiKey,
+        sheetId: environment.tenantData[environment.tenant].googleSheets.financeSheet,
         sheetName: 'Summe'
       },
       results => {
