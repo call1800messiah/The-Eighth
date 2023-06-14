@@ -6,6 +6,7 @@ import { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
 import { InventoryService } from '../../services/inventory.service';
 import { InventoryItem } from '../../models/inventory-item';
+import { DataService } from '../../../core/services/data.service';
 
 
 
@@ -17,6 +18,7 @@ import { InventoryItem } from '../../models/inventory-item';
 export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
+  deleteDisabled = true;
   itemForm = new UntypedFormGroup({
     amount: new UntypedFormControl(1),
     character: new UntypedFormControl(''),
@@ -28,6 +30,7 @@ export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
 
   constructor(
     private auth: AuthService,
+    private dataService: DataService,
     private inventory: InventoryService,
   ) {
     this.subscription.add(
@@ -48,6 +51,14 @@ export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
     this.subscription.unsubscribe();
   }
 
+  delete() {
+    if (this.props.id) {
+      this.dataService.delete(this.props.id, InventoryService.collection).then(() => {
+        this.dismissPopover.emit(true);
+      });
+    }
+  }
+
   save() {
     const item: InventoryItem = {
       ...this.itemForm.value,
@@ -60,5 +71,9 @@ export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
     this.inventory.store(item, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
+  }
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
   }
 }
