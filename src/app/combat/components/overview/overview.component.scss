@@ -36,7 +36,7 @@ app-avatar,
 .default-avatar {
   border: 1px solid $color-primary;
   border-radius: 50%;
-  font-size: $circle-size * 0.75;
+  font-size: calc(#{$circle-size} * 0.75);
   height: $circle-size;
   overflow: hidden;
   padding-top: 5px;
@@ -82,7 +82,7 @@ app-avatar,
 
 .bars {
   display: flex;
-  padding: 0 ($circle-size / 2);
+  padding: 0 calc(#{$circle-size} / 2);
 
   app-bar {
     display: block;
@@ -94,7 +94,7 @@ app-avatar,
   font-size: $detail-text-font-size;
   line-height: $detail-text-line-height;
   margin-top: $item-padding;
-  padding: 0 ($circle-size / 2);
+  padding: 0 calc(#{$circle-size} / 2);
 
   .state-name {
     font-weight: bold;
@@ -109,7 +109,7 @@ app-avatar,
   }
 
   .combatant {
-    padding-top: $circle-size / 2;
+    padding-top: calc(#{$circle-size} / 2);
   }
 
   app-avatar,
@@ -123,14 +123,14 @@ app-avatar,
 
   .default-avatar {
     background-color: $color-dark;
-    font-size: $avatar-medium * 0.75;
+    font-size: calc(#{$avatar-medium} * 0.75);
     height: $avatar-medium;
   }
 
   .name {
     border: 1px solid $color-primary;
-    border-top-left-radius: $circle-size / 2;
-    border-top-right-radius: $circle-size / 2;
+    border-top-left-radius: calc(#{$circle-size} / 2);
+    border-top-right-radius: calc(#{$circle-size} / 2);
     justify-content: center;
     margin: -15px 0 0;
     padding-left: 2rem;
@@ -154,8 +154,8 @@ app-avatar,
   .states {
     background-color: $color-primary;
     border: 1px solid $color-primary;
-    border-bottom-left-radius: $circle-size / 2;
-    border-bottom-right-radius: $circle-size / 2;
+    border-bottom-left-radius: calc(#{$circle-size} / 2);
+    border-bottom-right-radius:calc(#{$circle-size} / 2);
     color: $color-dark;
     margin-top: 0;
     padding: 1rem 2rem;

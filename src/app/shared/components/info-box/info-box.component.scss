@@ -6,8 +6,8 @@
 
 .detail {
   border-bottom: 1px dotted darken($color-primary, 5a0);
-  margin-bottom: $item-padding / 2;
-  padding-bottom: $item-padding / 2;
+  margin-bottom: calc(#{$item-padding} / 2);
+  padding-bottom: calc(#{$item-padding} / 2);
   white-space: pre-line;
 
   &:last-of-type {
