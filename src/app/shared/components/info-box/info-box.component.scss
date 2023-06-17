@@ -3,7 +3,7 @@
 }
 
 .detail {
-  border-bottom: 1px dotted var(--color-primary); // TODO: darken border color somehow
+  border-bottom: 1px dotted rgba(var(--color-primary-rgb), 0.5);
   margin-bottom: calc(var(--item-padding) / 2);
   padding-bottom: calc(var(--item-padding) / 2);
   white-space: pre-line;
