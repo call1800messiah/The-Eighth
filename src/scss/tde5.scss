@@ -1,18 +1,17 @@
-body.the-eighth {
+body.tde5 {
   // ===== COLORS =====
-  --color-primary: #efdc59;
-  --color-primary-rgb: 239, 220, 89;
-  --color-secondary: #224641;
-  --color-dark: #000000;
-  --color-bright: #ffffff;
+  --color-primary: #72a67f;
+  --color-primary-rgb: 114, 166, 127;
+  --color-secondary: #66333d;
+  --color-dark: #121a14;
+  --color-bright: #317544;
+  --color-bright-rgb: 17, 84, 28;
   --color-gray: #aaaaaa;
   --color-low: #00dd00;
   --color-high: #dd0000;
 
-  --color-lep: #70ad8c;
-  --color-aup: #c48d53;
-  --color-asp: #7493bc;
-  --color-erp: #9079f5;
+  --color-lep: #76bf60;
+  --color-asp: #5980b3;
 
 
   // ===== FONTS =====
@@ -35,7 +34,7 @@ body.the-eighth {
   --header-height: 5rem;
   --footer-height: 5rem;
   --container-horizontal-padding: 15px;
-  --item-padding: 10px;
+  --item-padding: 15px;
   --item-image-size: 80px;
   --mobile-interactive-height: 40px;
   --avatar-large: 500px;
@@ -46,4 +45,23 @@ body.the-eighth {
 
   // ===== ANIMATIONS =====
   --animation-time: 0.4s;
+
+
+  // ===== CUSTOM =====
+  .box {
+    --box-background: linear-gradient(330deg, rgba(var(--color-primary-rgb), 0.2) 0%, var(--color-dark) 45%);;
+    --box-border: none;
+    --box-border-radius: 15px;
+    --box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 5px 5px 20px rgba(0,0,0, 0.3);
+  }
+
+  .btn-icon {
+    --button-icon-border-radius: 50%;
+  }
+
+  .page-header {
+    --page-header-background: var(--color-primary);
+    --page-header-box-shadow: none;
+    --page-header-color: var(--color-dark);
+  }
 }

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { AuthService } from './core/services/auth.service';
-import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 
 
@@ -17,5 +18,6 @@ export class AppComponent {
     private auth: AuthService
   ) {
     this.isLoggedIn$ = this.auth.isLoggedIn();
+    document.body.classList.add(environment.tenant);
   }
 }

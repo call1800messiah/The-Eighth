@@ -28,6 +28,7 @@
             ],
             "styles": [
               "src/scss/styles.scss",
+              "src/scss/tde5.scss",
               "src/scss/the-eighth.scss"
             ],
             "scripts": [],
@@ -99,6 +100,7 @@
             ],
             "styles": [
               "src/scss/styles.scss",
+              "src/scss/tde5.scss",
               "src/scss/the-eighth.scss"
             ],
             "scripts": []

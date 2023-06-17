@@ -7,14 +7,16 @@
 }
 
 html {
-  font-size: var(--base-font-size);
+  font-size: 10px;
   margin: 0;
   padding: 0;
 }
 
 body {
-  background-color: var(--color-dark);
-  color: var(--color-primary);
+  --body-background: var(--color-dark);
+  --body-color: var(--color-primary);
+  background: var(--body-background);
+  color: var(--body-color);
   font-family: var(--base-body-font-family);
   font-size: var(--base-body-font-size);
   line-height: var(--base-body-line-height);
@@ -44,11 +46,12 @@ h2 {
 .float-left { float: left; }
 
 .btn {
+  --button-border-radius: 0;
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--color-dark);
   border: 1px solid var(--color-primary);
-  border-radius: 0;
+  border-radius: var(--button-border-radius);
   box-shadow: none;
   color: var(--color-primary);
   cursor: pointer;
@@ -80,11 +83,12 @@ h2 {
 }
 
 .btn-icon {
+  --button-icon-border-radius: 0;
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--color-dark);
   border: 1px solid var(--color-primary);
-  border-radius: 0;
+  border-radius: var(--button-icon-border-radius);
   box-shadow: none;
   color: var(--color-primary);
   cursor: pointer;
@@ -123,8 +127,12 @@ h2 {
 }
 
 .page-header {
-  background-color: var(--color-dark);
-  box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
+  --page-header-background: var(--color-dark);
+  --page-header-box-shadow: 0 3px 3px rgba(255, 255, 255, 0.1);
+  --page-header-color: inherit;
+  background: var(--page-header-background);
+  box-shadow: var(--page-header-box-shadow);
+  color: var(--page-header-color);
   height: var(--header-height);
   left: 0;
   padding: 0 6rem;
@@ -144,10 +152,11 @@ h2 {
 }
 
 .box {
+  --box-background: rgba(var(--color-primary-rgb), 0.15);
   --box-border: 1px solid var(--color-primary);
   --box-border-radius: 0;
   --box-shadow: 0 0 5px var(--color-primary);
-  background-color: rgba(var(--color-primary-rgb), 0.15);
+  background: var(--box-background);
   border: var(--box-border);
   border-radius: var(--box-border-radius);
   box-shadow: var(--box-shadow);

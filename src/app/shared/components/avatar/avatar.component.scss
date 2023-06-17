@@ -1,7 +1,13 @@
+:host {
+  --avatar-border: 1px solid var(--color-primary);
+  --avatar-box-shadow: none;
+}
+
 .wrapper {
   background-color: var(--color-dark);
-  border: 1px solid var(--color-primary);
+  border: var(--avatar-border);
   border-radius: 50%;
+  box-shadow: var(--avatar-box-shadow);
   cursor: pointer;
   overflow: hidden;
   position: relative;
