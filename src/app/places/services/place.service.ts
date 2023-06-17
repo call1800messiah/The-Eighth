@@ -20,13 +20,19 @@ import { InfoType } from '../../core/enums/info-type.enum';
 export class PlaceService {
   static readonly collection = 'places';
   static placeTypes = {
+    barony: 'Baronie',
+    castle: 'Burg',
     city: 'Stadt',
+    forest: 'Wald',
     island: 'Insel',
     landmass: 'Landmasse',
     ocean: 'Gewässer',
     place: 'Ort',
+    principality: 'Fürstentum',
     ship: 'Schiff',
-    state: 'Staat'
+    shire: 'Grafschaft',
+    state: 'Staat',
+    town: 'Dorf',
   };
   private places$: BehaviorSubject<Place[]>;
   private user: AuthUser;
