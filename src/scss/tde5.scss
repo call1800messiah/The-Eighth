@@ -81,4 +81,16 @@ body.tde5 {
     --avatar-border: none;
     --avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
   }
+
+  app-bar {
+    --bar-border: none;
+    --bar-border-radius: 12px;
+    --bar-box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.6), 3px 3px 10px rgba(0, 0, 0, 0.5);
+    --bar-height: 24px;
+    --bar-margin-top: 5px;
+  }
+
+  app-person {
+    --person-attributes-border: none;
+  }
 }

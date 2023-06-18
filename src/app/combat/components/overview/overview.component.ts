@@ -13,6 +13,7 @@ import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
 import { PeopleService } from '../../../people/services/people.service';
+import { environment } from '../../../../environments/environment';
 
 
 
@@ -23,6 +24,7 @@ import { PeopleService } from '../../../people/services/people.service';
 })
 export class OverviewComponent implements OnInit {
   combatants$: Observable<Combatant[]>;
+  displayAsBox: boolean;
   faDizzy = faDizzy;
   faPlus = faPlus;
   faUserNinja = faUserNinja;
@@ -36,6 +38,7 @@ export class OverviewComponent implements OnInit {
     private popover: PopoverService,
   ) {
     this.combatants$ = this.combatService.getCombatants();
+    this.displayAsBox = environment.tenant === 'tde5';
   }
 
   ngOnInit(): void {}

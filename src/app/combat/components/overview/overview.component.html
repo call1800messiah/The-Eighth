@@ -17,9 +17,7 @@
 
 
 <app-box-grid>
-  <div *ngFor="let fighter of combatants$ | async" class="combatant"
-       [ngClass]="{'inactive': !fighter.active}"
-  >
+  <div *ngFor="let fighter of combatants$ | async" class="combatant" [ngClass]="{'box': displayAsBox}">
     <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
     <div *ngIf="!fighter.person" class="default-avatar">
       <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>

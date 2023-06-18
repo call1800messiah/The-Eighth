@@ -1,9 +1,19 @@
-@import '../../../../scss/variables.scss';
+:host {
+  --bar-border: var(--border-line-width) solid var(--color-primary);
+  --bar-border-radius: 0;
+  --bar-box-shadow: none;
+  --bar-height: 25px;
+  --bar-margin-top: 0;
+}
 
 .bar-wrapper {
-  border: var(--border-line-width) solid var(--color-primary);
+  border: var(--bar-border);
+  border-radius: var(--bar-border-radius);
   border-top: none;
-  height: 25px;
+  box-shadow: var(--bar-box-shadow);
+  height: var(--bar-height);
+  margin-top: var(--bar-margin-top);
+  overflow: hidden;
   position: relative;
 
   &.lep .bar { background-color: var(--color-lep); }
@@ -13,13 +23,15 @@
 }
 
 .bar {
+  border-radius: var(--bar-border-radius);
+  box-shadow: var(--bar-box-shadow);
   height: 100%;
 }
 
 .text {
   color: var(--color-primary);
   left: 0;
-  line-height: 25px;
+  line-height: var(--bar-height);
   position: absolute;
   right: 0;
   text-align: center;

@@ -1,3 +1,7 @@
+:host {
+  --person-attributes-border: var(--border-line-width) solid var(--color-primary);
+}
+
 .person {
   position: relative;
 }
@@ -46,5 +50,5 @@ dd {
 }
 
 .attributes {
-  border-top: var(--border-line-width) solid var(--color-primary);
+  border-top: var(--person-attributes-border);
 }
