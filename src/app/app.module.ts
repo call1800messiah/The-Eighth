@@ -3,6 +3,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeDE from '@angular/common/locales/de';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgxEnvModule } from '@ngx-env/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +27,7 @@ registerLocaleData(localeDE, 'de');
     OverviewModule,
     FontAwesomeModule,
     SharedModule,
+    NgxEnvModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de' },
