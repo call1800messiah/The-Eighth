@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Rules } from '../../shared/models/rules';
+import { environment } from '../../../environments/environment';
 
 
 
@@ -17,7 +18,7 @@ export class RulesService {
 
 
   getRules(): Promise<Rules> {
-    const jsonFile = `assets/rules.json`;
+    const jsonFile = `assets/${environment.tenant}/rules.json`;
     return new Promise<Rules>((resolve, reject) => {
       if (this.rules) {
         resolve(this.rules);

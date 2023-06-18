@@ -1,0 +1,25 @@
+{
+  "hitLocations": {
+    "1": "Kopf",
+    "2": "Kopf",
+    "3": "Torso",
+    "4": "Torso",
+    "5": "Torso",
+    "6": "Torso",
+    "7": "Torso",
+    "8": "Torso",
+    "9": "Torso",
+    "10": "Torso",
+    "11": "Torso",
+    "12": "Torso",
+    "13": "Arme",
+    "14": "Arme",
+    "15": "Arme",
+    "16": "Arme",
+    "17": "Beine",
+    "18": "Beine",
+    "19": "Beine",
+    "20": "Beine"
+  },
+  "states": []
+}

@@ -1,15 +1,14 @@
-@import '../../../../scss/variables.scss';
 @import '../../../../scss/mixins.scss';
 
 .quest {
   cursor: pointer;
-  margin-bottom: $item-padding;
-  margin-top: $item-padding;
+  margin-bottom: var(--item-padding);
+  margin-top: var(--item-padding);
   position: relative;
 
   &.main {
-    border-bottom: 1px dotted $color-primary;
-    padding-bottom: $item-padding;
+    border-bottom: var(--border-line-width) dotted var(--color-primary);
+    padding-bottom: var(--item-padding);
   }
 
   &.private {
@@ -17,21 +16,21 @@
   }
 
   &.completed {
-    color: $color-gray;
+    color: var(--color-gray);
   }
 }
 
 .name {
-  font-size: $item-title-font-size;
+  font-size: var(--item-title-font-size);
   font-weight: bold;
-  line-height: $item-title-line-height;
+  line-height: var(--item-title-line-height);
   padding-right: 100px;
 }
 
 .type {
   @include text-label;
-  height: $item-title-line-height;
-  line-height: $item-title-line-height;
+  height: var(--item-title-line-height);
+  line-height: var(--item-title-line-height);
   position: absolute;
   right: 0;
   text-align: right;
@@ -40,5 +39,5 @@
 }
 
 .subquests {
-  padding-left: $item-padding;
+  padding-left: var(--item-padding);
 }

@@ -1,13 +1,12 @@
-@import "../../../../scss/variables.scss";
-
 button {
   position: relative;
 }
 
 .result {
   background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--button-icon-border-radius);
   bottom: 0;
-  color: $color-primary;
+  color: var(--color-primary);
   left: 0;
   position: absolute;
   right: 0;
@@ -15,6 +14,6 @@ button {
   top: 0;
   z-index: 1;
 
-  &.low { color: $color-low; }
-  &.high { color: $color-high; }
+  &.low { color: var(--color-low); }
+  &.high { color: var(--color-high); }
 }

@@ -12,7 +12,7 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class CampaignService {
   static readonly collection = 'campaign';
-  private campaignInfo$: Observable<CampaignData>;
+  private campaignInfo$: Observable<CampaignData | null>;
 
   constructor(
     private api: ApiService,
@@ -20,13 +20,16 @@ export class CampaignService {
 
 
 
-  private static transformCampaign(campaignData: any[]): CampaignData {
+  private static transformCampaign(campaignData: any[]): CampaignData | null {
+    if (campaignData.length < 1) {
+      return null;
+    }
     return campaignData[0].payload.doc.data() as CampaignData;
   }
 
 
 
-  getCampaignInfo(): Observable<CampaignData> {
+  getCampaignInfo(): Observable<CampaignData | null> {
     if (!this.campaignInfo$) {
       this.campaignInfo$ = this.api.getDataFromCollection(CampaignService.collection).pipe(
         map(CampaignService.transformCampaign),

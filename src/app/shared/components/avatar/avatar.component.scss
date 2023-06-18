@@ -1,9 +1,13 @@
-@import '../../../../scss/variables.scss';
+:host {
+  --avatar-border: var(--border-line-width) solid var(--color-primary);
+  --avatar-box-shadow: none;
+}
 
 .wrapper {
-  background-color: $color-dark;
-  border: 1px solid $color-primary;
+  background-color: var(--color-dark);
+  border: var(--avatar-border);
   border-radius: 50%;
+  box-shadow: var(--avatar-box-shadow);
   cursor: pointer;
   overflow: hidden;
   position: relative;

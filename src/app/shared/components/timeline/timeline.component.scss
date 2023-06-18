@@ -1,5 +1,3 @@
-@import '../../../../scss/variables.scss';
-
 .timeline {
   position: relative;
 }
@@ -11,8 +9,8 @@
 }
 
 .title {
-  font-size: $item-title-font-size;
-  line-height: $item-title-line-height;
+  font-size: var(--item-title-font-size);
+  line-height: var(--item-title-line-height);
 }
 
 dl {

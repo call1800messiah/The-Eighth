@@ -1,5 +1,3 @@
-@import "../scss/variables.scss";
-
 main {
-  padding: $container-horizontal-padding;
+  padding: var(--container-horizontal-padding);
 }

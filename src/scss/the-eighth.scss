@@ -1,0 +1,50 @@
+body.the-eighth {
+  // ===== COLORS =====
+  --color-primary: #efdc59;
+  --color-primary-rgb: 239, 220, 89;
+  --color-secondary: #224641;
+  --color-dark: #000000;
+  --color-bright: #ffffff;
+  --color-gray: #aaaaaa;
+  --color-low: #00dd00;
+  --color-high: #dd0000;
+
+  --color-lep: #70ad8c;
+  --color-aup: #c48d53;
+  --color-asp: #7493bc;
+  --color-erp: #9079f5;
+
+
+  // ===== FONTS =====
+  --base-font-size: 10px;
+
+  --base-body-font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  --base-body-font-size: 1.6rem;
+  --base-body-line-height: 2rem;
+
+  --item-title-font-size: 2rem;
+  --item-title-line-height: 2.4rem;
+
+  --detail-text-font-size: 1.3rem;
+  --detail-text-line-height: 1.5rem;
+
+  --headline-huge: 2.4rem;
+  --headline-large: 2.2rem;
+
+  // ===== SIZES =====
+  --header-height: 5rem;
+  --footer-height: 5rem;
+  --container-horizontal-padding: 15px;
+  --item-padding: 10px;
+  --item-image-size: 80px;
+  --mobile-interactive-height: 40px;
+  --avatar-large: 500px;
+  --avatar-medium: 200px;
+  --container-width-small: 400px;
+  --container-width-medium: 720px;
+  --border-line-width: 1px;
+
+
+  // ===== ANIMATIONS =====
+  --animation-time: 0.4s;
+}

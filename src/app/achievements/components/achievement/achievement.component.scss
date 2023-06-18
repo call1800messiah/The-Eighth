@@ -1,5 +1,6 @@
-@import '../../../../scss/variables.scss';
-$avatar-size:             2.8rem;
+:host {
+  --avatar-size: 2.8rem;
+}
 
 .box {
   display: flex;
@@ -8,40 +9,40 @@ $avatar-size:             2.8rem;
 
 .image {
   font-size: 4rem;
-  height: $item-image-size;
-  line-height: $item-image-size;
-  margin-right: $item-padding;
+  height: var(--item-image-size);
+  line-height: var(--item-image-size);
+  margin-right: var(--item-padding);
   text-align: center;
-  width: $item-image-size;
+  width: var(--item-image-size);
 }
 
 .text {
-  margin-bottom: $item-padding;
-  width: calc(100% - #{$item-image-size} - #{$item-padding});
+  margin-bottom: var(--item-padding);
+  width: calc(100% - var(--item-image-size) - var(--item-padding));
 }
 
 .title {
-  font-size: $item-title-font-size;
-  line-height: $item-title-line-height;
+  font-size: var(--item-title-font-size);
+  line-height: var(--item-title-line-height);
   margin-bottom: 5px;
 }
 
 .meta {
   line-height: 0;
-  min-height: $avatar-size;
+  min-height: var(--avatar-size);
   position: relative;
   width: 100%;
 
   .label {
     bottom: 0;
-    font-size: $detail-text-font-size;
+    font-size: var(--detail-text-font-size);
     left: 0;
     position: absolute;
   }
 }
 
 .people {
-  padding-left: $item-image-size + $item-padding;
+  padding-left: calc(var(--item-image-size) + var(--item-padding));
   text-align: right;
 }
 
@@ -49,6 +50,6 @@ app-avatar {
   display: inline-block;
   margin-left: 5px;
   overflow: hidden;
-  line-height: $avatar-size;
-  width: $avatar-size;
+  line-height: var(--avatar-size);
+  width: var(--avatar-size);
 }

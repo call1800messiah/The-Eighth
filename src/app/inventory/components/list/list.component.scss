@@ -1,8 +1,6 @@
-@import "./../../../../scss/variables";
-
 .item {
   display: flex;
-  margin-bottom: $item-padding;
+  margin-bottom: var(--item-padding);
 }
 
 .amount {
@@ -10,7 +8,7 @@
 }
 
 .name {
-  padding: 0 $item-padding;
+  padding: 0 var(--item-padding);
   width: 100%;
 }
 

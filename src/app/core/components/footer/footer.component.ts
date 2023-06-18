@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { NavigationService } from '../../services/navigation.service';
 import { NavEntry } from '../../models/nav-entry';
+import { environment } from '../../../../environments/environment';
 
 
 
@@ -19,6 +20,7 @@ export class FooterComponent implements OnInit {
   faCommentAlt = faCommentAlt;
   faDice = faDice;
   faMusic = faMusic;
+  hasAudio = environment.tenantData[environment.tenant].audioFiles?.length > 0 ;
   messagesVisible = false;
   navigation: NavEntry[];
   navVisible$: Observable<boolean>;

@@ -67,7 +67,7 @@ export class TimelineService {
   private transformTimeline(data: any): Timeline {
     return {
       id: data.payload.id,
-      name: data.payload.data().name,
+      name: data.payload.data()?.name,
       events: this.getEvents(data.payload.id),
     };
   }

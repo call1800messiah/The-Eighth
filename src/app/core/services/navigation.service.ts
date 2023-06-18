@@ -19,7 +19,7 @@ export class NavigationService {
   private currentBackLink: string;
   private navigation: NavEntry[] = [
     {
-      label: 'Isidas Hoffnung',
+      label: 'Übersicht',
       icon: faDharmachakra,
       link: '/overview'
     },

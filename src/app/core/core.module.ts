@@ -32,7 +32,7 @@ import { DiceModule } from '../dice/dice.module';
     HttpClientModule,
     RouterModule,
     SharedModule,
-    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireModule.initializeApp(environment.tenantData[environment.tenant].firebase),
     AngularFirestoreModule,
     AngularFireStorageModule,
   ]
