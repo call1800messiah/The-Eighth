@@ -12,6 +12,7 @@ button {
 
 .result {
   background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--button-icon-border-radius);
   bottom: 0;
   color: var(--color-primary);
   left: 0;
