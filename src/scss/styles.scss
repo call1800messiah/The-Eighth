@@ -50,7 +50,7 @@ h2 {
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--color-dark);
-  border: 1px solid var(--color-primary);
+  border: var(--border-line-width) solid var(--color-primary);
   border-radius: var(--button-border-radius);
   box-shadow: none;
   color: var(--color-primary);
@@ -87,7 +87,7 @@ h2 {
   -webkit-appearance: none;
   appearance: none;
   background-color: var(--color-dark);
-  border: 1px solid var(--color-primary);
+  border: var(--border-line-width) solid var(--color-primary);
   border-radius: var(--button-icon-border-radius);
   box-shadow: none;
   color: var(--color-primary);
@@ -153,7 +153,7 @@ h2 {
 
 .box {
   --box-background: rgba(var(--color-primary-rgb), 0.15);
-  --box-border: 1px solid var(--color-primary);
+  --box-border: var(--border-line-width) solid var(--color-primary);
   --box-border-radius: 0;
   --box-shadow: 0 0 5px var(--color-primary);
   background: var(--box-background);

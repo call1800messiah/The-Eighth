@@ -36,7 +36,7 @@ app-avatar,
 }
 
 .default-avatar {
-  border: 1px solid var(--color-primary);
+  border: var(--border-line-width) solid var(--color-primary);
   border-radius: 50%;
   font-size: calc(var(--circle-size) * 0.75);
   height: var(--circle-size);
@@ -47,8 +47,8 @@ app-avatar,
 
 .name {
   align-items: center;
-  border-bottom: 1px solid var(--color-primary);
-  border-top: 1px solid var(--color-primary);
+  border-bottom: var(--border-line-width) solid var(--color-primary);
+  border-top: var(--border-line-width) solid var(--color-primary);
   display: flex;
   height: var(--circle-size);
   line-height: 20px;
@@ -61,7 +61,7 @@ app-avatar,
 
 .initiative {
   background-color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  border: var(--border-line-width) solid var(--color-primary);
   border-radius: 50%;
   color: var(--color-dark);
   cursor: pointer;
@@ -130,7 +130,7 @@ app-avatar,
   }
 
   .name {
-    border: 1px solid var(--color-primary);
+    border: var(--border-line-width) solid var(--color-primary);
     border-top-left-radius: calc(var(--circle-size) / 2);
     border-top-right-radius: calc(var(--circle-size) / 2);
     justify-content: center;
@@ -155,7 +155,7 @@ app-avatar,
 
   .states {
     background-color: var(--color-primary);
-    border: 1px solid var(--color-primary);
+    border: var(--border-line-width) solid var(--color-primary);
     border-bottom-left-radius: calc(var(--circle-size) / 2);
     border-bottom-right-radius:calc(var(--circle-size) / 2);
     color: var(--color-dark);

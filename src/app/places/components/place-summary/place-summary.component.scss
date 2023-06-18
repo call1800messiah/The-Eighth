@@ -1,7 +1,7 @@
 @import '../../../../scss/mixins.scss';
 
 .place {
-  border-bottom: 1px dotted var(--color-primary);
+  border-bottom: var(--border-line-width) dotted var(--color-primary);
   margin-bottom: var(--item-padding);
   margin-top: var(--item-padding);
   padding-bottom: var(--item-padding);

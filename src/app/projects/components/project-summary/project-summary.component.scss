@@ -9,7 +9,7 @@
 }
 
 .milestone {
-  border-bottom: 1px dotted rgba(var(--color-primary-rgb), 0.5);
+  border-bottom: var(--border-line-width) dotted rgba(var(--color-primary-rgb), 0.5);
   margin-bottom: calc(var(--item-padding) / 2);
   padding-bottom: calc(var(--item-padding) / 2);
   padding-left: 2.5rem;

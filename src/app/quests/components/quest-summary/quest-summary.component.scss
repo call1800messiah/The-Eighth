@@ -7,7 +7,7 @@
   position: relative;
 
   &.main {
-    border-bottom: 1px dotted var(--color-primary);
+    border-bottom: var(--border-line-width) dotted var(--color-primary);
     padding-bottom: var(--item-padding);
   }
 

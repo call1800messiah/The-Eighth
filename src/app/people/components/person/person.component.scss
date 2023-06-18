@@ -44,3 +44,7 @@ dd {
   margin-top: var(--item-padding);
   justify-content: flex-end;
 }
+
+.attributes {
+  border-top: var(--border-line-width) solid var(--color-primary);
+}

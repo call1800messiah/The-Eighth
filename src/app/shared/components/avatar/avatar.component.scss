@@ -1,5 +1,5 @@
 :host {
-  --avatar-border: 1px solid var(--color-primary);
+  --avatar-border: var(--border-line-width) solid var(--color-primary);
   --avatar-box-shadow: none;
 }
 

@@ -1,6 +1,6 @@
 :host {
   --footer-background: var(--color-dark);
-  --footer-border-top: 1px solid var(--color-primary);
+  --footer-border-top: var(--border-line-width) solid var(--color-primary);
 }
 
 footer {
