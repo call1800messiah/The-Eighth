@@ -1,6 +1,19 @@
 @import "../../../../scss/variables.scss";
+
 :host {
-  --circle-size : 50px;
+  --combatant-avatar-left: 0;
+  --combatant-avatar-top: 0;
+  --combatant-content-padding: 0 calc(var(--combatant-circle-size) / 2);
+  --combatant-circle-size : 50px;
+  --combatant-default-avatar-border: var(--border-line-width) solid var(--color-primary);
+  --combatant-initiative-right: 0;
+  --combatant-initiative-top: 0;
+  --combatant-initiative-transform: none;
+  --combatant-name-border-color: var(--color-primary);
+  --combatant-name-border-radius: 0;
+  --combatant-name-border-width: var(--border-line-width) 0;
+  --combatant-states-background-color: transparent;
+  --combatant-states-color: inherit;
 }
 
 .top-bar {
@@ -19,6 +32,7 @@
 
 .combatant {
   margin-bottom: var(--item-padding);
+  overflow: hidden;
   position: relative;
 
   &.inactive { filter: grayscale(1) brightness(0.8); }
@@ -27,19 +41,20 @@
 app-avatar,
 .default-avatar {
   display: inline-block;
-  left: 0;
-  line-height: var(--circle-size);
+  left: var(--combatant-avatar-left);
+  line-height: var(--combatant-circle-size);
   position: absolute;
-  top: 0;
-  width: var(--circle-size);
+  top: var(--combatant-avatar-top);
+  width: var(--combatant-circle-size);
   z-index: 2;
 }
 
 .default-avatar {
-  border: var(--border-line-width) solid var(--color-primary);
+  background-color: var(--color-dark);
+  border: var(--combatant-default-avatar-border);
   border-radius: 50%;
-  font-size: calc(var(--circle-size) * 0.75);
-  height: var(--circle-size);
+  font-size: calc(var(--combatant-circle-size) * 0.75);
+  height: var(--combatant-circle-size);
   overflow: hidden;
   padding-top: 5px;
   text-align: center;
@@ -47,10 +62,12 @@ app-avatar,
 
 .name {
   align-items: center;
-  border-bottom: var(--border-line-width) solid var(--color-primary);
-  border-top: var(--border-line-width) solid var(--color-primary);
+  border-color: var(--combatant-name-border-color);
+  border-radius: var(--combatant-name-border-radius);
+  border-style: solid;
+  border-width: var(--combatant-name-border-width);
   display: flex;
-  height: var(--circle-size);
+  height: var(--combatant-circle-size);
   line-height: 20px;
   margin: 0 25px;
   overflow: hidden;
@@ -67,13 +84,14 @@ app-avatar,
   cursor: pointer;
   font-size: 24px;
   font-weight: bold;
-  height: var(--circle-size);
-  line-height: calc(var(--circle-size) - 2px);
+  height: var(--combatant-circle-size);
+  line-height: calc(var(--combatant-circle-size) - 2px);
   position: absolute;
-  right: 0;
+  right: var(--combatant-initiative-right);
   text-align: center;
-  top: 0;
-  width: var(--circle-size);
+  top: var(--combatant-initiative-top);
+  transform: var(--combatant-initiative-transform);
+  width: var(--combatant-circle-size);
   z-index: 2;
 
   &:hover {
@@ -84,7 +102,7 @@ app-avatar,
 
 .bars {
   display: flex;
-  padding: 0 calc(var(--circle-size) / 2);
+  padding: var(--combatant-content-padding);
 
   app-bar {
     display: block;
@@ -93,10 +111,12 @@ app-avatar,
 }
 
 .states {
+  background-color: var(--combatant-states-background-color);
+  color: var(--combatant-states-color);
   font-size: var(--detail-text-font-size);
   line-height: var(--detail-text-line-height);
   margin-top: var(--item-padding);
-  padding: 0 calc(var(--circle-size) / 2);
+  padding: var(--combatant-content-padding);
 
   .state-name {
     font-weight: bold;
@@ -106,17 +126,27 @@ app-avatar,
 
 
 @media (min-width: $break-sm) {
+  :host {
+    --combatant-avatar-left: 50%;
+    --combatant-content-padding: 0;
+    --combatant-initiative-right: 50%;
+    --combatant-initiative-transform: translateX(50%);
+    --combatant-name-border-radius: calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2) 0 0;
+    --combatant-name-border-width: var(--border-line-width);
+    --combatant-states-background-color: var(--color-primary);
+    --combatant-states-color: var(--color-dark);
+  }
+
   .combatants {
     grid-gap: 3rem;
   }
 
   .combatant {
-    padding-top: calc(var(--circle-size) / 2);
+    padding-top: calc(var(--combatant-circle-size) / 2);
   }
 
   app-avatar,
   .default-avatar {
-    left: 50%;
     line-height: var(--avatar-medium);
     position: relative;
     transform: translateX(-50%);
@@ -130,23 +160,14 @@ app-avatar,
   }
 
   .name {
-    border: var(--border-line-width) solid var(--color-primary);
-    border-top-left-radius: calc(var(--circle-size) / 2);
-    border-top-right-radius: calc(var(--circle-size) / 2);
     justify-content: center;
     margin: -15px 0 0;
     padding-left: 2rem;
     padding-right: 2rem;
   }
 
-  .initiative {
-    right: 50%;
-    transform: translateX(50%);
-  }
-
   .bars {
     flex-wrap: wrap;
-    padding: 0;
 
     app-bar {
       width: 100%;
@@ -154,11 +175,8 @@ app-avatar,
   }
 
   .states {
-    background-color: var(--color-primary);
-    border: var(--border-line-width) solid var(--color-primary);
-    border-bottom-left-radius: calc(var(--circle-size) / 2);
-    border-bottom-right-radius:calc(var(--circle-size) / 2);
-    color: var(--color-dark);
+    border-bottom-left-radius: calc(var(--combatant-circle-size) / 2);
+    border-bottom-right-radius:calc(var(--combatant-circle-size) / 2);
     margin-top: 0;
     padding: 1rem 2rem;
   }

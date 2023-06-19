@@ -1,3 +1,5 @@
+@import './variables';
+
 body.tde5 {
   // ===== COLORS =====
   --color-primary: #72a67f;
@@ -92,5 +94,25 @@ body.tde5 {
 
   app-person {
     --person-attributes-border: none;
+  }
+
+  app-overview {
+    --combatant-avatar-left: var(--item-padding);
+    --combatant-avatar-top: var(--item-padding);
+    --combatant-content-padding: 1rem 0 0;
+    --combatant-default-avatar-border: none;
+    --combatant-initiative-top: var(--item-padding);
+    --combatant-initiative-right: var(--item-padding);
+    --combatant-name-border-width: 0;
+
+    @media (min-width: $break-sm) {
+      --combatant-avatar-left: 50%;
+      --combatant-avatar-top: calc(var(--item-padding) * -1);
+      --combatant-content-padding: 1rem 2rem;
+      --combatant-initiative-right: var(--item-padding);
+      --combatant-initiative-transform: none;
+      --combatant-states-background-color: transparent;
+      --combatant-states-color: inherit;
+    }
   }
 }
