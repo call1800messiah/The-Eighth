@@ -101,6 +101,7 @@ body.tde5 {
     --combatant-avatar-top: var(--item-padding);
     --combatant-content-padding: 1rem 0 0;
     --combatant-default-avatar-border: none;
+    --combatant-default-avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
     --combatant-initiative-top: var(--item-padding);
     --combatant-initiative-right: var(--item-padding);
     --combatant-name-border-width: 0;
