@@ -18,9 +18,9 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
   @Input() props: { person: string, attribute?: Attribute, altCollection?: string };
   @Output() dismissPopover = new EventEmitter<boolean>();
   attributeForm = new UntypedFormGroup({
-    type: new UntypedFormControl(''),
-    current: new UntypedFormControl(0),
-    max: new UntypedFormControl(0),
+    type: new UntypedFormControl('lep'),
+    current: new UntypedFormControl(30),
+    max: new UntypedFormControl(30),
   });
   types: string[] = [];
 
