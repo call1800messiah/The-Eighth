@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -19,6 +19,7 @@ import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { ConfigService } from '../../../core/services/config.service';
 import { PeopleService } from '../../services/people.service';
+import { Menu } from '../../../shared/models/menu';
 
 
 
@@ -28,10 +29,26 @@ import { PeopleService } from '../../services/people.service';
   styleUrls: ['./person.component.scss']
 })
 export class PersonComponent implements OnInit, OnDestroy {
-  person: Person;
-  faPlus = faPlus;
-  faStickyNote = faStickyNote;
+  faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
+  menu: Menu = {
+    actions: [
+      {
+        label: 'Person bearbeiten',
+        action: this.editPerson.bind(this)
+      },
+      {
+        label: 'Bild ändern',
+        action: this.editImage.bind(this)
+      },
+      {
+        label: 'Neue Info',
+        action: this.addDetail.bind(this)
+      }
+    ],
+};
+  menuOpen = false;
+  person: Person;
   values$: Observable<Values>;
   private personSub: Subscription;
 
@@ -66,14 +83,6 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
 
-  addDetail() {
-    this.popover.showPopover('Neue Info', EditInfoComponent, {
-      collection: PeopleService.collection,
-      parentId: this.person.id
-    });
-  }
-
-
   editAttribute(attribute: Attribute) {
     this.popover.showPopover('Wert editieren', EditAttributeComponent, {
       person: this.person.id,
@@ -91,7 +100,21 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
-  editImage() {
+  toggleMenu(e) {
+    e.preventDefault();
+    this.menuOpen = !this.menuOpen;
+  }
+
+
+  private addDetail() {
+    this.popover.showPopover('Neue Info', EditInfoComponent, {
+      collection: PeopleService.collection,
+      parentId: this.person.id
+    });
+  }
+
+
+  private editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: PeopleService.collection,
       cropperSettings: ConfigService.imageSettings.person,
@@ -102,7 +125,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
-  editPerson() {
+  private editPerson() {
     this.popover.showPopover(this.person.name, EditPersonComponent, this.person);
   }
 }

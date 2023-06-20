@@ -26,6 +26,7 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
 import { TplVarDirective } from './directives/tpl-var.directive';
 import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
+import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 
 
 
@@ -52,6 +53,7 @@ import { PopoverComponent } from './components/popover/popover.component';
     TopBarFilterComponent,
     TplVarDirective,
     UnlockButtonComponent,
+    ContextMenuComponent,
   ],
   imports: [
     CommonModule,
@@ -67,6 +69,7 @@ import { PopoverComponent } from './components/popover/popover.component';
     BarComponent,
     BoxGridComponent,
     ContainerComponent,
+    ContextMenuComponent,
     DashboardComponent,
     EditAttributeComponent,
     EditImageComponent,

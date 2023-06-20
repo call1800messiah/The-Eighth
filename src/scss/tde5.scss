@@ -92,6 +92,12 @@ body.tde5 {
     --bar-margin-top: 5px;
   }
 
+  app-context-menu {
+    --context-menu-border: none;
+    --context-menu-border-radius: 15px;
+    --context-menu-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 5px 5px 20px rgba(0,0,0, 0.3);
+  }
+
   app-person {
     --person-attributes-border: none;
   }

@@ -1,14 +1,15 @@
 <app-container width="medium" class="person" *ngIf="person">
-  <div class="image" (click)="editImage()">
+  <div class="image">
     <app-avatar [person]="person"></app-avatar>
 
-    <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
-      <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+    <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+      <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+      <app-context-menu *ngIf="menuOpen" [personId]="person.id" [menu]="menu"></app-context-menu>
     </button>
   </div>
 
 
-  <div class="info box" (click)="editPerson()">
+  <div class="info box">
     <dl>
       <ng-container>
         <dt>Name</dt>
@@ -57,7 +58,7 @@
   </div>
 
   <div *ngIf="values$ | async as values" class="values">
-    <div *ngIf="values.attributes" class="attributes">
+    <div *ngIf="values.attributes && values.attributes.length > 0" class="attributes">
       <app-bar *ngFor="let bar of values.attributes"
                [bar]="bar"
                (barClicked)="editAttribute(bar)"
