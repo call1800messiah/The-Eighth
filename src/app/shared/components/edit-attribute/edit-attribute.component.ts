@@ -5,6 +5,7 @@ import { PopoverChild } from '../../models/popover-child';
 import { DataService } from '../../../core/services/data.service';
 import { Attribute } from '../../models/attribute';
 import { PeopleService } from '../../../people/services/people.service';
+import { RulesService } from '../../../core/services/rules.service';
 
 
 
@@ -14,31 +15,44 @@ import { PeopleService } from '../../../people/services/people.service';
   styleUrls: ['./edit-attribute.component.scss']
 })
 export class EditAttributeComponent implements OnInit, PopoverChild {
-  @Input() props: any;
+  @Input() props: { person: string, attribute?: Attribute, altCollection?: string };
   @Output() dismissPopover = new EventEmitter<boolean>();
   attributeForm = new UntypedFormGroup({
+    type: new UntypedFormControl(''),
     current: new UntypedFormControl(0),
-    max: new UntypedFormControl({ value: 0, disabled: true }),
+    max: new UntypedFormControl(0),
   });
+  types: string[] = [];
 
   constructor(
     private dataService: DataService,
-  ) { }
+    private rulesService: RulesService,
+  ) {
+    this.rulesService.getRules().then((rules) => {
+      this.types = rules.barTypes;
+    });
+  }
 
   ngOnInit(): void {
     if (this.props.attribute) {
       const attribute = this.props.attribute as Attribute;
       this.attributeForm.patchValue(attribute);
+      this.attributeForm.get('type').disable();
+      this.attributeForm.get('max').disable();
     }
   }
 
 
 
   save() {
+    let id: string;
+    if (this.props.attribute) {
+      id = this.props.attribute.id;
+    }
     const attribute: Attribute = {...this.attributeForm.value};
 
     const collection = `${this.props.altCollection ? this.props.altCollection : PeopleService.collection}/${this.props.person}/attributes`;
-    this.dataService.store(attribute, collection, this.props.attribute.id).then((stuff) => {
+    this.dataService.store(attribute, collection, id).then((stuff) => {
       this.dismissPopover.emit(true);
     });
   }

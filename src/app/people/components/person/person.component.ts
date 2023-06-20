@@ -34,12 +34,16 @@ export class PersonComponent implements OnInit, OnDestroy {
   menu: Menu = {
     actions: [
       {
-        label: 'Person bearbeiten',
+        label: 'Bild ändern',
+        action: this.editImage.bind(this)
+      },
+      {
+        label: 'Daten ändern',
         action: this.editPerson.bind(this)
       },
       {
-        label: 'Bild ändern',
-        action: this.editImage.bind(this)
+        label: 'Neues Attribut',
+        action: this.addAttribute.bind(this)
       },
       {
         label: 'Neue Info',
@@ -103,6 +107,13 @@ export class PersonComponent implements OnInit, OnDestroy {
   toggleMenu(e) {
     e.preventDefault();
     this.menuOpen = !this.menuOpen;
+  }
+
+
+  private addAttribute() {
+    this.popover.showPopover('Neuer Wert', EditAttributeComponent, {
+      person: this.person.id,
+    });
   }
 
 
