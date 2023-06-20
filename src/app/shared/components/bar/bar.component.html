@@ -1,4 +1,5 @@
 <div class="bar-wrapper {{bar.type}}" (click)="onBarClicked()">
   <div class="text">{{bar.type}}</div>
   <div #barElement class="bar"></div>
+  <div #extraBar class="extra-bar" [ngClass]="{'below' : bar.current < 0, 'above': bar.current > bar.max}"></div>
 </div>

@@ -4,6 +4,8 @@
   --bar-box-shadow: none;
   --bar-height: 25px;
   --bar-margin-top: 0;
+  --bar-above-background: orange;
+  --bar-below-background: gray;
 }
 
 .bar-wrapper {
@@ -24,10 +26,28 @@
   &.kap .bar { background-color: var(--color-kap); }
 }
 
-.bar {
+.bar,
+.extra-bar {
   border-radius: var(--bar-border-radius);
   box-shadow: var(--bar-box-shadow);
   height: 100%;
+}
+
+.extra-bar {
+  opacity: 0.75;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+
+  &.above {
+    background: var(--bar-above-background);
+    right: 0;
+  }
+
+  &.below {
+    background: var(--bar-below-background);
+    left: 0;
+  }
 }
 
 .text {
@@ -39,4 +59,5 @@
   text-align: center;
   text-transform: uppercase;
   top: 0;
+  z-index: 2;
 }
