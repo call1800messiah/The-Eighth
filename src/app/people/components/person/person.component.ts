@@ -4,22 +4,24 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Person } from '../../models/person';
+import type { Person } from '../../models/person';
+import type { Info } from '../../../shared/models/info';
+import type { Values } from '../../../shared/models/values';
+import type { Attribute } from '../../../shared/models/attribute';
+import type { Menu } from '../../../shared/models/menu';
+import type { AuthUser } from '../../../auth/models/auth-user';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { DataService } from '../../../core/services/data.service';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';
 import { UtilService } from '../../../core/services/util.service';
-import { Info } from '../../../shared/models/info';
 import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
-import { Values } from '../../../shared/models/values';
-import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { ConfigService } from '../../../core/services/config.service';
 import { PeopleService } from '../../services/people.service';
-import { Menu } from '../../../shared/models/menu';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -35,35 +37,42 @@ export class PersonComponent implements OnInit, OnDestroy {
     actions: [
       {
         label: 'Bild ändern',
-        action: this.editImage.bind(this)
+        action: this.editImage.bind(this),
+        restricted: true,
       },
       {
         label: 'Daten ändern',
-        action: this.editPerson.bind(this)
+        action: this.editPerson.bind(this),
+        restricted: true,
       },
       {
         label: 'Neues Attribut',
-        action: this.addAttribute.bind(this)
+        action: this.addAttribute.bind(this),
+        restricted: true,
       },
       {
         label: 'Neue Info',
         action: this.addDetail.bind(this)
       }
     ],
-};
+  };
   menuOpen = false;
   person: Person;
+  user: AuthUser;
   values$: Observable<Values>;
   private personSub: Subscription;
 
   constructor(
+    private auth: AuthService,
     private data: DataService,
     private navigation: NavigationService,
     private peopleService: PeopleService,
     private popover: PopoverService,
     private route: ActivatedRoute,
     private util: UtilService,
-  ) { }
+  ) {
+    this.user = this.auth.user;
+  }
 
   ngOnInit(): void {
     // TODO: Check if the person can be loaded by a resolver as an observable
@@ -101,6 +110,11 @@ export class PersonComponent implements OnInit, OnDestroy {
       info,
       parentId: this.person.id,
     });
+  }
+
+
+  isOwnerOrCan(access: string): boolean {
+    return this.user && (this.user.isGM || this.user[access] || this.user.id === this.person.owner);
   }
 
 

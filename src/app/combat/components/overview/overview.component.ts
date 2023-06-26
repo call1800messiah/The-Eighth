@@ -3,17 +3,19 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { faDizzy, faPlus, faUserNinja, faUsers } from '@fortawesome/free-solid-svg-icons';
 
-import { Combatant } from '../../models/combatant';
+import type { Combatant } from '../../models/combatant';
+import type { Person } from '../../../people/models/person';
+import type { Attribute } from '../../../shared/models/attribute';
+import type { AuthUser } from '../../../auth/models/auth-user';
 import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
-import { Person } from '../../../people/models/person';
 import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
-import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
 import { PeopleService } from '../../../people/services/people.service';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -31,14 +33,17 @@ export class OverviewComponent implements OnInit {
   faUsers = faUsers;
   newCombatant = '';
   people: Person[];
+  user: AuthUser;
 
   constructor(
+    private auth: AuthService,
     private combatService: CombatService,
     private peopleService: PeopleService,
     private popover: PopoverService,
   ) {
     this.combatants$ = this.combatService.getCombatants();
     this.displayAsBox = environment.tenant === 'tde5';
+    this.user = this.auth.user;
   }
 
   ngOnInit(): void {}
@@ -63,6 +68,11 @@ export class OverviewComponent implements OnInit {
       data.altCollection = this.combatService.combatCollection;
     }
     this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
+  }
+
+
+  isOwnerOrCan(access: string, owner: string): boolean {
+    return this.user && (this.user.isGM || this.user[access] || this.user.id === owner);
   }
 
 

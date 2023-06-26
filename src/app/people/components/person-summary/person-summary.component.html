@@ -4,8 +4,12 @@
   </div>
 
   <div class="text">
-    <div class="title" *ngIf="person.title">{{person.title}}</div>
-    <div class="name">{{person.name}}</div>
+    <div class="title" *ngIf="person.title && isOwnerOrCan('viewTitle')">
+      {{person.title}}
+    </div>
+    <div class="name">
+      {{isOwnerOrCan('viewName')  ? person.name : person.name.split(' ')[0]}}
+    </div>
     <div class="race" *ngIf="person.race">{{person.race}}</div>
     <div class="birthday">{{person.birthyear | estimatedAge}}</div>
     <div class="status">

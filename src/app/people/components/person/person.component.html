@@ -4,7 +4,7 @@
 
     <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
       <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
-      <app-context-menu *ngIf="menuOpen" [personId]="person.id" [menu]="menu"></app-context-menu>
+      <app-context-menu *ngIf="menuOpen" [owner]="person.owner" [menu]="menu"></app-context-menu>
     </button>
   </div>
 
@@ -13,10 +13,10 @@
     <dl>
       <ng-container>
         <dt>Name</dt>
-        <dd>{{person.name}}</dd>
+        <dd>{{isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0]}}</dd>
       </ng-container>
 
-      <ng-container *ngIf="person.title">
+      <ng-container *ngIf="person.title && isOwnerOrCan('viewTitle')">
         <dt>Titel</dt>
         <dd>{{person.title}}</dd>
       </ng-container>

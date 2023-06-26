@@ -28,7 +28,11 @@
       <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
     </div>
     <div class="name" (click)="showMenu(fighter)">
-      {{fighter.person ? fighter.person.name : fighter.name}}
+      {{
+        fighter.person ?
+        isOwnerOrCan('viewName', fighter.person.owner) ? fighter.person.name : fighter.person.name.split(' ')[0] :
+        fighter.name
+      }}
     </div>
 
     <div *ngIf="(fighter.attributes | async) as attributes" class="bars">

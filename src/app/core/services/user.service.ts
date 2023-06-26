@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { User } from '../models/user';
+import type { User } from '../models/user';
 import { ApiService } from './api.service';
-import { AuthService } from './auth.service';
 
 
 
@@ -16,7 +15,6 @@ export class UserService {
 
   constructor(
     private api: ApiService,
-    private auth: AuthService,
   ) {}
 
 
@@ -29,14 +27,6 @@ export class UserService {
       });
       return all;
     }, []);
-  }
-
-
-
-  getCurrentUser(): Observable<User> {
-    return this.users$.pipe(
-      map((users) => users.find((user) => user.id === this.auth.user.id))
-    );
   }
 
 
