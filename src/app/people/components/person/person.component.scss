@@ -1,3 +1,5 @@
+@import '../../../../scss/variables.scss';
+
 :host {
   --person-attributes-border: var(--border-line-width) solid var(--color-primary);
 }
@@ -20,6 +22,14 @@
   position: relative;
   text-align: center;
   max-width: var(--avatar-large);
+}
+
+.banner {
+  bottom: 0;
+  height: 22.5%;
+  left: 0;
+  position: absolute;
+  width: 22.5%;
 }
 
 .info {

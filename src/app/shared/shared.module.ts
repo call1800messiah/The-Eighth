@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -62,6 +62,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     ReactiveFormsModule,
     ImageCropperModule,
     RouterModule,
+    NgOptimizedImage,
   ],
   exports: [
     AudioPlayerListComponent,
@@ -79,6 +80,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     FontAwesomeModule,
     FormsModule,
     InfoBoxComponent,
+    NgOptimizedImage,
     PopoverComponent,
     ProgressBarComponent,
     ReactiveFormsModule,

@@ -13,6 +13,7 @@ import { Person } from 'src/app/people/models/person';
 })
 export class AvatarComponent implements OnInit {
   @Input() person: Person;
+  @Input() priority?: boolean;
   faUser = faUser;
 
   constructor(

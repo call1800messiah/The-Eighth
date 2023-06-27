@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 
-import { PopoverChild } from '../../models/popover-child';
+import type { PopoverChild } from '../../models/popover-child';
+import type { EditImageProps } from '../../models/edit-image-props';
 import { UtilService } from '../../../core/services/util.service';
 import { StorageService } from '../../../core/services/storage.service';
-import { EditImageProps } from '../../models/edit-image-props';
 
 
 
@@ -27,9 +27,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
   ) {
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.dynamicSizing = true;
-    this.cropperSettings.fileType = 'image/jpeg';
     this.cropperSettings.noFileInput = true;
-    this.cropperSettings.compressRatio = 0.9;
   }
 
   ngOnInit(): void {
@@ -52,7 +50,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
     }
 
     this.storage.uploadFile(
-      `${imageName}.jpg`,
+      `${imageName}.${this.cropperSettings.fileType.split('/')[1]}`,
       this.util.dataURLtoBlob(this.croppedImageData.image),
       this.props.bucket,
       this.props.updateRef

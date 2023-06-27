@@ -3,6 +3,7 @@ import { CombatState } from '../../shared/models/combat-state';
 export interface Person {
   id: string;
   name: string;
+  banner: string;
   birthday: string;
   birthyear: number;
   culture: string;

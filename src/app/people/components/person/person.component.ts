@@ -51,6 +51,11 @@ export class PersonComponent implements OnInit, OnDestroy {
         restricted: true,
       },
       {
+        label: 'Banner ändern',
+        action: this.editBanner.bind(this),
+        restricted: true,
+      },
+      {
         label: 'Neue Info',
         action: this.addDetail.bind(this)
       }
@@ -139,13 +144,32 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
+  private editBanner() {
+    this.popover.showPopover('Banner ändern', EditImageComponent, {
+      bucket: 'banners',
+      cropperSettings: ConfigService.imageSettings.banner,
+      imageName: this.util.slugify(this.person.name),
+      imageUrl: this.person.banner,
+      updateRef: {
+        attribute: 'banner',
+        collection: PeopleService.collection,
+        id: this.person.id,
+      },
+    });
+  }
+
+
   private editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: PeopleService.collection,
       cropperSettings: ConfigService.imageSettings.person,
       imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,
-      updateRef: this.person,
+      updateRef: {
+        attribute: 'image',
+        collection: PeopleService.collection,
+        id: this.person.id
+      },
     });
   }
 

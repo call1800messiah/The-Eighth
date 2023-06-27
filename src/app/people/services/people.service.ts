@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Person } from '../models/person';
+import type { Person } from '../models/person';
+import type { Values } from '../../shared/models/values';
+import type { AuthUser } from '../../auth/models/auth-user';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
-import { Values } from '../../shared/models/values';
 import { DataService } from '../../core/services/data.service';
-import { AuthUser } from '../../auth/models/auth-user';
 
 
 
@@ -94,9 +94,10 @@ export class PeopleService {
   private transformPeople(people: any[]): Person[] {
     return people.reduce((all, entry) => {
       const personData = entry.payload.doc.data();
-      const person = {
+      const person: Person = {
         id: entry.payload.doc.id,
         name: personData.name || '',
+        banner: null,
         birthday: personData.birthday || null,
         birthyear: personData.birthyear !== undefined ? personData.birthyear : null,
         culture: personData.culture || null,
@@ -105,6 +106,7 @@ export class PeopleService {
         image: null,
         profession: personData.profession || null,
         race: personData.race || null,
+        states: personData.states || [],
         tags: personData.tags || [],
         title: personData.title || null,
         pc: personData.pc || false,
@@ -114,6 +116,11 @@ export class PeopleService {
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {
           person.image = url;
+        });
+      }
+      if (personData.banner && personData.banner !== '') {
+        this.storage.getDownloadURL(personData.banner).subscribe((url) => {
+          person.banner = url;
         });
       }
       all.push(person);

@@ -1,11 +1,15 @@
 <app-container width="medium" class="person" *ngIf="person">
   <div class="image">
-    <app-avatar [person]="person"></app-avatar>
+    <app-avatar [person]="person" [priority]="true"></app-avatar>
 
     <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
       <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
       <app-context-menu *ngIf="menuOpen" [owner]="person.owner" [menu]="menu"></app-context-menu>
     </button>
+
+    <div class="banner" *ngIf="person.banner && isOwnerOrCan('viewBanner')">
+      <img [ngSrc]="person.banner" fill alt="Banner">
+    </div>
   </div>
 
 
