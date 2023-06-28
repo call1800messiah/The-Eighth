@@ -22,6 +22,7 @@ import { EditAttributeComponent } from '../../../shared/components/edit-attribut
 import { ConfigService } from '../../../core/services/config.service';
 import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 
 
 
@@ -53,6 +54,11 @@ export class PersonComponent implements OnInit, OnDestroy {
       {
         label: 'Banner ändern',
         action: this.editBanner.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Zugriff regeln',
+        action: this.editAccess.bind(this),
         restricted: true,
       },
       {
@@ -140,6 +146,14 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.popover.showPopover('Neue Info', EditInfoComponent, {
       collection: PeopleService.collection,
       parentId: this.person.id
+    });
+  }
+
+
+  private editAccess() {
+    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
+      collection: PeopleService.collection,
+      documentId: this.person.id,
     });
   }
 

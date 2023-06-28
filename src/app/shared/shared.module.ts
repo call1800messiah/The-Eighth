@@ -27,6 +27,7 @@ import { TplVarDirective } from './directives/tpl-var.directive';
 import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { EditAccessComponent } from './components/edit-access/edit-access.component';
 
 
 
@@ -54,6 +55,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     TplVarDirective,
     UnlockButtonComponent,
     ContextMenuComponent,
+    EditAccessComponent,
   ],
   imports: [
     CommonModule,
@@ -72,6 +74,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
     ContainerComponent,
     ContextMenuComponent,
     DashboardComponent,
+    EditAccessComponent,
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
