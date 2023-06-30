@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTags } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -23,6 +23,7 @@ import { ConfigService } from '../../../core/services/config.service';
 import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
+import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
 
 
 
@@ -33,6 +34,7 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 })
 export class PersonComponent implements OnInit, OnDestroy {
   faBars = faBars;
+  faTags = faTags;
   infos$: Observable<Map<InfoType, Info[]>>;
   menu: Menu = {
     actions: [
@@ -54,6 +56,11 @@ export class PersonComponent implements OnInit, OnDestroy {
       {
         label: 'Banner ändern',
         action: this.editBanner.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Tags ändern',
+        action: this.editTags.bind(this),
         restricted: true,
       },
       {
@@ -190,5 +197,14 @@ export class PersonComponent implements OnInit, OnDestroy {
 
   private editPerson() {
     this.popover.showPopover(this.person.name, EditPersonComponent, this.person);
+  }
+
+
+  private editTags() {
+    this.popover.showPopover('Tags editieren', EditTagsComponent, {
+      collection: PeopleService.collection,
+      id: this.person.id,
+      tags: this.person.tags,
+    });
   }
 }

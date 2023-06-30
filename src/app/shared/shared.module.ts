@@ -28,6 +28,7 @@ import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
 import { EditAccessComponent } from './components/edit-access/edit-access.component';
+import { EditTagsComponent } from './components/edit-tags/edit-tags.component';
 
 
 
@@ -56,6 +57,7 @@ import { EditAccessComponent } from './components/edit-access/edit-access.compon
     UnlockButtonComponent,
     ContextMenuComponent,
     EditAccessComponent,
+    EditTagsComponent,
   ],
   imports: [
     CommonModule,
@@ -78,6 +80,7 @@ import { EditAccessComponent } from './components/edit-access/edit-access.compon
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    EditTagsComponent,
     EstimatedAgePipe,
     FocusOnInitDirective,
     FontAwesomeModule,

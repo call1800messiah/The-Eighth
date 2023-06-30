@@ -1,0 +1,26 @@
+<div>
+  <div class="top-bar">
+    <div class="form-group">
+      <label for="newTag">Neuer Tag</label>
+      <input type="text" class="form-control" id="newTag" [(ngModel)]="newTag">
+    </div>
+
+    <button type="button" class="btn-icon" (click)="addTag()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
+    </button>
+  </div>
+
+  <div class="tag-list">
+    <div class="single-tag" *ngFor="let tag of tagsList">
+      {{tag}}
+
+      <button type="button" class="btn-icon" (click)="removeTag(tag)">
+        <fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <button type="button" class="btn" (click)="save()">
+    Speichern
+  </button>
+</div>
