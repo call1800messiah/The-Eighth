@@ -1,6 +1,6 @@
 <app-container width="medium" class="quest" *ngIf="quest">
   <div class="info box">
-    <div class="type" (click)="editQuest()">
+    <div class="type">
       {{questTypes[quest.type]}}
     </div>
     <div class="parent" *ngIf="quest.parent && quest.parent.name" (click)="goTo(quest.parent.id)">
@@ -26,8 +26,9 @@
     <div class="header">
       <h2>Details</h2>
 
-      <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
-        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+      <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+        <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+        <app-context-menu *ngIf="menuOpen" [owner]="quest.owner" [menu]="menu"></app-context-menu>
       </button>
     </div>
   </div>

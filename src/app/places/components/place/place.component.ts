@@ -111,6 +111,14 @@ export class PlaceComponent implements OnInit, OnDestroy {
   }
 
 
+  private editAccess() {
+    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
+      collection: PlaceService.collection,
+      documentId: this.place.id,
+    });
+  }
+
+
   private editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: 'places',
@@ -128,13 +136,5 @@ export class PlaceComponent implements OnInit, OnDestroy {
 
   private editPlace() {
     this.popover.showPopover(this.place.name, EditPlaceComponent, this.place);
-  }
-
-
-  private editAccess() {
-    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
-      collection: PlaceService.collection,
-      documentId: this.place.id,
-    });
   }
 }
