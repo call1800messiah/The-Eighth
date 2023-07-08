@@ -117,7 +117,11 @@ export class PlaceComponent implements OnInit, OnDestroy {
       cropperSettings: ConfigService.imageSettings.place,
       imageName: this.util.slugify(this.place.name),
       imageUrl: this.place.image,
-      updateRef: this.place,
+      updateRef: {
+        attribute: 'image',
+        collection: PlaceService.collection,
+        id: this.place.id,
+      },
     });
   }
 
