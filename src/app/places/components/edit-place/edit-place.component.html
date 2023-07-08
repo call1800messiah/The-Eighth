@@ -19,7 +19,7 @@
     <div class="form-group">
       <select id="parentId" formControlName="parentId">
         <option [value]="null">Nichts</option>
-        <option [ngValue]="place.id" *ngFor="let place of places$ | async">
+        <option [ngValue]="place.id" *ngFor="let place of places$ | async" [disabled]="place.id === props.id">
           {{place.name}} ({{placeTypeMap[place.type]}})
         </option>
       </select>
