@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import type { FileUpdateRef } from '../models/file-update-ref';
 import { ApiService } from './api.service';
@@ -18,6 +18,18 @@ export class StorageService {
     private storage: AngularFireStorage
   ) { }
 
+
+
+  delete(bucket: string, fileName: string, updateRef?: FileUpdateRef): Promise<void> {
+    return firstValueFrom(this.storage.ref(`${bucket}/${fileName}`).delete()).then(() => {
+      if (updateRef) {
+        const update = { [updateRef.attribute]: '' };
+        this.api.updateDocumentInCollection(updateRef.id, updateRef.collection, update).catch((error) => {
+          console.error(error);
+        });
+      }
+    });
+  }
 
 
   getDownloadURL(fileName: string): Observable<string> {

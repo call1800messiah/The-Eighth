@@ -19,6 +19,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
   @ViewChild('cropper') cropper: ImageCropperComponent;
   croppedImageData: any = {};
   cropperSettings: CropperSettings;
+  deleteDisabled = true;
   imageName: string;
 
   constructor(
@@ -34,6 +35,19 @@ export class EditImageComponent implements OnInit, PopoverChild {
     if (this.props.cropperSettings) {
       Object.entries(this.props.cropperSettings).forEach(([key, value]) => {
         this.cropperSettings[key] = value;
+      });
+    }
+  }
+
+
+  delete() {
+    if (this.props.imageName) {
+      this.storage.delete(
+        this.props.bucket,
+        `${this.props.imageName}.${this.cropperSettings.fileType.split('/')[1]}`,
+        this.props.updateRef
+      ).then(() => {
+        this.dismissPopover.emit(true);
       });
     }
   }
@@ -75,5 +89,9 @@ export class EditImageComponent implements OnInit, PopoverChild {
     };
 
     myReader.readAsDataURL(file);
+  }
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
   }
 }
