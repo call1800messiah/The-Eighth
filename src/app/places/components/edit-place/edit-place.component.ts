@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
+import type { Place } from '../../models/place';
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
-import { Place } from '../../models/place';
 import { PlaceService } from '../../services/place.service';
 
 
@@ -83,4 +83,6 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   toggleDelete() {
     this.deleteDisabled = !this.deleteDisabled;
   }
+
+  protected readonly PlaceService = PlaceService;
 }

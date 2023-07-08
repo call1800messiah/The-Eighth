@@ -20,7 +20,7 @@
       <select id="parentId" formControlName="parentId">
         <option>Nichts</option>
         <option [ngValue]="place.id" *ngFor="let place of places$ | async">
-          {{place.name}}
+          {{place.name}} ({{PlaceService.placeTypes[place.type]}})
         </option>
       </select>
       <label for="parentId">Teil von</label>
