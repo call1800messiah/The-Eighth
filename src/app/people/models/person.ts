@@ -1,21 +1,25 @@
-import { CombatState } from '../../shared/models/combat-state';
+import type { CombatState } from '../../shared/models/combat-state';
+import type { Relative } from './relative';
 
 export interface Person {
   id: string;
-  name: string;
   banner: string;
   birthday: string;
   birthyear: number;
+  children?: Relative[];
   culture: string;
   deathday: string;
   height: number;
   image: string;
+  isPrivate?: boolean;
+  name: string;
+  owner?: string;
+  parents?: Relative[];
+  pc: boolean;
   profession: string;
   race: string;
-  title: string;
-  pc: boolean;
+  siblings?: Relative[];
   states: CombatState[];
   tags?: string[];
-  owner?: string;
-  isPrivate?: boolean;
+  title: string;
 }
