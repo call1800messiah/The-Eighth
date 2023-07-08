@@ -1,8 +1,11 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
+import firebase from 'firebase/compat/app';
+import FieldValue = firebase.firestore.FieldValue;
 
 import type { Place } from '../../models/place';
+import type { PlaceDB } from '../../models/place.db';
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
 import { PlaceService } from '../../services/place.service';
@@ -28,6 +31,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
     parentId: new UntypedFormControl(),
     type: new UntypedFormControl(this.placeTypes[0])
   });
+  placeTypeMap = PlaceService.placeTypes;
   places$: Observable<Place[]>;
   userID: string;
   private subscription = new Subscription();
@@ -48,10 +52,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
     if (this.props.id) {
       const place = this.props as Place;
       this.placeForm.patchValue(place);
-
-      if (this.props.parent) {
-        this.placeForm.patchValue({ parentId: this.props.parent.id });
-      }
+      this.placeForm.patchValue({ parentId: this.props.parent ? this.props.parent.id : null });
     }
   }
 
@@ -60,19 +61,17 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
 
-  isSelectedParent(parentId: string): boolean {
-    return this.props.id && this.props.parent && this.props.parent.id === parentId;
-  }
-
-
   save() {
-    const place: Partial<Place> = {
+    const place: Partial<PlaceDB> = {
       ...this.placeForm.value
     };
     if (this.props.id) {
       place.owner = this.props.owner;
     } else {
       place.owner = this.userID;
+    }
+    if (!place.parentId || place.parentId === 'null') {
+      place.parentId = FieldValue.delete();
     }
     this.placeService.store(place, this.props.id).then(() => {
       this.dismissPopover.emit(true);
@@ -83,6 +82,4 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   toggleDelete() {
     this.deleteDisabled = !this.deleteDisabled;
   }
-
-  protected readonly PlaceService = PlaceService;
 }

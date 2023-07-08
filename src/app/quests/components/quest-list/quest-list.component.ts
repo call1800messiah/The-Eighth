@@ -35,7 +35,7 @@ export class QuestListComponent implements OnInit {
       map(this.filterQuestsByText)
     );
     this.quests$ = this.questsService.getQuests().pipe(
-      map((quests) => quests.filter((quest) => quest.parent.id === 'Nichts')),
+      map((quests) => quests.filter((quest) => !quest.parent)),
     );
   }
 

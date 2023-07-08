@@ -18,9 +18,9 @@
     </div>
     <div class="form-group">
       <select id="parentId" formControlName="parentId">
-        <option>Nichts</option>
+        <option [value]="null">Nichts</option>
         <option [ngValue]="place.id" *ngFor="let place of places$ | async">
-          {{place.name}} ({{PlaceService.placeTypes[place.type]}})
+          {{place.name}} ({{placeTypeMap[place.type]}})
         </option>
       </select>
       <label for="parentId">Teil von</label>

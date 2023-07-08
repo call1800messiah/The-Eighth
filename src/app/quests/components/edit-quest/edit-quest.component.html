@@ -18,7 +18,7 @@
     </div>
     <div class="form-group">
       <select id="parentId" formControlName="parentId">
-        <option>Nichts</option>
+        <option [value]="null">Nichts</option>
         <option [ngValue]="quest.id" *ngFor="let quest of quests$ | async">
           {{quest.name}}
         </option>

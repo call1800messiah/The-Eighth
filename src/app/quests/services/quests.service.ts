@@ -95,18 +95,19 @@ export class QuestsService {
     const questGroupMap: Record<string, Quest[]> = {
       Nichts: []
     };
-    // TODO: Fix quests without a parent having multiple representations in the database
 
     quests.forEach((quest) => {
       questMap[quest.id] = quest;
-      if (!questGroupMap[quest.parent.id]) {
-        questGroupMap[quest.parent.id] = [];
+      if (quest.parent) {
+        if (!questGroupMap[quest.parent.id]) {
+          questGroupMap[quest.parent.id] = [];
+        }
+        questGroupMap[quest.parent.id].push(quest);
       }
-      questGroupMap[quest.parent.id].push(quest);
     });
 
     Object.entries(questGroupMap).forEach(([questId, questList]) => {
-      if (questId !== 'Nichts' && questMap[questId]) {
+      if (questMap[questId]) {
         questMap[questId].subQuests = questList;
       }
     });

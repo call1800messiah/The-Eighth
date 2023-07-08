@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Place } from '../models/place';
+import type { Place } from '../models/place';
+import type { AuthUser } from '../../auth/models/auth-user';
+import type { Info } from '../../shared/models/info';
 import { UtilService } from '../../core/services/util.service';
 import { StorageService } from '../../core/services/storage.service';
 import { ApiService } from '../../core/services/api.service';
-import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
-import { Info } from '../../shared/models/info';
 import { InfoType } from '../../core/enums/info-type.enum';
 
 
@@ -24,6 +24,8 @@ export class PlaceService {
     castle: 'Burg',
     city: 'Stadt',
     forest: 'Wald',
+    fortifiedYard: 'Wehrhof',
+    hamlet: 'Weiler',
     island: 'Insel',
     landmass: 'Landmasse',
     ocean: 'Gewässer',
@@ -120,7 +122,6 @@ export class PlaceService {
     const placeGroupMap: Record<string, Place[]> = {
       none: []
     };
-    // TODO: Fix places without a parent having multiple representations in the database
 
     places.forEach((place) => {
       placeMap[place.id] = place;
@@ -135,7 +136,7 @@ export class PlaceService {
     });
 
     Object.entries(placeGroupMap).forEach(([placeId, placeList]) => {
-      if (placeId !== 'none' && placeMap[placeId]) {
+      if (placeMap[placeId]) {
         placeMap[placeId].parts = placeList;
       }
     });

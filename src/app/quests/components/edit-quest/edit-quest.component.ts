@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
+import firebase from 'firebase/compat/app';
+import FieldValue = firebase.firestore.FieldValue;
 
+import type { Quest } from '../../models/quest';
 import { QuestsService } from '../../services/quests.service';
 import { PopoverChild } from '../../../shared/models/popover-child';
-import { Quest } from '../../models/quest';
 import { AuthService } from '../../../core/services/auth.service';
+import { QuestDB } from '../../models/quest.db';
 
 
 
@@ -50,10 +53,7 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
     if (this.props.id) {
       const quest = this.props;
       this.questForm.patchValue(quest);
-
-      if (this.props.parent) {
-        this.questForm.patchValue({ parentId: this.props.parent.id });
-      }
+      this.questForm.patchValue({ parentId: this.props.parent ? this.props.parent.id  : null });
     }
   }
 
@@ -68,13 +68,16 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
   save() {
-    const quest: Partial<Quest> = {
+    const quest: Partial<QuestDB> = {
       ...this.questForm.value
     };
     if (this.props.id) {
       quest.owner = this.props.owner;
     } else {
       quest.owner = this.userID;
+    }
+    if (!quest.parentId || quest.parentId === 'null') {
+      quest.parentId = FieldValue.delete();
     }
     this.questService.store(quest, this.props.id).then(() => {
       this.dismissPopover.emit(true);
