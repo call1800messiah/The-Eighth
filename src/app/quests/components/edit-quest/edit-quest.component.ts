@@ -76,8 +76,10 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
     } else {
       quest.owner = this.userID;
     }
-    if (!quest.parentId || quest.parentId === 'null') {
+    if (this.props.id && quest.parentId === 'null') {
       quest.parentId = FieldValue.delete();
+    } else {
+      delete quest.parentId;
     }
     this.questService.store(quest, this.props.id).then(() => {
       this.dismissPopover.emit(true);
