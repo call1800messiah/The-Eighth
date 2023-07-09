@@ -8,7 +8,7 @@
     </button>
 
     <div class="banner" *ngIf="person.banner && isOwnerOrCan('viewBanner')">
-      <img [ngSrc]="person.banner" fill alt="Banner">
+      <img src="{{person.banner}}" alt="Banner">
     </div>
   </div>
 
@@ -54,6 +54,14 @@
         <dt>Größe</dt>
         <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
       </ng-container>
+
+      <ng-container *ngIf="person.location as location">
+        <dt>Ort</dt>
+        <dd>
+          <a [routerLink]="['/places', location.id]" *ngIf="location.id" class="location">{{location.name}}</a>
+          <span *ngIf="!location.id">{{location.name}}</span>
+        </dd>
+      </ng-container>
     </dl>
 
     <div class="tags" *ngIf="person.tags">
@@ -67,6 +75,23 @@
                [bar]="bar"
                (barClicked)="editAttribute(bar)"
       ></app-bar>
+    </div>
+  </div>
+
+  <div *ngIf="person.relatives && isOwnerOrCan('viewAncestry')" class="box relatives">
+    <div class="heading">Verwandte</div>
+    <div class="relatives-list">
+      <ul class="unstyled-list">
+        <li *ngFor="let relatives of person.relatives | keyvalue">
+          {{relativeTypes[relatives.key]}}
+          <ul>
+            <li *ngFor=" let relative of relatives.value">
+              <a [routerLink]="['/people', relative.id]" *ngIf="relative.id" class="location">{{relative.name}}</a>
+              <span *ngIf="!relative.id">{{relative.name}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 

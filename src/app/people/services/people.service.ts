@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import type { Person } from '../models/person';
 import type { Values } from '../../shared/models/values';
 import type { AuthUser } from '../../auth/models/auth-user';
+import type { Relative } from '../models/relative';
+import type { PersonDB } from '../models/person.db';
+import type { Place } from '../../places/models/place';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
 import { DataService } from '../../core/services/data.service';
+import { PlaceService } from '../../places/services/place.service';
 
 
 
@@ -18,6 +22,12 @@ import { DataService } from '../../core/services/data.service';
 })
 export class PeopleService {
   static readonly collection = 'people';
+  static readonly relativeTypes = {
+    children: 'Kinder',
+    parents: 'Eltern',
+    partners: 'Partner',
+    siblings: 'Geschwister',
+  };
   private people$: BehaviorSubject<Person[]>;
   private user: AuthUser;
 
@@ -25,9 +35,30 @@ export class PeopleService {
     private api: ApiService,
     private auth: AuthService,
     private data: DataService,
+    private place: PlaceService,
     private storage: StorageService,
   ) {
     this.user = this.auth.user;
+  }
+
+
+
+  private static resolveAllRelatives(people: Person[]): Person[] {
+    people.forEach(person => {
+      Object.values(person.relatives).forEach((relatives: Relative[]) => {
+        relatives.map((relative) => {
+          const p = people.find(r => r.id === relative.id);
+          if (p) {
+            relative.name = p.name;
+          } else {
+            delete relative.id;
+          }
+          return relative;
+        });
+      });
+    });
+    console.log(people);
+    return people;
   }
 
 
@@ -58,7 +89,14 @@ export class PeopleService {
         (ref) => ref
           .where('access', 'array-contains', this.user.id)
       ).pipe(
+        withLatestFrom(this.place.getPlaces().pipe(
+          map((places) => places.reduce((all, p) => {
+            all[p.id] = p;
+            return all;
+          }, {}) as Record<string, Place>),
+        )),
         map(this.transformPeople.bind(this)),
+        map(PeopleService.resolveAllRelatives),
         map((people: Person[]) => people.sort(UtilService.orderByName)),
       ).subscribe((people) => {
         this.people$.next(people);
@@ -91,9 +129,9 @@ export class PeopleService {
 
 
 
-  private transformPeople(people: any[]): Person[] {
+  private transformPeople([people, placeMap]): Person[] {
     return people.reduce((all, entry) => {
-      const personData = entry.payload.doc.data();
+      const personData = entry.payload.doc.data() as PersonDB;
       const person: Person = {
         id: entry.payload.doc.id,
         name: personData.name || '',
@@ -106,7 +144,8 @@ export class PeopleService {
         image: null,
         profession: personData.profession || null,
         race: personData.race || null,
-        states: personData.states || [],
+        relatives: {},
+        states: [],
         tags: personData.tags || [],
         title: personData.title || null,
         pc: personData.pc || false,
@@ -123,6 +162,20 @@ export class PeopleService {
           person.banner = url;
         });
       }
+      if (personData.location) {
+        person.location = {
+          name: placeMap[personData.location]?.name ?? personData.location,
+        };
+        if (placeMap[personData.location]) {
+          person.location.id = personData.location;
+        }
+      }
+      if (personData.relatives) {
+        Object.entries(personData.relatives).forEach(([type, relativeList]) => {
+          person.relatives[type] = relativeList.map((id) => ({ id, name: id }));
+        });
+      }
+
       all.push(person);
       return all;
     }, []);

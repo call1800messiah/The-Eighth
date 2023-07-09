@@ -28,8 +28,14 @@
   bottom: 0;
   height: 22.5%;
   left: 0;
+  line-height: 0;
   position: absolute;
   width: 22.5%;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .info {
@@ -52,6 +58,11 @@ dd {
   display: inline-block;
   margin: 0;
   width: calc(100% - 100px);
+}
+
+.location {
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .tags {

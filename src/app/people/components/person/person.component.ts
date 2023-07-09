@@ -76,6 +76,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   };
   menuOpen = false;
   person: Person;
+  relativeTypes = PeopleService.relativeTypes;
   user: AuthUser;
   values$: Observable<Values>;
   private personSub: Subscription;
