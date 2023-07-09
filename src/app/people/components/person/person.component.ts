@@ -132,6 +132,11 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
+  hasRelatives(): boolean {
+    return Object.keys(this.person.relatives).length > 0;
+  }
+
+
   isOwnerOrCan(access: string): boolean {
     return this.user && (this.user.isGM || this.user[access] || this.user.id === this.person.owner);
   }

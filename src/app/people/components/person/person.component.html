@@ -55,7 +55,7 @@
         <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
       </ng-container>
 
-      <ng-container *ngIf="person.location as location">
+      <ng-container *ngIf="isOwnerOrCan('viewLocation') && person.location as location">
         <dt>Ort</dt>
         <dd>
           <a [routerLink]="['/places', location.id]" *ngIf="location.id" class="location">{{location.name}}</a>
@@ -78,7 +78,7 @@
     </div>
   </div>
 
-  <div *ngIf="person.relatives && isOwnerOrCan('viewAncestry')" class="box relatives">
+  <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
     <div class="heading">Verwandte</div>
     <div class="relatives-list">
       <ul class="unstyled-list">

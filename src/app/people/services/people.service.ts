@@ -57,7 +57,6 @@ export class PeopleService {
         });
       });
     });
-    console.log(people);
     return people;
   }
 
