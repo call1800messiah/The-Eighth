@@ -6,7 +6,7 @@
 </app-top-bar-filter>
 
 <app-box-grid>
-  <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person"
-                      (click)="goToPerson(person)">
-  </app-person-summary>
+  <a [routerLink]="[person.id]" *ngFor="let person of filteredPeople$ | async">
+    <app-person-summary [person]="person" ></app-person-summary>
+  </a>
 </app-box-grid>

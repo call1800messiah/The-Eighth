@@ -26,6 +26,12 @@ body {
   padding: var(--header-height) 0 var(--footer-height);
 }
 
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+
 h1 {
   font-size: var(--headline-huge);
   font-weight: normal;

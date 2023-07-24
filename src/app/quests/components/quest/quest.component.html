@@ -3,8 +3,8 @@
     <div class="type">
       {{questTypes[quest.type]}}
     </div>
-    <div class="parent" *ngIf="quest.parent && quest.parent.name" (click)="goTo(quest.parent.id)">
-      Teil von: {{quest.parent.name}}
+    <div class="parent" *ngIf="quest.parent && quest.parent.name">
+      Teil von: <a [routerLink]="['/quests/', quest.parent.id]">{{quest.parent.name}}</a>
     </div>
     <div class="description" *ngIf="quest.description">
       {{quest.description}}
@@ -15,8 +15,8 @@
     <div class="subquests box" *ngIf="quest.subQuests.length > 0">
       <div class="heading">Subquests</div>
       <ul class="unstyled-list">
-        <li class="subquest" *ngFor="let subQuest of quest.subQuests" (click)="goTo(subQuest.id)">
-          {{subQuest.name}}
+        <li class="subquest" *ngFor="let subQuest of quest.subQuests">
+          <a [routerLink]="['/quests/', subQuest.id]">{{subQuest.name}}</a>
         </li>
       </ul>
     </div>

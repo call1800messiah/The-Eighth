@@ -13,6 +13,8 @@
 }
 
 .header {
+  align-items: center;
+  display: flex;
   min-height: var(--mobile-interactive-height);
   position: relative;
 

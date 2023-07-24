@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from 'src/app/people/models/person';
+import type { Person } from 'src/app/people/models/person';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
@@ -24,7 +23,6 @@ export class ListComponent implements OnInit {
   constructor(
     private peopleService: PeopleService,
     private popover: PopoverService,
-    private router: Router,
   ) {
     this.filterText = new BehaviorSubject<string>('');
     this.filteredPeople$ = combineLatest([
@@ -38,11 +36,6 @@ export class ListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-
-
-  goToPerson(person: Person) {
-    this.router.navigate([`people/${person.id}`]);
-  }
 
 
   onFilterChanged(text: string) {

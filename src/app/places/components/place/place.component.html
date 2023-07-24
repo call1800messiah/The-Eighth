@@ -23,7 +23,11 @@
         </ng-container>
         <ng-container *ngIf="place.parent && place.parent.name">
           <dt>Teil von</dt>
-          <dd>{{place.parent.name}}</dd>
+          <dd>
+            <a [routerLink]="['/places/', place.parent.id]">
+              {{place.parent.name}}
+            </a>
+          </dd>
         </ng-container>
       </dl>
     </div>

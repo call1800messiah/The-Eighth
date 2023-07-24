@@ -3,10 +3,10 @@
     *ngIf="showCompleted || !quest.completed"
 >
   <div class="type">{{questTypes[quest.type]}}</div>
-  <div class="details" (click)="goToQuest()">
+  <a class="details" [routerLink]="[quest.id]">
     <div class="name">{{quest.name}}</div>
     <div class="description">{{quest.description}}</div>
-  </div>
+  </a>
 
   <ul class="subquests unstyled-list" *ngIf="quest.subQuests && showSubQuests">
     <app-quest-summary

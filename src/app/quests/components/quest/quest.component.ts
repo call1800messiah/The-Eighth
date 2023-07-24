@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -55,7 +55,6 @@ export class QuestComponent implements OnInit, OnDestroy {
     private popover: PopoverService,
     private questService: QuestsService,
     private route: ActivatedRoute,
-    private router: Router,
   ) {
     // TODO: Check if the quest can be loaded by a resolver as an observable
     this.questSub = this.route.paramMap.pipe(
@@ -86,11 +85,6 @@ export class QuestComponent implements OnInit, OnDestroy {
       info,
       parentId: this.quest.id
     });
-  }
-
-
-  goTo(id: string) {
-    this.router.navigate([`quests/${id}`]);
   }
 
 
