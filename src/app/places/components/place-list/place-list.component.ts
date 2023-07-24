@@ -3,7 +3,7 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { Place } from '../../models/place';
+import type { Place } from '../../models/place';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPlaceComponent } from '../edit-place/edit-place.component';
 import { PlaceService } from '../../services/place.service';
@@ -19,13 +19,15 @@ export class PlaceListComponent implements OnInit {
   filteredPlaces$: Observable<Place[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
   places$: Observable<Place[]>;
 
   constructor(
     private placeService: PlaceService,
     private popover: PopoverService,
   ) {
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('places-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredPlaces$ = combineLatest([
       this.placeService.getPlaces(),
       this.filterText,
@@ -42,12 +44,8 @@ export class PlaceListComponent implements OnInit {
 
 
 
-  editPlace(place: Place) {
-    this.popover.showPopover('Ort editieren', EditPlaceComponent, place);
-  }
-
-
   onFilterChanged(text: string) {
+    localStorage.setItem('places-filter', text);
     this.filterText.next(text);
   }
 

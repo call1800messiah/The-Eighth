@@ -22,6 +22,7 @@ export class ListComponent implements OnInit {
   filteredAchievements$: Observable<Achievement[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
   user: AuthUser;
 
   constructor(
@@ -30,7 +31,8 @@ export class ListComponent implements OnInit {
     private popover: PopoverService,
   ) {
     this.user = this.auth.user;
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('achievements-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredAchievements$ = combineLatest([
       this.achievementService.getAchievements(),
       this.filterText,
@@ -44,6 +46,7 @@ export class ListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('achievements-filter', text);
     this.filterText.next(text);
   }
 

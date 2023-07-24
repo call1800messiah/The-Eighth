@@ -11,25 +11,26 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./top-bar-filter.component.scss']
 })
 export class TopBarFilterComponent implements OnInit, OnDestroy {
+  @Input() text: string;
   @Input() placeholder: string;
   @Output() filterChanged = new EventEmitter<string>();
   textFilter: UntypedFormControl;
   subscription = new Subscription();
 
   constructor() {
-    this.textFilter = new UntypedFormControl('');
+  }
+
+  ngOnInit(): void {
+    this.textFilter = new UntypedFormControl(this.text || '');
     this.subscription.add(
       this.textFilter.valueChanges.pipe(
-        startWith(''),
+        startWith(this.text || ''),
         debounceTime(300),
         distinctUntilChanged(),
       ).subscribe((text) => {
         this.filterChanged.emit(text);
       })
     );
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy(): void {

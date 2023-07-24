@@ -16,15 +16,17 @@ import { PeopleService } from '../../services/people.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
-  filteredPeople$: Observable<Person[]>;
   faPlus = faPlus;
+  filteredPeople$: Observable<Person[]>;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
 
   constructor(
     private peopleService: PeopleService,
     private popover: PopoverService,
   ) {
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('people-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredPeople$ = combineLatest([
       this.peopleService.getPeople(),
       this.filterText,
@@ -39,6 +41,7 @@ export class ListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('people-filter', text);
     this.filterText.next(text);
   }
 

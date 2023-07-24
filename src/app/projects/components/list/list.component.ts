@@ -20,13 +20,15 @@ export class ListComponent implements OnInit {
   filteredProjects$: Observable<Project[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
   showCompleted: UntypedFormControl;
 
   constructor(
     private projectsService: ProjectService,
     private popover: PopoverService
   ) {
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('projects-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.showCompleted = new UntypedFormControl(false);
     this.filteredProjects$ = combineLatest([
       this.projectsService.getProjects(),
@@ -46,6 +48,7 @@ export class ListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('projects-filter', text);
     this.filterText.next(text);
   }
 

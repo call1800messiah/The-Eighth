@@ -1,5 +1,5 @@
 <app-container width="medium">
-  <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
+  <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
     <button type="button" class="btn-icon" (click)="showAddDialog()" *ngIf="user && user.isGM">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"
                title="Achievement hinzufügen"></fa-icon>

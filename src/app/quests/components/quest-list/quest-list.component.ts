@@ -20,14 +20,16 @@ export class QuestListComponent implements OnInit {
   showCompleted: boolean;
   filteredQuests$: Observable<Quest[]>;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
   quests$: Observable<Quest[]>;
 
   constructor(
     private questsService: QuestsService,
     private popover: PopoverService,
   ) {
-    this.showCompleted = false;
-    this.filterText = new BehaviorSubject<string>('');
+    this.showCompleted = JSON.parse(localStorage.getItem('quests-showCompleted')) || false;
+    this.initialFilterText = localStorage.getItem('quests-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredQuests$ = combineLatest([
       this.questsService.getQuests(),
       this.filterText,
@@ -45,7 +47,13 @@ export class QuestListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('quests-filter', text);
     this.filterText.next(text);
+  }
+
+
+  onSetShowCompleted() {
+    localStorage.setItem('quests-showCompleted', JSON.stringify(this.showCompleted));
   }
 
 
