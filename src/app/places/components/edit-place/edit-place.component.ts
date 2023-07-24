@@ -72,7 +72,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
     }
     if (this.props.id && place.parentId === 'null') {
       place.parentId = FieldValue.delete();
-    } else {
+    } else if (place.parentId === 'null') {
       delete place.parentId;
     }
     this.placeService.store(place, this.props.id).then(() => {
