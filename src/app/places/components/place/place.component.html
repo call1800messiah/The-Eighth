@@ -1,9 +1,9 @@
 <div class="place" *ngIf="place">
-  <div class="image" *ngIf="place.image">
-    <img src="{{place.image}}" alt="{{place.name}}" />
-  </div>
-
   <app-container width="medium">
+    <a class="image" *ngIf="place.image" [href]="place.image" target="_blank">
+      <img src="{{place.image}}" alt="{{place.name}}" />
+    </a>
+
     <div class="action-buttons">
       <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
         <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>

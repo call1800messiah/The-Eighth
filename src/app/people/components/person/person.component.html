@@ -1,6 +1,9 @@
 <app-container width="medium" class="person" *ngIf="person">
   <div class="image">
-    <app-avatar [person]="person" [priority]="true"></app-avatar>
+    <a [href]="person.image" target="_blank" *ngIf="person.image">
+      <app-avatar [person]="person" [priority]="true"></app-avatar>
+    </a>
+    <app-avatar [person]="person" [priority]="true" *ngIf="!person.image"></app-avatar>
 
     <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
       <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
