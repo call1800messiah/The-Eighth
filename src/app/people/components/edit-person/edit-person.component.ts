@@ -6,6 +6,8 @@ import { Person } from '../../models/person';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { PeopleService } from '../../services/people.service';
+import { PlaceService } from '../../../places/services/place.service';
+import { Place } from '../../../places/models/place';
 
 
 
@@ -18,28 +20,37 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new UntypedFormGroup({
-    name: new UntypedFormControl(''),
-    title: new UntypedFormControl(''),
-    race: new UntypedFormControl(''),
-    culture: new UntypedFormControl(''),
-    profession: new UntypedFormControl(''),
     birthday: new UntypedFormControl(''),
     birthyear: new UntypedFormControl(1000),
-    height: new UntypedFormControl(0),
+    culture: new UntypedFormControl(''),
     deathday: new UntypedFormControl(''),
+    height: new UntypedFormControl(0),
+    isPrivate: new UntypedFormControl(false),
+    location: new UntypedFormControl(''),
+    name: new UntypedFormControl(''),
     pc: new UntypedFormControl(false),
-    isPrivate: new UntypedFormControl(false)
+    profession: new UntypedFormControl(''),
+    race: new UntypedFormControl(''),
+    title: new UntypedFormControl('')
   });
   userID: string;
+  places: Place[] = [];
+  placeTypes = PlaceService.placeTypes;
   private subscription = new Subscription();
 
   constructor(
-    private peopleService: PeopleService,
     private auth: AuthService,
+    private peopleService: PeopleService,
+    private placeService: PlaceService,
   ) {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;
+      })
+    );
+    this.subscription.add(
+      this.placeService.getPlaces().subscribe((places) => {
+        this.places = places;
       })
     );
   }
@@ -48,6 +59,11 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     if (this.props.id) {
       const person = this.props as Person;
       this.personForm.patchValue(person);
+      if (person.location && person.location.id) {
+        this.personForm.patchValue({ location: person.location.id });
+      } else if (person.location) {
+        this.personForm.patchValue({ location: person.location.name });
+      }
     }
   }
 
