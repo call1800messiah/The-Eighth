@@ -98,6 +98,7 @@ export class PlaceService {
       const place: Place = {
         id: entry.payload.doc.id,
         image: null,
+        inhabitants: placeData.inhabitants,
         isPrivate: placeData.isPrivate,
         name: placeData.name,
         owner: placeData.owner,

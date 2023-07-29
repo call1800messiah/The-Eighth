@@ -4,6 +4,7 @@ import { PlaceType } from './place-type.enum';
 
 export interface PlaceDB {
   image?: string;
+  inhabitants?: string;
   isPrivate: boolean;
   name: string;
   owner: string;

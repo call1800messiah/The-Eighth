@@ -27,6 +27,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   }, []);
   placeForm = new UntypedFormGroup({
     name: new UntypedFormControl(''),
+    inhabitants: new UntypedFormControl(''),
     isPrivate: new UntypedFormControl(false),
     parentId: new UntypedFormControl(),
     type: new UntypedFormControl(this.placeTypes[0])

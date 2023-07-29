@@ -29,6 +29,10 @@
             </a>
           </dd>
         </ng-container>
+        <ng-container *ngIf="place.inhabitants">
+          <dt>Einwohner</dt>
+          <dd>{{place.inhabitants}}</dd>
+        </ng-container>
       </dl>
     </div>
 
