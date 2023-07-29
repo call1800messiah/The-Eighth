@@ -101,7 +101,7 @@ export class PersonComponent implements OnInit, OnDestroy {
     ).subscribe((person) => {
       if (person) {
         this.person = person;
-        this.navigation.setPageLabel(this.person.name, '/people');
+        this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
         this.values$ = this.peopleService.getPersonValues(this.person.id);
       }
