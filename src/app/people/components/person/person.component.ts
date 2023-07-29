@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faBars, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -34,7 +34,6 @@ import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tag
 })
 export class PersonComponent implements OnInit, OnDestroy {
   faBars = faBars;
-  faTags = faTags;
   infos$: Observable<Map<InfoType, Info[]>>;
   menu: Menu = {
     actions: [
