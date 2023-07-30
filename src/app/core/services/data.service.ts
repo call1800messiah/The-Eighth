@@ -60,15 +60,25 @@ export class DataService {
       (ref) => ref
         .where('access', 'array-contains', this.user.id)
     ).pipe(
-      map((infos) => this.transformInfos(infos)),
+      map((infos) => this.transformInfos(infos, `${collection}/${id}/info`)),
     );
   }
 
 
   store(item: any, collection: string, id?: string): Promise<boolean> {
     const storeItem = { ...item };
-    if (item.owner) {
-      storeItem.access = this.getDocumentPermissionIds(item.owner, item.isPrivate);
+    if (!id) {
+      // Set access for new items
+      storeItem.access = this.getInitialDocumentPermissions(item.owner);
+    } else if (storeItem.access) {
+      // Never overwrite access for existing items, this only done through access management
+      delete storeItem.access;
+    }
+    if (storeItem.id) {
+      delete storeItem.id;
+    }
+    if (storeItem.collection) {
+      delete storeItem.collection;
     }
 
     return new Promise((resolve) => {
@@ -95,9 +105,9 @@ export class DataService {
   }
 
 
-  private getDocumentPermissionIds(creatorID: string, isPrivate: boolean = true): string[] {
+  private getInitialDocumentPermissions(creatorID: string): string[] {
     return this.users.reduce((all, user) => {
-      if (!isPrivate || user.id === creatorID || user.isGM) {
+      if (user.id === creatorID || user.isGM) {
         all.push(user.id);
       }
       return all;
@@ -105,7 +115,7 @@ export class DataService {
   }
 
 
-  private transformInfos(infos: any[]): Map<InfoType, Info[]> {
+  private transformInfos(infos: any[], collection: string): Map<InfoType, Info[]> {
     return infos.reduce((all, entry) => {
       const infoData = entry.payload.doc.data();
       let typeArray = all.get(infoData.type);
@@ -114,12 +124,13 @@ export class DataService {
         all.set(infoData.type, typeArray);
       }
       typeArray.push({
+        access: infoData.access,
+        collection,
         content: infoData.content,
         created: infoData.created ? new Date(infoData.created.seconds * 1000) : null,
         id: entry.payload.doc.id,
-        isPrivate: infoData.isPrivate ? infoData.isPrivate : false,
         modified: infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
-        owner: infoData.owner ? infoData.owner : null,
+        owner: infoData.owner,
         type: infoData.type,
       });
       return all;

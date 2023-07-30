@@ -22,7 +22,6 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   deleteDisabled = true;
   infoForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(false),
     type: new UntypedFormControl(0),
   });
   infoTypes = Object.values(ConfigService.infoTypes);

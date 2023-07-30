@@ -29,7 +29,6 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   }
 
   ngOnInit(): void {
-    console.log(this.props);
     this.api.getItemFromCollection(`${this.props.collection}/${this.props.documentId}`).subscribe((item: any) => {
       this.selected = this.users.reduce((all, user) => {
         all[user.id] = item.payload.data()?.access?.indexOf(user.id) !== -1;

@@ -48,7 +48,7 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy {
             return false;
           });
           return user ? user.name : '';
-        });
+        }).sort();
 
         if (this.item.access.length === users.length) {
           this.accessState = 'all';
