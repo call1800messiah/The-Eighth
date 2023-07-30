@@ -170,6 +170,7 @@ h2 {
   box-shadow: var(--box-shadow);
   height: 100%;
   padding: var(--item-padding);
+  position: relative;
 
   .heading {
     font-weight: bold;
