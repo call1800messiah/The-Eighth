@@ -1,12 +1,10 @@
 import { PlaceType } from './place-type.enum';
+import { AccessControlledItem } from '../../core/models/access-controlled-item';
 
-export interface Place {
-  id: string;
+export interface Place extends AccessControlledItem {
   image: string;
   inhabitants?: string;
-  isPrivate: boolean;
   name: string;
-  owner: string;
   parent?: {
     id: string,
     name?: string,

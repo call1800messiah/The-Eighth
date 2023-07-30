@@ -30,7 +30,7 @@
   height: var(--item-title-line-height);
   line-height: var(--item-title-line-height);
   position: absolute;
-  right: 0;
+  right: calc(var(--access-indicator-size) + 5px);
   text-align: right;
   top: 0;
   width: 100px;
@@ -38,4 +38,9 @@
 
 .parts {
   padding-left: var(--item-padding);
+}
+
+app-access-indicator {
+  right: 0;
+  top: 6px;
 }

@@ -96,10 +96,11 @@ export class PlaceService {
     return places.reduce((all, entry) => {
       const placeData = entry.payload.doc.data();
       const place: Place = {
+        access: placeData.access,
+        collection: PlaceService.collection,
         id: entry.payload.doc.id,
         image: null,
         inhabitants: placeData.inhabitants,
-        isPrivate: placeData.isPrivate,
         name: placeData.name,
         owner: placeData.owner,
         type: placeData.type,

@@ -1,5 +1,8 @@
-<li class="place" [ngClass]="{'private' : place.isPrivate}">
+<li class="place">
+  <app-access-indicator [item]="place"></app-access-indicator>
+
   <div class="type">{{placeTypes[place.type]}}</div>
+
   <a class="name" [routerLink]="[place.id]">
     {{place.name}}
   </a>
