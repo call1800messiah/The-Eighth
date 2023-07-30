@@ -1,8 +1,11 @@
 <li class="quest"
-    [ngClass]="quest.type.concat(quest.isPrivate ? ' private' : '', quest.completed ? ' completed' : '')"
+    [ngClass]="quest.type.concat(quest.completed ? ' completed' : '')"
     *ngIf="showCompleted || !quest.completed"
 >
+  <app-access-indicator [item]="quest"></app-access-indicator>
+
   <div class="type">{{questTypes[quest.type]}}</div>
+
   <a class="details" [routerLink]="[quest.id]">
     <div class="name">{{quest.name}}</div>
     <div class="description">{{quest.description}}</div>

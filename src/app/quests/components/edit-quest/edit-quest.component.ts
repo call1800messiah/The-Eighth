@@ -27,7 +27,6 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
   }, []);
   questForm = new UntypedFormGroup({
     name: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(true),
     parentId: new UntypedFormControl(),
     type: new UntypedFormControl(this.questTypes[0]),
     description: new UntypedFormControl(''),
@@ -62,10 +61,6 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
 
-
-  isSelectedParent(parentId: string): boolean {
-    return this.props.id && this.props.parent && this.props.parent.id === parentId;
-  }
 
   save() {
     const quest: Partial<QuestDB> = {

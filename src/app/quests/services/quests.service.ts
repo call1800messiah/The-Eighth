@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Quest } from '../models/quest';
-import { AuthUser } from '../../auth/models/auth-user';
+import type { AuthUser } from '../../auth/models/auth-user';
+import type { Quest } from '../models/quest';
 import { ApiService } from '../../core/services/api.service';
 import { UtilService } from '../../core/services/util.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -39,10 +39,11 @@ export class QuestsService {
     return quests.reduce((all, entry) => {
       const questData = entry.payload.doc.data();
       const quest: Quest = {
-        id: entry.payload.doc.id,
+        access: questData.access,
+        collection: QuestsService.collection,
         completed: questData.completed || false,
         description: questData.description || '',
-        isPrivate: questData.isPrivate,
+        id: entry.payload.doc.id,
         name: questData.name || '',
         owner: questData.owner,
         type: questData.type || null

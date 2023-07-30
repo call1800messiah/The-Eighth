@@ -1,9 +1,5 @@
 <div>
   <form [formGroup]="questForm" (ngSubmit)="save()">
-    <div class="form-group" *ngIf="!props.id || props.owner === userID">
-      <input type="checkbox" id="isPrivate" formControlName="isPrivate">
-      <label for="isPrivate">Verborgen</label>
-    </div>
     <div class="form-group">
       <select id="type" formControlName="type" required>
         <option [ngValue]="type.key" *ngFor="let type of questTypes; let i = index">

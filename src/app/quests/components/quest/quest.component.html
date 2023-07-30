@@ -1,5 +1,7 @@
 <app-container width="medium" class="quest" *ngIf="quest">
   <div class="info box">
+    <app-access-indicator [item]="quest"></app-access-indicator>
+
     <div class="type">
       {{questTypes[quest.type]}}
     </div>
