@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import type { AccessControlledItem } from '../../../core/models/access-controlled-item';
@@ -16,7 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './access-indicator.component.html',
   styleUrls: ['./access-indicator.component.scss']
 })
-export class AccessIndicatorComponent implements OnInit, OnDestroy {
+export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() item: AccessControlledItem;
   accessState = 'none';
   user: AuthUser;
@@ -35,26 +35,8 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription.add(
       this.userService.getUsers().subscribe((users) => {
-        let accessByThirdParty = false;
         this.users = users;
-        this.usersWithAccess = this.item.access.map((id) => {
-          const user = this.users.find((u) => {
-            if (u.id === id) {
-              if (!u.isGM && u.id !== this.item.owner) {
-                accessByThirdParty = true;
-              }
-              return true;
-            }
-            return false;
-          });
-          return user ? user.name : '';
-        }).sort();
-
-        if (this.item.access.length === users.length) {
-          this.accessState = 'all';
-        } else if (accessByThirdParty) {
-          this.accessState = 'some';
-        }
+        this.calculateAccessState();
       })
     );
   }
@@ -63,11 +45,41 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes.item.previousValue || changes.item.previousValue.id !== changes.item.currentValue.id) {
+      this.calculateAccessState();
+    }
+  }
+
   editAccess(event: MouseEvent) {
     event.stopImmediatePropagation();
     this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
       collection: this.item.collection,
       documentId: this.item.id,
     });
+  }
+
+  private calculateAccessState(): void {
+    let accessByThirdParty = false;
+    this.usersWithAccess = this.item.access.map((id) => {
+      const user = this.users.find((u) => {
+        if (u.id === id) {
+          if (!u.isGM && u.id !== this.item.owner) {
+            accessByThirdParty = true;
+          }
+          return true;
+        }
+        return false;
+      });
+      return user ? user.name : '';
+    }).sort();
+
+    if (this.item.access.length === this.users.length) {
+      this.accessState = 'all';
+    } else if (accessByThirdParty) {
+      this.accessState = 'some';
+    } else {
+      this.accessState = 'none';
+    }
   }
 }
