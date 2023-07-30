@@ -1,8 +1,9 @@
 import type { CombatState } from '../../shared/models/combat-state';
 import type { Relative } from './relative';
 import type { Location } from './location';
+import type { AccessControlledItem } from '../../core/models/access-controlled-item';
 
-export interface Person {
+export interface Person extends AccessControlledItem {
   id: string;
   banner: string;
   birthday: string;
@@ -12,10 +13,8 @@ export interface Person {
   deathday: string;
   height: number;
   image: string;
-  isPrivate?: boolean;
   location?: Location;
   name: string;
-  owner?: string;
   parents?: Relative[];
   partners?: Relative[];
   pc: boolean;

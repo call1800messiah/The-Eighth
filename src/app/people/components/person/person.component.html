@@ -17,6 +17,7 @@
 
 
   <div class="info box">
+    <app-access-indicator *ngIf="isOwnerOrCan('')" [item]="person"></app-access-indicator>
     <dl>
       <ng-container>
         <dt>Name</dt>

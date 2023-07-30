@@ -1,12 +1,14 @@
 @import '../../../../scss/mixins.scss';
 
 .wrapper {
-  align-content: space-between;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
   position: relative;
   min-height: calc(var(--item-image-size) + (var(--item-padding) * 2));
+
+  a {
+    align-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 .image {
@@ -67,4 +69,11 @@
   justify-content: flex-end;
   margin-top: var(--item-padding);
   width: 100%;
+}
+
+app-access-indicator {
+  bottom: var(--item-padding);
+  left: var(--item-padding);
+  right: auto;
+  top: auto;
 }

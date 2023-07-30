@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-
-import { PopoverChild } from '../../../shared/models/popover-child';
-import { Person } from '../../models/person';
 import { Subscription } from 'rxjs';
+
+import type { Person } from '../../models/person';
+import type { Place } from '../../../places/models/place';
+import type { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
 import { PeopleService } from '../../services/people.service';
 import { PlaceService } from '../../../places/services/place.service';
-import { Place } from '../../../places/models/place';
 
 
 
@@ -25,7 +25,6 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     culture: new UntypedFormControl(''),
     deathday: new UntypedFormControl(''),
     height: new UntypedFormControl(0),
-    isPrivate: new UntypedFormControl(false),
     location: new UntypedFormControl(''),
     name: new UntypedFormControl(''),
     pc: new UntypedFormControl(false),

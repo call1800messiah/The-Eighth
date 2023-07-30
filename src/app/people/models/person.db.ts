@@ -1,4 +1,5 @@
 export interface PersonDB {
+  access: string[];
   banner?: string;
   birthday: string;
   birthyear: number;
@@ -7,10 +8,9 @@ export interface PersonDB {
   deathday: string;
   height: number;
   image: string;
-  isPrivate: boolean;
   location?: string;
   name: string;
-  owner?: string;
+  owner: string;
   parents?: string[];
   partners?: string[];
   pc: boolean;

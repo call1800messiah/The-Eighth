@@ -132,24 +132,25 @@ export class PeopleService {
     return people.reduce((all, entry) => {
       const personData = entry.payload.doc.data() as PersonDB;
       const person: Person = {
-        id: entry.payload.doc.id,
-        name: personData.name || '',
+        access: personData.access,
         banner: null,
         birthday: personData.birthday || null,
         birthyear: personData.birthyear !== undefined ? personData.birthyear : null,
+        collection: PeopleService.collection,
         culture: personData.culture || null,
         deathday: personData.deathday || null,
         height: personData.height !== undefined ? personData.height : null,
         image: null,
+        id: entry.payload.doc.id,
+        name: personData.name || '',
+        owner: personData.owner,
+        pc: personData.pc || false,
         profession: personData.profession || null,
         race: personData.race || null,
         relatives: {},
         states: [],
         tags: personData.tags || [],
         title: personData.title || null,
-        pc: personData.pc || false,
-        owner: personData.owner,
-        isPrivate: personData.isPrivate
       };
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {
