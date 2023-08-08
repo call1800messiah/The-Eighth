@@ -51,4 +51,11 @@ export class EditAccessComponent implements OnInit, PopoverChild {
       this.dismissPopover.emit(true);
     });
   }
+
+
+  allowAccessForAll() {
+    Object.keys(this.selected).forEach((id) => {
+      this.selected[id] = true;
+    });
+  }
 }

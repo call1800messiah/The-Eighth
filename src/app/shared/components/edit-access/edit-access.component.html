@@ -5,6 +5,11 @@
       <label for="user-{{user.id}}">{{user.name}}</label>
     </div>
   </div>
+
+  <button type="button" class="btn spacer" (click)="allowAccessForAll()">
+    Allen Zugriff geben
+  </button>
+
   <button type="button" class="btn" (click)="save()">
     Speichern
   </button>
