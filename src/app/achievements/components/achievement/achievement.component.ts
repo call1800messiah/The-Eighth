@@ -2,10 +2,10 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faTrophy, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
-import { Achievement } from 'src/app/achievements/models/achievement';
+import type { Achievement } from 'src/app/achievements/models/achievement';
+import type { AuthUser } from '../../../auth/models/auth-user';
 import { EditAchievementComponent } from '../edit-achievement/edit-achievement.component';
 import { PopoverService } from '../../../core/services/popover.service';
-import { AuthUser } from '../../../auth/models/auth-user';
 import { AuthService } from '../../../core/services/auth.service';
 
 

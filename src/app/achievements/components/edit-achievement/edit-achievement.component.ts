@@ -4,12 +4,12 @@ import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DateTime } from 'luxon';
 
-import { PopoverChild } from '../../../shared/models/popover-child';
-import { Achievement } from '../../models/achievement';
+import type { Achievement } from '../../models/achievement';
+import type { Person } from '../../../people/models/person';
+import type { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
 import { AchievementService } from '../../services/achievement.service';
 import { PeopleService } from '../../../people/services/people.service';
-import { Person } from '../../../people/models/person';
 
 
 
@@ -23,7 +23,6 @@ export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild
   @Output() dismissPopover = new EventEmitter<boolean>();
   achievementForm = new UntypedFormGroup({
     description: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(false),
     name: new UntypedFormControl(''),
     people: new UntypedFormControl([]),
     unlocked: new UntypedFormControl(new Date())
@@ -51,14 +50,12 @@ export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild
     if (this.props.id) {
       const {
         description,
-        isPrivate,
         name,
         people,
         unlocked,
       } = this.props;
       this.achievementForm.patchValue({
         description,
-        isPrivate,
         name,
         people,
         unlocked: DateTime.fromJSDate(unlocked).toISODate(),

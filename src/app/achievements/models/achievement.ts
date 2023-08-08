@@ -1,12 +1,11 @@
 import { Person } from '../../people/models/person';
+import { AccessControlledItem } from '../../core/models/access-controlled-item';
 
-export interface Achievement {
+export interface Achievement extends AccessControlledItem {
   description: string;
   icon: string;
   id: string;
-  isPrivate: boolean;
   name: string;
-  owner: string;
   people: Person[];
   unlocked: Date;
 }
