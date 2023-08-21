@@ -1,10 +1,21 @@
-<app-top-bar-filter placeholder="z.B. Name, Titel, Rasse, Kultur, Mannschaft" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
-  <button type="button" class="btn-icon" (click)="showAddDialog()">
-    <fa-icon [icon]="faPlus" [fixedWidth]="true"
-             title="Person hinzufügen"></fa-icon>
-  </button>
-</app-top-bar-filter>
+<app-container width="large">
+  <app-top-bar-filter placeholder="z.B. Name, Titel, Rasse, Kultur, Mannschaft" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
+    <button type="button" class="btn-icon" (click)="showAddDialog()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Person hinzufügen"></fa-icon>
+    </button>
 
-<app-box-grid>
-  <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person" ></app-person-summary>
-</app-box-grid>
+    <button type="button" class="btn-icon" (click)="toggleDisplayStyle()">
+      <fa-icon [icon]="faList" [fixedWidth]="true"
+               title="Anzeigestil wechseln"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <app-box-grid *ngIf="!showAsList">
+    <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person" ></app-person-summary>
+  </app-box-grid>
+
+  <div *ngIf="showAsList">
+    <app-person-summary *ngFor="let person of filteredPeople$ | async" [person]="person" [showAsList]="true" ></app-person-summary>
+  </div>
+</app-container>

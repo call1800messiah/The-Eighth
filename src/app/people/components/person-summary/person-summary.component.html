@@ -1,4 +1,4 @@
-<div class="wrapper box">
+<div class="wrapper box" [ngClass]="{'list': showAsList}">
   <a [routerLink]="[person.id]">
     <div class="image">
       <app-avatar [person]="person"></app-avatar>
@@ -11,18 +11,22 @@
       <div class="name">
         {{isOwnerOrCan('viewName')  ? person.name : person.name.split(' ')[0]}}
       </div>
-      <div class="race" *ngIf="person.race">{{person.race}}</div>
+      <div class="location" *ngIf="person.location && isOwnerOrCan('viewLocation')">{{person.location.name}}</div>
+      <div class="race" *ngIf="person.race && !showAsList">{{person.race}}</div>
       <div class="birthday">{{person.birthyear | estimatedAge}}</div>
-      <div class="status">
-        <fa-icon *ngIf="person.deathday" [icon]="faSkullCrossbones" [fixedWidth]="true"
-          title="Gestorben am {{person.deathday}} BF"></fa-icon>
-        <fa-icon *ngIf="person.pc" [icon]="faUser" [fixedWidth]="true"
-          title="Spielercharakter"></fa-icon>
-      </div>
     </div>
 
-    <div class="tags" *ngIf="person.tags && person.tags.length > 0">
-      <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+    <div class="status">
+      <fa-icon *ngIf="person.deathday" [icon]="faSkullCrossbones" [fixedWidth]="true"
+               title="Gestorben am {{person.deathday}} BF"></fa-icon>
+      <fa-icon *ngIf="person.pc" [icon]="faUser" [fixedWidth]="true"
+               title="Spielercharakter"></fa-icon>
+    </div>
+
+    <div class="tags">
+      <ng-container *ngIf="person.tags && person.tags.length > 0">
+        <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+      </ng-container>
     </div>
   </a>
 

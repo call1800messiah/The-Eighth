@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class PersonSummaryComponent implements OnInit {
   @Input() person: Person;
+  @Input() showAsList = false;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
   user: AuthUser;

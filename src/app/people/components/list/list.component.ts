@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faList, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import type { Person } from 'src/app/people/models/person';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -16,16 +16,19 @@ import { PeopleService } from '../../services/people.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
+  faList = faList;
   faPlus = faPlus;
   filteredPeople$: Observable<Person[]>;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
+  showAsList = false;
 
   constructor(
     private peopleService: PeopleService,
     private popover: PopoverService,
   ) {
     this.initialFilterText = localStorage.getItem('people-filter') || '';
+    this.showAsList = localStorage.getItem('people-show-as-list') === 'true';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredPeople$ = combineLatest([
       this.peopleService.getPeople(),
@@ -48,6 +51,12 @@ export class ListComponent implements OnInit {
 
   showAddDialog() {
     this.popover.showPopover('Neue Person', EditPersonComponent);
+  }
+
+
+  toggleDisplayStyle() {
+    this.showAsList = !this.showAsList;
+    localStorage.setItem('people-show-as-list', this.showAsList.toString());
   }
 
 

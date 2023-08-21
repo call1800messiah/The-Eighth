@@ -9,4 +9,8 @@
   &.medium {
     max-width: var(--container-width-medium);
   }
+
+  &.large {
+    max-width: var(--container-width-large);
+  }
 }
