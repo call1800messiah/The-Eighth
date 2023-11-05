@@ -60,6 +60,9 @@ export class EditProjectComponent implements OnInit, OnDestroy {
         this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
         this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
       });
+    } else {
+      this.milestones = [];
+      this.requirements = [];
     }
   }
 
