@@ -28,7 +28,6 @@ export class EditProjectComponent implements OnInit, OnDestroy {
     benefit: new UntypedFormControl(''),
     interval: new UntypedFormControl(''),
     name: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(false)
   });
   requirements: ProjectRequirement[];
   userID: string;

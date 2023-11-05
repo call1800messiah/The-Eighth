@@ -1,6 +1,6 @@
 <div
   class="wrapper box"
-  [ngClass]="{'private' : project.isPrivate, 'completed': currentPoints >= requiredPoints}"
+  [ngClass]="{'completed': currentPoints >= requiredPoints}"
   (click)="editProject(project)"
 >
   <div class="name">{{project.name}}</div>
@@ -25,4 +25,5 @@
     </div>
     Interval: {{project.interval}}
   </div>
+  <app-access-indicator [item]="project"></app-access-indicator>
 </div>

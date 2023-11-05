@@ -112,9 +112,9 @@ export class ProjectService {
     }
 
     return {
+      access: project.access || [this.user.id],
       benefit: project.benefit,
       interval: project.interval,
-      isPrivate: project.isPrivate,
       mDesc,
       mReq,
       name: project.name,
@@ -159,10 +159,11 @@ export class ProjectService {
       }, []).sort(UtilService.orderBySkill);
 
       const project: Project = {
-        id: entry.payload.doc.id,
+        access: projectData.access,
         benefit: projectData.benefit,
+        collection: ProjectService.collection,
+        id: entry.payload.doc.id,
         interval: projectData.interval,
-        isPrivate: projectData.isPrivate,
         milestones,
         name: projectData.name,
         owner: projectData.owner,
