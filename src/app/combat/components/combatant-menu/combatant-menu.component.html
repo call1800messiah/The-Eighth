@@ -1,17 +1,20 @@
 <div class="combatant-menu">
-  <div class="form-group" *ngIf="states">
-    <select (ngModelChange)="setCombatantStates($event)" [compareWith]="compareStates" [ngModel]="props.states" multiple>
-      <option [ngValue]="state" *ngFor="let state of states">
-        {{state.name}}
-      </option>
-    </select>
-  </div>
+  <form [formGroup]="combatantForm" (ngSubmit)="save()">
+    <div class="form-group">
+      <input type="text" id="name" formControlName="name" required>
+      <label for="name">Name *</label>
+    </div>
 
-  <div class="locked-input">
-    <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-    <button type="button" class="btn" (click)="removeCombatant()" [disabled]="deleteDisabled">
-      Löschen
+    <button type="submit" class="btn" [disabled]="!combatantForm.valid">
+      Speichern
     </button>
-  </div>
+
+    <div class="locked-input">
+      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+
+      <button type="button" class="btn" (click)="removeCombatant()" [disabled]="deleteDisabled">
+        Löschen
+      </button>
+    </div>
+  </form>
 </div>

@@ -1,185 +1,29 @@
 @import "../../../../scss/variables.scss";
 
-:host {
-  --combatant-avatar-left: 0;
-  --combatant-avatar-top: 0;
-  --combatant-content-padding: 0 calc(var(--combatant-circle-size) / 2);
-  --combatant-circle-size : 50px;
-  --combatant-default-avatar-border: var(--border-line-width) solid var(--color-primary);
-  --combatant-default-avatar-box-shadow: none;
-  --combatant-initiative-right: 0;
-  --combatant-initiative-top: 0;
-  --combatant-initiative-transform: none;
-  --combatant-name-border-color: var(--color-primary);
-  --combatant-name-border-radius: 0;
-  --combatant-name-border-width: var(--border-line-width) 0;
-  --combatant-states-background-color: transparent;
-  --combatant-states-color: inherit;
-}
-
 .top-bar {
+  display: flex;
   margin-bottom: var(--item-padding);
-  position: relative;
-  padding-right: 100px;
+
+  .form-group {
+    flex: 1 1 auto;
+  }
 
   button {
-    position: absolute;
-    right: 0;
-    top: 0;
-
-    &.btn-add { right: 50px; }
-  }
-}
-
-.combatant {
-  margin-bottom: var(--item-padding);
-  overflow: hidden;
-  position: relative;
-
-  &.inactive { filter: grayscale(1) brightness(0.8); }
-}
-
-app-avatar,
-.default-avatar {
-  display: inline-block;
-  left: var(--combatant-avatar-left);
-  line-height: var(--combatant-circle-size);
-  position: absolute;
-  top: var(--combatant-avatar-top);
-  width: var(--combatant-circle-size);
-  z-index: 2;
-}
-
-.default-avatar {
-  background-color: var(--color-dark);
-  border: var(--combatant-default-avatar-border);
-  box-shadow: var(--combatant-default-avatar-box-shadow);
-  border-radius: 50%;
-  font-size: calc(var(--combatant-circle-size) * 0.75);
-  height: var(--combatant-circle-size);
-  overflow: hidden;
-  padding-top: 5px;
-  text-align: center;
-}
-
-.name {
-  align-items: center;
-  border-color: var(--combatant-name-border-color);
-  border-radius: var(--combatant-name-border-radius);
-  border-style: solid;
-  border-width: var(--combatant-name-border-width);
-  display: flex;
-  height: var(--combatant-circle-size);
-  line-height: 20px;
-  margin: 0 25px;
-  overflow: hidden;
-  padding: 5px 35px;
-  position: relative;
-  z-index: 1;
-}
-
-.initiative {
-  background-color: var(--color-primary);
-  border: var(--border-line-width) solid var(--color-primary);
-  border-radius: 50%;
-  color: var(--color-dark);
-  cursor: pointer;
-  font-size: 24px;
-  font-weight: bold;
-  height: var(--combatant-circle-size);
-  line-height: calc(var(--combatant-circle-size) - 2px);
-  position: absolute;
-  right: var(--combatant-initiative-right);
-  text-align: center;
-  top: var(--combatant-initiative-top);
-  transform: var(--combatant-initiative-transform);
-  width: var(--combatant-circle-size);
-  z-index: 2;
-
-  &:hover {
-    background-color: var(--color-primary);
-    color: var(--color-dark);
-  }
-}
-
-.bars {
-  display: flex;
-  padding: var(--combatant-content-padding);
-
-  app-bar {
-    display: block;
-    flex-grow: 1;
-  }
-}
-
-.states {
-  background-color: var(--combatant-states-background-color);
-  color: var(--combatant-states-color);
-  font-size: var(--detail-text-font-size);
-  line-height: var(--detail-text-line-height);
-  margin-top: var(--item-padding);
-  padding: var(--combatant-content-padding);
-
-  .state-name {
-    font-weight: bold;
+    flex: 0 0 auto;
+    margin-left: calc(var(--item-padding) / 2);
   }
 }
 
 
 
 @media (min-width: $break-sm) {
-  :host {
-    --combatant-avatar-left: 50%;
-    --combatant-content-padding: 0;
-    --combatant-initiative-right: 50%;
-    --combatant-initiative-transform: translateX(50%);
-    --combatant-name-border-radius: calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2) 0 0;
-    --combatant-name-border-width: var(--border-line-width);
-    --combatant-states-background-color: var(--color-primary);
-    --combatant-states-color: var(--color-dark);
+  .top-bar {
+    button {
+      margin-left: var(--item-padding);
+    }
   }
 
   .combatants {
     grid-gap: 3rem;
-  }
-
-  .combatant {
-    padding-top: calc(var(--combatant-circle-size) / 2);
-  }
-
-  app-avatar,
-  .default-avatar {
-    line-height: var(--avatar-medium);
-    position: relative;
-    transform: translateX(-50%);
-    width: var(--avatar-medium);
-  }
-
-  .default-avatar {
-    background-color: var(--color-dark);
-    font-size: calc(var(--avatar-medium) * 0.75);
-    height: var(--avatar-medium);
-  }
-
-  .name {
-    justify-content: center;
-    margin: -15px 0 0;
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
-  .bars {
-    flex-wrap: wrap;
-
-    app-bar {
-      width: 100%;
-    }
-  }
-
-  .states {
-    border-bottom-left-radius: calc(var(--combatant-circle-size) / 2);
-    border-bottom-right-radius:calc(var(--combatant-circle-size) / 2);
-    margin-top: 0;
-    padding: 1rem 2rem;
   }
 }

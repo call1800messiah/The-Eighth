@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Combatant } from '../models/combatant';
-import { Person } from '../../people/models/person';
+import type { Combatant } from '../models/combatant';
+import type { Person } from '../../people/models/person';
 import { ApiService } from '../../core/services/api.service';
 import { CombatState } from '../../shared/models/combat-state';
 import { PeopleService } from '../../people/services/people.service';
 import { RulesService } from '../../core/services/rules.service';
 import { Rules } from '../../shared/models/rules';
+import { DataService } from '../../core/services/data.service';
 
 
 
@@ -22,6 +23,7 @@ export class CombatService {
 
   constructor(
     private api: ApiService,
+    private data: DataService,
     private peopleService: PeopleService,
     private rulesService: RulesService,
   ) {
@@ -113,6 +115,11 @@ export class CombatService {
         states
       }
     );
+  }
+
+
+  store(combatant: Combatant, combatantId: string) {
+    return this.data.store(combatant, this.combatCollection, combatantId);
   }
 
 

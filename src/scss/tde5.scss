@@ -105,7 +105,7 @@ body.tde5 {
     --person-attributes-border: none;
   }
 
-  app-overview {
+  app-combatant {
     --combatant-avatar-left: var(--item-padding);
     --combatant-avatar-top: var(--item-padding);
     --combatant-content-padding: 1rem 0 0;
@@ -114,6 +114,9 @@ body.tde5 {
     --combatant-initiative-top: var(--item-padding);
     --combatant-initiative-right: var(--item-padding);
     --combatant-name-border-width: 0;
+    --combatant-states-background-color: rgba(255, 255, 255, 0.1);
+    --combatant-states-border-radius: 15px;
+    --combatant-states-border-width: 0;
 
     @media (min-width: $break-sm) {
       --combatant-avatar-left: 50%;
@@ -121,7 +124,6 @@ body.tde5 {
       --combatant-content-padding: 1rem 2rem;
       --combatant-initiative-right: var(--item-padding);
       --combatant-initiative-transform: none;
-      --combatant-states-background-color: transparent;
       --combatant-states-color: inherit;
     }
   }

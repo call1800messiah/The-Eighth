@@ -17,38 +17,5 @@
 
 
 <app-box-grid>
-  <div *ngFor="let fighter of combatants$ | async" class="combatant" [ngClass]="{'box': displayAsBox}">
-    <app-avatar *ngIf="fighter.person" [person]="fighter.person"></app-avatar>
-    <div *ngIf="!fighter.person" class="default-avatar">
-      <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
-    </div>
-
-    <div class="initiative" (click)="setInitiative(fighter)">
-      <span *ngIf="fighter.active">{{fighter.initiative}}</span>
-      <fa-icon *ngIf="!fighter.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
-    </div>
-    <div class="name" (click)="showMenu(fighter)">
-      {{
-        fighter.person ?
-        isOwnerOrCan('viewName', fighter.person.owner) ? fighter.person.name : fighter.person.name.split(' ')[0] :
-        fighter.name
-      }}
-    </div>
-
-    <div *ngIf="(fighter.attributes | async) as attributes" class="bars">
-      <app-bar *ngFor="let bar of attributes"
-               [bar]="bar"
-               (barClicked)="editAttribute(bar, fighter)"
-      ></app-bar>
-    </div>
-
-    <div *ngIf="fighter.states && fighter.states.length > 0" class="states" (click)="showMenu(fighter)">
-      <div *ngFor="let state of fighter.states" class="state">
-        <span [innerHTML]="state.name" class="state-name"></span>
-        <span *ngFor="let mod of state.modifiers">
-          | {{mod.target}} {{mod.value}}
-        </span>
-      </div>
-    </div>
-  </div>
+  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant"></app-combatant>
 </app-box-grid>
