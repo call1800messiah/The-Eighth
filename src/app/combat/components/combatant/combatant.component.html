@@ -1,10 +1,10 @@
-<div class="combatant" [ngClass]="{'box': displayAsBox}">
+<div class="combatant" [ngClass]="{'box': displayAsBox, 'grid': !showAsList}">
   <app-avatar *ngIf="combatant.person" [person]="combatant.person"></app-avatar>
   <div *ngIf="!combatant.person" class="default-avatar">
     <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
   </div>
 
-  <div class="initiative" (click)="setInitiative()">
+  <div class="initiative" [ngClass]="{'disabled': !combatant.active}" (click)="setInitiative()">
     <span *ngIf="combatant.active">{{combatant.initiative}}</span>
     <fa-icon *ngIf="!combatant.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
   </div>

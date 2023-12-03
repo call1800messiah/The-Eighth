@@ -108,23 +108,42 @@ body.tde5 {
   app-combatant {
     --combatant-avatar-left: var(--item-padding);
     --combatant-avatar-top: var(--item-padding);
-    --combatant-content-padding: 1rem 0 0;
+    --combatant-bars-border-width: 0;
+    --combatant-content-padding: 0;
     --combatant-default-avatar-border: none;
     --combatant-default-avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
+    --combatant-gap: 1rem;
     --combatant-initiative-top: var(--item-padding);
     --combatant-initiative-right: var(--item-padding);
     --combatant-name-border-width: 0;
+    --combatant-name-margin: 0 0 0 calc(var(--combatant-circle-size) / 2);
+    --combatant-padding: var(--item-padding);
     --combatant-states-background-color: rgba(255, 255, 255, 0.1);
     --combatant-states-border-radius: 15px;
     --combatant-states-border-width: 0;
 
     @media (min-width: $break-sm) {
-      --combatant-avatar-left: 50%;
-      --combatant-avatar-top: calc(var(--item-padding) * -1);
-      --combatant-content-padding: 1rem 2rem;
-      --combatant-initiative-right: var(--item-padding);
-      --combatant-initiative-transform: none;
-      --combatant-states-color: inherit;
+      --combatant-initiative-border-radius: var(--box-border-radius);
+      --combatant-initiative-right: 0;
+      --combatant-initiative-top: 0;
+      --combatant-padding: var(--item-padding) calc(var(--combatant-circle-size) + var(--item-padding)) var(--item-padding) var(--item-padding);
+
+
+      .grid {
+        --combatant-avatar-left: 50%;
+        --combatant-avatar-top: calc(var(--item-padding) * -1);
+        --combatant-content-padding: 1rem 0 0;
+        --combatant-name-border-width: 0;
+        --combatant-initiative-border-radius: 50%;
+        --combatant-initiative-right: var(--item-padding);
+        --combatant-initiative-top: var(--item-padding);
+        --combatant-initiative-transform: none;
+        --combatant-padding: var(--item-padding);
+        --combatant-states-background-color: rgba(255, 255, 255, 0.1);
+        --combatant-states-border-radius: 15px;
+        --combatant-states-color: inherit;
+        --combatant-states-padding: 1rem;
+      }
     }
   }
 }

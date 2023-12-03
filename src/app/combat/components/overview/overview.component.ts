@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faList, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
 import type { Person } from '../../../people/models/person';
@@ -23,11 +23,13 @@ import { AuthService } from '../../../core/services/auth.service';
 export class OverviewComponent implements OnInit {
   combatants$: Observable<Combatant[]>;
   displayAsBox: boolean;
+  faList = faList;
   faPlus = faPlus;
   faUsers = faUsers;
   newCombatant = '';
   people: Person[];
   user: AuthUser;
+  showAsList = false;
 
   constructor(
     private auth: AuthService,
@@ -37,6 +39,7 @@ export class OverviewComponent implements OnInit {
   ) {
     this.combatants$ = this.combatService.getCombatants();
     this.displayAsBox = environment.tenant === 'tde5';
+    this.showAsList = localStorage.getItem('combat-show-as-list') === 'true';
     this.user = this.auth.user;
   }
 
@@ -69,5 +72,11 @@ export class OverviewComponent implements OnInit {
         data,
       );
     });
+  }
+
+
+  toggleDisplayStyle() {
+    this.showAsList = !this.showAsList;
+    localStorage.setItem('combat-show-as-list', this.showAsList.toString());
   }
 }

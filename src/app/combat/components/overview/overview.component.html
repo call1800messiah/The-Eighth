@@ -13,9 +13,18 @@
     <fa-icon [icon]="faUsers" [fixedWidth]="true"
              title="Person als Kämpfer hinzufügen"></fa-icon>
   </button>
+
+  <button type="button" class="btn-icon" [ngClass]="{'active': showAsList}" (click)="toggleDisplayStyle()">
+    <fa-icon [icon]="faList" [fixedWidth]="true"
+             title="Anzeigestil wechseln"></fa-icon>
+  </button>
 </div>
 
 
-<app-box-grid>
+<app-box-grid *ngIf="!showAsList">
   <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant"></app-combatant>
 </app-box-grid>
+
+<div *ngIf="showAsList">
+  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant" [showAsList]="true"></app-combatant>
+</div>

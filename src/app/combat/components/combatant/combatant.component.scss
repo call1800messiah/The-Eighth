@@ -3,24 +3,35 @@
 :host {
   --combatant-avatar-left: 0;
   --combatant-avatar-top: 0;
+  --combatant-bars-border-width: var(--border-line-width);
   --combatant-content-padding: 0 calc(var(--combatant-circle-size) / 2);
   --combatant-circle-size : 50px;
   --combatant-default-avatar-border: var(--border-line-width) solid var(--color-primary);
   --combatant-default-avatar-box-shadow: none;
+  --combatant-gap: 0;
+  --combatant-initiative-border-radius: 50%;
   --combatant-initiative-right: 0;
   --combatant-initiative-top: 0;
   --combatant-initiative-transform: none;
   --combatant-name-border-color: var(--color-primary);
   --combatant-name-border-radius: 0;
   --combatant-name-border-width: var(--border-line-width) 0;
+  --combatant-name-margin: 0 25px;
+  --combatant-padding: 0;
   --combatant-states-background-color: transparent;
   --combatant-states-border-width: 0 1px 1px 1px;
   --combatant-states-border-radius: 0;
   --combatant-states-color: inherit;
+  --combatant-states-padding: 1rem;
 }
 
 .combatant {
+  display: flex;
+  flex-direction: column;
+  gap: var(--combatant-gap);
+  margin: 0 0 var(--item-padding);
   overflow: hidden;
+  padding: var(--combatant-padding);
   position: relative;
 
   &.inactive { filter: grayscale(1) brightness(0.8); }
@@ -58,7 +69,7 @@ app-avatar,
   display: flex;
   height: var(--combatant-circle-size);
   line-height: 20px;
-  margin: 0 25px;
+  margin: var(--combatant-name-margin);
   overflow: hidden;
   padding: 5px 35px;
   position: relative;
@@ -68,7 +79,7 @@ app-avatar,
 .initiative {
   background-color: var(--color-primary);
   border: var(--border-line-width) solid var(--color-primary);
-  border-radius: 50%;
+  border-radius: var(--combatant-initiative-border-radius);
   color: var(--color-dark);
   cursor: pointer;
   font-size: 24px;
@@ -86,6 +97,11 @@ app-avatar,
   &:hover {
     background-color: var(--color-primary);
     color: var(--color-dark);
+  }
+
+  &.disabled {
+    background-color: var(--color-gray);
+    border-color: var(--color-gray);
   }
 }
 
@@ -112,7 +128,7 @@ app-avatar,
   line-height: var(--detail-text-line-height);
   min-height: var(--mobile-interactive-height);
   margin: var(--combatant-content-padding);
-  padding: 1rem;
+  padding: var(--combatant-states-padding);
 
   .state-name {
     font-weight: bold;
@@ -121,52 +137,92 @@ app-avatar,
 
 @media (min-width: $break-sm) {
   :host {
-    --combatant-avatar-left: 50%;
     --combatant-content-padding: 0;
-    --combatant-initiative-right: 50%;
-    --combatant-initiative-transform: translateX(50%);
-    --combatant-name-border-radius: calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2) 0 0;
-    --combatant-name-border-width: var(--border-line-width);
-    --combatant-states-background-color: var(--color-primary);
-    --combatant-states-border-radius: 0 0 calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2);
-    --combatant-states-color: var(--color-dark);
+    --combatant-name-margin: 0;
+    --combatant-padding: 0 var(--combatant-circle-size) 0 calc(var(--combatant-circle-size) / 2);
+    --combatant-initiative-border-radius: 0 calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2) 0;
   }
 
   .combatant {
-    padding-top: calc(var(--combatant-circle-size) / 2);
-  }
-
-  app-avatar,
-  .default-avatar {
-    line-height: var(--avatar-medium);
-    position: relative;
-    transform: translateX(-50%);
-    width: var(--avatar-medium);
-  }
-
-  .default-avatar {
-    background-color: var(--color-dark);
-    font-size: calc(var(--avatar-medium) * 0.75);
-    height: var(--avatar-medium);
+    display: grid;
+    gap: var(--combatant-gap);
+    grid-template-areas:
+      "name bars"
+      "states bars";
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: var(--combatant-circle-size) 1fr;
   }
 
   .name {
-    justify-content: center;
-    margin: -15px 0 0;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    grid-area: name;
+  }
+
+  .initiative {
+    height: 100%;
   }
 
   .bars {
+    align-content: flex-start;
+    border-top: var(--combatant-bars-border-width) solid var(--color-primary);
     flex-wrap: wrap;
+    grid-area: bars;
+    padding: 0;
 
     app-bar {
+      margin-bottom: 0;
       width: 100%;
     }
   }
 
   .states {
-    margin-top: 0;
-    padding: 1rem 2rem;
+    align-self: stretch;
+    grid-area: states;
+  }
+
+
+
+  .grid {
+    --combatant-avatar-left: 50%;
+    --combatant-content-padding: 0;
+    --combatant-initiative-border-radius: 50%;
+    --combatant-initiative-right: 50%;
+    --combatant-initiative-transform: translateX(50%);
+    --combatant-name-border-radius: calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2) 0 0;
+    --combatant-name-border-width: var(--border-line-width);
+    --combatant-name-margin: -15px 0 0;
+    --combatant-padding: 0;
+    --combatant-states-background-color: var(--color-primary);
+    --combatant-states-border-radius: 0 0 calc(var(--combatant-circle-size) / 2) calc(var(--combatant-circle-size) / 2);
+    --combatant-states-color: var(--color-dark);
+    --combatant-states-padding: 1rem 2rem;
+
+    &.combatant {
+      display: block;
+      padding-top: calc(var(--combatant-circle-size) / 2);
+    }
+
+    app-avatar,
+    .default-avatar {
+      line-height: var(--avatar-medium);
+      position: relative;
+      transform: translateX(-50%);
+      width: var(--avatar-medium);
+    }
+
+    .default-avatar {
+      background-color: var(--color-dark);
+      font-size: calc(var(--avatar-medium) * 0.75);
+      height: var(--avatar-medium);
+    }
+
+    .name {
+      justify-content: center;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    .initiative {
+      height: var(--combatant-circle-size);
+    }
   }
 }
