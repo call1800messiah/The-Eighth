@@ -124,7 +124,8 @@ h2 {
     cursor: not-allowed;
   }
 
-  &:hover {
+  &:hover,
+  &.active {
     background-color: var(--color-primary);
     color: var(--color-dark);
   }
