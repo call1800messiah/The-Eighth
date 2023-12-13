@@ -5,6 +5,11 @@
                title="Person hinzufügen"></fa-icon>
     </button>
 
+    <button type="button" class="btn-icon" (click)="toggleShowDead()" [ngClass]="{'active': showDead$ | async}">
+      <fa-icon [icon]="faSkullCrossbones" [fixedWidth]="true"
+               title="Tote anzeigen"></fa-icon>
+    </button>
+
     <button type="button" class="btn-icon" [ngClass]="{'active': showAsList}" (click)="toggleDisplayStyle()">
       <fa-icon [icon]="faList" [fixedWidth]="true"
                title="Anzeigestil wechseln"></fa-icon>
