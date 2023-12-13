@@ -13,6 +13,15 @@
   line-height: var(--item-title-line-height);
 }
 
+.event {
+  position: relative;
+
+  app-access-indicator {
+    right: 0;
+    top: 5px;
+  }
+}
+
 dl {
   dt {
     font-weight: bold;

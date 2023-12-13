@@ -61,16 +61,14 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
-    let id;
+    let id: string;
     const event: HistoricEvent = {...this.eventForm.value};
     if (this.props.event) {
       id = this.props.event.id;
       event.owner = this.props.event.owner;
-      event.isPrivate = this.props.event.isPrivate;
     } else {
       event.created = new Date();
       event.owner = this.userID;
-      event.isPrivate = false;
     }
     event.modified = new Date();
 

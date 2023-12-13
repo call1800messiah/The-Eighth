@@ -61,7 +61,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
-    let id;
+    let id: string;
     const info: Info = {...this.infoForm.value};
     if (this.props.info) {
       id = this.props.info.id;
