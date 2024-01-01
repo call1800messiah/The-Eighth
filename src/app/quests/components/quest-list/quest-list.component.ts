@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestsService } from '../../services/quests.service';
@@ -62,13 +62,14 @@ export class QuestListComponent implements OnInit {
   }
 
 
-  private filterQuestsByText(data): Quest[] {
+  private filterQuestsByText(data: [Quest[], string]): Quest[] {
     const [quests, text] = data;
+    const lowText = text.trim().toLowerCase();
     return quests.filter((quest) => {
       return text === ''
-        || quest.name.toLowerCase().indexOf(text.toLowerCase()) !== -1
-        || (quest.type && quest.type.toLowerCase().indexOf(text.toLowerCase()) !== -1)
-        || (quest.description && quest.description.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+        || quest.name.toLowerCase().indexOf(lowText) !== -1
+        || (quest.type && quest.type.toLowerCase().indexOf(lowText) !== -1)
+        || (quest.description && quest.description.toLowerCase().indexOf(lowText) !== -1);
     });
   }
 }

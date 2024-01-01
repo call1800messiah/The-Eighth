@@ -75,8 +75,8 @@ export class ListComponent implements OnInit {
 
   private filterPeopleByText(data: [Person[], string, boolean]): Person[] {
     const [people, text, showDead] = data;
+    const lowText = text.toLowerCase();
     return people.filter((person) => {
-      const lowText = text.toLowerCase();
       return (
         text === ''
         || person.name.toLowerCase().indexOf(lowText) !== -1
