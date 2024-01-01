@@ -1,0 +1,35 @@
+<div class="combatant" [ngClass]="{'box': displayAsBox, 'grid': !showAsList}">
+  <app-avatar *ngIf="combatant.person" [person]="combatant.person"></app-avatar>
+  <div *ngIf="!combatant.person" class="default-avatar">
+    <fa-icon [icon]="faUserNinja" [fixedWidth]="true"></fa-icon>
+  </div>
+
+  <div class="initiative" [ngClass]="{'disabled': !combatant.active}" (click)="setInitiative()">
+    <span *ngIf="combatant.active">{{combatant.initiative}}</span>
+    <fa-icon *ngIf="!combatant.active" [icon]="faDizzy" [fixedWidth]="true"></fa-icon>
+  </div>
+
+  <div class="name" (click)="showMenu()">
+    {{
+    combatant.person ?
+      isOwnerOrCan('viewName', combatant.person.owner) ? combatant.person.name : combatant.person.name.split(' ')[0] :
+      combatant.name
+    }}
+  </div>
+
+  <div *ngIf="(combatant.attributes | async) as attributes" class="bars">
+    <app-bar *ngFor="let bar of attributes"
+             [bar]="bar"
+             (barClicked)="editAttribute(bar, combatant)"
+    ></app-bar>
+  </div>
+
+  <div class="states" (click)="setStates()">
+    <div *ngFor="let state of combatant.states" class="state">
+      <span [innerHTML]="state.name" class="state-name"></span>
+      <span *ngFor="let mod of state.modifiers">
+        | {{mod.target}} {{mod.value}}
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -26,6 +26,10 @@ import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filte
 import { TplVarDirective } from './directives/tpl-var.directive';
 import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
+import { ContextMenuComponent } from './components/context-menu/context-menu.component';
+import { EditAccessComponent } from './components/edit-access/edit-access.component';
+import { EditTagsComponent } from './components/edit-tags/edit-tags.component';
+import { AccessIndicatorComponent } from './components/access-indicator/access-indicator.component';
 
 
 
@@ -52,6 +56,10 @@ import { PopoverComponent } from './components/popover/popover.component';
     TopBarFilterComponent,
     TplVarDirective,
     UnlockButtonComponent,
+    ContextMenuComponent,
+    EditAccessComponent,
+    EditTagsComponent,
+    AccessIndicatorComponent,
   ],
   imports: [
     CommonModule,
@@ -60,22 +68,28 @@ import { PopoverComponent } from './components/popover/popover.component';
     ReactiveFormsModule,
     ImageCropperModule,
     RouterModule,
+    NgOptimizedImage,
   ],
   exports: [
+    AccessIndicatorComponent,
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
     BoxGridComponent,
     ContainerComponent,
+    ContextMenuComponent,
     DashboardComponent,
+    EditAccessComponent,
     EditAttributeComponent,
     EditImageComponent,
     EditInfoComponent,
+    EditTagsComponent,
     EstimatedAgePipe,
     FocusOnInitDirective,
     FontAwesomeModule,
     FormsModule,
     InfoBoxComponent,
+    NgOptimizedImage,
     PopoverComponent,
     ProgressBarComponent,
     ReactiveFormsModule,

@@ -1,0 +1,15 @@
+.top-bar {
+  display: flex;
+  gap: var(--item-padding);
+
+  .form-group {
+    flex: 1 1 auto;
+  }
+}
+
+.single-tag {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}

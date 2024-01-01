@@ -4,24 +4,69 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+* Create a `.env` file in the root directory of the project and add the following variables:
 
-## Code scaffolding
+```
+NG_APP_TENANT=YOUR_TENANT_NAME
+```
+* Create a `src/environments/environment.ts` file and add the following data according to your Firebase project.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```javascript
+export const environment = {
+  name: 'dev',
+  production: false,
+  tenant: process.env.NG_APP_TENANT.trim(),
+  tenantData: {
+    YOUR_TENANT_NAME: {
+      firebase: {
+        apiKey: '',
+        authDomain: '',
+        databaseURL: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: ''
+      },
+    },
+  },
+};
+```
+
+* Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+## Deploy
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Prerequisites:
+* Create a `src/environments/environment.prod.ts` file and add the following data according to your Firebase project.
 
-## Running end-to-end tests
+```javascript
+export const environment = {
+  name: 'prod',
+  production: true,
+  tenant: process.env.NG_APP_TENANT.trim(),
+  tenantData: {
+    YOUR_TENANT_NAME: {
+      firebase: {
+        apiKey: '',
+        authDomain: '',
+        databaseURL: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: ''
+      },
+    },
+  },
+};
+```
+* Run `firebase login` to login to your Firebase account.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Deployment:
+* Run `firebase use YOUR_TENANT_NAME` to select the Firebase project you want to deploy to.
+* Ensure that you have the correct environment variables in your `.env` file.
+* Run `ng build --configuration=production` to build the project for production.
+* Run `firebase deploy` to deploy the project to Firebase Hosting.

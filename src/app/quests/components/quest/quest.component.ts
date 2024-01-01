@@ -1,18 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { ActivatedRoute } from '@angular/router';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Quest } from '../../models/quest';
+import type { Quest } from '../../models/quest';
+import type { Info } from '../../../shared/models/info';
+import type { Menu } from '../../../shared/models/menu';
 import { InfoType } from '../../../core/enums/info-type.enum';
-import { Info } from '../../../shared/models/info';
 import { DataService } from '../../../core/services/data.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
 import { QuestsService } from '../../services/quests.service';
 import { EditQuestComponent } from '../edit-quest/edit-quest.component';
+import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 
 
 
@@ -22,9 +24,27 @@ import { EditQuestComponent } from '../edit-quest/edit-quest.component';
   styleUrls: ['./quest.component.scss']
 })
 export class QuestComponent implements OnInit, OnDestroy {
-  faPlus = faPlus;
-  faStickyNote = faStickyNote;
+  faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
+  menu: Menu = {
+    actions: [
+      {
+        label: 'Daten ändern',
+        action: this.editQuest.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Zugriff regeln',
+        action: this.editAccess.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Neue Info',
+        action: this.addDetail.bind(this)
+      }
+    ]
+  };
+  menuOpen = false;
   quest: Quest;
   questSub: Subscription;
   questTypes = QuestsService.questTypes;
@@ -35,7 +55,6 @@ export class QuestComponent implements OnInit, OnDestroy {
     private popover: PopoverService,
     private questService: QuestsService,
     private route: ActivatedRoute,
-    private router: Router,
   ) {
     // TODO: Check if the quest can be loaded by a resolver as an observable
     this.questSub = this.route.paramMap.pipe(
@@ -60,14 +79,6 @@ export class QuestComponent implements OnInit, OnDestroy {
 
 
 
-  addDetail() {
-    this.popover.showPopover('Neue Info', EditInfoComponent, {
-      collection: QuestsService.collection,
-      parentId: this.quest.id
-    });
-  }
-
-
   editDetail(info: Info) {
     this.popover.showPopover('Info editieren', EditInfoComponent, {
       collection: QuestsService.collection,
@@ -77,12 +88,29 @@ export class QuestComponent implements OnInit, OnDestroy {
   }
 
 
-  editQuest() {
-    this.popover.showPopover(this.quest.name, EditQuestComponent, this.quest);
+  toggleMenu(e) {
+    e.preventDefault();
+    this.menuOpen = !this.menuOpen;
   }
 
 
-  goTo(id: string) {
-    this.router.navigate([`quests/${id}`]);
+  private addDetail() {
+    this.popover.showPopover('Neue Info', EditInfoComponent, {
+      collection: QuestsService.collection,
+      parentId: this.quest.id
+    });
+  }
+
+
+  private editAccess() {
+    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
+      collection: QuestsService.collection,
+      documentId: this.quest.id,
+    });
+  }
+
+
+  private editQuest() {
+    this.popover.showPopover(this.quest.name, EditQuestComponent, this.quest);
   }
 }

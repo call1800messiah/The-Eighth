@@ -1,4 +1,5 @@
 {
+  "barTypes": ["asp", "kap", "lep"],
   "hitLocations": {
     "1": "Kopf",
     "2": "Kopf",
@@ -21,5 +22,460 @@
     "19": "Beine",
     "20": "Beine"
   },
-  "states": []
+  "states": [
+    {
+      "name": "Belastung I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Proben auf Talente, die durch Belastung erschwert sind",
+          "value": -1
+        },
+        {
+          "target": "AT",
+          "value": -1
+        },
+        {
+          "target": "Verteidigung",
+          "value": -1
+        },{
+          "target": "INI",
+          "value": -1
+        },{
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Belastung II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Proben auf Talente, die durch Belastung erschwert sind",
+          "value": -2
+        },
+        {
+          "target": "AT",
+          "value": -2
+        },
+        {
+          "target": "Verteidigung",
+          "value": -2
+        },{
+          "target": "INI",
+          "value": -2
+        },{
+          "target": "GS",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Belastung III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Proben auf Talente, die durch Belastung erschwert sind",
+          "value": -3
+        },
+        {
+          "target": "AT",
+          "value": -3
+        },
+        {
+          "target": "Verteidigung",
+          "value": -3
+        },{
+          "target": "INI",
+          "value": -3
+        },{
+          "target": "GS",
+          "value": -3
+        }
+      ]
+    },{
+      "name": "Belastung VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Handlungsunfähig",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Betäubung I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Betäubung II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Betäubung III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -3
+        }
+      ]
+    },{
+      "name": "Betäubung VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Handlungsunfähig",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Entrückung I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben auf Talente und Zauber, so sie nicht dem Gott des Geweihten gefällig sind",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Entrückung II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle dem Gott des Geweihten gefällige Proben auf Talente und Zauber",
+          "value": 1
+        },{
+          "target": "alle anderen",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Entrückung III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle dem Gott des Geweihten gefällige Proben auf Talente und Zauber",
+          "value": 2
+        },{
+          "target": "alle anderen",
+          "value": -3
+        }
+      ]
+    },{
+      "name": "Entrückung VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle dem Gott des Geweihten gefällige Proben auf Talente und Zauber",
+          "value": 3
+        },{
+          "target": "alle anderen",
+          "value": -4
+        }
+      ]
+    },
+    {
+      "name": "Furcht I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Furcht II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Furcht III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -3
+        }
+      ]
+    },{
+      "name": "Furcht VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "Handlungsunfähig",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Paralyse I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben, die Bewegung oder Sprache erfordern",
+          "value": -1
+        },{
+          "target": "GS",
+          "value": "nur noch 75 %"
+        }
+      ]
+    },{
+      "name": "Paralyse II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben, die Bewegung oder Sprache erfordern",
+          "value": -2
+        },{
+          "target": "GS",
+          "value": "nur noch 50 %"
+        }
+      ]
+    },{
+      "name": "Paralyse III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben, die Bewegung oder Sprache erfordern",
+          "value": -3
+        },{
+          "target": "GS",
+          "value": "nur noch 25 %"
+        }
+      ]
+    },{
+      "name": "Paralyse VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "bewegungsunfähig",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "name": "Schmerz I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -1
+        },{
+          "target": "GS",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Schmerz II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -2
+        },{
+          "target": "GS",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Schmerz III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -3
+        },{
+          "target": "GS",
+          "value": -3
+        }
+      ]
+    },{
+      "name": "Schmerz VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "handlungsunfähig",
+          "value": ""
+        },{
+          "target": "ansonsten alle Proben",
+          "value": -4
+        }
+      ]
+    },
+    {
+      "name": "Verwirrung I",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -1
+        }
+      ]
+    },{
+      "name": "Verwirrung II",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -2
+        }
+      ]
+    },{
+      "name": "Verwirrung III",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "alle Proben",
+          "value": -3
+        },{
+          "target": "komplexe Aktivitäten wie Zaubern, Liturgien wirken und die Anwendung von Wissenstalenten ist unmöglich",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Verwirrung VI",
+      "exclusive": true,
+      "modifiers": [
+        {
+          "target": "handlungsunfähig",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Bewegungsunfähig",
+      "modifiers": [
+        {
+          "target": "GRW S.34",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Bewusstlos",
+      "modifiers": [
+        {
+          "target": "GRW S.34",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Blind",
+      "modifiers": [
+        {
+          "target": "GRW S.34",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Blutrausch",
+      "modifiers": [
+        {
+          "target": "GRW S.35",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Brennend",
+      "modifiers": [
+        {
+          "target": "GRW S.35",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Eingeengt",
+      "modifiers": [
+        {
+          "target": "GRW S.35",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Fixiert",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Handlungsunfähig",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Krank",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Liegend",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Stumm",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Taub",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Überrascht",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Unsichtbar",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    },{
+      "name": "Vergiftet",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ]
+    }
+  ]
 }

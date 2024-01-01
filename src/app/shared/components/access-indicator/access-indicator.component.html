@@ -1,0 +1,7 @@
+<button
+  type="button"
+  class="btn-icon access-indicator"
+  *ngIf="user.isGM || user.id === item.owner"
+  [ngClass]="accessState" [title]="usersWithAccess.join(', ')"
+  (click)="editAccess($event)"
+></button>

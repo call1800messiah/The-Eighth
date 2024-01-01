@@ -19,12 +19,14 @@ export class ListComponent implements OnInit {
   faPlus = faPlus;
   filteredItems$: Observable<InventoryItem[]>;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
 
   constructor(
     private inventory: InventoryService,
     private popover: PopoverService,
   ) {
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('inventory-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredItems$ = combineLatest([
       this.inventory.getInventory(),
       this.filterText,
@@ -38,6 +40,7 @@ export class ListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('inventory-filter', text);
     this.filterText.next(text);
   }
 

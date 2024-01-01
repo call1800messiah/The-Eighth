@@ -28,12 +28,13 @@ export class TimelineService {
 
 
   getEvents(timelineId: string): Observable<HistoricEvent[]> {
+    const eventCollection = `${TimelineService.collection}/${timelineId}/events`;
     return this.api.getDataFromCollection(
-      `${TimelineService.collection}/${timelineId}/events`,
+      eventCollection,
       (ref) => ref
         .where('access', 'array-contains', this.user.id)
     ).pipe(
-      map((events) => this.transformEvents(events)),
+      map((events) => this.transformEvents(events, eventCollection)),
     );
   }
 
@@ -46,15 +47,16 @@ export class TimelineService {
 
 
 
-  private transformEvents(events: any[]): HistoricEvent[] {
-    return events.reduce((all, event) => {
+  private transformEvents(events: any[], collection: string): HistoricEvent[] {
+    return events.reduce((all: HistoricEvent[], event) => {
       const eventData = event.payload.doc.data();
       all.push({
-        id: event.payload.doc.id,
+        access: eventData.access,
+        collection,
         content: eventData.content,
-        date: eventData.date,
         created: eventData.created ? new Date(eventData.created.seconds * 1000) : null,
-        isPrivate: eventData.isPrivate ? eventData.isPrivate : false,
+        date: eventData.date,
+        id: event.payload.doc.id,
         modified: eventData.modified ? new Date(eventData.modified.seconds * 1000) : null,
         owner: eventData.owner ? eventData.owner : null,
         type: eventData.type,

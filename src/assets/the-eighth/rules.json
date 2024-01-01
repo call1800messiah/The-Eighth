@@ -1,4 +1,5 @@
 {
+  "barTypes": ["aup", "asp", "erp", "kap", "lep"],
   "hitLocations": {
     "1": "Linkes Bein",
     "2": "Rechtes Bein",

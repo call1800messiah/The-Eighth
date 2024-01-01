@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { faMask, faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from '../../models/person';
+import type { Person } from '../../models/person';
+import { AuthUser } from '../../../auth/models/auth-user';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -12,14 +14,22 @@ import { Person } from '../../models/person';
 })
 export class PersonSummaryComponent implements OnInit {
   @Input() person: Person;
-  faMask = faMask;
+  @Input() showAsList = false;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
+  user: AuthUser;
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+  ) {
+    this.user = this.authService.user;
+  }
 
   ngOnInit(): void {
   }
 
+  isOwnerOrCan(access: string): boolean {
+    return this.user && (this.user.isGM || this.user[access] || this.user.id === this.person.owner);
+  }
 }
 

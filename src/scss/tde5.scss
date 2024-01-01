@@ -1,3 +1,5 @@
+@import './variables';
+
 body.tde5 {
   // ===== COLORS =====
   --color-primary: #72a67f;
@@ -8,10 +10,12 @@ body.tde5 {
   --color-bright-rgb: 17, 84, 28;
   --color-gray: #aaaaaa;
   --color-low: #00dd00;
+  --color-medium: #dddd00;
   --color-high: #dd0000;
 
   --color-lep: #663333;
   --color-asp: #334766;
+  --color-kap: #533366;
 
 
   // ===== FONTS =====
@@ -41,7 +45,9 @@ body.tde5 {
   --avatar-medium: 200px;
   --container-width-small: 400px;
   --container-width-medium: 720px;
+  --container-width-large: 1280px;
   --border-line-width: 2px;
+  --access-indicator-size: 10px;
 
 
   // ===== ANIMATIONS =====
@@ -79,5 +85,65 @@ body.tde5 {
   app-avatar {
     --avatar-border: none;
     --avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
+  }
+
+  app-bar {
+    --bar-border: none;
+    --bar-border-radius: 12px;
+    --bar-box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.6), 3px 3px 10px rgba(0, 0, 0, 0.5);
+    --bar-height: 24px;
+    --bar-margin-top: 5px;
+  }
+
+  app-context-menu {
+    --context-menu-border: none;
+    --context-menu-border-radius: 15px;
+    --context-menu-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 5px 5px 20px rgba(0,0,0, 0.3);
+  }
+
+  app-person {
+    --person-attributes-border: none;
+  }
+
+  app-combatant {
+    --combatant-avatar-left: var(--item-padding);
+    --combatant-avatar-top: var(--item-padding);
+    --combatant-bars-border-width: 0;
+    --combatant-content-padding: 0;
+    --combatant-default-avatar-border: none;
+    --combatant-default-avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
+    --combatant-gap: 1rem;
+    --combatant-initiative-top: var(--item-padding);
+    --combatant-initiative-right: var(--item-padding);
+    --combatant-name-border-width: 0;
+    --combatant-name-margin: 0 0 0 calc(var(--combatant-circle-size) / 2);
+    --combatant-padding: var(--item-padding);
+    --combatant-states-background-color: rgba(255, 255, 255, 0.1);
+    --combatant-states-border-radius: 15px;
+    --combatant-states-border-width: 0;
+
+    @media (min-width: $break-sm) {
+      --combatant-initiative-border-radius: var(--box-border-radius);
+      --combatant-initiative-right: 0;
+      --combatant-initiative-top: 0;
+      --combatant-padding: var(--item-padding) calc(var(--combatant-circle-size) + var(--item-padding)) var(--item-padding) var(--item-padding);
+
+
+      .grid {
+        --combatant-avatar-left: 50%;
+        --combatant-avatar-top: calc(var(--item-padding) * -1);
+        --combatant-content-padding: 1rem 0 0;
+        --combatant-name-border-width: 0;
+        --combatant-initiative-border-radius: 50%;
+        --combatant-initiative-right: var(--item-padding);
+        --combatant-initiative-top: var(--item-padding);
+        --combatant-initiative-transform: none;
+        --combatant-padding: var(--item-padding);
+        --combatant-states-background-color: rgba(255, 255, 255, 0.1);
+        --combatant-states-border-radius: 15px;
+        --combatant-states-color: inherit;
+        --combatant-states-padding: 1rem;
+      }
+    }
   }
 }

@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 
-import { PopoverChild } from '../../models/popover-child';
+import type { PopoverChild } from '../../models/popover-child';
+import type { EditImageProps } from '../../models/edit-image-props';
 import { UtilService } from '../../../core/services/util.service';
 import { StorageService } from '../../../core/services/storage.service';
-import { EditImageProps } from '../../models/edit-image-props';
 
 
 
@@ -19,6 +19,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
   @ViewChild('cropper') cropper: ImageCropperComponent;
   croppedImageData: any = {};
   cropperSettings: CropperSettings;
+  deleteDisabled = true;
   imageName: string;
 
   constructor(
@@ -27,15 +28,26 @@ export class EditImageComponent implements OnInit, PopoverChild {
   ) {
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.dynamicSizing = true;
-    this.cropperSettings.fileType = 'image/jpeg';
     this.cropperSettings.noFileInput = true;
-    this.cropperSettings.compressRatio = 0.9;
   }
 
   ngOnInit(): void {
     if (this.props.cropperSettings) {
       Object.entries(this.props.cropperSettings).forEach(([key, value]) => {
         this.cropperSettings[key] = value;
+      });
+    }
+  }
+
+
+  delete() {
+    if (this.props.imageName) {
+      this.storage.delete(
+        this.props.bucket,
+        `${this.props.imageName}.${this.cropperSettings.fileType.split('/')[1]}`,
+        this.props.updateRef
+      ).then(() => {
+        this.dismissPopover.emit(true);
       });
     }
   }
@@ -52,7 +64,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
     }
 
     this.storage.uploadFile(
-      `${imageName}.jpg`,
+      `${imageName}.${this.cropperSettings.fileType.split('/')[1]}`,
       this.util.dataURLtoBlob(this.croppedImageData.image),
       this.props.bucket,
       this.props.updateRef
@@ -77,5 +89,9 @@ export class EditImageComponent implements OnInit, PopoverChild {
     };
 
     myReader.readAsDataURL(file);
+  }
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
   }
 }

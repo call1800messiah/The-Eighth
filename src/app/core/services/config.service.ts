@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ICropperSettings } from 'ngx-img-cropper';
+import type { ICropperSettings } from 'ngx-img-cropper';
 import { customAlphabet } from 'nanoid';
 
 @Injectable({
@@ -26,13 +26,24 @@ export class ConfigService {
   static nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_', 10);
 
   static imageSettings: Record<string, ICropperSettings> = {
+    banner: {
+      croppedHeight: 150,
+      croppedWidth: 142.5,
+      fileType: 'image/png',
+      height: 100,
+      width: 95,
+    },
     person: {
+      compressRatio: 0.9,
       croppedHeight: 500,
       croppedWidth: 500,
+      fileType: 'image/jpg',
       height: 100,
       width: 100,
     },
     place: {
+      compressRatio: 0.7,
+      fileType: 'image/jpg',
       keepAspect: false,
       preserveSize: true,
     }

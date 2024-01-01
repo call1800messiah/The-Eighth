@@ -1,20 +1,78 @@
 @import '../../../../scss/mixins.scss';
 
 .wrapper {
-  align-content: space-between;
-  cursor: pointer;
-  display: flex;
-  flex-wrap: wrap;
   position: relative;
   min-height: calc(var(--item-image-size) + (var(--item-padding) * 2));
+
+  a {
+    align-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &.list {
+    --list-spacing: 5px;
+    margin-bottom: var(--list-spacing);
+    min-height: auto;
+    padding: var(--list-spacing) var(--mobile-interactive-height) var(--list-spacing) var(--list-spacing);
+
+    a {
+      gap: var(--item-padding);
+    }
+
+    .image {
+      --item-image-size: var(--mobile-interactive-height);
+      flex: 0 0 auto;
+      position: static;
+      transform: none;
+
+      &:hover {
+        height: var(--item-image-size);
+        width: var(--item-image-size);
+      }
+    }
+
+    .text {
+      align-items: center;
+      display: flex;
+      flex: 1 1 auto;
+      gap: var(--item-padding);
+      justify-content: space-between;
+      padding-left: 0;
+      width: auto;
+    }
+
+    .name {
+      margin-bottom: 0;
+    }
+
+    .tags {
+      align-items: flex-end;
+      flex: 0 0 auto;
+      margin-top: 0;
+      width: 20%;
+    }
+
+    .status {
+      bottom: var(--list-spacing);
+      right: var(--list-spacing);
+      top: auto;
+    }
+
+    app-access-indicator {
+      bottom: auto;
+      left: auto;
+      right: 10px;
+      top: 10px;
+    }
+  }
 }
 
 .image {
-  font-size: 4rem;
+  font-size: calc(var(--item-image-size) / 2);
   height: var(--item-image-size);
   left: 0;
   line-height: var(--item-image-size);
-  margin-right: var(--item-padding);
   position: absolute;
   text-align: center;
   top: 0;
@@ -37,16 +95,17 @@
 
 .text {
   padding-left: calc(var(--item-image-size) + var(--item-padding));
+  padding-top: var(--detail-text-line-height);
   position: relative;
   width: 100%;
 }
 
 .name {
+  flex: 1 1 auto;
   font-size: var(--item-title-font-size);
   font-weight: bold;
   line-height: var(--item-title-line-height);
   margin-bottom: 0.5rem;
-  padding-top: var(--detail-text-line-height);
 }
 
 .title {
@@ -54,17 +113,25 @@
   height: var(--detail-text-line-height);
   overflow: hidden;
   position: absolute;
+  top: 0;
 }
 
 .status {
   position: absolute;
-  right: -3px;
+  right: var(--item-padding);
   text-align: right;
-  top: -3px;
+  top: var(--item-padding);
 }
 
 .tags {
   justify-content: flex-end;
   margin-top: var(--item-padding);
   width: 100%;
+}
+
+app-access-indicator {
+  bottom: var(--item-padding);
+  left: var(--item-padding);
+  right: auto;
+  top: auto;
 }

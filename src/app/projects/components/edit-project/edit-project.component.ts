@@ -28,7 +28,6 @@ export class EditProjectComponent implements OnInit, OnDestroy {
     benefit: new UntypedFormControl(''),
     interval: new UntypedFormControl(''),
     name: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(false)
   });
   requirements: ProjectRequirement[];
   userID: string;
@@ -61,6 +60,9 @@ export class EditProjectComponent implements OnInit, OnDestroy {
         this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
         this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
       });
+    } else {
+      this.milestones = [];
+      this.requirements = [];
     }
   }
 

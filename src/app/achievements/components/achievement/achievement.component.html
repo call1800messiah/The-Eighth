@@ -1,4 +1,6 @@
-<div class="box" [ngClass]="{'private': achievement.isPrivate}">
+<div class="box">
+  <app-access-indicator [item]="achievement"></app-access-indicator>
+
   <div class="image">
     <img *ngIf="achievement.icon" src="{{achievement.icon}}" alt="{{achievement.name}}" />
     <fa-icon *ngIf="!achievement.icon" [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>

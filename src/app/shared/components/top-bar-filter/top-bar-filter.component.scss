@@ -1,3 +1,5 @@
+@import "../../../../scss/variables.scss";
+
 .top-bar {
   display: flex;
   margin-bottom: var(--container-horizontal-padding);
@@ -17,5 +19,13 @@
 
 :host ::ng-deep button {
   flex: 0 0 auto;
-  margin-left: var(--item-padding);
+  margin-left: calc(var(--item-padding) / 2);
+}
+
+
+
+@media (min-width: $break-sm) {
+  :host ::ng-deep button {
+    margin-left: var(--item-padding);
+  }
 }

@@ -1,8 +1,11 @@
-<li class="place" [ngClass]="{'private' : place.isPrivate}">
+<li class="place">
+  <app-access-indicator [item]="place"></app-access-indicator>
+
   <div class="type">{{placeTypes[place.type]}}</div>
-  <div class="name" (click)="goToPlace()">
+
+  <a class="name" [routerLink]="[place.id]">
     {{place.name}}
-  </div>
+  </a>
 
   <ul class="parts unstyled-list" *ngIf="place.parts && showParts">
     <app-place-summary

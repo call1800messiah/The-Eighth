@@ -1,5 +1,5 @@
 <app-container width="medium">
-  <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)">
+  <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
     <button type="button" class="btn-icon" (click)="showAddDialog()">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"
                title="Queste hinzufügen"></fa-icon>
@@ -7,7 +7,7 @@
   </app-top-bar-filter>
 
   <div class="form-group">
-    <input type="checkbox" id="showCompleted" [(ngModel)]="showCompleted">
+    <input type="checkbox" id="showCompleted" [(ngModel)]="showCompleted" (ngModelChange)="onSetShowCompleted()">
     <label for="showCompleted">Abgeschlossene Quests anzeigen</label>
   </div>
 

@@ -1,1 +1,1 @@
-export type ContainerWidth = 'small' | 'medium';
+export type ContainerWidth = 'small' | 'medium' | 'large';

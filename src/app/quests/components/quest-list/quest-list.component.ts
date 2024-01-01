@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestsService } from '../../services/quests.service';
@@ -20,14 +20,16 @@ export class QuestListComponent implements OnInit {
   showCompleted: boolean;
   filteredQuests$: Observable<Quest[]>;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
   quests$: Observable<Quest[]>;
 
   constructor(
     private questsService: QuestsService,
     private popover: PopoverService,
   ) {
-    this.showCompleted = false;
-    this.filterText = new BehaviorSubject<string>('');
+    this.showCompleted = JSON.parse(localStorage.getItem('quests-showCompleted')) || false;
+    this.initialFilterText = localStorage.getItem('quests-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredQuests$ = combineLatest([
       this.questsService.getQuests(),
       this.filterText,
@@ -35,7 +37,7 @@ export class QuestListComponent implements OnInit {
       map(this.filterQuestsByText)
     );
     this.quests$ = this.questsService.getQuests().pipe(
-      map((quests) => quests.filter((quest) => quest.parent.id === 'Nichts')),
+      map((quests) => quests.filter((quest) => !quest.parent)),
     );
   }
 
@@ -45,7 +47,13 @@ export class QuestListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('quests-filter', text);
     this.filterText.next(text);
+  }
+
+
+  onSetShowCompleted() {
+    localStorage.setItem('quests-showCompleted', JSON.stringify(this.showCompleted));
   }
 
 
@@ -54,13 +62,14 @@ export class QuestListComponent implements OnInit {
   }
 
 
-  private filterQuestsByText(data): Quest[] {
+  private filterQuestsByText(data: [Quest[], string]): Quest[] {
     const [quests, text] = data;
+    const lowText = text.trim().toLowerCase();
     return quests.filter((quest) => {
       return text === ''
-        || quest.name.toLowerCase().indexOf(text.toLowerCase()) !== -1
-        || (quest.type && quest.type.toLowerCase().indexOf(text.toLowerCase()) !== -1)
-        || (quest.description && quest.description.toLowerCase().indexOf(text.toLowerCase()) !== -1);
+        || quest.name.toLowerCase().indexOf(lowText) !== -1
+        || (quest.type && quest.type.toLowerCase().indexOf(lowText) !== -1)
+        || (quest.description && quest.description.toLowerCase().indexOf(lowText) !== -1);
     });
   }
 }

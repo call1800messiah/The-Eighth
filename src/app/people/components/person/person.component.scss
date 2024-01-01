@@ -1,8 +1,14 @@
+@import '../../../../scss/variables.scss';
+
+:host {
+  --person-attributes-border: var(--border-line-width) solid var(--color-primary);
+}
+
 .person {
   position: relative;
 }
 
-#btn-add-detail {
+#btn-menu {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -18,7 +24,22 @@
   max-width: var(--avatar-large);
 }
 
-.info {
+.banner {
+  bottom: 0;
+  height: 22.5%;
+  left: 0;
+  line-height: 0;
+  position: absolute;
+  width: 22.5%;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.info,
+.relatives {
   margin: var(--container-horizontal-padding) 0;
 }
 
@@ -40,11 +61,16 @@ dd {
   width: calc(100% - 100px);
 }
 
+.location {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
 .tags {
   margin-top: var(--item-padding);
   justify-content: flex-end;
 }
 
 .attributes {
-  border-top: var(--border-line-width) solid var(--color-primary);
+  border-top: var(--person-attributes-border);
 }

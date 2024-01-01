@@ -1,4 +1,9 @@
 {
+  "projects": {
+    "default": "the-eighth-52dae",
+    "tde5": "tde5-a4875",
+    "the-eighth": "the-eighth-52dae"
+  },
   "targets": {
     "the-eighth-52dae": {
       "hosting": {
@@ -6,9 +11,14 @@
           "the-eighth-52dae"
         ]
       }
+    },
+    "tde5-a4875": {
+      "hosting": {
+        "The-Eighth": [
+          "tde5-a4875"
+        ]
+      }
     }
   },
-  "projects": {
-    "default": "the-eighth-52dae"
-  }
+  "etags": {}
 }

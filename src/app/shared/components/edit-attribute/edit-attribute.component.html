@@ -1,7 +1,14 @@
 <div>
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
-    <div class="locked-input" *ngIf="props.attribute">
-      <app-unlock-button (toggle)="toggleMax()"></app-unlock-button>
+    <div class="form-group" *ngIf="!this.props.attribute">
+      <select formControlName="type" id="type">
+        <option *ngFor="let type of types" [value]="type">{{ type }}</option>
+      </select>
+      <label for="type">Typ</label>
+    </div>
+
+    <div [ngClass]="{'locked-input': props.attribute}">
+      <app-unlock-button (toggle)="toggleMax()" *ngIf="props.attribute"></app-unlock-button>
 
       <div class="form-group">
         <input
@@ -22,8 +29,6 @@
         id="current"
         formControlName="current"
         type="number"
-        min="0"
-        [max]="props.attribute.max"
         step="1"
         required
         appSelectOnFocus

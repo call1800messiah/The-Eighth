@@ -1,12 +1,15 @@
 <li class="quest"
-    [ngClass]="quest.type.concat(quest.isPrivate ? ' private' : '', quest.completed ? ' completed' : '')"
+    [ngClass]="quest.type.concat(quest.completed ? ' completed' : '')"
     *ngIf="showCompleted || !quest.completed"
 >
+  <app-access-indicator [item]="quest"></app-access-indicator>
+
   <div class="type">{{questTypes[quest.type]}}</div>
-  <div class="details" (click)="goToQuest()">
+
+  <a class="details" [routerLink]="[quest.id]">
     <div class="name">{{quest.name}}</div>
     <div class="description">{{quest.description}}</div>
-  </div>
+  </a>
 
   <ul class="subquests unstyled-list" *ngIf="quest.subQuests && showSubQuests">
     <app-quest-summary

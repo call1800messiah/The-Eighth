@@ -66,13 +66,13 @@ form button {
           border-radius: var(--input-border-radius);
           content: '';
           display: block;
-          height: var(--mobile-interactive-height);
+          height: calc(var(--mobile-interactive-height) - 2 * var(--border-line-width));
           left: 0;
           line-height: calc(#{var(--mobile-interactive-height)} - 2px);
           position: absolute;
           text-align: center;
           top: 0;
-          width: var(--mobile-interactive-height);
+          width: calc(var(--mobile-interactive-height) - 2 * var(--border-line-width));
         }
       }
 

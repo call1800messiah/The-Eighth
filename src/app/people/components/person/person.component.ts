@@ -1,24 +1,29 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { faPlus, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Person } from '../../models/person';
+import type { Person } from '../../models/person';
+import type { Info } from '../../../shared/models/info';
+import type { Values } from '../../../shared/models/values';
+import type { Attribute } from '../../../shared/models/attribute';
+import type { Menu } from '../../../shared/models/menu';
+import type { AuthUser } from '../../../auth/models/auth-user';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { DataService } from '../../../core/services/data.service';
 import { EditImageComponent } from '../../../shared/components/edit-image/edit-image.component';
 import { UtilService } from '../../../core/services/util.service';
-import { Info } from '../../../shared/models/info';
 import { InfoType } from '../../../core/enums/info-type.enum';
 import { EditInfoComponent } from '../../../shared/components/edit-info/edit-info.component';
-import { Values } from '../../../shared/models/values';
-import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { ConfigService } from '../../../core/services/config.service';
 import { PeopleService } from '../../services/people.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
+import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
 
 
 
@@ -28,21 +33,64 @@ import { PeopleService } from '../../services/people.service';
   styleUrls: ['./person.component.scss']
 })
 export class PersonComponent implements OnInit, OnDestroy {
-  person: Person;
-  faPlus = faPlus;
-  faStickyNote = faStickyNote;
+  faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
+  menu: Menu = {
+    actions: [
+      {
+        label: 'Bild ändern',
+        action: this.editImage.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Daten ändern',
+        action: this.editPerson.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Neues Attribut',
+        action: this.addAttribute.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Banner ändern',
+        action: this.editBanner.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Tags ändern',
+        action: this.editTags.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Zugriff regeln',
+        action: this.editAccess.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Neue Info',
+        action: this.addDetail.bind(this)
+      }
+    ],
+  };
+  menuOpen = false;
+  person: Person;
+  relativeTypes = PeopleService.relativeTypes;
+  user: AuthUser;
   values$: Observable<Values>;
   private personSub: Subscription;
 
   constructor(
+    private auth: AuthService,
     private data: DataService,
     private navigation: NavigationService,
     private peopleService: PeopleService,
     private popover: PopoverService,
     private route: ActivatedRoute,
     private util: UtilService,
-  ) { }
+  ) {
+    this.user = this.auth.user;
+  }
 
   ngOnInit(): void {
     // TODO: Check if the person can be loaded by a resolver as an observable
@@ -53,7 +101,7 @@ export class PersonComponent implements OnInit, OnDestroy {
     ).subscribe((person) => {
       if (person) {
         this.person = person;
-        this.navigation.setPageLabel(this.person.name, '/people');
+        this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
         this.values$ = this.peopleService.getPersonValues(this.person.id);
       }
@@ -64,14 +112,6 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.personSub.unsubscribe();
   }
 
-
-
-  addDetail() {
-    this.popover.showPopover('Neue Info', EditInfoComponent, {
-      collection: PeopleService.collection,
-      parentId: this.person.id
-    });
-  }
 
 
   editAttribute(attribute: Attribute) {
@@ -91,18 +131,85 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
-  editImage() {
+  hasRelatives(): boolean {
+    return Object.keys(this.person.relatives).length > 0;
+  }
+
+
+  isOwnerOrCan(access: string): boolean {
+    return this.user && (this.user.isGM || this.user[access] || this.user.id === this.person.owner);
+  }
+
+
+  toggleMenu(e) {
+    e.preventDefault();
+    this.menuOpen = !this.menuOpen;
+  }
+
+
+  private addAttribute() {
+    this.popover.showPopover('Neuer Wert', EditAttributeComponent, {
+      person: this.person.id,
+    });
+  }
+
+
+  private addDetail() {
+    this.popover.showPopover('Neue Info', EditInfoComponent, {
+      collection: PeopleService.collection,
+      parentId: this.person.id
+    });
+  }
+
+
+  private editAccess() {
+    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
+      collection: PeopleService.collection,
+      documentId: this.person.id,
+    });
+  }
+
+
+  private editBanner() {
+    this.popover.showPopover('Banner ändern', EditImageComponent, {
+      bucket: 'banners',
+      cropperSettings: ConfigService.imageSettings.banner,
+      imageName: this.util.slugify(this.person.name),
+      imageUrl: this.person.banner,
+      updateRef: {
+        attribute: 'banner',
+        collection: PeopleService.collection,
+        id: this.person.id,
+      },
+    });
+  }
+
+
+  private editImage() {
     this.popover.showPopover('Bild ändern', EditImageComponent, {
       bucket: PeopleService.collection,
       cropperSettings: ConfigService.imageSettings.person,
       imageName: this.util.slugify(this.person.name),
       imageUrl: this.person.image,
-      updateRef: this.person,
+      updateRef: {
+        attribute: 'image',
+        collection: PeopleService.collection,
+        id: this.person.id
+      },
     });
   }
 
 
-  editPerson() {
+  private editPerson() {
     this.popover.showPopover(this.person.name, EditPersonComponent, this.person);
+  }
+
+
+  private editTags() {
+    this.popover.showPopover('Tags editieren', EditTagsComponent, {
+      collection: PeopleService.collection,
+      id: this.person.id,
+      tags: this.person.tags,
+    });
   }
 }

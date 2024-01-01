@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import firebase from 'firebase/compat';
-import { map } from 'rxjs/operators';
 
+import type { AuthUser } from '../../auth/models/auth-user';
 import { ApiService } from './api.service';
-import { AuthUser } from '../../auth/models/auth-user';
+import { UserService } from './user.service';
 
 
 
@@ -21,11 +22,19 @@ export class AuthService {
   constructor(
     private api: ApiService,
     private router: Router,
+    private userService: UserService,
   ) {
     this.user$ = new BehaviorSubject<AuthUser>(null);
     this.firebaseUser$ = this.api.getAuthState();
-    this.firebaseUser$.subscribe(user => {
-      this.user = AuthService.transformUser(user);
+    combineLatest([
+      this.firebaseUser$,
+      this.userService.getUsers().pipe(
+        startWith([]),
+      )
+    ]).pipe(
+      map(AuthService.transformUser),
+    ).subscribe(user => {
+      this.user = user;
       this.user$.next(this.user);
       if (user){
         localStorage.setItem('user', JSON.stringify(user));
@@ -37,14 +46,17 @@ export class AuthService {
 
 
 
-  private static transformUser(firebaseUser): AuthUser {
+  private static transformUser([firebaseUser, users]): AuthUser | null {
     if (!firebaseUser) {
       return null;
     }
 
+    const user = users.find((u) => u.id === firebaseUser.uid);
+
     return {
       id: firebaseUser.uid,
       email: firebaseUser.email,
+      ...user,
     };
   }
 

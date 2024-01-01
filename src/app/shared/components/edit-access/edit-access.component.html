@@ -1,0 +1,16 @@
+<div>
+  <div class="users" *ngIf="users && selected">
+    <div class="form-group" *ngFor="let user of users">
+      <input type="checkbox" [checked]="selected[user.id]" id="user-{{user.id}}" (change)="accessChanged($event, user)" [disabled]="user.isGM" />
+      <label for="user-{{user.id}}">{{user.name}}</label>
+    </div>
+  </div>
+
+  <button type="button" class="btn spacer" (click)="allowAccessForAll()">
+    Allen Zugriff geben
+  </button>
+
+  <button type="button" class="btn" (click)="save()">
+    Speichern
+  </button>
+</div>

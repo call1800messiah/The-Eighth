@@ -1,5 +1,5 @@
 <app-container width="medium">
-  <app-top-bar-filter placeholder="z.B. Name" (filterChanged)="onFilterChanged($event)">
+  <app-top-bar-filter placeholder="z.B. Name" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
     <button type="button" class="btn-icon" (click)="showAddDialog()">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"
                title="Ort hinzufügen"></fa-icon>

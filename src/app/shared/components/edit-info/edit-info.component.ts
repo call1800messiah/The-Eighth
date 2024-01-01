@@ -22,7 +22,6 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   deleteDisabled = true;
   infoForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
-    isPrivate: new UntypedFormControl(false),
     type: new UntypedFormControl(0),
   });
   infoTypes = Object.values(ConfigService.infoTypes);
@@ -62,7 +61,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
-    let id;
+    let id: string;
     const info: Info = {...this.infoForm.value};
     if (this.props.info) {
       id = this.props.info.id;

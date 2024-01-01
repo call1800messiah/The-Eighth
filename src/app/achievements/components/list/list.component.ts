@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
-import { Achievement } from 'src/app/achievements/models/achievement';
+import type { Achievement } from 'src/app/achievements/models/achievement';
+import type { AuthUser } from '../../../auth/models/auth-user';
 import { AchievementService } from '../../services/achievement.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditAchievementComponent } from '../edit-achievement/edit-achievement.component';
-import { User } from '../../../core/models/user';
-import { UserService } from '../../../core/services/user.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -22,15 +22,17 @@ export class ListComponent implements OnInit {
   filteredAchievements$: Observable<Achievement[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
-  user$: Observable<User>;
+  initialFilterText: string;
+  user: AuthUser;
 
   constructor(
     private achievementService: AchievementService,
-    private userService: UserService,
+    private auth: AuthService,
     private popover: PopoverService,
   ) {
-    this.user$ = this.userService.getCurrentUser();
-    this.filterText = new BehaviorSubject<string>('');
+    this.user = this.auth.user;
+    this.initialFilterText = localStorage.getItem('achievements-filter') || '';
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredAchievements$ = combineLatest([
       this.achievementService.getAchievements(),
       this.filterText,
@@ -44,6 +46,7 @@ export class ListComponent implements OnInit {
 
 
   onFilterChanged(text: string) {
+    localStorage.setItem('achievements-filter', text);
     this.filterText.next(text);
   }
 

@@ -1,9 +1,17 @@
 export enum PlaceType {
+  Barony = 'barony',
+  Castle = 'castle',
   City = 'city',
+  Forest = 'forest',
+  FortifiedYard = 'fortifiedYard',
+  Hamlet = 'hamlet',
   Island = 'island',
   Landmass = 'landmass',
   Ocean = 'ocean',
   Place = 'place',
+  Principality = 'principality',
   Ship = 'ship',
-  State = 'state'
+  Shire = 'shire',
+  State = 'state',
+  Town = 'town',
 }

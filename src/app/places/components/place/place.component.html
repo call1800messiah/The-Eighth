@@ -1,20 +1,19 @@
 <div class="place" *ngIf="place">
-  <div class="image" (click)="editImage()" *ngIf="place.image">
-    <img src="{{place.image}}" alt="{{place.name}}" />
-  </div>
-
   <app-container width="medium">
-    <div class="action-buttons">
-      <button type="button" id="btn-add-image" class="btn-icon" (click)="editImage()" *ngIf="!place.image">
-        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faImage" transform="shrink-8"></fa-icon>
-      </button>
+    <a class="image" *ngIf="place.image" [href]="place.image" target="_blank">
+      <img src="{{place.image}}" alt="{{place.name}}" />
+    </a>
 
-      <button type="button" id="btn-add-detail" class="btn-icon" (click)="addDetail()">
-        <fa-icon [fixedWidth]="true" [icon]="faPlus" [mask]="faStickyNote" transform="shrink-8"></fa-icon>
+    <div class="action-buttons">
+      <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+        <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+        <app-context-menu *ngIf="menuOpen" [owner]="place.owner" [menu]="menu"></app-context-menu>
       </button>
     </div>
 
-    <div class="info box" (click)="editPlace()">
+    <div class="info box">
+      <app-access-indicator [item]="place"></app-access-indicator>
+
       <dl>
         <ng-container>
           <dt>Art</dt>
@@ -26,7 +25,15 @@
         </ng-container>
         <ng-container *ngIf="place.parent && place.parent.name">
           <dt>Teil von</dt>
-          <dd>{{place.parent.name}}</dd>
+          <dd>
+            <a [routerLink]="['/places/', place.parent.id]">
+              {{place.parent.name}}
+            </a>
+          </dd>
+        </ng-container>
+        <ng-container *ngIf="place.inhabitants">
+          <dt>Einwohner</dt>
+          <dd>{{place.inhabitants}}</dd>
         </ng-container>
       </dl>
     </div>

@@ -7,12 +7,14 @@ body.the-eighth {
   --color-bright: #ffffff;
   --color-gray: #aaaaaa;
   --color-low: #00dd00;
+  --color-medium: #dddd00;
   --color-high: #dd0000;
 
   --color-lep: #70ad8c;
-  --color-aup: #c48d53;
-  --color-asp: #7493bc;
-  --color-erp: #9079f5;
+  --color-aup: #ad9071;
+  --color-asp: #718aad;
+  --color-kap: #8e71ad;
+  --color-erp: #ad7171;
 
 
   // ===== FONTS =====
@@ -42,7 +44,9 @@ body.the-eighth {
   --avatar-medium: 200px;
   --container-width-small: 400px;
   --container-width-medium: 720px;
+  --container-width-large: 1280px;
   --border-line-width: 1px;
+  --access-indicator-size: 10px;
 
 
   // ===== ANIMATIONS =====

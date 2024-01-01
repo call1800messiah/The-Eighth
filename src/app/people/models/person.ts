@@ -1,20 +1,28 @@
-import { CombatState } from '../../shared/models/combat-state';
+import type { CombatState } from '../../shared/models/combat-state';
+import type { Relative } from './relative';
+import type { Location } from './location';
+import type { AccessControlledItem } from '../../core/models/access-controlled-item';
 
-export interface Person {
+export interface Person extends AccessControlledItem {
   id: string;
-  name: string;
+  banner: string;
   birthday: string;
   birthyear: number;
+  children?: Relative[];
   culture: string;
   deathday: string;
   height: number;
   image: string;
+  location?: Location;
+  name: string;
+  parents?: Relative[];
+  partners?: Relative[];
+  pc: boolean;
   profession: string;
   race: string;
-  title: string;
-  pc: boolean;
+  relatives: Record<string, Relative[]>;
+  siblings?: Relative[];
   states: CombatState[];
   tags?: string[];
-  owner?: string;
-  isPrivate?: boolean;
+  title: string;
 }

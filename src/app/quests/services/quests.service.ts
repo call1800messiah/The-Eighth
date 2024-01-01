@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Quest } from '../models/quest';
-import { AuthUser } from '../../auth/models/auth-user';
+import type { AuthUser } from '../../auth/models/auth-user';
+import type { Quest } from '../models/quest';
 import { ApiService } from '../../core/services/api.service';
 import { UtilService } from '../../core/services/util.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -39,10 +39,11 @@ export class QuestsService {
     return quests.reduce((all, entry) => {
       const questData = entry.payload.doc.data();
       const quest: Quest = {
-        id: entry.payload.doc.id,
+        access: questData.access,
+        collection: QuestsService.collection,
         completed: questData.completed || false,
         description: questData.description || '',
-        isPrivate: questData.isPrivate,
+        id: entry.payload.doc.id,
         name: questData.name || '',
         owner: questData.owner,
         type: questData.type || null
@@ -95,18 +96,19 @@ export class QuestsService {
     const questGroupMap: Record<string, Quest[]> = {
       Nichts: []
     };
-    // TODO: Fix quests without a parent having multiple representations in the database
 
     quests.forEach((quest) => {
       questMap[quest.id] = quest;
-      if (!questGroupMap[quest.parent.id]) {
-        questGroupMap[quest.parent.id] = [];
+      if (quest.parent) {
+        if (!questGroupMap[quest.parent.id]) {
+          questGroupMap[quest.parent.id] = [];
+        }
+        questGroupMap[quest.parent.id].push(quest);
       }
-      questGroupMap[quest.parent.id].push(quest);
     });
 
     Object.entries(questGroupMap).forEach(([questId, questList]) => {
-      if (questId !== 'Nichts' && questMap[questId]) {
+      if (questMap[questId]) {
         questMap[questId].subQuests = questList;
       }
     });

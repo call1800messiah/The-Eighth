@@ -2,9 +2,9 @@ import firebase from 'firebase/compat';
 import FieldValue = firebase.firestore.FieldValue;
 
 export interface ProjectDB {
+  access: string[];
   benefit: string;
   interval: string;
-  isPrivate: boolean;
   mDesc?: Record<string, string | FieldValue>;
   mReq?: Record<string, number | FieldValue>;
   name: string;

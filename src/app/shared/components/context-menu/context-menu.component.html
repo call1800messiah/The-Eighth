@@ -1,0 +1,6 @@
+<div class="context-menu" *ngIf="menu">
+  <button *ngFor="let button of actions" class="btn" type="button" (click)="button.action()">
+    {{button.label}}
+  </button>
+</div>
+<div class="close-box"></div>

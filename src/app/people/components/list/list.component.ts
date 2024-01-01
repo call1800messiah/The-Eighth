@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faList, faPlus, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from 'src/app/people/models/person';
+import type { Person } from 'src/app/people/models/person';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
@@ -17,21 +16,31 @@ import { PeopleService } from '../../services/people.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
-  filteredPeople$: Observable<Person[]>;
+  faList = faList;
   faPlus = faPlus;
+  faSkullCrossbones = faSkullCrossbones;
+  filteredPeople$: Observable<Person[]>;
   filterText: BehaviorSubject<string>;
+  initialFilterText: string;
+  showAsList = false;
+  showDead = false;
+  showDead$: BehaviorSubject<boolean>;
 
   constructor(
     private peopleService: PeopleService,
     private popover: PopoverService,
-    private router: Router,
   ) {
-    this.filterText = new BehaviorSubject<string>('');
+    this.initialFilterText = localStorage.getItem('people-filter') || '';
+    this.showAsList = localStorage.getItem('people-show-as-list') === 'true';
+    this.showDead = localStorage.getItem('people-show-dead') === 'true';
+    this.showDead$ = new BehaviorSubject<boolean>(this.showDead);
+    this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredPeople$ = combineLatest([
       this.peopleService.getPeople(),
       this.filterText,
+      this.showDead$,
     ]).pipe(
-      map(this.filterPeopleByText),
+      map(this.filterPeopleByText.bind(this)),
     );
   }
 
@@ -40,12 +49,8 @@ export class ListComponent implements OnInit {
 
 
 
-  goToPerson(person: Person) {
-    this.router.navigate([`people/${person.id}`]);
-  }
-
-
   onFilterChanged(text: string) {
+    localStorage.setItem('people-filter', text);
     this.filterText.next(text);
   }
 
@@ -55,16 +60,31 @@ export class ListComponent implements OnInit {
   }
 
 
-  private filterPeopleByText(data): Person[] {
-    const [people, text] = data;
+  toggleShowDead() {
+    this.showDead = !this.showDead;
+    this.showDead$.next(this.showDead);
+    localStorage.setItem('people-show-dead', this.showDead.toString());
+  }
+
+
+  toggleDisplayStyle() {
+    this.showAsList = !this.showAsList;
+    localStorage.setItem('people-show-as-list', this.showAsList.toString());
+  }
+
+
+  private filterPeopleByText(data: [Person[], string, boolean]): Person[] {
+    const [people, text, showDead] = data;
+    const lowText = text.toLowerCase();
     return people.filter((person) => {
-      const lowText = text.toLowerCase();
-      return text === ''
+      return (
+        text === ''
         || person.name.toLowerCase().indexOf(lowText) !== -1
         || (person.title && person.title.toLowerCase().indexOf(lowText) !== -1)
         || (person.race && person.race.toLowerCase().indexOf(lowText) !== -1)
         || (person.culture && person.culture.toLowerCase().indexOf(lowText) !== -1)
-        || (person.tags && person.tags.find((tag) => tag.toLowerCase().indexOf(lowText) !== -1) !== undefined);
+        || (person.tags && person.tags.find((tag) => tag.toLowerCase().indexOf(lowText) !== -1) !== undefined)
+      ) && (!person.deathday || showDead);
     });
   }
 }

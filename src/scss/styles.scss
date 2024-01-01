@@ -26,6 +26,12 @@ body {
   padding: var(--header-height) 0 var(--footer-height);
 }
 
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+
 h1 {
   font-size: var(--headline-huge);
   font-weight: normal;
@@ -63,6 +69,7 @@ h2 {
   padding: 0 5px;
   text-transform: uppercase;
   transition: all var(--animation-time);
+  white-space: nowrap;
   width: 100%;
 
   &:active,
@@ -97,6 +104,7 @@ h2 {
   height: var(--mobile-interactive-height);
   line-height: calc(var(--mobile-interactive-height) - 2px);
   padding: 0;
+  position: relative;
   text-align: center;
   width: var(--mobile-interactive-height);
 
@@ -116,7 +124,8 @@ h2 {
     cursor: not-allowed;
   }
 
-  &:hover {
+  &:hover,
+  &.active {
     background-color: var(--color-primary);
     color: var(--color-dark);
   }
@@ -162,6 +171,7 @@ h2 {
   box-shadow: var(--box-shadow);
   height: 100%;
   padding: var(--item-padding);
+  position: relative;
 
   .heading {
     font-weight: bold;

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+
+import type { FileUpdateRef } from '../models/file-update-ref';
 import { ApiService } from './api.service';
 import { ConfigService } from './config.service';
 
@@ -18,12 +20,24 @@ export class StorageService {
 
 
 
+  delete(bucket: string, fileName: string, updateRef?: FileUpdateRef): Promise<void> {
+    return firstValueFrom(this.storage.ref(`${bucket}/${fileName}`).delete()).then(() => {
+      if (updateRef) {
+        const update = { [updateRef.attribute]: '' };
+        this.api.updateDocumentInCollection(updateRef.id, updateRef.collection, update).catch((error) => {
+          console.error(error);
+        });
+      }
+    });
+  }
+
+
   getDownloadURL(fileName: string): Observable<string> {
     return this.storage.ref(fileName).getDownloadURL();
   }
 
 
-  uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: { id: string, image: string }): AngularFireUploadTask {
+  uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: FileUpdateRef): AngularFireUploadTask {
     const fileName = `${bucket}/${name}`;
     const fileRef = this.storage.ref(fileName);
     const task = fileRef.put(file, ConfigService.fileMetadata);
@@ -31,8 +45,8 @@ export class StorageService {
       finalize(() => {
         if (updateRef) {
           fileRef.getDownloadURL().subscribe(() => {
-            const update = Object.assign({}, updateRef, { image: fileName });
-            this.api.updateDocumentInCollection(update.id, bucket, update).then(() => {}).catch((error) => {
+            const update = { [updateRef.attribute]: fileName };
+            this.api.updateDocumentInCollection(updateRef.id, updateRef.collection, update).catch((error) => {
               console.error(error);
             });
           });

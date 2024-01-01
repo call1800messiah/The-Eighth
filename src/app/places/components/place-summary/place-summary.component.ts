@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
-import { Place } from '../../models/place';
+import type { Place } from '../../models/place';
 import { PlaceService } from '../../services/place.service';
 
 
@@ -16,16 +15,8 @@ export class PlaceSummaryComponent implements OnInit {
   @Input() showParts = true;
   placeTypes = PlaceService.placeTypes;
 
-  constructor(
-    private router: Router,
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
-  }
-
-
-
-  goToPlace() {
-    this.router.navigate([`places/${this.place.id}`]);
   }
 }

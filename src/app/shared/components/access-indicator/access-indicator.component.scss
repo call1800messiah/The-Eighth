@@ -1,0 +1,27 @@
+:host {
+  line-height: 0;
+  position: absolute;
+  right: var(--item-padding);
+  top: var(--item-padding);
+  z-index: 15;
+}
+
+.access-indicator {
+  border: none;
+  border-radius: 50%;
+  height: var(--access-indicator-size);
+  opacity: 0.5;
+  width: var(--access-indicator-size);
+
+  &.none {
+    background-color: var(--color-high);
+  }
+
+  &.some {
+    background-color: var(--color-medium);
+  }
+
+  &.all {
+    background-color: var(--color-low);
+  }
+}

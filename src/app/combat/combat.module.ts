@@ -7,6 +7,8 @@ import { SharedModule } from '../shared/shared.module';
 import { AddPersonAsCombatantComponent } from './components/add-person-as-combatant/add-person-as-combatant.component';
 import { EditInitiativeComponent } from './components/edit-initiative/edit-initiative.component';
 import { CombatantMenuComponent } from './components/combatant-menu/combatant-menu.component';
+import { CombatantComponent } from './components/combatant/combatant.component';
+import { EditStatesComponent } from './components/edit-states/edit-states.component';
 
 
 
@@ -15,7 +17,9 @@ import { CombatantMenuComponent } from './components/combatant-menu/combatant-me
     OverviewComponent,
     AddPersonAsCombatantComponent,
     EditInitiativeComponent,
-    CombatantMenuComponent
+    CombatantMenuComponent,
+    CombatantComponent,
+    EditStatesComponent
   ],
   imports: [
     CommonModule,

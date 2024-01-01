@@ -1,24 +1,34 @@
-<div class="wrapper box" [ngClass]="{'private' : person.isPrivate}">
-  <div class="image">
-    <app-avatar [person]="person"></app-avatar>
-  </div>
+<div class="wrapper box" [ngClass]="{'list': showAsList}">
+  <a [routerLink]="[person.id]">
+    <div class="image">
+      <app-avatar [person]="person"></app-avatar>
+    </div>
 
-  <div class="text">
-    <div class="title" *ngIf="person.title">{{person.title}}</div>
-    <div class="name">{{person.name}}</div>
-    <div class="race" *ngIf="person.race">{{person.race}}</div>
-    <div class="birthday">{{person.birthyear | estimatedAge}}</div>
+    <div class="text">
+      <div class="title" *ngIf="person.title && isOwnerOrCan('viewTitle')">
+        {{person.title}}
+      </div>
+      <div class="name">
+        {{isOwnerOrCan('viewName')  ? person.name : person.name.split(' ')[0]}}
+      </div>
+      <div class="location" *ngIf="person.location && isOwnerOrCan('viewLocation')">{{person.location.name}}</div>
+      <div class="race" *ngIf="person.race && !showAsList">{{person.race}}</div>
+      <div class="birthday">{{person.birthyear | estimatedAge}}</div>
+    </div>
+
     <div class="status">
       <fa-icon *ngIf="person.deathday" [icon]="faSkullCrossbones" [fixedWidth]="true"
-        title="Gestorben am {{person.deathday}} BF"></fa-icon>
+               title="Gestorben am {{person.deathday}} BF"></fa-icon>
       <fa-icon *ngIf="person.pc" [icon]="faUser" [fixedWidth]="true"
-        title="Spielercharakter"></fa-icon>
-      <fa-icon *ngIf="person.isPrivate" [icon]="faMask" [fixedWidth]="true"
-         title="Verborgen"></fa-icon>
+               title="Spielercharakter"></fa-icon>
     </div>
-  </div>
 
-  <div class="tags" *ngIf="person.tags && person.tags.length > 0">
-    <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
-  </div>
+    <div class="tags">
+      <ng-container *ngIf="person.tags && person.tags.length > 0">
+        <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
+      </ng-container>
+    </div>
+  </a>
+
+  <app-access-indicator [item]="person"></app-access-indicator>
 </div>

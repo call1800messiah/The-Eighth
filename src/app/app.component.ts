@@ -18,6 +18,6 @@ export class AppComponent {
     private auth: AuthService
   ) {
     this.isLoggedIn$ = this.auth.isLoggedIn();
-    document.body.classList.add('tde5');
+    document.body.classList.add(environment.tenant);
   }
 }

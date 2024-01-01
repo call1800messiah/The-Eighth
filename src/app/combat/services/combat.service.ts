@@ -2,11 +2,14 @@ import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Combatant } from '../models/combatant';
-import { Person } from '../../people/models/person';
+import type { Combatant } from '../models/combatant';
+import type { Person } from '../../people/models/person';
 import { ApiService } from '../../core/services/api.service';
 import { CombatState } from '../../shared/models/combat-state';
 import { PeopleService } from '../../people/services/people.service';
+import { RulesService } from '../../core/services/rules.service';
+import { Rules } from '../../shared/models/rules';
+import { DataService } from '../../core/services/data.service';
 
 
 
@@ -16,10 +19,13 @@ import { PeopleService } from '../../people/services/people.service';
 export class CombatService {
   readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
   private readonly combatants$: Observable<Combatant[]>;
+  private rules: Rules;
 
   constructor(
     private api: ApiService,
+    private data: DataService,
     private peopleService: PeopleService,
+    private rulesService: RulesService,
   ) {
     this.combatants$ = combineLatest([
       this.peopleService.getPeople(),
@@ -27,6 +33,7 @@ export class CombatService {
     ]).pipe(
       map(([people, fighters]) => this.transformCombatants(people, fighters)),
     );
+    this.rulesService.getRules().then((rules) => this.rules = rules);
   }
 
 
@@ -40,16 +47,20 @@ export class CombatService {
     }
     this.api.addDocumentToCollection(newFighter, this.combatCollection).then((ref) => {
       if (!combatant.hasOwnProperty('id')) {
-        this.api.addDocumentToCollection({
-          current: 30,
-          max: 30,
-          type: 'lep',
-        }, `${this.combatCollection}/${ref.id}/attributes`);
-        this.api.addDocumentToCollection({
-          current: 30,
-          max: 30,
-          type: 'aup',
-        }, `${this.combatCollection}/${ref.id}/attributes`);
+        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'lep') > -1) {
+          this.api.addDocumentToCollection({
+            current: 30,
+            max: 30,
+            type: 'lep',
+          }, `${this.combatCollection}/${ref.id}/attributes`);
+        }
+        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'aup') > -1) {
+          this.api.addDocumentToCollection({
+            current: 30,
+            max: 30,
+            type: 'aup',
+          }, `${this.combatCollection}/${ref.id}/attributes`);
+        }
       }
     });
   }
@@ -104,6 +115,11 @@ export class CombatService {
         states
       }
     );
+  }
+
+
+  store(combatant: Combatant, combatantId: string) {
+    return this.data.store(combatant, this.combatCollection, combatantId);
   }
 
 
