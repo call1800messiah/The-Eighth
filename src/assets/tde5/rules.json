@@ -357,13 +357,23 @@
         }
       ]
     },{
+      "name": "Baumartig",
+      "modifiers": [
+        {
+          "target": "AH S. 158",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/status_Baumartig.html"
+    },{
       "name": "Bewegungsunfähig",
       "modifiers": [
         {
           "target": "GRW S.34",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Bewegungsunf%C3%A4hig.html"
     },{
       "name": "Bewusstlos",
       "modifiers": [
@@ -371,7 +381,8 @@
           "target": "GRW S.34",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/St_Bewusstlos.html"
     },{
       "name": "Blind",
       "modifiers": [
@@ -379,7 +390,17 @@
           "target": "GRW S.34",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Blind.html"
+    },{
+      "name": "Blutend",
+      "modifiers": [
+        {
+          "target": "AK2 S.147",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Status_Blutend.html"
     },{
       "name": "Blutrausch",
       "modifiers": [
@@ -387,7 +408,8 @@
           "target": "GRW S.35",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Blutrausch.html"
     },{
       "name": "Brennend",
       "modifiers": [
@@ -395,7 +417,8 @@
           "target": "GRW S.35",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Brennend.html"
     },{
       "name": "Eingeengt",
       "modifiers": [
@@ -403,7 +426,26 @@
           "target": "GRW S.35",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Eingeengt.html"
+    },{
+      "name": "Feuerförmig",
+      "modifiers": [
+        {
+          "target": "AE S.155",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/GR_Status_Feuerfoermig.html"
+    },{
+      "name": "Feylamia",
+      "modifiers": [
+        {
+          "target": "DRdB S.65",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/status_Feylamia.html"
     },{
       "name": "Fixiert",
       "modifiers": [
@@ -411,7 +453,17 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Fixiert.html"
+    },{
+      "name": "Gasförmig",
+      "modifiers": [
+        {
+          "target": "AE S.155",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/GR_Status_Gasfoermig.html"
     },{
       "name": "Handlungsunfähig",
       "modifiers": [
@@ -419,7 +471,35 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Handlungsunf%C3%A4hig.html"
+    },{
+      "name": "Hörigkeit",
+      "modifiers": [
+        {
+          "target": "AA S.174",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Hoerigkeit.html"
+    },{
+      "name": "Kind der Finsternis",
+      "modifiers": [
+        {
+          "target": "AB II S.119",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/kind-der-finsternis.html"
+    },{
+      "name": "Kind der Nacht",
+      "modifiers": [
+        {
+          "target": "AG II S.184",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/kind-der-nacht.html"
     },{
       "name": "Krank",
       "modifiers": [
@@ -427,7 +507,17 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Krank.html"
+    },{
+      "name": "Lamijah",
+      "modifiers": [
+        {
+          "target": "AG II S.185",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Status_Lamijah.html"
     },{
       "name": "Liegend",
       "modifiers": [
@@ -435,7 +525,53 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Liegend.html"
+    },{
+      "name": "Lykanthrop",
+      "modifiers": [
+        {
+          "target": "AB II S.125",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/lykanthrop.html"
+    },{
+      "name": "Minderer Feylamia",
+      "modifiers": [
+        {
+          "target": "AG II S.186",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/status_Minderer_Feylamia.html"
+    },{
+      "name": "Minderer Vampir",
+      "modifiers": [
+        {
+          "target": "AB II S.120",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/minderer-vampir.html"
+    },{
+      "name": "Pechmagnet",
+      "modifiers": [
+        {
+          "target": "AB S.121",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Pechm.html"
+    },{
+      "name": "Raserei",
+      "modifiers": [
+        {
+          "target": "AG S.235",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Raserei.html"
     },{
       "name": "Stumm",
       "modifiers": [
@@ -443,7 +579,8 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Stumm.html"
     },{
       "name": "Taub",
       "modifiers": [
@@ -451,15 +588,8 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
-    },{
-      "name": "Überrascht",
-      "modifiers": [
-        {
-          "target": "GRW S.36",
-          "value": ""
-        }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Taub.html"
     },{
       "name": "Unsichtbar",
       "modifiers": [
@@ -467,7 +597,44 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta-Unsichtbar.html"
+    },{
+      "name": "Überrascht",
+      "modifiers": [
+        {
+          "target": "GRW S.36",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_%C3%9Cberrascht.html"
+    },{
+      "name": "Übler Geruch",
+      "modifiers": [
+        {
+          "target": "AB S.122",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Uebler.html"
+    },{
+      "name": "Vereist",
+      "modifiers": [
+        {
+          "target": "AE S.155",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/GR_Status_Vereist.html"
+    },{
+      "name": "Verflüssigt",
+      "modifiers": [
+        {
+          "target": "AE S.155",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/GR_Status_Verfluessigt.html"
     },{
       "name": "Vergiftet",
       "modifiers": [
@@ -475,7 +642,26 @@
           "target": "GRW S.36",
           "value": ""
         }
-      ]
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Sta_Vergiftet.html"
+    },{
+      "name": "Versteinert",
+      "modifiers": [
+        {
+          "target": "AB S.122",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/Versteinert.html"
+    },{
+      "name": "Wergestalt",
+      "modifiers": [
+        {
+          "target": "AB II S.125",
+          "value": ""
+        }
+      ],
+      "link": "https://dsa.ulisses-regelwiki.de/wergestalt.html"
     }
   ]
 }
