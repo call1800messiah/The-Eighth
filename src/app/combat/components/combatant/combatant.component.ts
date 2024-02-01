@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { faDizzy, faUserNinja } from '@fortawesome/free-solid-svg-icons';
 import type { Combatant } from '../../models/combatant';
 import type { AuthUser } from '../../../auth/models/auth-user';
+import type { Attribute } from '../../../shared/models/attribute';
 import { environment } from '../../../../environments/environment';
-import { Attribute } from '../../../shared/models/attribute';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
 import { CombatService } from '../../services/combat.service';
@@ -23,7 +23,7 @@ export class CombatantComponent {
   displayAsBox: boolean;
   faDizzy = faDizzy;
   faUserNinja = faUserNinja;
-  user: AuthUser;
+  private readonly user: AuthUser;
 
   constructor(
     private auth: AuthService,
@@ -35,7 +35,7 @@ export class CombatantComponent {
   }
 
 
-  editAttribute(attribute: Attribute, fighter) {
+  editAttribute(attribute: Attribute, fighter: Combatant) {
     const data = {
       altCollection: null,
       person: fighter.person ? fighter.person.id : fighter.id,
@@ -45,6 +45,14 @@ export class CombatantComponent {
       data.altCollection = this.combatService.combatCollection;
     }
     this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
+  }
+
+
+  gotoLink(event: MouseEvent, url?: string) {
+    if (url) {
+      event.stopPropagation();
+      window.open(url, '_blank');
+    }
   }
 
 

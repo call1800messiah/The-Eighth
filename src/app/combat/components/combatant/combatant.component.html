@@ -25,11 +25,11 @@
   </div>
 
   <div class="states" (click)="setStates()">
-    <div *ngFor="let state of combatant.states" class="state">
+    <span *ngFor="let state of combatant.states" class="state" (click)="gotoLink($event, state.link)">
       <span [innerHTML]="state.name" class="state-name"></span>
       <span *ngFor="let mod of state.modifiers">
         | {{mod.target}} {{mod.value}}
       </span>
-    </div>
+    </span>
   </div>
 </div>

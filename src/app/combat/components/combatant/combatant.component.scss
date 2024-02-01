@@ -116,6 +116,7 @@ app-avatar,
 }
 
 .states {
+  align-items: flex-start;
   background-color: var(--combatant-states-background-color);
   border-color: var(--color-primary);
   border-radius: var(--combatant-states-border-radius);
@@ -124,6 +125,8 @@ app-avatar,
   border-top: none;
   color: var(--combatant-states-color);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   font-size: var(--detail-text-font-size);
   line-height: var(--detail-text-line-height);
   min-height: var(--mobile-interactive-height);
