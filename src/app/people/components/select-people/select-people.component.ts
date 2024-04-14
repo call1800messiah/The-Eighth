@@ -1,25 +1,23 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { PopoverChild } from '../../../shared/models/popover-child';
-import { Person } from '../../../people/models/person';
-import { CombatService } from '../../services/combat.service';
+import type { PopoverChild } from '../../../shared/models/popover-child';
+import type { Person } from '../../models/person';
+import type { SelectPeopleProps } from '../../models/select-people-props';
 
 
 
 @Component({
-  selector: 'app-add-combatant',
-  templateUrl: './add-person-as-combatant.component.html',
-  styleUrls: ['./add-person-as-combatant.component.scss']
+  selector: 'app-select-people',
+  templateUrl: './select-people.component.html',
+  styleUrls: ['./select-people.component.scss']
 })
-export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
-  @Input() props: any;
+export class SelectPeopleComponent implements OnInit, PopoverChild {
+  @Input() props: SelectPeopleProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   people: Person[];
   selected: {[id: number]: boolean};
 
-  constructor(
-    private combat: CombatService,
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.people = this.props.people;
@@ -33,9 +31,9 @@ export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
 
   selectionChanged(event, person: Person) {
     if (this.selected[person.id]) {
-      this.combat.addCombatant(person);
+      this.props.onPersonSelected(person);
     } else {
-      this.combat.removeCombatantByPersonId(person.id);
+      this.props.onPersonDeselected(person.id);
     }
   }
 

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { AddPersonAsCombatantComponent } from './add-person-as-combatant.component';
+import { SelectPeopleComponent } from './select-people.component';
 
 describe('AddPersonAsCombatantComponent', () => {
-  let component: AddPersonAsCombatantComponent;
-  let fixture: ComponentFixture<AddPersonAsCombatantComponent>;
+  let component: SelectPeopleComponent;
+  let fixture: ComponentFixture<SelectPeopleComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddPersonAsCombatantComponent ]
+      declarations: [ SelectPeopleComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddPersonAsCombatantComponent);
+    fixture = TestBed.createComponent(SelectPeopleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,6 +7,7 @@ import { PersonSummaryComponent } from './components/person-summary/person-summa
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 import { PersonComponent } from './components/person/person.component';
+import { SelectPeopleComponent } from './components/select-people/select-people.component';
 
 
 
@@ -16,6 +17,7 @@ import { PersonComponent } from './components/person/person.component';
     PersonSummaryComponent,
     EditPersonComponent,
     PersonComponent,
+    SelectPeopleComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +26,7 @@ import { PersonComponent } from './components/person/person.component';
   ],
   exports: [
     EditPersonComponent,
+    SelectPeopleComponent,
   ]
 })
 export class PeopleModule { }

@@ -8,7 +8,7 @@ import type { Person } from '../../../people/models/person';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../core/services/popover.service';
-import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-person-as-combatant.component';
+import { SelectPeopleComponent } from '../../../people/components/select-people/select-people.component';
 import { PeopleService } from '../../../people/services/people.service';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
@@ -68,8 +68,16 @@ export class OverviewComponent implements OnInit {
     ).subscribe((data) => {
       this.popover.showPopover(
         'Kämpfer hinzufügen',
-        AddPersonAsCombatantComponent,
-        data,
+        SelectPeopleComponent,
+        {
+          ...data,
+          onPersonSelected: (person: Person) => {
+            this.combatService.addCombatant(person);
+          },
+          onPersonDeselected: (id: string) => {
+            this.combatService.removeCombatantByPersonId(id);
+          },
+        },
       );
     });
   }
