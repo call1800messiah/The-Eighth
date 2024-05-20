@@ -3,6 +3,7 @@ import { faDizzy, faUserNinja } from '@fortawesome/free-solid-svg-icons';
 import type { Combatant } from '../../models/combatant';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import type { Attribute } from '../../../shared/models/attribute';
+import type { EditAttributeProps } from '../../../shared/models/edit-attribute-props';
 import { environment } from '../../../../environments/environment';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
@@ -36,15 +37,15 @@ export class CombatantComponent {
 
 
   editAttribute(attribute: Attribute, fighter: Combatant) {
-    const data = {
+    const data: EditAttributeProps = {
       altCollection: null,
-      person: fighter.person ? fighter.person.id : fighter.id,
+      personId: fighter.person ? fighter.person.id : fighter.id,
       attribute,
     };
     if (!fighter.person) {
       data.altCollection = this.combatService.combatCollection;
     }
-    this.popover.showPopover('Wert editieren', EditAttributeComponent, data);
+    this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, data);
   }
 
 

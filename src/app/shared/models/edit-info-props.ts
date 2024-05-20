@@ -1,6 +1,6 @@
 import { Info } from './info';
 
-export interface EditInfoComponentProps {
+export interface EditInfoProps {
   collection: string;
   info?: Info;
   parentId: string;

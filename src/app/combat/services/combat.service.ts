@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
@@ -129,7 +129,7 @@ export class CombatService {
       const fighter = {
         id: data.payload.doc.id,
         active: fighterData.active,
-        attributes: null,
+        attributes: from([fighterData.attributes || []]),
         initiative: fighterData.initiative,
         name: fighterData.name ? fighterData.name : null,
         person: people.find((person) => person.id === fighterData.person),
@@ -137,10 +137,6 @@ export class CombatService {
       };
       if (fighter.person) {
         fighter.attributes = this.peopleService.getPersonValues(fighter.person.id).pipe(
-          map((values) => values.attributes),
-        );
-      } else {
-        fighter.attributes = this.peopleService.getPersonValues(fighter.id, this.combatCollection).pipe(
           map((values) => values.attributes),
         );
       }
