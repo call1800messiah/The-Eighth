@@ -122,7 +122,7 @@ export class PeopleService {
   }
 
 
-  store(person: Partial<Person>, personId?: string) {
+  store(person: Partial<PersonDB>, personId?: string) {
     return this.data.store(person, PeopleService.collection, personId);
   }
 

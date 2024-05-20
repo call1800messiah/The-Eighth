@@ -3,6 +3,7 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import type { Person } from '../../models/person';
+import type { PersonDB } from '../../models/person.db';
 import type { Place } from '../../../places/models/place';
 import type { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
@@ -72,7 +73,7 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
-    const person: Person = {
+    const person: PersonDB = {
       ...this.personForm.value
     };
     if (this.props.id) {
