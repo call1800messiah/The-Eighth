@@ -10,6 +10,10 @@ import type { Values } from '../../../shared/models/values';
 import type { Attribute } from '../../../shared/models/attribute';
 import type { Menu } from '../../../shared/models/menu';
 import type { AuthUser } from '../../../auth/models/auth-user';
+import type { EditAttributeProps } from '../../../shared/models/edit-attribute-props';
+import type { EditInfoProps } from '../../../shared/models/edit-info-props';
+import type { EditAccessProps } from '../../../shared/models/edit-access-props';
+import type { EditImageProps } from '../../../shared/models/edit-image-props';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
@@ -115,15 +119,15 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   editAttribute(attribute: Attribute) {
-    this.popover.showPopover('Wert editieren', EditAttributeComponent, {
-      person: this.person.id,
+    this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, {
+      personId: this.person.id,
       attribute,
     });
   }
 
 
   editDetail(info: Info) {
-    this.popover.showPopover('Info editieren', EditInfoComponent, {
+    this.popover.showPopover<EditInfoProps>('Info editieren', EditInfoComponent, {
       collection: PeopleService.collection,
       info,
       parentId: this.person.id,
@@ -148,14 +152,14 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private addAttribute() {
-    this.popover.showPopover('Neuer Wert', EditAttributeComponent, {
-      person: this.person.id,
+    this.popover.showPopover<EditAttributeProps>('Neuer Wert', EditAttributeComponent, {
+      personId: this.person.id,
     });
   }
 
 
   private addDetail() {
-    this.popover.showPopover('Neue Info', EditInfoComponent, {
+    this.popover.showPopover<EditInfoProps>('Neue Info', EditInfoComponent, {
       collection: PeopleService.collection,
       parentId: this.person.id
     });
@@ -163,7 +167,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private editAccess() {
-    this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
+    this.popover.showPopover<EditAccessProps>('Zugriff regeln', EditAccessComponent, {
       collection: PeopleService.collection,
       documentId: this.person.id,
     });
@@ -171,7 +175,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private editBanner() {
-    this.popover.showPopover('Banner ändern', EditImageComponent, {
+    this.popover.showPopover<EditImageProps>('Banner ändern', EditImageComponent, {
       bucket: 'banners',
       cropperSettings: ConfigService.imageSettings.banner,
       imageName: this.util.slugify(this.person.name),

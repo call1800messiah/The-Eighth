@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
@@ -43,26 +43,17 @@ export class CombatService {
     if (combatant.hasOwnProperty('id')) {
       newFighter = { active: true, initiative: 0, person: (combatant as Person).id };
     } else {
-      newFighter = { active: true, initiative: 0, name: combatant };
-    }
-    this.api.addDocumentToCollection(newFighter, this.combatCollection).then((ref) => {
-      if (!combatant.hasOwnProperty('id')) {
-        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'lep') > -1) {
-          this.api.addDocumentToCollection({
-            current: 30,
-            max: 30,
-            type: 'lep',
-          }, `${this.combatCollection}/${ref.id}/attributes`);
-        }
-        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'aup') > -1) {
-          this.api.addDocumentToCollection({
-            current: 30,
-            max: 30,
-            type: 'aup',
-          }, `${this.combatCollection}/${ref.id}/attributes`);
-        }
+      newFighter = {
+        active: true,
+        initiative: 0,
+        name: combatant,
+        attributes: []
+      };
+      if (this.rules?.barTypes?.includes('lep')) {
+        newFighter.attributes.push({ type: 'lep', current: 30, max: 30 });
       }
-    });
+    }
+    this.api.addDocumentToCollection(newFighter, this.combatCollection).then();
   }
 
 
@@ -129,7 +120,7 @@ export class CombatService {
       const fighter = {
         id: data.payload.doc.id,
         active: fighterData.active,
-        attributes: null,
+        attributes: from([fighterData.attributes || []]),
         initiative: fighterData.initiative,
         name: fighterData.name ? fighterData.name : null,
         person: people.find((person) => person.id === fighterData.person),
@@ -137,10 +128,6 @@ export class CombatService {
       };
       if (fighter.person) {
         fighter.attributes = this.peopleService.getPersonValues(fighter.person.id).pipe(
-          map((values) => values.attributes),
-        );
-      } else {
-        fighter.attributes = this.peopleService.getPersonValues(fighter.id, this.combatCollection).pipe(
           map((values) => values.attributes),
         );
       }

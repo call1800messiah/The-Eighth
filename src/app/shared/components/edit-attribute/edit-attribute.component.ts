@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
-import { PopoverChild } from '../../models/popover-child';
+import type { PopoverChild } from '../../models/popover-child';
+import type { Attribute } from '../../models/attribute';
+import type { EditAttributeProps } from '../../models/edit-attribute-props';
 import { DataService } from '../../../core/services/data.service';
-import { Attribute } from '../../models/attribute';
 import { PeopleService } from '../../../people/services/people.service';
 import { RulesService } from '../../../core/services/rules.service';
 
@@ -15,7 +16,7 @@ import { RulesService } from '../../../core/services/rules.service';
   styleUrls: ['./edit-attribute.component.scss']
 })
 export class EditAttributeComponent implements OnInit, PopoverChild {
-  @Input() props: { person: string, attribute?: Attribute, altCollection?: string };
+  @Input() props: EditAttributeProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   attributeForm = new UntypedFormGroup({
     type: new UntypedFormControl('lep'),
@@ -45,16 +46,24 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
 
 
   save() {
-    let id: string;
-    if (this.props.attribute) {
-      id = this.props.attribute.id;
+    if (this.props.altCollection) {
+      this.dataService.store({ attributes: [{
+        current: this.attributeForm.get('current').value,
+        max: this.attributeForm.get('max').value,
+        type: this.attributeForm.get('type').value,
+      }] }, this.props.altCollection, this.props.personId).then(() => {
+        this.dismissPopover.emit(true);
+      });
+    } else {
+      const attribute: Attribute = {...this.attributeForm.value};
+      let id: string;
+      if (this.props.attribute) {
+        id = this.props.attribute.id;
+      }
+      this.dataService.store(attribute, `${PeopleService.collection}/${this.props.personId}/attributes`, id).then(() => {
+        this.dismissPopover.emit(true);
+      });
     }
-    const attribute: Attribute = {...this.attributeForm.value};
-
-    const collection = `${this.props.altCollection ? this.props.altCollection : PeopleService.collection}/${this.props.person}/attributes`;
-    this.dataService.store(attribute, collection, id).then((stuff) => {
-      this.dismissPopover.emit(true);
-    });
   }
 
 

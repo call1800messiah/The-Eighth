@@ -27,7 +27,7 @@ export class PopoverService {
   }
 
 
-  showPopover(title: string, component, props: object = {}) {
+  showPopover<T>(title: string, component, props: T = {} as T) {
     if (this.popoverVisible) {
       console.error('Can\'t open multiple popovers at once.');
       return;

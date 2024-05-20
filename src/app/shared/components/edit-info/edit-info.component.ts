@@ -7,7 +7,7 @@ import { Info } from '../../models/info';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { EditInfoComponentProps } from '../../models/edit-info-component-props';
+import { EditInfoProps } from '../../models/edit-info-props';
 
 
 
@@ -17,7 +17,7 @@ import { EditInfoComponentProps } from '../../models/edit-info-component-props';
   styleUrls: ['./edit-info.component.scss']
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() props: EditInfoComponentProps;
+  @Input() props: EditInfoProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   infoForm = new UntypedFormGroup({

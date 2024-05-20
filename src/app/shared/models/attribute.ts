@@ -1,5 +1,5 @@
 export interface Attribute {
-  id: string;
+  id?: string;
   current: number;
   max: number;
   type: string;
