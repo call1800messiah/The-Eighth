@@ -1,0 +1,20 @@
+<div>
+  <form [formGroup]="sceneForm" (ngSubmit)="save()">
+    <div class="form-group">
+      <input type="text" id="name" formControlName="name" required>
+      <label for="name">Name *</label>
+    </div>
+    <div class="form-group">
+      <input type="text" id="place" list="places" formControlName="place">
+      <label for="place">Ort</label>
+      <datalist id="places">
+        <option *ngFor="let place of places" [value]="place.id">
+          {{place.name}} ({{placeTypes[place.type]}})
+        </option>
+      </datalist>
+    </div>
+    <button type="submit" class="btn" [disabled]="!sceneForm.valid">
+      Speichern
+    </button>
+  </form>
+</div>

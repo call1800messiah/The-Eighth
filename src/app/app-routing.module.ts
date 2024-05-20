@@ -51,6 +51,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'scenes',
+    loadChildren: () => import('./scene/scene.module').then(m => m.SceneModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: '',
     redirectTo: '/overview',
     pathMatch: 'full'

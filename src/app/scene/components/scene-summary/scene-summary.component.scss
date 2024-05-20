@@ -1,0 +1,13 @@
+.scene {
+  margin-bottom: var(--item-padding);
+  margin-top: var(--item-padding);
+  position: relative;
+}
+
+.name {
+  cursor: pointer;
+  font-size: var(--item-title-font-size);
+  font-weight: bold;
+  line-height: var(--item-title-line-height);
+  padding-right: 100px;
+}

@@ -1,0 +1,22 @@
+<app-container width="medium">
+  <app-top-bar-filter placeholder="z.B. Name" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
+    <button type="button" class="btn-icon" (click)="showAddDialog()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Szene hinzufügen"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <ul class="places unstyled-list" *ngIf="filterText.value === ''">
+    <app-scene-summary
+      *ngFor="let scene of scenes$ | async"
+      [scene]="scene"
+    ></app-scene-summary>
+  </ul>
+
+  <ul class="filterted-scenes unstyled-list" *ngIf="filterText.value !== ''">
+    <app-scene-summary
+      *ngFor="let scene of filteredScenes$ | async"
+      [scene]="scene"
+    ></app-scene-summary>
+  </ul>
+</app-container>
