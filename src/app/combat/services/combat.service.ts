@@ -43,26 +43,17 @@ export class CombatService {
     if (combatant.hasOwnProperty('id')) {
       newFighter = { active: true, initiative: 0, person: (combatant as Person).id };
     } else {
-      newFighter = { active: true, initiative: 0, name: combatant };
-    }
-    this.api.addDocumentToCollection(newFighter, this.combatCollection).then((ref) => {
-      if (!combatant.hasOwnProperty('id')) {
-        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'lep') > -1) {
-          this.api.addDocumentToCollection({
-            current: 30,
-            max: 30,
-            type: 'lep',
-          }, `${this.combatCollection}/${ref.id}/attributes`);
-        }
-        if (this.rules && this.rules.barTypes.findIndex((type) => type === 'aup') > -1) {
-          this.api.addDocumentToCollection({
-            current: 30,
-            max: 30,
-            type: 'aup',
-          }, `${this.combatCollection}/${ref.id}/attributes`);
-        }
+      newFighter = {
+        active: true,
+        initiative: 0,
+        name: combatant,
+        attributes: []
+      };
+      if (this.rules?.barTypes?.includes('lep')) {
+        newFighter.attributes.push({ type: 'lep', current: 30, max: 30 });
       }
-    });
+    }
+    this.api.addDocumentToCollection(newFighter, this.combatCollection).then();
   }
 
 
