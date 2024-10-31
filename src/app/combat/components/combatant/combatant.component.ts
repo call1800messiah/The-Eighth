@@ -45,7 +45,9 @@ export class CombatantComponent {
     if (!fighter.person) {
       data.altCollection = this.combatService.combatCollection;
     }
-    this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, data);
+    if (this.isOwnerOrCan('editHitPoints', fighter.person?.owner)) {
+      this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, data);
+    }
   }
 
 
@@ -57,7 +59,7 @@ export class CombatantComponent {
   }
 
 
-  isOwnerOrCan(access: string, owner: string): boolean {
+  isOwnerOrCan(access: string, owner?: string): boolean {
     return this.user && (this.user.isGM || this.user[access] || this.user.id === owner);
   }
 

@@ -74,7 +74,7 @@
   </div>
 
   <div *ngIf="values$ | async as values" class="values">
-    <div *ngIf="values.attributes && values.attributes.length > 0" class="attributes">
+    <div *ngIf="isOwnerOrCan('viewHitPoints') && values.attributes && values.attributes.length > 0" class="attributes">
       <app-bar *ngFor="let bar of values.attributes"
                [bar]="bar"
                (barClicked)="editAttribute(bar)"
