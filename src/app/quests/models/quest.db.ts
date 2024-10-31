@@ -1,5 +1,4 @@
-import firebase from 'firebase/compat/app';
-import FieldValue = firebase.firestore.FieldValue;
+import type { FieldValue } from '@angular/fire/firestore';
 import { QuestType } from './quest-type.enum';
 
 export interface QuestDB {

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -29,12 +29,14 @@ import { DiceModule } from '../dice/dice.module';
   imports: [
     CommonModule,
     DiceModule,
-    HttpClientModule,
     RouterModule,
     SharedModule,
     AngularFireModule.initializeApp(environment.tenantData[environment.tenant].firebase),
     AngularFirestoreModule,
-    AngularFireStorageModule,
+    AngularFireStorageModule
+  ],
+  providers: [
+    provideHttpClient(withInterceptorsFromDi())
   ]
 })
 export class CoreModule { }

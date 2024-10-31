@@ -1,5 +1,4 @@
-import firebase from 'firebase/compat';
-import FieldValue = firebase.firestore.FieldValue;
+import type { FieldValue } from '@angular/fire/firestore';
 
 export interface ProjectDB {
   access: string[];
