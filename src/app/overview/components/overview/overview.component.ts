@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import * as GSheetReader from 'g-sheets-api';
 
 import type { CampaignData } from '../../models/campaign-data';
-import type { Timeline } from '../../models/timeline';
 import { CampaignService } from '../../services/campaign.service';
-import { TimelineService } from '../../services/timeline.service';
 import { environment } from '../../../../environments/environment';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -20,14 +18,12 @@ import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component'
 })
 export class OverviewComponent implements OnInit {
   campaignInfo: CampaignData;
-  timeline$: Observable<Timeline>;
   money$: Subject<number>;
 
   constructor(
     private campaignService: CampaignService,
     private navService: NavigationService,
     private popover: PopoverService,
-    private timelineService: TimelineService,
   ) {
     this.campaignService.getCampaignInfo().subscribe((campaignInfo) => {
       if (!campaignInfo) {
@@ -35,9 +31,6 @@ export class OverviewComponent implements OnInit {
       }
       this.campaignInfo = campaignInfo;
       this.navService.setPageLabel(campaignInfo.name);
-      if (campaignInfo.timelineId) {
-        this.timeline$ = this.timelineService.getTimeline(campaignInfo.timelineId);
-      }
     });
 
     this.money$ = new Subject<number>();

@@ -32,5 +32,5 @@
   </dl>
 
 
-  <app-timeline [timeline$]="timeline$"></app-timeline>
+  <app-timeline *ngIf="campaignInfo?.timelineId" [timelineId]="campaignInfo.timelineId"></app-timeline>
 </app-container>

@@ -30,6 +30,7 @@ import { ContextMenuComponent } from './components/context-menu/context-menu.com
 import { EditAccessComponent } from './components/edit-access/edit-access.component';
 import { EditTagsComponent } from './components/edit-tags/edit-tags.component';
 import { AccessIndicatorComponent } from './components/access-indicator/access-indicator.component';
+import { LoadingTriggerComponent } from './components/loading-trigger/loading-trigger.component';
 
 
 
@@ -49,6 +50,7 @@ import { AccessIndicatorComponent } from './components/access-indicator/access-i
     EstimatedAgePipe,
     FocusOnInitDirective,
     InfoBoxComponent,
+    LoadingTriggerComponent,
     PopoverComponent,
     ProgressBarComponent,
     SelectOnFocusDirective,
@@ -89,6 +91,7 @@ import { AccessIndicatorComponent } from './components/access-indicator/access-i
     FontAwesomeModule,
     FormsModule,
     InfoBoxComponent,
+    LoadingTriggerComponent,
     NgOptimizedImage,
     PopoverComponent,
     ProgressBarComponent,
