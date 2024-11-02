@@ -66,6 +66,11 @@
           <span *ngIf="!location.id">{{location.name}}</span>
         </dd>
       </ng-container>
+
+      <ng-container *ngIf="person.xp">
+        <dt>AP</dt>
+        <dd>{{person.xp}}</dd>
+      </ng-container>
     </dl>
 
     <div class="tags" *ngIf="person.tags">

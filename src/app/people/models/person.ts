@@ -25,4 +25,5 @@ export interface Person extends AccessControlledItem {
   states: CombatState[];
   tags?: string[];
   title: string;
+  xp?: number;
 }

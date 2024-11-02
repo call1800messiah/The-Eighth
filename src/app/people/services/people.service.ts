@@ -151,6 +151,7 @@ export class PeopleService {
         states: [],
         tags: personData.tags || [],
         title: personData.title || null,
+        xp: personData.xp || 0
       };
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {

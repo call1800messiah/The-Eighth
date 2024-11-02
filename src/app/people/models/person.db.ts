@@ -20,4 +20,5 @@ export interface PersonDB {
   siblings?: string[];
   tags?: string[];
   title: string;
+  xp?: number;
 }
