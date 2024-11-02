@@ -1,5 +1,5 @@
 <app-container width="medium">
-  <dl *ngIf="campaignInfo as campaign">
+  <dl *ngIf="campaignInfo as campaign" (click)="editCampaign()">
     <dt>Aktuelles Datum</dt>
     <dd>{{campaign.date}} BF</dd>
     <ng-container *ngIf="campaign.staminaReduction">

@@ -17,7 +17,7 @@ import { PlaceService } from '../../../places/services/place.service';
   styleUrls: ['./edit-person.component.scss']
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() props: any;
+  @Input() props: Person;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new UntypedFormGroup({
     birthday: new UntypedFormControl(''),

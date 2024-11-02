@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import * as GSheetReader from 'g-sheets-api';
 
-import { CampaignData } from '../../models/campaign-data';
-import { Timeline } from '../../models/timeline';
+import type { CampaignData } from '../../models/campaign-data';
+import type { Timeline } from '../../models/timeline';
 import { CampaignService } from '../../services/campaign.service';
 import { TimelineService } from '../../services/timeline.service';
 import { environment } from '../../../../environments/environment';
 import { NavigationService } from '../../../core/services/navigation.service';
+import { PopoverService } from '../../../core/services/popover.service';
+import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component';
 
 
 
@@ -24,6 +26,7 @@ export class OverviewComponent implements OnInit {
   constructor(
     private campaignService: CampaignService,
     private navService: NavigationService,
+    private popover: PopoverService,
     private timelineService: TimelineService,
   ) {
     this.campaignService.getCampaignInfo().subscribe((campaignInfo) => {
@@ -42,6 +45,10 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.getMoney();
+  }
+
+  editCampaign(): void {
+    this.popover.showPopover('Kampagne bearbeiten', EditCampaignComponent, this.campaignInfo);
   }
 
   getMoney() {

@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { CampaignData } from '../models/campaign-data';
 import { ApiService } from '../../core/services/api.service';
+import { DataService } from '../../core/services/data.service';
 
 
 
@@ -16,6 +17,7 @@ export class CampaignService {
 
   constructor(
     private api: ApiService,
+    private data: DataService,
   ) { }
 
 
@@ -24,7 +26,10 @@ export class CampaignService {
     if (campaignData.length < 1) {
       return null;
     }
-    return campaignData[0].payload.doc.data() as CampaignData;
+    return {
+      id: campaignData[0].payload.doc.id,
+      ...campaignData[0].payload.doc.data(),
+    };
   }
 
 
@@ -36,5 +41,10 @@ export class CampaignService {
       );
     }
     return this.campaignInfo$;
+  }
+
+
+  public store(campaign: Partial<CampaignData>, campaignId: string) {
+    return this.data.store(campaign, CampaignService.collection, campaignId);
   }
 }
