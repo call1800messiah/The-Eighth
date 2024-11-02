@@ -119,10 +119,12 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   editAttribute(attribute: Attribute) {
-    this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, {
-      personId: this.person.id,
-      attribute,
-    });
+    if (this.isOwnerOrCan('editHitPoints')) {
+      this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, {
+        personId: this.person.id,
+        attribute,
+      });
+    }
   }
 
 

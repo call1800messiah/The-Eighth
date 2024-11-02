@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { deleteField } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
-import firebase from 'firebase/compat/app';
-import FieldValue = firebase.firestore.FieldValue;
 
 import type { Place } from '../../models/place';
 import type { PlaceDB } from '../../models/place.db';
@@ -71,7 +70,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
       place.owner = this.userID;
     }
     if (this.props.id && place.parentId === 'null') {
-      place.parentId = FieldValue.delete();
+      place.parentId = deleteField();
     } else if (place.parentId === 'null') {
       delete place.parentId;
     }

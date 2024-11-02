@@ -17,7 +17,7 @@
     }}
   </div>
 
-  <div *ngIf="(combatant.attributes | async) as attributes" class="bars">
+  <div *ngIf="isOwnerOrCan('viewHitPoints', combatant.person?.owner) && (combatant.attributes | async) as attributes" class="bars">
     <app-bar *ngFor="let bar of attributes"
              [bar]="bar"
              (barClicked)="editAttribute(bar, combatant)"

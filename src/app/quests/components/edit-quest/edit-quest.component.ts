@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import firebase from 'firebase/compat/app';
-import FieldValue = firebase.firestore.FieldValue;
+import { deleteField } from '@angular/fire/firestore';
 
 import type { Quest } from '../../models/quest';
 import { QuestsService } from '../../services/quests.service';
@@ -72,7 +71,7 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
       quest.owner = this.userID;
     }
     if (this.props.id && quest.parentId === 'null') {
-      quest.parentId = FieldValue.delete();
+      quest.parentId = deleteField();
     } else if (quest.parentId === 'null') {
       delete quest.parentId;
     }

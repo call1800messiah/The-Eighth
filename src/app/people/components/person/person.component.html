@@ -66,6 +66,11 @@
           <span *ngIf="!location.id">{{location.name}}</span>
         </dd>
       </ng-container>
+
+      <ng-container *ngIf="person.xp">
+        <dt>AP</dt>
+        <dd>{{person.xp}}</dd>
+      </ng-container>
     </dl>
 
     <div class="tags" *ngIf="person.tags">
@@ -74,7 +79,7 @@
   </div>
 
   <div *ngIf="values$ | async as values" class="values">
-    <div *ngIf="values.attributes && values.attributes.length > 0" class="attributes">
+    <div *ngIf="isOwnerOrCan('viewHitPoints') && values.attributes && values.attributes.length > 0" class="attributes">
       <app-bar *ngFor="let bar of values.attributes"
                [bar]="bar"
                (barClicked)="editAttribute(bar)"

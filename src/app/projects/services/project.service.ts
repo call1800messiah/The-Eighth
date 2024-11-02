@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { deleteField, FieldValue } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import firebase from 'firebase/compat/app';
-import FieldValue = firebase.firestore.FieldValue;
+
 
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -95,16 +95,16 @@ export class ProjectService {
         if (currentProject) {
           currentProject.milestones.forEach((milestone) => {
             if (!mDesc[milestone.id]) {
-              mDesc[milestone.id] = FieldValue.delete();
-              mReq[milestone.id] = FieldValue.delete();
+              mDesc[milestone.id] = deleteField();
+              mReq[milestone.id] = deleteField();
             }
           });
           currentProject.requirements.forEach((requirement) => {
             if (!rSkill[requirement.id]) {
-              rThresh[requirement.id] = FieldValue.delete();
-              rSkill[requirement.id] = FieldValue.delete();
-              rReq[requirement.id] = FieldValue.delete();
-              rCur[requirement.id] = FieldValue.delete();
+              rThresh[requirement.id] = deleteField();
+              rSkill[requirement.id] = deleteField();
+              rReq[requirement.id] = deleteField();
+              rCur[requirement.id] = deleteField();
             }
           });
         }

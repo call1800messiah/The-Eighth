@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 
-import { PopoverService } from '../../../core/services/popover.service';
-import { Bar } from '../../models/bar';
+import type { Bar } from '../../models/bar';
 
 
 
@@ -17,7 +16,6 @@ export class BarComponent implements OnInit {
   @ViewChild('extraBar', {static: true}) extraBar: ElementRef;
 
   constructor(
-    private popover: PopoverService,
     private renderer: Renderer2,
   ) { }
 

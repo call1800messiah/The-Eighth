@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import * as GSheetReader from 'g-sheets-api';
 
-import { CampaignData } from '../../models/campaign-data';
-import { Timeline } from '../../models/timeline';
+import type { CampaignData } from '../../models/campaign-data';
 import { CampaignService } from '../../services/campaign.service';
-import { TimelineService } from '../../services/timeline.service';
 import { environment } from '../../../../environments/environment';
 import { NavigationService } from '../../../core/services/navigation.service';
+import { PopoverService } from '../../../core/services/popover.service';
+import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component';
 
 
 
@@ -18,13 +18,12 @@ import { NavigationService } from '../../../core/services/navigation.service';
 })
 export class OverviewComponent implements OnInit {
   campaignInfo: CampaignData;
-  timeline$: Observable<Timeline>;
   money$: Subject<number>;
 
   constructor(
     private campaignService: CampaignService,
     private navService: NavigationService,
-    private timelineService: TimelineService,
+    private popover: PopoverService,
   ) {
     this.campaignService.getCampaignInfo().subscribe((campaignInfo) => {
       if (!campaignInfo) {
@@ -32,9 +31,6 @@ export class OverviewComponent implements OnInit {
       }
       this.campaignInfo = campaignInfo;
       this.navService.setPageLabel(campaignInfo.name);
-      if (campaignInfo.timelineId) {
-        this.timeline$ = this.timelineService.getTimeline(campaignInfo.timelineId);
-      }
     });
 
     this.money$ = new Subject<number>();
@@ -42,6 +38,10 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.getMoney();
+  }
+
+  editCampaign(): void {
+    this.popover.showPopover('Kampagne bearbeiten', EditCampaignComponent, this.campaignInfo);
   }
 
   getMoney() {

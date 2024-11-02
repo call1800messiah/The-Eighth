@@ -18,7 +18,7 @@ import { PlaceService } from '../../../places/services/place.service';
   styleUrls: ['./edit-person.component.scss']
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
-  @Input() props: any;
+  @Input() props: Person;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new UntypedFormGroup({
     birthday: new UntypedFormControl(''),
@@ -31,7 +31,8 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     pc: new UntypedFormControl(false),
     profession: new UntypedFormControl(''),
     race: new UntypedFormControl(''),
-    title: new UntypedFormControl('')
+    title: new UntypedFormControl(''),
+    xp: new UntypedFormControl(0),
   });
   userID: string;
   places: Place[] = [];
