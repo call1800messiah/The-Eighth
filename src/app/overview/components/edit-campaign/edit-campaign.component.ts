@@ -13,9 +13,11 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
   @Input() props: CampaignData;
   @Output() dismissPopover = new EventEmitter<boolean>();
   campaignForm = new UntypedFormGroup({
-    name: new UntypedFormControl(''),
-    date: new UntypedFormControl(''),
+    captain: new UntypedFormControl(''),
     crewcount: new UntypedFormControl(0),
+    date: new UntypedFormControl(''),
+    name: new UntypedFormControl(''),
+    ship: new UntypedFormControl(''),
     staminaReduction: new UntypedFormControl(0),
   });
 
