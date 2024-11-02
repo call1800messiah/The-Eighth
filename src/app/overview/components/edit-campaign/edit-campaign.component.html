@@ -8,6 +8,10 @@
       <input type="text" id="date" formControlName="date" required>
       <label for="name">Datum *</label>
     </div>
+    <div class="form-group" *ngIf="props.xp">
+      <input type="text" id="xp" formControlName="xp">
+      <label for="xp">Abenteuerpunkte</label>
+    </div>
     <div class="form-group" *ngIf="props.crewcount">
       <input type="number" id="crewcount" formControlName="crewcount">
       <label for="crewcount">Mannschaft</label>

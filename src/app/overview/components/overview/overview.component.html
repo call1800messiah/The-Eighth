@@ -2,6 +2,10 @@
   <dl *ngIf="campaignInfo as campaign" (click)="editCampaign()">
     <dt>Aktuelles Datum</dt>
     <dd>{{campaign.date}} BF</dd>
+    <ng-container *ngIf="campaign.xp">
+      <dt>Abenteuerpunkte</dt>
+      <dd>{{campaign.xp}}</dd>
+    </ng-container>
     <ng-container *ngIf="campaign.staminaReduction">
       <dt>Ausdauer Malus</dt>
       <dd>

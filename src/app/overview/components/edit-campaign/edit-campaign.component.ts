@@ -19,6 +19,7 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
     name: new UntypedFormControl(''),
     ship: new UntypedFormControl(''),
     staminaReduction: new UntypedFormControl(0),
+    xp: new UntypedFormControl(0),
   });
 
   constructor(private campaignService: CampaignService) {}

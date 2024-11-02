@@ -9,4 +9,5 @@ export interface CampaignData {
   ship?: string;
   staminaReduction?: number;
   timelineId?: string;
+  xp?: number;
 }
