@@ -21,11 +21,11 @@
       <label for="staminaReduction">Ausdauer Malus</label>
     </div>
     <div class="form-group" *ngIf="props.ship">
-      <input type="number" id="ship" formControlName="ship">
+      <input type="text" id="ship" formControlName="ship">
       <label for="ship">Schiff</label>
     </div>
     <div class="form-group" *ngIf="props.captain">
-      <input type="number" id="captain" formControlName="captain">
+      <input type="text" id="captain" formControlName="captain">
       <label for="captain">Kapitän</label>
     </div>
     <button type="submit" class="btn" [disabled]="!campaignForm.valid">
