@@ -41,7 +41,7 @@ export class CombatantMenuComponent implements OnInit, PopoverChild {
       ...this.combatantForm.value,
     };
 
-    this.combatService.store(combatant, this.props.id).then(() => {
+    this.combatService.storeCombatant(combatant, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

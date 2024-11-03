@@ -1,8 +1,12 @@
 <div class="enemies">
   <div class="enemy" *ngFor="let enemy of enemies$ | async">
     <div class="enemy-name">{{ enemy.name }}</div>
+    <button type="button" class="btn-icon" (click)="editEnemy(enemy)">
+      <fa-icon [icon]="faEdit" [fixedWidth]="true"
+               title="Gegner bearbeiten"></fa-icon>
+    </button>
     <button type="button" class="btn-icon" (click)="addEnemyAsCombatant(enemy)">
-      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+      <fa-icon [icon]="faHandFist" [fixedWidth]="true"
                title="Gegner als Kämpfer hinzufügen"></fa-icon>
     </button>
   </div>

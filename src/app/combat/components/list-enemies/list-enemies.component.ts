@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faHandFist } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import type { Enemy } from '../../models/enemy';
 import { CombatService } from '../../services/combat.service';
@@ -17,7 +17,7 @@ export class ListEnemiesComponent implements PopoverChild {
   @Output() dismissPopover = new EventEmitter<boolean>();
   enemies$: Observable<Enemy[]>;
   faEdit = faEdit;
-  faPlus = faPlus;
+  faHandFist = faHandFist;
 
   constructor(
     private combatService: CombatService,

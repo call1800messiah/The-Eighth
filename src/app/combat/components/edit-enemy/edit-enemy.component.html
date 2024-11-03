@@ -1,1 +1,11 @@
-<p>edit-enemy works!</p>
+<div>
+  <form [formGroup]="enemyForm" (ngSubmit)="save()">
+    <div class="form-group">
+      <input type="text" id="name" formControlName="name" required>
+      <label for="name">Name *</label>
+    </div>
+    <button type="submit" class="btn" [disabled]="!enemyForm.valid">
+      Speichern
+    </button>
+  </form>
+</div>

@@ -11,6 +11,7 @@ import { PeopleService } from '../../people/services/people.service';
 import { RulesService } from '../../core/services/rules.service';
 import { Rules } from '../../shared/models/rules';
 import { DataService } from '../../core/services/data.service';
+import { UtilService } from '../../core/services/util.service';
 
 
 
@@ -85,6 +86,7 @@ export class CombatService {
       this.enemies$ = new BehaviorSubject<Enemy[]>([]);
       this.api.getDataFromCollection(CombatService.enemiesCollection).pipe(
         map(this.transformEnemies),
+        map((enemies) => enemies.sort(UtilService.orderByName)),
       ).subscribe((enemies) => {
         this.enemies$.next(enemies);
       });
@@ -140,7 +142,12 @@ export class CombatService {
   }
 
 
-  store(combatant: Combatant, combatantId: string) {
+  storeEnemy(enemy: Enemy, enemyId?: string) {
+    return this.data.store(enemy, CombatService.enemiesCollection, enemyId);
+  }
+
+
+  storeCombatant(combatant: Combatant, combatantId: string) {
     return this.data.store(combatant, this.combatCollection, combatantId);
   }
 
