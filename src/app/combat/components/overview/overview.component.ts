@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { faList, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faList, faPlus, faSpaghettiMonsterFlying, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
 import type { Person } from '../../../people/models/person';
@@ -12,6 +12,7 @@ import { AddPersonAsCombatantComponent } from '../add-person-as-combatant/add-pe
 import { PeopleService } from '../../../people/services/people.service';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
+import { ListEnemiesComponent } from '../list-enemies/list-enemies.component';
 
 
 
@@ -25,6 +26,7 @@ export class OverviewComponent implements OnInit {
   displayAsBox: boolean;
   faList = faList;
   faPlus = faPlus;
+  faSpaghettiMonsterFlying = faSpaghettiMonsterFlying;
   faUsers = faUsers;
   newCombatant = '';
   people: Person[];
@@ -54,6 +56,10 @@ export class OverviewComponent implements OnInit {
     }
   }
 
+
+  showAddEnemyDialog() {
+    this.popover.showPopover('Gegner hinzufügen', ListEnemiesComponent);
+  }
 
 
   showAddPersonDialog() {

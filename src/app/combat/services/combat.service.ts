@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, from, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
+import type { Enemy } from '../models/enemy';
 import type { Person } from '../../people/models/person';
 import { ApiService } from '../../core/services/api.service';
 import { CombatState } from '../../shared/models/combat-state';
@@ -18,7 +19,9 @@ import { DataService } from '../../core/services/data.service';
 })
 export class CombatService {
   readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
+  static enemiesCollection = 'enemies';
   private readonly combatants$: Observable<Combatant[]>;
+  private enemies$: BehaviorSubject<Enemy[]>;
   private rules: Rules;
 
   constructor(
@@ -57,8 +60,36 @@ export class CombatService {
   }
 
 
+  addEnemyAsCombatant(enemy: Enemy) {
+    const newFighter = {
+      active: true,
+      initiative: 0,
+      name: enemy.name,
+      attributes: [],
+      enemy: enemy.id,
+    };
+    if (this.rules?.barTypes?.includes('lep') && enemy.stats.lep) {
+      newFighter.attributes.push({ type: 'lep', current: enemy.stats.lep, max: enemy.stats.lep });
+    }
+    this.api.addDocumentToCollection(newFighter, this.combatCollection).then();
+  }
+
+
   getCombatants(): Observable<Combatant[]> {
     return this.combatants$;
+  }
+
+
+  getEnemies(): Observable<Enemy[]> {
+    if (!this.enemies$) {
+      this.enemies$ = new BehaviorSubject<Enemy[]>([]);
+      this.api.getDataFromCollection(CombatService.enemiesCollection).pipe(
+        map(this.transformEnemies),
+      ).subscribe((enemies) => {
+        this.enemies$.next(enemies);
+      });
+    }
+    return this.enemies$;
   }
 
 
@@ -148,6 +179,20 @@ export class CombatService {
       }
       return 0;
     });
+  }
+
+
+  private transformEnemies(enemies: any[]): Enemy[] {
+    return enemies.reduce((all, data) => {
+      const enemyData = data.payload.doc.data();
+      all.push({
+        attacks: enemyData.attacks,
+        id: data.payload.doc.id,
+        name: enemyData.name,
+        stats: enemyData.stats,
+      });
+      return all;
+    }, []);
   }
 
 

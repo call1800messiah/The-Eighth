@@ -9,21 +9,25 @@ import { EditInitiativeComponent } from './components/edit-initiative/edit-initi
 import { CombatantMenuComponent } from './components/combatant-menu/combatant-menu.component';
 import { CombatantComponent } from './components/combatant/combatant.component';
 import { EditStatesComponent } from './components/edit-states/edit-states.component';
+import { ListEnemiesComponent } from './components/list-enemies/list-enemies.component';
+import { EditEnemyComponent } from './components/edit-enemy/edit-enemy.component';
 
 
 
 @NgModule({
   declarations: [
-    OverviewComponent,
     AddPersonAsCombatantComponent,
-    EditInitiativeComponent,
-    CombatantMenuComponent,
     CombatantComponent,
-    EditStatesComponent
+    CombatantMenuComponent,
+    EditEnemyComponent,
+    EditInitiativeComponent,
+    EditStatesComponent,
+    ListEnemiesComponent,
+    OverviewComponent,
   ],
   imports: [
-    CommonModule,
     CombatRoutingModule,
+    CommonModule,
     SharedModule,
   ]
 })
