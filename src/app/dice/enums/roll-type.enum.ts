@@ -3,4 +3,5 @@ export enum RollType {
   Damage = 'damage',
   Dice = 'dice',
   Skill = 'skill',
+  Skill5 = 'skill5',
 }

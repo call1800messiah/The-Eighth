@@ -72,7 +72,7 @@ export class DiceRollerService {
       rolls: results,
       type: RollType.Damage,
     });
-    return results.reduce((total, roll ) => total += roll, 0) + modifier;
+    return results.reduce((total, roll ) => total + roll, 0) + modifier;
   }
 
 
@@ -101,6 +101,7 @@ export class DiceRollerService {
     third: number,
     skill: number,
     modifier: number = 0,
+    edition: number = 4,
   ): number {
     const roll: SkillRoll = {
       attributes: [first, second, third],
@@ -113,7 +114,14 @@ export class DiceRollerService {
       type: RollType.Skill,
     };
     this.store(roll);
-    return this.validateSkillCheck(roll);
+    switch(edition) {
+      case 4:
+        return this.validateSkillCheck(roll);
+      case 5:
+        return this.validateSkill5Check(roll);
+      default:
+        return this.validateSkillCheck(roll);
+    }
   }
 
 
@@ -152,6 +160,20 @@ export class DiceRollerService {
     }
     if (netSkill === 0) {
       netSkill = 1;
+    }
+
+    return netSkill;
+  }
+
+
+  validateSkill5Check(roll: Partial<SkillRoll>): number {
+    const effectiveAttributes = roll.attributes.map((attr) => attr + roll.modifier);
+    let netSkill = roll.skillPoints;
+
+    for (let i = 0; i < 3; i++) {
+      if (roll.rolls[i] > effectiveAttributes[i]) {
+        netSkill -= roll.rolls[i] - effectiveAttributes[i];
+      }
     }
 
     return netSkill;
@@ -217,6 +239,7 @@ export class DiceRollerService {
           };
           break;
         case RollType.Skill:
+        case RollType.Skill5:
           roll = {
             ...roll,
             attributes: rollData.attributes,
