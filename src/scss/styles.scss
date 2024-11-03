@@ -24,6 +24,10 @@ body {
   min-height: 100vh;
   min-width: 320px;
   padding: var(--header-height) 0 var(--footer-height);
+
+  &.no-scroll {
+    overflow: hidden;
+  }
 }
 
 a {

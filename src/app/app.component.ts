@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from './core/services/auth.service';
 import { environment } from '../environments/environment';
+import { PopoverService } from './core/services/popover.service';
 
 
 
@@ -15,9 +16,13 @@ export class AppComponent {
   isLoggedIn$: Observable<boolean>;
 
   constructor(
-    private auth: AuthService
+    private auth: AuthService,
+    private popover: PopoverService,
   ) {
     this.isLoggedIn$ = this.auth.isLoggedIn();
     document.body.classList.add(environment.tenant);
+    this.popover.isPopoverVisible$.subscribe((isVisible) => {
+      document.body.classList.toggle('no-scroll', isVisible);
+    });
   }
 }
