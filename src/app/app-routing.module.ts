@@ -26,6 +26,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'notes',
+    loadChildren: () => import('./notes/notes.module').then(m => m.NotesModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'overview',
     loadChildren: () => import('./overview/overview.module').then(m => m.OverviewModule),
     canLoad: [AuthGuardService]

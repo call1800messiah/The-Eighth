@@ -1,0 +1,18 @@
+.category {
+  font-size: var(--item-title-font-size);
+  font-weight: bold;
+  line-height: var(--item-title-line-height);
+  margin: var(--item-padding) 0;
+}
+
+.note {
+  cursor: pointer;
+  margin-top: var(--item-padding);
+  position: relative;
+}
+
+.title {
+  font-size: var(--item-title-font-size);
+  line-height: var(--item-title-line-height);
+  margin-bottom: 5px;
+}

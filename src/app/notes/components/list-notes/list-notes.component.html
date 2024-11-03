@@ -1,0 +1,22 @@
+<app-container width="medium">
+  <app-top-bar-filter placeholder="z.B. Titel, Kategorie, Inhalt" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
+    <button type="button" class="btn-icon" (click)="showAddDialog()">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"
+               title="Notiz hinzufügen"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <div *ngFor="let group of filteredNotes$ | async | keyvalue">
+    <div class="category">{{group.key}}</div>
+
+    <div>
+      <div class="note box" *ngFor="let note of group.value" (click)="editNote(note)">
+        <app-access-indicator [item]="note"></app-access-indicator>
+
+        <div class="title" *ngIf="note.title">{{note.title}}</div>
+        <div class="content">{{note.content}}</div>
+      </div>
+    </div>
+  </div>
+
+</app-container>

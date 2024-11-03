@@ -31,6 +31,11 @@ export class UtilService {
   }
 
 
+  static orderByTitle(a: { title?: string }, b: { title?: string }): 1 | -1 | 0 {
+    return UtilService.orderByObjectProperty(a, b, 'title', true);
+  }
+
+
   static orderByType(a: { type: string }, b: { type: string }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'type', false);
   }
