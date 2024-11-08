@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import type { Person } from '../models/person';
-import type { Values } from '../../shared/models/values';
+import type { Attribute } from '../../shared';
 import type { AuthUser } from '../../auth/models/auth-user';
 import type { Relative } from '../models/relative';
 import type { PersonDB } from '../models/person.db';
@@ -61,21 +61,18 @@ export class PeopleService {
   }
 
 
-  private static transformValues(id: string, data: any): Values {
-    return {
-      person: id,
-      attributes: data.reduce((all, entry) => {
-        const attribute = entry.payload.doc.data();
-        all.push({
-          id: entry.payload.doc.id,
-          current: attribute.current,
-          max: attribute.max,
-          type: attribute.type,
-        });
+  private static transformAttributes(data: any): Attribute[] {
+    return data.reduce((all, entry) => {
+      const attribute = entry.payload.doc.data();
+      all.push({
+        id: entry.payload.doc.id,
+        current: attribute.current,
+        max: attribute.max,
+        type: attribute.type,
+      });
 
-        return all;
-      }, []).sort(UtilService.orderByType),
-    };
+      return all;
+    }, []).sort(UtilService.orderByType);
   }
 
 
@@ -112,12 +109,12 @@ export class PeopleService {
   }
 
 
-  getPersonValues(id: string, altCollection?: string): Observable<Values> {
+  getPersonAttributes(id: string, altCollection?: string): Observable<Attribute[]> {
     const collection = `${altCollection ? altCollection : PeopleService.collection}/${id}/attributes`;
     return this.api.getDataFromCollection(
       collection,
     ).pipe(
-      map((values) => PeopleService.transformValues(id, values)),
+      map((attributes) => PeopleService.transformAttributes(attributes)),
     );
   }
 

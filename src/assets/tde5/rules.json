@@ -1,4 +1,117 @@
 {
+  "allowedAttributes": [
+    {
+      "displayStyle": "number",
+      "name": "Mut",
+      "rollType": "single",
+      "shortCode": "mu"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Klugheit",
+      "rollType": "single",
+      "shortCode": "kl"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Intuition",
+      "rollType": "single",
+      "shortCode": "in"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Charisma",
+      "rollType": "single",
+      "shortCode": "ch"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Fingerfertigkeit",
+      "rollType": "single",
+      "shortCode": "ff"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Gewandtheit",
+      "rollType": "single",
+      "shortCode": "ge"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Konsitution",
+      "rollType": "single",
+      "shortCode": "ko"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Körperkraft",
+      "rollType": "single",
+      "shortCode": "kk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Mut",
+      "rollType": "single",
+      "shortCode": "mu"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Lebensenergie",
+      "shortCode": "lep"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Astralenergie",
+      "shortCode": "asp"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Karmaenergie",
+      "shortCode": "kep"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Initiative",
+      "rollType": "single",
+      "shortCode": "ini"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Geschwindigkeit",
+      "shortCode": "gs"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Zähigkeit",
+      "shortCode": "zk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Seelenkraft",
+      "shortCode": "sk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Schicksalspunkte",
+      "shortCode": "sp"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Rüstungsschutz",
+      "shortCode": "rs"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Behinderung",
+      "shortCode": "be"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Ausweichen",
+      "rollType": "single",
+      "shortCode": "au"
+    }
+  ],
   "barTypes": ["asp", "kap", "lep"],
   "hitLocations": {
     "1": "Kopf",

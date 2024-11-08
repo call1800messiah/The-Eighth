@@ -4,16 +4,17 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import type { Person } from '../../models/person';
-import type { Info } from '../../../shared/models/info';
-import type { Values } from '../../../shared/models/values';
-import type { Attribute } from '../../../shared/models/attribute';
-import type { Menu } from '../../../shared/models/menu';
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { EditAttributeProps } from '../../../shared/models/edit-attribute-props';
-import type { EditInfoProps } from '../../../shared/models/edit-info-props';
-import type { EditAccessProps } from '../../../shared/models/edit-access-props';
-import type { EditImageProps } from '../../../shared/models/edit-image-props';
+import type { Person } from '../../models/person';
+import type {
+  Attribute,
+  EditAccessProps,
+  EditAttributeProps,
+  EditImageProps,
+  EditInfoProps,
+  Info,
+  Menu,
+} from '../../../shared';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
@@ -81,7 +82,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   person: Person;
   relativeTypes = PeopleService.relativeTypes;
   user: AuthUser;
-  values$: Observable<Values>;
+  attributes$: Observable<Attribute[]>;
   private personSub: Subscription;
 
   constructor(
@@ -107,7 +108,7 @@ export class PersonComponent implements OnInit, OnDestroy {
         this.person = person;
         this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
-        this.values$ = this.peopleService.getPersonValues(this.person.id);
+        this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
       }
     });
   }
@@ -116,16 +117,6 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.personSub.unsubscribe();
   }
 
-
-
-  editAttribute(attribute: Attribute) {
-    if (this.isOwnerOrCan('editHitPoints')) {
-      this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, {
-        personId: this.person.id,
-        attribute,
-      });
-    }
-  }
 
 
   editDetail(info: Info) {

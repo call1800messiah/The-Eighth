@@ -2,7 +2,7 @@
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
     <div class="form-group" *ngIf="!this.props.attribute">
       <select formControlName="type" id="type">
-        <option *ngFor="let type of types" [value]="type">{{ type }}</option>
+        <option *ngFor="let att of allowedAttributes | keyvalue" [value]="att.key">{{ att.value }}</option>
       </select>
       <label for="type">Typ</label>
     </div>

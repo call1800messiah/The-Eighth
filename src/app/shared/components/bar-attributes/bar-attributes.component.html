@@ -1,0 +1,6 @@
+<div class="bar-attributes">
+  <app-bar *ngFor="let attribute of attributes$ | async"
+           [bar]="attribute"
+           (barClicked)="editAttribute(attribute)"
+  ></app-bar>
+</div>

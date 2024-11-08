@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faMale } from '@fortawesome/free-solid-svg-icons';
 import { DiceRollerService } from '../../services/dice-roller.service';
-import { RulesService } from '../../../core/services/rules.service';
+import { RulesService } from '../../../shared/services/rules.service';
 import { Die } from '../../enums/die.enum';
 
 @Component({

@@ -1,12 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
-import type { PopoverChild } from '../../models/popover-child';
-import type { Attribute } from '../../models/attribute';
-import type { EditAttributeProps } from '../../models/edit-attribute-props';
+import type { Attribute, EditAttributeProps, PopoverChild } from '../../models';
 import { DataService } from '../../../core/services/data.service';
 import { PeopleService } from '../../../people/services/people.service';
-import { RulesService } from '../../../core/services/rules.service';
+import { RulesService } from '../../services/rules.service';
 
 
 
@@ -23,14 +21,17 @@ export class EditAttributeComponent implements OnInit, PopoverChild {
     current: new UntypedFormControl(30),
     max: new UntypedFormControl(30),
   });
-  types: string[] = [];
+  allowedAttributes: Record<string, string>;
 
   constructor(
     private dataService: DataService,
     private rulesService: RulesService,
   ) {
     this.rulesService.getRules().then((rules) => {
-      this.types = rules.barTypes;
+      this.allowedAttributes = rules.allowedAttributes.reduce((acc, allowedAttribute) => {
+        acc[allowedAttribute.shortCode] = allowedAttribute.name;
+        return acc;
+      }, {});
     });
   }
 

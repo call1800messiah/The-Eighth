@@ -78,13 +78,14 @@
     </div>
   </div>
 
-  <div *ngIf="values$ | async as values" class="values">
-    <div *ngIf="isOwnerOrCan('viewHitPoints') && values.attributes && values.attributes.length > 0" class="attributes">
-      <app-bar *ngFor="let bar of values.attributes"
-               [bar]="bar"
-               (barClicked)="editAttribute(bar)"
-      ></app-bar>
-    </div>
+  <div *ngIf="attributes$ | async as attributes" class="values">
+    <app-bar-attributes
+      *ngIf="isOwnerOrCan('viewHitPoints') && attributes.length > 0"
+      [attributeValues$]="attributes$"
+      [canEdit]="isOwnerOrCan('editHitPoints')"
+      [personId]="person.id"
+    >
+    </app-bar-attributes>
   </div>
 
   <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">

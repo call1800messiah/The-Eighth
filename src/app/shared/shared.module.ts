@@ -31,6 +31,7 @@ import { EditAccessComponent } from './components/edit-access/edit-access.compon
 import { EditTagsComponent } from './components/edit-tags/edit-tags.component';
 import { AccessIndicatorComponent } from './components/access-indicator/access-indicator.component';
 import { LoadingTriggerComponent } from './components/loading-trigger/loading-trigger.component';
+import { BarAttributesComponent } from './components/bar-attributes/bar-attributes.component';
 
 
 
@@ -40,6 +41,7 @@ import { LoadingTriggerComponent } from './components/loading-trigger/loading-tr
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
+    BarAttributesComponent,
     BoxGridComponent,
     ContainerComponent,
     DashboardComponent,
@@ -77,6 +79,7 @@ import { LoadingTriggerComponent } from './components/loading-trigger/loading-tr
     AudioPlayerListComponent,
     AvatarComponent,
     BarComponent,
+    BarAttributesComponent,
     BoxGridComponent,
     ContainerComponent,
     ContextMenuComponent,

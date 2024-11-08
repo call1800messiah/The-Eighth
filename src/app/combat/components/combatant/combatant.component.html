@@ -17,12 +17,13 @@
     }}
   </div>
 
-  <div *ngIf="isOwnerOrCan('viewHitPoints', combatant.person?.owner) && (combatant.attributes | async) as attributes" class="bars">
-    <app-bar *ngFor="let bar of attributes"
-             [bar]="bar"
-             (barClicked)="editAttribute(bar, combatant)"
-    ></app-bar>
-  </div>
+  <app-bar-attributes
+    *ngIf="isOwnerOrCan('viewHitPoints', combatant.person?.owner)"
+    [attributeValues$]="combatant.attributes"
+    [altCollection]="combatant.person ? null : CombatService.combatCollection"
+    [canEdit]="isOwnerOrCan('editHitPoints', combatant.person?.owner)"
+    [personId]="combatant.person ? combatant.person.id : combatant.id"
+  ></app-bar-attributes>
 
   <div class="states" (click)="setStates()">
     <span *ngFor="let state of combatant.states" class="state" (click)="gotoLink($event, state.link)">
