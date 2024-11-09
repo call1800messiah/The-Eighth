@@ -130,7 +130,6 @@
       "shortCode": "be"
     }
   ],
-  "barTypes": ["asp", "kap", "lep"],
   "hitLocations": {
     "1": "Kopf",
     "2": "Kopf",

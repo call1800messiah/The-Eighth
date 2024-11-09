@@ -82,6 +82,11 @@ body.tde5 {
     --page-header-color: var(--color-dark);
   }
 
+
+  app-attributes {
+    --attribute-border-radius: 5px;
+  }
+
   app-avatar {
     --avatar-border: none;
     --avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);

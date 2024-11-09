@@ -3,22 +3,24 @@
     <button type="button" class="btn-text label" (click)="editAttribute(att)" title="Attribut bearbeiten">
       {{allowedAttributes[att.type].name}}
     </button>
-    <div class="value">
+
+    <button
+      *ngIf="allowedAttributes[att.type].rollType"
+      type="button"
+      class="btn-text value"
+      (click)="rollAttribute(att)"
+      title="Probe würfeln"
+    >
       <div *ngIf="att.max !== att.current">
-        ({{att.max}})
+        {{att.max}} |
       </div>
-      <button
-        *ngIf="allowedAttributes[att.type].rollType"
-        type="button"
-        class="btn-text"
-        (click)="rollAttribute(att)"
-        title="Probe würfeln"
-      >
-        {{att.current}}
-      </button>
-      <span *ngIf="!allowedAttributes[att.type].rollType">
-        {{att.current}}
-      </span>
+      {{att.current}}
+    </button>
+    <div class="value" *ngIf="!allowedAttributes[att.type].rollType">
+      <div *ngIf="att.max !== att.current">
+        {{att.max}} |
+      </div>
+      {{att.current}}
     </div>
   </div>
 </div>

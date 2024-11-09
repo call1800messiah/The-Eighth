@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
 import type { Person } from '../../models/person';
@@ -147,6 +147,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   private addAttribute() {
     this.popover.showPopover<EditAttributeProps>('Neuer Wert', EditAttributeComponent, {
       personId: this.person.id,
+      filterAttributes$: this.attributes$.pipe(map((attributes) => attributes.map((att) => att.type))),
     });
   }
 

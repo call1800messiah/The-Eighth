@@ -7,6 +7,7 @@ import type { AllowedAttribute, Attribute, EditAttributeProps } from '../../mode
 import { EditAttributeComponent } from '../edit-attribute/edit-attribute.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { RulesService } from '../../services/rules.service';
+import { UtilService } from '../../../core/services/util.service';
 
 
 
@@ -38,13 +39,13 @@ export class BarAttributesComponent implements OnInit {
       this.allowedAttributes$,
     ]).pipe(
       map(([attributes, allowed]) => {
-        const barAttributes = allowed.reduce((acc,attribute) => {
-          if (attribute.displayStyle === 'bar') {
-            acc.push(attribute.shortCode);
+        return allowed.sort(UtilService.orderByOrder).reduce((acc,attribute) => {
+          const attValues = attributes.find((att) => att.type === attribute.shortCode);
+          if (attribute.displayStyle === 'bar' && attValues) {
+            acc.push(attValues);
           }
           return acc;
         }, []);
-        return attributes.filter((attribute) => barAttributes.includes(attribute.type))
       })
     );
   }

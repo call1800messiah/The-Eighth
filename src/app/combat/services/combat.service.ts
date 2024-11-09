@@ -48,7 +48,7 @@ export class CombatService {
         name: combatant,
         attributes: []
       };
-      if (this.rules?.barTypes?.includes('lep')) {
+      if (this.rules?.allowedAttributes?.find((att) => att.shortCode === 'lep')) {
         newFighter.attributes.push({ type: 'lep', current: 30, max: 30 });
       }
     }
