@@ -1,1 +1,162 @@
-<p>edit-rule works!</p>
+<div>
+  <form [formGroup]="ruleForm" (ngSubmit)="save()">
+    @if (props.id) {
+      <input type="hidden" formControlName="type" required>
+    } @else {
+      <div class="form-group">
+        <select id="type" formControlName="type" required (change)="onTypeChanged()">
+          <option [ngValue]="type.key" *ngFor="let type of addableRuleTypes | keyvalue; let i = index">
+            {{ruleTypes[type.key]}}
+          </option>
+        </select>
+        <label for="type">Art *</label>
+      </div>
+    }
+
+    <div class="form-group">
+      <input type="text" id="name" formControlName="name" required>
+      <label for="name">Name *</label>
+    </div>
+
+    <div class="form-group">
+      <textarea type="text" id="rules" formControlName="rules"></textarea>
+      <label for="rules">Regeln</label>
+    </div>
+
+    @if (hasField('alternatives')) {
+      <div class="form-group">
+        <input type="text" id="alternatives" formControlName="alternatives">
+        <label for="alternatives">Ausweichtalente</label>
+      </div>
+    }
+    @if (hasField('applications')) {
+      <div class="form-group">
+        <input type="text" id="applications" formControlName="applications">
+        <label for="applications">Anwendungsgebiete</label>
+      </div>
+    }
+    @if (hasField('attributeOne')) {
+      <div class="form-group">
+        <input type="text" id="attributeOne" formControlName="attributeOne">
+        <label for="attributeOne">Attribut 1</label>
+      </div>
+    }
+    @if (hasField('attributeTwo')) {
+      <div class="form-group">
+        <input type="text" id="attributeTwo" formControlName="attributeTwo">
+        <label for="attributeTwo">Attribut 2</label>
+      </div>
+    }
+    @if (hasField('attributeThree')) {
+      <div class="form-group">
+        <input type="text" id="attributeThree" formControlName="attributeThree">
+        <label for="attributeThree">Attribut 3</label>
+      </div>
+    }
+    @if (hasField('castingTime')) {
+      <div class="form-group">
+        <input type="text" id="castingTime" formControlName="castingTime">
+        <label for="castingTime">Zauberdauer</label>
+      </div>
+    }
+    @if (hasField('category')) {
+      <div class="form-group">
+        <input type="text" id="category" formControlName="category">
+        <label for="category">Kategorie/Merkmal</label>
+      </div>
+    }
+    @if (hasField('combatTechniques')) {
+      <div class="form-group">
+        <input type="text" id="combatTechniques" formControlName="combatTechniques">
+        <label for="combatTechniques">Kampftechniken (nur Kampfsonderfertigkeiten)</label>
+      </div>
+    }
+    @if (hasField('cost')) {
+      <div class="form-group">
+        <input type="text" id="cost" formControlName="cost">
+        <label for="cost">Kosten</label>
+      </div>
+    }
+    @if (hasField('description')) {
+      <div class="form-group">
+        <input type="text" id="description" formControlName="description">
+        <label for="description">Beschreibung</label>
+      </div>
+    }
+    @if (hasField('duration')) {
+      <div class="form-group">
+        <input type="text" id="duration" formControlName="duration">
+        <label for="duration">Wirkungsdauer</label>
+      </div>
+    }
+    @if (hasField('encumbrance')) {
+      <div class="form-group">
+        <input type="text" id="encumbrance" formControlName="encumbrance">
+        <label for="encumbrance">Behinderung</label>
+      </div>
+    }
+    @if (hasField('increaseFactor')) {
+      <div class="form-group">
+        <input type="text" id="increaseFactor" formControlName="increaseFactor">
+        <label for="increaseFactor">Steigerungsfaktor</label>
+      </div>
+    }
+    @if (hasField('modifier')) {
+      <div class="form-group">
+        <input type="text" id="modifier" formControlName="modifier">
+        <label for="modifier">Aufschlag (z.B. MR,SK,ZK)</label>
+      </div>
+    }
+    @if (hasField('prevalence')) {
+      <div class="form-group">
+        <input type="text" id="prevalence" formControlName="prevalence">
+        <label for="prevalence">Verbreitung</label>
+      </div>
+    }
+    @if (hasField('range')) {
+      <div class="form-group">
+        <input type="text" id="range" formControlName="range">
+        <label for="range">Reichweite</label>
+      </div>
+    }
+    @if (hasField('requirements')) {
+      <div class="form-group">
+        <input type="text" id="requirements" formControlName="requirements">
+        <label for="requirements">Vorraussetzungen</label>
+      </div>
+    }
+    @if (hasField('requiresDetails')) {
+      <div class="form-group">
+        <input type="checkbox" id="requiresDetails" formControlName="requiresDetails">
+        <label for="requiresDetails">muss konfiguriert werden</label>
+      </div>
+    }
+    @if (hasField('specializations')) {
+      <div class="form-group">
+        <input type="text" id="specializations" formControlName="specializations">
+        <label for="specializations">Spezialisierungen</label>
+      </div>
+    }
+    @if (hasField('target')) {
+      <div class="form-group">
+        <input type="text" id="target" formControlName="target">
+        <label for="target">Zielgruppe/Zielobjekt</label>
+      </div>
+    }
+    @if (hasField('usage')) {
+      <div class="form-group">
+        <select id="usage" formControlName="usage">
+          <option value="passive">Passiv</option>
+          <option value="basic">Basismanöver</option>
+          <option value="special">Spezialmanöver</option>
+        </select>
+        <label for="usage">Manöverart (nur Kampfsonderfertigkeiten)</label>
+      </div>
+    }
+
+
+    <button type="submit" class="btn" [disabled]="!ruleForm.valid">
+      Speichern
+    </button>
+  </form>
+</div>

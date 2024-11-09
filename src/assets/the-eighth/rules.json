@@ -1,4 +1,52 @@
 {
+  "addableRuleTypes": {
+    "advantage": {
+      "cost": "string",
+      "description": "string",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "disadvantage": {
+      "cost": "string",
+      "description": "string",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "feat": {
+      "category": "string",
+      "combatTechniques": "string",
+      "cost": "string",
+      "description": "string",
+      "prevalence": "string",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "skill": {
+      "alternatives": "string",
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "encumbrance": "string",
+      "increaseFactor": "string",
+      "specializations": "string"
+    },
+    "spell": {
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "castingTime": "string",
+      "cost": "string",
+      "description": "string",
+      "duration": "string",
+      "increaseFactor": "string",
+      "modifier": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    }
+  },
   "allowedAttributes": [
     {
       "displayStyle": "number",

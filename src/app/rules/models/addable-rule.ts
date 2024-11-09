@@ -30,7 +30,7 @@ export interface FeatMeta {
   requirements?: string;
   requiresDetails?: boolean;                // For feats that can be customized like skill specializations
   type: 'feat';
-  usage?: 'passive' | 'basic' | 'special';  // Only for combat feats: Whether the feat is passive or active
+  usage?: 'passive' | 'basic' | 'special';  // Only for 5e combat feats: Whether the feat is passive or active
 }
 
 export interface SkillMeta {
@@ -59,6 +59,6 @@ export interface SpellMeta {
   modifier?: string;                        // Only for spells that can be passively resisted
   prevalence?: string;
   range: string;
-  target?: string;                          // Only 5e: For spells that require a target
+  target?: string;
   type: 'spell';
 }
