@@ -8,6 +8,7 @@ export type AddableRule = {
 export interface AdvantageMeta {
   cost: string;
   description?: string;
+  hasLevels?: boolean;                      // For advantages that can be taken multiple times
   requirements?: string;
   requiresDetails?: boolean;                // For advantages that can be customized like immunities
   type: 'advantage';
@@ -16,6 +17,7 @@ export interface AdvantageMeta {
 export interface DisadvantageMeta {
   cost: string;
   description?: string;
+  hasLevels?: boolean;                      // For disadvantages that can be taken multiple times
   requirements?: string;
   requiresDetails?: boolean;                // For disadvantages that can be customized like immunities
   type: 'disadvantage';
@@ -26,6 +28,7 @@ export interface FeatMeta {
   combatTechniques?: string;                // Only for combat feats: The combat techniques the feat can be used with
   cost: string;
   description?: string;
+  hasLevels?: boolean;                      // For feats that can be taken multiple times
   prevalence?: string;                      // Only 4e: The prevalence of the feat
   requirements?: string;
   requiresDetails?: boolean;                // For feats that can be customized like skill specializations

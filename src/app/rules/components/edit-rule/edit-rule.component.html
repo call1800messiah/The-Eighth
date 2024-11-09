@@ -95,6 +95,12 @@
         <label for="encumbrance">Behinderung</label>
       </div>
     }
+    @if (hasField('hasLevels')) {
+      <div class="form-group">
+        <input type="checkbox" id="hasLevels" formControlName="hasLevels">
+        <label for="hasLevels">Hat mehrere Stufen</label>
+      </div>
+    }
     @if (hasField('increaseFactor')) {
       <div class="form-group">
         <input type="text" id="increaseFactor" formControlName="increaseFactor">

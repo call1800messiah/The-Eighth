@@ -3,12 +3,14 @@
     "advantage": {
       "cost": "string",
       "description": "string",
+      "hasLevels": "boolean",
       "requirements": "string",
       "requiresDetails": "boolean"
     },
     "disadvantage": {
       "cost": "string",
       "description": "string",
+      "hasLevels": "boolean",
       "requirements": "string",
       "requiresDetails": "boolean"
     },
@@ -17,6 +19,7 @@
       "combatTechniques": "string",
       "cost": "string",
       "description": "string",
+      "hasLevels": "boolean",
       "prevalence": "string",
       "requirements": "string",
       "requiresDetails": "boolean"
