@@ -72,7 +72,7 @@ export class PeopleService {
       });
 
       return all;
-    }, []).sort(UtilService.orderByType);
+    }, []).sort(UtilService.orderByOrder);
   }
 
 

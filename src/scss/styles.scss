@@ -131,6 +131,20 @@ h2 {
   }
 }
 
+.btn-text {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  color: var(--color-primary);
+  font: var(--base-body-font-family);
+  font-size: var(--base-body-font-size);
+  line-height: var(--base-body-line-height);
+  padding: 0;
+}
+
 .unstyled-list {
   @include unstyled-list;
 }

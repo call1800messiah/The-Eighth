@@ -1,0 +1,30 @@
+.attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px calc(var(--item-padding) * 2);
+}
+
+.attribute {
+  display: flex;
+  flex: 1 1 auto;
+  gap: calc(var(--item-padding) / 2);
+  min-width: 210px;
+  width: calc(50% - var(--item-padding));
+
+  .label {
+    flex: 1 1 auto;
+    padding: 5px 0;
+    text-align: left;
+    width: 75%;
+  }
+
+  .value {
+    display: flex;
+    flex: 1 0 auto;
+    gap: 5px;
+    justify-content: flex-end;
+    min-width: 50px;
+    padding: 5px 0;
+    width: 25%;
+  }
+}

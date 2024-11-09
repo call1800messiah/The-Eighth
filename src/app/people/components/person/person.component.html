@@ -73,12 +73,19 @@
       </ng-container>
     </dl>
 
-    <div class="tags" *ngIf="person.tags">
+    <div class="tags" *ngIf="person.tags && person.tags.length > 0">
       <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
     </div>
   </div>
 
   <div *ngIf="attributes$ | async as attributes" class="values">
+    <app-attributes
+      *ngIf="isOwnerOrCan('viewStats') && attributes.length > 0"
+      [attributeValues$]="attributes$"
+      [canEdit]="isOwnerOrCan('editStats')"
+      [personId]="person.id"
+    ></app-attributes>
+
     <app-bar-attributes
       *ngIf="isOwnerOrCan('viewHitPoints') && attributes.length > 0"
       [attributeValues$]="attributes$"

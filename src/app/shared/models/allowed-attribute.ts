@@ -1,6 +1,7 @@
 export interface AllowedAttribute {
   displayStyle: 'bar' | 'number';
   name: string;
-  rollType?: 'single' | 'skill';
+  order?: number;
+  rollType?: 'attribute' | 'skill';
   shortCode: string;
 }

@@ -3,113 +3,131 @@
     {
       "displayStyle": "number",
       "name": "Mut",
-      "rollType": "single",
+      "order": 1,
+      "rollType": "attribute",
       "shortCode": "mu"
     },
     {
       "displayStyle": "number",
       "name": "Klugheit",
-      "rollType": "single",
+      "order": 2,
+      "rollType": "attribute",
       "shortCode": "kl"
     },
     {
       "displayStyle": "number",
       "name": "Intuition",
-      "rollType": "single",
+      "order": 3,
+      "rollType": "attribute",
       "shortCode": "in"
     },
     {
       "displayStyle": "number",
       "name": "Charisma",
-      "rollType": "single",
+      "order": 4,
+      "rollType": "attribute",
       "shortCode": "ch"
     },
     {
       "displayStyle": "number",
       "name": "Fingerfertigkeit",
-      "rollType": "single",
+      "order": 5,
+      "rollType": "attribute",
       "shortCode": "ff"
     },
     {
       "displayStyle": "number",
       "name": "Gewandtheit",
-      "rollType": "single",
+      "order": 6,
+      "rollType": "attribute",
       "shortCode": "ge"
     },
     {
       "displayStyle": "number",
       "name": "Konsitution",
-      "rollType": "single",
+      "order": 7,
+      "rollType": "attribute",
       "shortCode": "ko"
     },
     {
       "displayStyle": "number",
       "name": "Körperkraft",
-      "rollType": "single",
+      "order": 8,
+      "rollType": "attribute",
       "shortCode": "kk"
-    },
-    {
-      "displayStyle": "number",
-      "name": "Mut",
-      "rollType": "single",
-      "shortCode": "mu"
     },
     {
       "displayStyle": "bar",
       "name": "Lebensenergie",
+      "order": 9,
       "shortCode": "lep"
     },
     {
       "displayStyle": "bar",
       "name": "Astralenergie",
+      "order": 10,
       "shortCode": "asp"
     },
     {
       "displayStyle": "bar",
       "name": "Karmaenergie",
+      "order": 11,
       "shortCode": "kep"
     },
     {
       "displayStyle": "number",
+      "name": "Seelenkraft",
+      "order": 12,
+      "shortCode": "sk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Zähigkeit",
+      "order": 13,
+      "shortCode": "zk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Ausweichen",
+      "order": 14,
+      "rollType": "attribute",
+      "shortCode": "au"
+    },
+    {
+      "displayStyle": "number",
       "name": "Initiative",
-      "rollType": "single",
+      "order": 15,
       "shortCode": "ini"
     },
     {
       "displayStyle": "number",
       "name": "Geschwindigkeit",
+      "order": 16,
       "shortCode": "gs"
     },
     {
       "displayStyle": "number",
-      "name": "Zähigkeit",
-      "shortCode": "zk"
-    },
-    {
-      "displayStyle": "number",
-      "name": "Seelenkraft",
-      "shortCode": "sk"
+      "name": "Wundschwelle",
+      "order": 17,
+      "shortCode": "ws"
     },
     {
       "displayStyle": "number",
       "name": "Schicksalspunkte",
+      "order": 18,
       "shortCode": "sp"
     },
     {
       "displayStyle": "number",
       "name": "Rüstungsschutz",
+      "order": 19,
       "shortCode": "rs"
     },
     {
       "displayStyle": "number",
       "name": "Behinderung",
+      "order": 20,
       "shortCode": "be"
-    },
-    {
-      "displayStyle": "number",
-      "name": "Ausweichen",
-      "rollType": "single",
-      "shortCode": "au"
     }
   ],
   "barTypes": ["asp", "kap", "lep"],
