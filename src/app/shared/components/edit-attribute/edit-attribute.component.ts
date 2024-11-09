@@ -5,7 +5,7 @@ import { combineLatest, from, Subscription } from 'rxjs';
 import type { Attribute, EditAttributeProps, PopoverChild } from '../../models';
 import { DataService } from '../../../core/services/data.service';
 import { PeopleService } from '../../../people/services/people.service';
-import { RulesService } from '../../services/rules.service';
+import { RulesService } from '../../../rules/services/rules.service';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 

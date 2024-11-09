@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import type { CombatState, PopoverChild } from '../../../shared';
 import type { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
-import { RulesService } from '../../../shared/services/rules.service';
+import { RulesService } from '../../../rules/services/rules.service';
 import { UtilService } from '../../../core/services/util.service';
 
 @Component({

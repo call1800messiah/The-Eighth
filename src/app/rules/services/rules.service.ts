@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import type { Rules } from '../index';
+import type { Rules } from '../models';
 import { environment } from '../../../environments/environment';
 
 

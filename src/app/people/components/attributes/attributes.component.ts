@@ -3,8 +3,9 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
-import type { AllowedAttribute, Attribute, EditAttributeProps } from '../../../shared';
-import { RulesService } from '../../../shared/services/rules.service';
+import type { Attribute, EditAttributeProps } from '../../../shared';
+import type { AllowedAttribute } from '../../../rules';
+import { RulesService } from '../../../rules/services/rules.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { DiceRollerService } from '../../../dice/services/dice-roller.service';

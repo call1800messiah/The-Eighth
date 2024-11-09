@@ -1,4 +1,4 @@
-import type { CombatState } from './combat-state';
+import type { CombatState } from '../../shared';
 import type { AllowedAttribute } from './allowed-attribute';
 
 export interface Rules {

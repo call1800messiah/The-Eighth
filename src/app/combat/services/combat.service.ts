@@ -4,10 +4,11 @@ import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
 import type { Person } from '../../people/models/person';
-import type { CombatState, Rules } from '../../shared';
+import type { CombatState } from '../../shared';
+import type { Rules } from '../../rules';
 import { ApiService } from '../../core/services/api.service';
 import { PeopleService } from '../../people/services/people.service';
-import { RulesService } from '../../shared/services/rules.service';
+import { RulesService } from '../../rules/services/rules.service';
 import { DataService } from '../../core/services/data.service';
 
 

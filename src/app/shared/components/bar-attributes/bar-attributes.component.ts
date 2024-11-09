@@ -3,10 +3,11 @@ import { combineLatest, Observable  } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
-import type { AllowedAttribute, Attribute, EditAttributeProps } from '../../models';
+import type { Attribute, EditAttributeProps } from '../../models';
+import type { AllowedAttribute } from '../../../rules';
 import { EditAttributeComponent } from '../edit-attribute/edit-attribute.component';
 import { PopoverService } from '../../../core/services/popover.service';
-import { RulesService } from '../../services/rules.service';
+import { RulesService } from '../../../rules/services/rules.service';
 import { UtilService } from '../../../core/services/util.service';
 
 
