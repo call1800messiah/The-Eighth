@@ -31,7 +31,7 @@ export class AttributesComponent implements OnInit {
     private popover: PopoverService,
     private rulesService: RulesService,
   ) {
-    this.allowedAttributes$ = fromPromise(this.rulesService.getRules()).pipe(
+    this.allowedAttributes$ = fromPromise(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes),
       tap((allowedAttributes) => {
         this.allowedAttributes = allowedAttributes.reduce((acc, attribute) => {

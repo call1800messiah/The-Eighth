@@ -34,7 +34,7 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
 
   ngOnInit(): void {
     this.subscription.add(combineLatest([
-      fromPromise(this.rulesService.getRules()),
+      fromPromise(this.rulesService.getRulesConfig()),
       this.props?.filterAttributes$ ? this.props.filterAttributes$ : from([]),
     ]).subscribe(([rules, filterAttributes]) => {
       this.allowedAttributes = rules.allowedAttributes

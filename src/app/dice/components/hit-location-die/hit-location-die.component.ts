@@ -19,7 +19,7 @@ export class HitLocationDieComponent implements OnInit {
     private dice: DiceRollerService,
     private rulesService: RulesService,
   ) {
-    this.rulesService.getRules().then((rules) => {
+    this.rulesService.getRulesConfig().then((rules) => {
       this.locations = rules.hitLocations;
     });
   }

@@ -1,0 +1,35 @@
+@import '../../../../scss/mixins.scss';
+
+.category {
+  border-bottom: var(--border-line-width) dotted var(--color-primary);
+  font-size: var(--item-title-font-size);
+  font-weight: bold;
+  line-height: var(--item-title-line-height);
+  margin-bottom: var(--item-padding);
+  margin-top: var(--item-padding);
+  padding-bottom: var(--item-padding);
+}
+
+.rules {
+  padding-left: var(--item-padding);
+}
+
+.rule {
+  cursor: pointer;
+  margin-bottom: var(--item-padding);
+  margin-top: var(--item-padding);
+  padding-right: 100px;
+  position: relative;
+}
+
+.details {
+  @include text-label;
+  font-weight: normal;
+  height: var(--item-title-line-height);
+  line-height: var(--item-title-line-height);
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
+  width: 100px;
+}

@@ -19,7 +19,7 @@ export class EditStatesComponent implements OnInit, PopoverChild {
     private combatService: CombatService,
     private rulesService: RulesService,
   ) {
-    this.rulesService.getRules().then((rules) => {
+    this.rulesService.getRulesConfig().then((rules) => {
       this.states = rules.states.sort(UtilService.orderByName);
     });
   }

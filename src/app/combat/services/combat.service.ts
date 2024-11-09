@@ -33,7 +33,7 @@ export class CombatService {
     ]).pipe(
       map(([people, fighters]) => this.transformCombatants(people, fighters)),
     );
-    this.rulesService.getRules().then((rules) => this.rules = rules);
+    this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }
 
 
