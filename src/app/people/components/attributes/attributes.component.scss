@@ -1,3 +1,6 @@
+@import 'src/scss/variables.scss';
+
+
 :host {
   --attribute-border-radius: 0;
 }
@@ -6,16 +9,17 @@
 .attributes {
   display: flex;
   flex-wrap: wrap;
-  gap: 1px calc(var(--item-padding) * 2);
+  gap: 1px calc(var(--item-padding));
+  justify-content: flex-start;
 }
 
 .attribute {
   border-radius: var(--attribute-border-radius);
   box-shadow: var(--box-shadow);
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 210px;
-  width: calc(50% - var(--item-padding));
+  width: calc(50% - var(--item-padding) / 2);
 
   .label {
     background-color: rgba(var(--color-primary-rgb), 0.1);
@@ -48,5 +52,13 @@
         background-color: rgba(var(--color-primary-rgb), 0.2);
       }
     }
+  }
+}
+
+
+
+@media(max-width: $break-xs) {
+  .attribute {
+    width: 100%;
   }
 }

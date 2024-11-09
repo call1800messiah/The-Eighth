@@ -39,5 +39,13 @@
     <button type="submit" class="btn" [disabled]="!attributeForm.valid">
       Speichern
     </button>
+
+    <div class="locked-input" *ngIf="props.attribute && !props.altCollection">
+      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+
+      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+        Löschen
+      </button>
+    </div>
   </form>
 </div>

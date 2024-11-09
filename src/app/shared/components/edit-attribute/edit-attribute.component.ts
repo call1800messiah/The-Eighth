@@ -18,12 +18,13 @@ import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
   @Input() props: EditAttributeProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
+  allowedAttributes: Record<string, string>;
   attributeForm = new UntypedFormGroup({
     type: new UntypedFormControl('lep'),
     current: new UntypedFormControl(30),
     max: new UntypedFormControl(30),
   });
-  allowedAttributes: Record<string, string>;
+  deleteDisabled = true;
   subscription = new Subscription();
 
   constructor(
@@ -60,6 +61,15 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
   }
 
 
+  delete() {
+    if (this.props.attribute && !this.props.altCollection) {
+      this.dataService.delete(this.props.attribute.id, `${PeopleService.collection}/${this.props.personId}/attributes`).then(() => {
+        this.dismissPopover.emit(true);
+      });
+    }
+  }
+
+
   save() {
     if (this.props.altCollection) {
       this.dataService.store({ attributes: [{
@@ -71,14 +81,15 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
       });
     } else {
       const attribute: Attribute = {...this.attributeForm.value};
-      let id: string;
-      if (this.props.attribute) {
-        id = this.props.attribute.id;
-      }
-      this.dataService.store(attribute, `${PeopleService.collection}/${this.props.personId}/attributes`, id).then(() => {
+      this.dataService.store(attribute, `${PeopleService.collection}/${this.props.personId}/attributes`, this.props.attribute?.id).then(() => {
         this.dismissPopover.emit(true);
       });
     }
+  }
+
+
+  toggleDelete() {
+    this.deleteDisabled = !this.deleteDisabled;
   }
 
 
