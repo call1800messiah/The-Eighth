@@ -19,11 +19,11 @@ export class CapabilityListComponent {
   ) {}
 
   addCapability(type?: AddableRule['type']): void {
-    this.popover.showPopover('Hinzufügen', EditCapabilityComponent, { person: this.person, type });
+    this.popover.showPopover('Fähigkeit hinzufügen', EditCapabilityComponent, { person: this.person, type });
   }
 
   editCapability(capability: Capability, type: AddableRule['type']): void {
-    this.popover.showPopover('Bearbeiten', EditCapabilityComponent, { capability, person: this.person, type });
+    this.popover.showPopover('Fähigkeit bearbeiten', EditCapabilityComponent, { capability, person: this.person, type });
   }
 
   rollCapability(capability: Spell | Skill): void {

@@ -2,12 +2,10 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { PopoverChild } from '../../models/popover-child';
-import { Info } from '../../models/info';
+import type { EditInfoProps, Info, PopoverChild } from '../../models';
 import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { EditInfoProps } from '../../models/edit-info-props';
 
 
 

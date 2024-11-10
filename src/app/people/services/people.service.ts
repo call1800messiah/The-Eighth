@@ -67,14 +67,19 @@ export class PeopleService {
 
     if (personData.advantages) {
       resolvedPerson.advantages = Object.entries(personData.advantages).reduce((acc, [id, data]) => {
-        const advantage = rules.find(r => r.id === id);
-        if (advantage && advantage.type === 'advantage') {
-          acc.push({
-            details: data.details,
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'advantage') {
+          const advantage: Advantage = {
             id,
-            level: data.level,
-            name: advantage.name,
-          });
+            name: rule.name,
+          };
+          if (data.level) {
+            advantage.level = data.level;
+          }
+          if (data.details) {
+            advantage.details = data.details;
+          }
+          acc.push(advantage);
         }
         return acc;
       }, [] as Advantage[]).sort(UtilService.orderByName);
@@ -82,14 +87,19 @@ export class PeopleService {
 
     if (personData.disadvantages) {
       resolvedPerson.disadvantages = Object.entries(personData.disadvantages).reduce((acc, [id, data]) => {
-        const disadvantage = rules.find(r => r.id === id);
-        if (disadvantage && disadvantage.type === 'disadvantage') {
-          acc.push({
-            details: data.details,
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'disadvantage') {
+          const disadvantage: Disadvantage = {
             id,
-            level: data.level,
-            name: disadvantage.name,
-          });
+            name: rule.name,
+          };
+          if (data.level) {
+            disadvantage.level = data.level;
+          }
+          if (data.details) {
+            disadvantage.details = data.details;
+          }
+          acc.push(disadvantage);
         }
         return acc;
       }, [] as Disadvantage[]).sort(UtilService.orderByName);
@@ -97,14 +107,19 @@ export class PeopleService {
 
     if (personData.feats) {
       resolvedPerson.feats = Object.entries(personData.feats).reduce((acc, [id, data]) => {
-        const feat = rules.find(r => r.id === id);
-        if (feat && feat.type === 'feat') {
-          acc.push({
-            details: data.details,
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'feat') {
+          const feat: Feat = {
             id,
-            level: data.level,
-            name: feat.name,
-          });
+            name: rule.name,
+          };
+          if (data.level) {
+            feat.level = data.level;
+          }
+          if (data.details) {
+            feat.details = data.details;
+          }
+          acc.push(feat);
         }
         return acc;
       }, [] as Feat[]).sort(UtilService.orderByName);
@@ -112,14 +127,14 @@ export class PeopleService {
 
     if (personData.skills) {
       resolvedPerson.skills = Object.entries(personData.skills).reduce((acc, [id, value]) => {
-        const skill = rules.find(r => r.id === id);
-        if (skill && skill.type === 'skill') {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'skill') {
           acc.push({
-            attributeOne: skill.attributeOne,
-            attributeThree: skill.attributeThree,
-            attributeTwo: skill.attributeTwo,
+            attributeOne: rule.attributeOne,
+            attributeThree: rule.attributeThree,
+            attributeTwo: rule.attributeTwo,
             id,
-            name: skill.name,
+            name: rule.name,
             value,
           });
         }
@@ -129,14 +144,14 @@ export class PeopleService {
 
     if (personData.spells) {
       resolvedPerson.spells = Object.entries(personData.spells).reduce((acc, [id, value]) => {
-        const spell = rules.find(r => r.id === id);
-        if (spell && spell.type === 'spell') {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'spell') {
           acc.push({
-            attributeOne: spell.attributeOne,
-            attributeThree: spell.attributeThree,
-            attributeTwo: spell.attributeTwo,
+            attributeOne: rule.attributeOne,
+            attributeThree: rule.attributeThree,
+            attributeTwo: rule.attributeTwo,
             id,
-            name: spell.name,
+            name: rule.name,
             value,
           });
         }

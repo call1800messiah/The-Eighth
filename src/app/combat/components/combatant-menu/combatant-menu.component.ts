@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
-import type { PopoverChild } from '../../../shared/models/popover-child';
+import type { PopoverChild } from '../../../shared';
 import type { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { CombatantComponent } from '../combatant/combatant.component';
 
 
 

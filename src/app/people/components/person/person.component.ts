@@ -159,7 +159,7 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private addCapability() {
-    this.popover.showPopover('Hinzufügen', EditCapabilityComponent);
+    this.popover.showPopover('Fähigkeit hinzufügen', EditCapabilityComponent, { person: this.person });
   }
 
 
