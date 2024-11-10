@@ -1,0 +1,83 @@
+<div class="box skills" *ngIf="person.skills">
+  <div class="heading">Talente</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('skill')" title="Talent hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="skill" *ngFor="let skill of person.skills">
+    <button type="button" class="btn-text label" (click)="editCapability(skill, 'skill')" title="Talent bearbeiten">
+      {{skill.name}}
+      <span class="attributes">({{skill.attributeOne}} | {{skill.attributeTwo}} | {{skill.attributeThree}})</span>
+    </button>
+    <button
+      type="button"
+      class="btn-text value"
+      (click)="rollCapability(skill)"
+      title="Probe würfeln"
+    >
+      {{skill.value}}
+    </button>
+  </div>
+</div>
+
+<div class="box spells" *ngIf="person.spells">
+  <div class="heading">Zauber</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('spell')" title="Zauber hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="spell" *ngFor="let spell of person.spells">
+    <button type="button" class="btn-text label" (click)="editCapability(spell, 'spell')" title="Zauber bearbeiten">
+      {{spell.name}}
+      <span class="attributes">({{spell.attributeOne}} | {{spell.attributeTwo}} | {{spell.attributeThree}})</span>
+    </button>
+    <button
+      type="button"
+      class="btn-text value"
+      (click)="rollCapability(spell)"
+      title="Probe würfeln"
+    >
+      {{spell.value}}
+    </button>
+  </div>
+</div>
+
+<div class="box feats" *ngIf="person.feats">
+  <div class="heading">Sonderfertigkeiten</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('feat')" title="Sonderfertigkeit hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="feat" *ngFor="let feat of person.feats">
+    <button type="button" class="btn-text label" (click)="editCapability(feat, 'feat')" title="Sonderfertigkeit bearbeiten">
+      {{feat.name}}
+      {{feat.details ? ' (' + feat.details + ')' : ''}}
+      {{feat.level ? ' ' + feat.level : ''}}
+    </button>
+  </div>
+</div>
+
+<div class="box advantages" *ngIf="person.advantages">
+  <div class="heading">Vorteile</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('advantage')" title="Vorteil hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="advantage" *ngFor="let advantage of person.advantages">
+    <button type="button" class="btn-text label" (click)="editCapability(advantage, 'advantage')" title="Vorteil bearbeiten">
+      {{advantage.name}}
+      {{advantage.details ? ' (' + advantage.details + ')' : ''}}
+      {{advantage.level ? ' ' + advantage.level : ''}}
+    </button>
+  </div>
+</div>
+
+<div class="box disadvantages" *ngIf="person.disadvantages">
+  <div class="heading">Nachteile</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('disadvantage')" title="Nachteil hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="disadvantage" *ngFor="let disadvantage of person.disadvantages">
+    <button type="button" class="btn-text label" (click)="editCapability(disadvantage, 'disadvantage')" title="Nachteil bearbeiten">
+      {{disadvantage.name}}
+      {{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}
+      {{disadvantage.level ? ' ' + disadvantage.level : ''}}
+    </button>
+  </div>
+</div>

@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { Person } from '../../models/person';
+import type { Person } from '../../models';
 import type {
   Attribute,
   EditAccessProps,
@@ -29,6 +29,7 @@ import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
+import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
 
 
 
@@ -55,6 +56,11 @@ export class PersonComponent implements OnInit, OnDestroy {
       {
         label: 'Neues Attribut',
         action: this.addAttribute.bind(this),
+        restricted: true,
+      },
+      {
+        label: 'Neue Fähigkeit',
+        action: this.addCapability.bind(this),
         restricted: true,
       },
       {
@@ -149,6 +155,11 @@ export class PersonComponent implements OnInit, OnDestroy {
       personId: this.person.id,
       filterAttributes$: this.attributes$.pipe(map((attributes) => attributes.map((att) => att.type))),
     });
+  }
+
+
+  private addCapability() {
+    this.popover.showPopover('Hinzufügen', EditCapabilityComponent);
   }
 
 

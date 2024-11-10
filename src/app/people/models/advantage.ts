@@ -1,6 +1,6 @@
 export interface Advantage {
-  detail?: string;
+  details?: string;
   id: string;
-  level?: number;
+  level?: string;
   name: string;
 }

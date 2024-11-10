@@ -1,5 +1,6 @@
 export interface Feat {
+  details?: string;
   id: string;
-  level?: number;
+  level?: string;
   name: string;
 }

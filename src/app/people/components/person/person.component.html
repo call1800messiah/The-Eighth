@@ -95,6 +95,8 @@
     </app-bar-attributes>
   </div>
 
+  <app-capability-list [person]="person"></app-capability-list>
+
   <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
     <div class="heading">Verwandte</div>
     <div class="relatives-list">

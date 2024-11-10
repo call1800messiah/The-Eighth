@@ -8,12 +8,16 @@ import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 import { PersonComponent } from './components/person/person.component';
 import { AttributesComponent } from './components/attributes/attributes.component';
+import { CapabilityListComponent } from './components/capability-list/capability-list.component';
+import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
 
 
 
 @NgModule({
   declarations: [
     AttributesComponent,
+    CapabilityListComponent,
+    EditCapabilityComponent,
     EditPersonComponent,
     ListComponent,
     PersonComponent,

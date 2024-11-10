@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import type { Person } from '../models/person';
+import type { Advantage, Disadvantage, Feat, Person, PersonDB, Relative, Skill } from '../models';
 import type { Attribute } from '../../shared';
+import type { AddableRule } from '../../rules';
 import type { AuthUser } from '../../auth/models/auth-user';
-import type { Relative } from '../models/relative';
-import type { PersonDB } from '../models/person.db';
 import type { Place } from '../../places/models/place';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,6 +13,7 @@ import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
 import { DataService } from '../../core/services/data.service';
 import { PlaceService } from '../../places/services/place.service';
+import { RulesService } from '../../rules/services/rules.service';
 
 
 
@@ -36,6 +36,7 @@ export class PeopleService {
     private auth: AuthService,
     private data: DataService,
     private place: PlaceService,
+    private rules: RulesService,
     private storage: StorageService,
   ) {
     this.user = this.auth.user;
@@ -58,6 +59,92 @@ export class PeopleService {
       });
     });
     return people;
+  }
+
+
+  private static resolveRules(person: Person, personData: PersonDB, rules: AddableRule[]): Person {
+    const resolvedPerson = { ...person };
+
+    if (personData.advantages) {
+      resolvedPerson.advantages = Object.entries(personData.advantages).reduce((acc, [id, data]) => {
+        const advantage = rules.find(r => r.id === id);
+        if (advantage && advantage.type === 'advantage') {
+          acc.push({
+            details: data.details,
+            id,
+            level: data.level,
+            name: advantage.name,
+          });
+        }
+        return acc;
+      }, [] as Advantage[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.disadvantages) {
+      resolvedPerson.disadvantages = Object.entries(personData.disadvantages).reduce((acc, [id, data]) => {
+        const disadvantage = rules.find(r => r.id === id);
+        if (disadvantage && disadvantage.type === 'disadvantage') {
+          acc.push({
+            details: data.details,
+            id,
+            level: data.level,
+            name: disadvantage.name,
+          });
+        }
+        return acc;
+      }, [] as Disadvantage[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.feats) {
+      resolvedPerson.feats = Object.entries(personData.feats).reduce((acc, [id, data]) => {
+        const feat = rules.find(r => r.id === id);
+        if (feat && feat.type === 'feat') {
+          acc.push({
+            details: data.details,
+            id,
+            level: data.level,
+            name: feat.name,
+          });
+        }
+        return acc;
+      }, [] as Feat[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.skills) {
+      resolvedPerson.skills = Object.entries(personData.skills).reduce((acc, [id, value]) => {
+        const skill = rules.find(r => r.id === id);
+        if (skill && skill.type === 'skill') {
+          acc.push({
+            attributeOne: skill.attributeOne,
+            attributeThree: skill.attributeThree,
+            attributeTwo: skill.attributeTwo,
+            id,
+            name: skill.name,
+            value,
+          });
+        }
+        return acc;
+      }, [] as Skill[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.spells) {
+      resolvedPerson.spells = Object.entries(personData.spells).reduce((acc, [id, value]) => {
+        const spell = rules.find(r => r.id === id);
+        if (spell && spell.type === 'spell') {
+          acc.push({
+            attributeOne: spell.attributeOne,
+            attributeThree: spell.attributeThree,
+            attributeTwo: spell.attributeTwo,
+            id,
+            name: spell.name,
+            value,
+          });
+        }
+        return acc;
+      }, [] as Skill[]).sort(UtilService.orderByName);
+    }
+
+    return resolvedPerson;
   }
 
 
@@ -91,7 +178,8 @@ export class PeopleService {
             return all;
           }, {}) as Record<string, Place>),
         )),
-        map(this.transformPeople.bind(this)),
+        withLatestFrom(this.rules.getDynamicRules()),
+        map(this.deserializePeople.bind(this)),
         map(PeopleService.resolveAllRelatives),
         map((people: Person[]) => people.sort(UtilService.orderByName)),
       ).subscribe((people) => {
@@ -125,10 +213,10 @@ export class PeopleService {
 
 
 
-  private transformPeople([people, placeMap]): Person[] {
+  private deserializePeople([[people, placeMap], rules]): Person[] {
     return people.reduce((all, entry) => {
       const personData = entry.payload.doc.data() as PersonDB;
-      const person: Person = {
+      let person: Person = {
         access: personData.access,
         banner: null,
         birthday: personData.birthday || null,
@@ -150,6 +238,9 @@ export class PeopleService {
         title: personData.title || null,
         xp: personData.xp || 0
       };
+
+      person = PeopleService.resolveRules(person, personData, rules);
+
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {
           person.image = url;

@@ -1,6 +1,6 @@
 export interface Disadvantage {
-  detail?: string;
+  details?: string;
   id: string;
-  level?: number;
+  level?: string;
   name: string;
 }

@@ -129,6 +129,16 @@ h2 {
     background-color: var(--color-primary);
     color: var(--color-dark);
   }
+
+  &.small {
+    height: calc(var(--mobile-interactive-height) * 0.8);
+    line-height: calc(var(--mobile-interactive-height) * 0.8 - 2px);
+    width: calc(var(--mobile-interactive-height) * 0.8);
+
+    &.borderless {
+      line-height: calc(var(--mobile-interactive-height) * 0.8);
+    }
+  }
 }
 
 .btn-text {

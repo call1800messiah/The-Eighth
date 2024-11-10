@@ -19,6 +19,7 @@
   display: flex;
   flex: 0 1 auto;
   min-width: 210px;
+  overflow: hidden;
   width: calc(50% - var(--item-padding) / 2);
 
   .label {
