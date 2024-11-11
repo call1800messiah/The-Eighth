@@ -10,6 +10,7 @@ import { PersonComponent } from './components/person/person.component';
 import { AttributesComponent } from './components/attributes/attributes.component';
 import { CapabilityListComponent } from './components/capability-list/capability-list.component';
 import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
+import { StatsComponent } from './components/stats/stats.component';
 
 
 
@@ -22,6 +23,7 @@ import { EditCapabilityComponent } from './components/edit-capability/edit-capab
     ListComponent,
     PersonComponent,
     PersonSummaryComponent,
+    StatsComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { EditCapabilityComponent } from './components/edit-capability/edit-capab
   ],
   exports: [
     EditPersonComponent,
+    StatsComponent,
   ]
 })
 export class PeopleModule { }

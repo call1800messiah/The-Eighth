@@ -28,6 +28,7 @@ export class PeopleService {
     partners: 'Partner',
     siblings: 'Geschwister',
   };
+  private attributeMap: Record<string, Observable<Attribute[]>> = {};
   private people$: BehaviorSubject<Person[]>;
   private user: AuthUser;
 
@@ -214,11 +215,14 @@ export class PeopleService {
 
   getPersonAttributes(id: string, altCollection?: string): Observable<Attribute[]> {
     const collection = `${altCollection ? altCollection : PeopleService.collection}/${id}/attributes`;
-    return this.api.getDataFromCollection(
-      collection,
-    ).pipe(
-      map((attributes) => PeopleService.transformAttributes(attributes)),
-    );
+    if (!this.attributeMap[collection]) {
+      this.attributeMap[collection] = this.api.getDataFromCollection(
+        collection,
+      ).pipe(
+        map(PeopleService.transformAttributes),
+      );
+    }
+    return this.attributeMap[collection];
   }
 
 
