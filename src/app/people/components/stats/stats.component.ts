@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import type { Person } from '../../models';
 import type { Attribute } from '../../../shared';
@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss'
 })
-export class StatsComponent implements OnInit {
+export class StatsComponent implements OnChanges, OnInit {
   @Input() person: Person;
   attributes$: Observable<Attribute[]>;
   user: AuthUser;
@@ -24,6 +24,10 @@ export class StatsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
+  }
+
+  ngOnChanges() {
     this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
   }
 

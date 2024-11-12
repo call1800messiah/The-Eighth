@@ -1,12 +1,10 @@
-@import 'src/scss/variables.scss';
-
-
 :host {
   --attribute-border-radius: 0;
 }
 
 
 .attributes {
+  container-type: inline-size;
   display: flex;
   flex-wrap: wrap;
   gap: 1px calc(var(--item-padding));
@@ -58,7 +56,7 @@
 
 
 
-@media(max-width: $break-xs) {
+@container(max-width: 480px) {
   .attribute {
     width: 100%;
   }

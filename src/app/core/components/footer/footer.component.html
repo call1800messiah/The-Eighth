@@ -1,4 +1,8 @@
 <footer class="page-footer">
+  <button id="stats-button" type="button" class="btn-icon borderless" (click)="toggleSidebar()" title="Werte">
+    <fa-icon [icon]="faPerson" size="lg" [fixedWidth]="true"></fa-icon>
+  </button>
+
   <button id="menu-button" type="button" class="btn-icon borderless" (click)="toggleNavigation()" title="Menu">
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>

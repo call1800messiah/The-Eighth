@@ -13,7 +13,13 @@
   &.visible {
     top: 0;
 
-    .page-header { display: block; }
+    .page-header {
+      display: block;
+      left: 0;
+      position: fixed;
+      right: 0;
+      top: 0;
+    }
   }
 
   .page-header { display: none; }

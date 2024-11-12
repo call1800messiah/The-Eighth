@@ -1,3 +1,72 @@
+@import '../scss/variables.scss';
+
+.page {
+  display: flex;
+  flex: 1 1 auto;
+  height: calc(100vh - var(--header-height) - var(--footer-height));
+  justify-content: stretch;
+  position: relative;
+
+  &.sidebar-closed {
+    app-sidebar {
+      overflow: hidden;
+      transform: translateX(-105%);
+      min-width: 0;
+      width: 0;
+    }
+
+    main {
+      width: 100%;
+    }
+  }
+
+}
+
+app-sidebar {
+  flex: 1 1 auto;
+  max-width: 550px;
+  min-width: 370px;
+  transition: min-width var(--animation-time), transform var(--animation-time), width var(--animation-time);
+  width: 25%;
+}
+
 main {
+  flex: 1 1 auto;
+  height: 100%;
+  overflow-y: auto;
   padding: var(--container-horizontal-padding);
+  transition: width var(--animation-time);
+  width: 75%;
+}
+
+
+
+@media(max-width: $break-sm) {
+  .page {
+    flex-direction: column;
+    justify-content: flex-start;
+
+    &.sidebar-closed {
+      app-sidebar {
+        width: 100%;
+      }
+    }
+  }
+
+  app-sidebar {
+    background-color: var(--body-background);
+    bottom: var(--footer-height);
+    left: 0;
+    max-width: none;
+    min-width: auto;
+    position: fixed;
+    top: var(--header-height);
+    width: 100%;
+    z-index: 40;
+  }
+
+  main {
+    height: auto;
+    width: 100%;
+  }
 }
