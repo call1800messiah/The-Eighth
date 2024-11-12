@@ -11,6 +11,7 @@ import { AttributesComponent } from './components/attributes/attributes.componen
 import { CapabilityListComponent } from './components/capability-list/capability-list.component';
 import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { PersonSelectorComponent } from './components/person-selector/person-selector.component';
 
 
 
@@ -22,6 +23,7 @@ import { StatsComponent } from './components/stats/stats.component';
     EditPersonComponent,
     ListComponent,
     PersonComponent,
+    PersonSelectorComponent,
     PersonSummaryComponent,
     StatsComponent,
   ],
@@ -32,6 +34,7 @@ import { StatsComponent } from './components/stats/stats.component';
   ],
   exports: [
     EditPersonComponent,
+    PersonSelectorComponent,
     StatsComponent,
   ]
 })
