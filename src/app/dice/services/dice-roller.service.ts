@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import type { AttributeRoll, DamageRoll, DiceRoll, Roll, SkillRoll } from '../models/roll';
+import type { AuthUser } from '../../auth/models/auth-user';
+import type { Rules } from '../../rules';
 import { Die } from '../enums/die.enum';
-import { AttributeRoll, DamageRoll, DiceRoll, Roll, SkillRoll } from '../models/roll';
+import { RollType } from '../enums/roll-type.enum';
 import { ApiService } from '../../core/services/api.service';
-import { AuthUser } from '../../auth/models/auth-user';
 import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
-import { RollType } from '../enums/roll-type.enum';
+import { RulesService } from '../../rules/services/rules.service';
 
 
 @Injectable({
@@ -19,13 +21,16 @@ export class DiceRollerService {
   private rolls$: Observable<Roll[]>;
   private stats: Record<number, Record<number, number>> = {};
   private user: AuthUser;
+  private rules: Rules;
 
   constructor(
     private api: ApiService,
     private auth: AuthService,
     private data: DataService,
+    private rulesService: RulesService,
   ) {
     this.user = this.auth.user;
+    this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }
 
 
@@ -113,7 +118,14 @@ export class DiceRollerService {
       type: RollType.Skill,
     };
     this.store(roll);
-    return this.validateSkillCheck(roll);
+    switch(this.rules.edition) {
+      case 4:
+        return this.validateSkillCheck(roll);
+      case 5:
+        return this.validateSkill5Check(roll);
+      default:
+        return this.validateSkillCheck(roll);
+    }
   }
 
 
@@ -152,6 +164,20 @@ export class DiceRollerService {
     }
     if (netSkill === 0) {
       netSkill = 1;
+    }
+
+    return netSkill;
+  }
+
+
+  validateSkill5Check(roll: Partial<SkillRoll>): number {
+    const effectiveAttributes = roll.attributes.map((attr) => attr + roll.modifier);
+    let netSkill = roll.skillPoints;
+
+    for (let i = 0; i < 3; i++) {
+      if (roll.rolls[i] > effectiveAttributes[i]) {
+        netSkill -= roll.rolls[i] - effectiveAttributes[i];
+      }
     }
 
     return netSkill;
