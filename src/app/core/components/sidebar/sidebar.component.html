@@ -1,5 +1,5 @@
 <aside>
   <app-person-selector (personSelected)="onSelectionChange($event)"></app-person-selector>
 
-  <app-stats *ngIf="selectedPerson" [person]="selectedPerson"></app-stats>
+  <app-stats *ngIf="selectedPerson$" [person$]="selectedPerson$"></app-stats>
 </aside>

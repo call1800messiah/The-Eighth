@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { from, Observable, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
 import type { Person } from '../../models';
 import type {
-  Attribute,
   EditAccessProps,
   EditAttributeProps,
   EditImageProps,
@@ -86,9 +85,9 @@ export class PersonComponent implements OnInit, OnDestroy {
   };
   menuOpen = false;
   person: Person;
+  person$: Observable<Person>;
   relativeTypes = PeopleService.relativeTypes;
   user: AuthUser;
-  attributes$: Observable<Attribute[]>;
   private personSub: Subscription;
 
   constructor(
@@ -107,14 +106,13 @@ export class PersonComponent implements OnInit, OnDestroy {
     // TODO: Check if the person can be loaded by a resolver as an observable
     this.personSub = this.route.paramMap.pipe(
       switchMap(params => {
-        return this.peopleService.getPersonById(params.get('id'));
+        return this.person$ = this.peopleService.getPersonById(params.get('id'));
       }),
     ).subscribe((person) => {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
-        this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
       }
     });
   }
@@ -153,7 +151,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   private addAttribute() {
     this.popover.showPopover<EditAttributeProps>('Neuer Wert', EditAttributeComponent, {
       personId: this.person.id,
-      filterAttributes$: this.attributes$.pipe(map((attributes) => attributes.map((att) => att.type))),
+      filterAttributes$: from([this.person.attributes ? this.person.attributes.map((att) => att.type) : []]),
     });
   }
 

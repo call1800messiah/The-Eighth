@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { combineLatest, from, Subscription } from 'rxjs';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 import type { Attribute, EditAttributeProps, PopoverChild } from '../../models';
 import { DataService } from '../../../core/services/data.service';
 import { PeopleService } from '../../../people/services/people.service';
 import { RulesService } from '../../../rules/services/rules.service';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 
 
@@ -29,6 +29,7 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
 
   constructor(
     private dataService: DataService,
+    private peopleService: PeopleService,
     private rulesService: RulesService,
   ) {}
 
@@ -62,8 +63,8 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
 
 
   delete() {
-    if (this.props.attribute && !this.props.altCollection) {
-      this.dataService.delete(this.props.attribute.id, `${PeopleService.collection}/${this.props.personId}/attributes`).then(() => {
+    if (this.props.attribute && this.props.personId) {
+      this.peopleService.deleteAttribute(this.props.personId, this.props.attribute.type).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -71,17 +72,17 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
 
 
   save() {
-    if (this.props.altCollection) {
-      this.dataService.store({ attributes: [{
-        current: this.attributeForm.get('current').value,
-        max: this.attributeForm.get('max').value,
-        type: this.attributeForm.get('type').value,
-      }] }, this.props.altCollection, this.props.personId).then(() => {
+    const attribute: Attribute = {
+      current: this.attributeForm.get('current').value,
+      max: this.attributeForm.get('max').value,
+      type: this.attributeForm.get('type').value,
+    };
+    if (this.props.altCollection && this.props.personId) {
+      this.dataService.store({ attributes: [attribute] }, this.props.altCollection, this.props.personId).then(() => {
         this.dismissPopover.emit(true);
       });
     } else {
-      const attribute: Attribute = {...this.attributeForm.value};
-      this.dataService.store(attribute, `${PeopleService.collection}/${this.props.personId}/attributes`, this.props.attribute?.id).then(() => {
+      this.peopleService.updateAttribute(this.props.personId, attribute).then(() => {
         this.dismissPopover.emit(true);
       });
     }

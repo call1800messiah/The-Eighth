@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import type { Advantage, Disadvantage, Feat, Person, PersonDB, Relative, Skill } from '../models';
 import type { Attribute } from '../../shared';
@@ -164,20 +164,19 @@ export class PeopleService {
   }
 
 
-  private static transformAttributes(data: any): Attribute[] {
-    return data.reduce((all, entry) => {
-      const attribute = entry.payload.doc.data();
-      all.push({
-        id: entry.payload.doc.id,
-        current: attribute.current,
-        max: attribute.max,
-        type: attribute.type,
+
+  deleteAttribute(personId: string, type: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getPersonById(personId).pipe(take(1)).subscribe((person) => {
+        const personUpdate = {
+          attributes: person.attributes.filter((a) => a.type !== type),
+        };
+        this.data.store(personUpdate, PeopleService.collection, personId).then(() => {
+          resolve(true);
+        });
       });
-
-      return all;
-    }, []).sort(UtilService.orderByOrder);
+    });
   }
-
 
 
   getPeople(): Observable<Person[]> {
@@ -213,21 +212,25 @@ export class PeopleService {
   }
 
 
-  getPersonAttributes(id: string, altCollection?: string): Observable<Attribute[]> {
-    const collection = `${altCollection ? altCollection : PeopleService.collection}/${id}/attributes`;
-    if (!this.attributeMap[collection]) {
-      this.attributeMap[collection] = this.api.getDataFromCollection(
-        collection,
-      ).pipe(
-        map(PeopleService.transformAttributes),
-      );
-    }
-    return this.attributeMap[collection];
+  store(person: Partial<Person>, personId?: string) {
+    return this.data.store(person, PeopleService.collection, personId);
   }
 
 
-  store(person: Partial<Person>, personId?: string) {
-    return this.data.store(person, PeopleService.collection, personId);
+  updateAttribute(personId: string, attribute: Attribute): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getPersonById(personId).pipe(take(1)).subscribe((person) => {
+        const personUpdate = {
+          attributes: [
+            ...(person.attributes ? person.attributes.filter((a) => a.type !== attribute.type) : []),
+            attribute,
+          ],
+        };
+        this.data.store(personUpdate, PeopleService.collection, personId).then(() => {
+          resolve(true);
+        });
+      });
+    });
   }
 
 
@@ -282,6 +285,9 @@ export class PeopleService {
         Object.entries(personData.relatives).forEach(([type, relativeList]) => {
           person.relatives[type] = relativeList.map((id) => ({ id, name: id }));
         });
+      }
+      if (personData.attributes) {
+        person.attributes = personData.attributes;
       }
 
       all.push(person);

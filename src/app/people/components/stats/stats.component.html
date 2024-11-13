@@ -1,4 +1,4 @@
-<div *ngIf="attributes$ | async as attributes" class="values">
+<div *ngIf="attributes$ && person" class="values">
   <app-attributes
     *ngIf="isOwnerOrCan('viewStats')"
     [attributeValues$]="attributes$"
@@ -15,4 +15,4 @@
   </app-bar-attributes>
 </div>
 
-<app-capability-list [person]="person"></app-capability-list>
+<app-capability-list *ngIf="person" [person]="person"></app-capability-list>

@@ -1,11 +1,15 @@
 <div>
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
-    <div class="form-group" *ngIf="!this.props.attribute">
-      <select formControlName="type" id="type">
-        <option *ngFor="let att of allowedAttributes | keyvalue" [value]="att.key">{{ att.value }}</option>
-      </select>
-      <label for="type">Typ</label>
-    </div>
+    @if(!props.attribute) {
+      <div class="form-group">
+        <select formControlName="type" id="type">
+          <option *ngFor="let att of allowedAttributes | keyvalue" [value]="att.key">{{ att.value }}</option>
+        </select>
+        <label for="type">Typ</label>
+      </div>
+    } @else {
+      <input type="hidden" formControlName="type" value="{{props.attribute.type}}">
+    }
 
     <div [ngClass]="{'locked-input': props.attribute}">
       <app-unlock-button (toggle)="toggleMax()" *ngIf="props.attribute"></app-unlock-button>

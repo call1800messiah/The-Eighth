@@ -78,7 +78,7 @@
     </div>
   </div>
 
-  <app-stats [person]="person"></app-stats>
+  <app-stats [person$]="person$"></app-stats>
 
   <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
     <div class="heading">Verwandte</div>

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { map, tap } from 'rxjs/operators';
 
 import type { Attribute, EditAttributeProps } from '../../../shared';
 import type { AllowedAttribute } from '../../../rules';

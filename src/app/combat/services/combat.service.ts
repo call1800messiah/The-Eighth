@@ -3,7 +3,7 @@ import { combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
-import type { Person } from '../../people/models/person';
+import type { Person } from '../../people';
 import type { CombatState } from '../../shared';
 import type { Rules } from '../../rules';
 import { ApiService } from '../../core/services/api.service';
@@ -127,7 +127,7 @@ export class CombatService {
         states: fighterData.states ? fighterData.states : null,
       };
       if (fighter.person) {
-        fighter.attributes = this.peopleService.getPersonAttributes(fighter.person.id);
+        fighter.attributes = from([fighter.person.attributes || []]);
       }
       all.push(fighter);
       return all;

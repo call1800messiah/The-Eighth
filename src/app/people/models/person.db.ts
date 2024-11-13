@@ -1,9 +1,12 @@
+import type { Attribute } from '../../shared';
+
 export interface PersonDB {
   advantages?: Record<string, {
     details?: string;
     level?: string;
   }>
   access: string[];
+  attributes?: Attribute[];
   banner?: string;
   birthday: string;
   birthyear: number;

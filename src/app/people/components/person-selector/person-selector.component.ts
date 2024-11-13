@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import type { Person } from '../../models';
 import type { AuthUser } from '../../../auth/models/auth-user';
@@ -15,45 +15,43 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './person-selector.component.html',
   styleUrl: './person-selector.component.scss'
 })
-export class PersonSelectorComponent {
+export class PersonSelectorComponent implements OnDestroy, OnInit {
   @Output() personSelected = new EventEmitter<Person>();
   people$: Observable<Person[]>;
   user: AuthUser;
   personForm = new UntypedFormGroup({
     selectedPersonId: new UntypedFormControl('')
   });
+  private subscription = new Subscription();
 
   constructor(
     private auth: AuthService,
     private peopleService: PeopleService,
   ) {
     this.user = this.auth.user;
+    this.people$ = this.peopleService.getPeople().pipe(
+      map(people => people.filter(person => person.owner === this.user.id)),
+    );
+  }
+
+  ngOnInit() {
+    this.subscription = combineLatest([
+      this.personForm.valueChanges,
+      this.people$
+    ]).subscribe(([changes, people]) => {
+      if (changes.selectedPersonId) {
+        localStorage.setItem('sidebar-selected-person', changes.selectedPersonId);
+        const person = people.find(person => person.id === changes.selectedPersonId);
+        this.personSelected.emit(person);
+      }
+    });
     const selectedPersonId = localStorage.getItem('sidebar-selected-person');
     if (selectedPersonId) {
       this.personForm.patchValue({ selectedPersonId });
     }
-    this.people$ = this.peopleService.getPeople().pipe(
-      map(people => people.filter(person => person.owner === this.user.id)),
-      tap(people => {
-        if (!selectedPersonId) {
-          return;
-        }
-
-        const person = people.find(person => person.id === selectedPersonId);
-        if (person) {
-          this.personSelected.emit(person);
-        }
-      }),
-    )
   }
 
-
-
-  onSelectionChange() {
-    localStorage.setItem('sidebar-selected-person', this.personForm.get('selectedPersonId').value);
-    this.people$.pipe(take(1)).subscribe(people => {
-      const person = people.find(person => person.id === this.personForm.get('selectedPersonId').value);
-      this.personSelected.emit(person);
-    });
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

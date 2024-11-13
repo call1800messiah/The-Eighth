@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import type { Person } from '../../models';
 import type { Attribute } from '../../../shared';
-import { PeopleService } from '../../services/people.service';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -11,24 +11,28 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.scss'
 })
-export class StatsComponent implements OnChanges, OnInit {
-  @Input() person: Person;
+export class StatsComponent implements OnDestroy, OnInit {
+  @Input() person$: Observable<Person>;
   attributes$: Observable<Attribute[]>;
   user: AuthUser;
+  person: Person;
+  private subscription = new Subscription();
 
   constructor(
     private auth: AuthService,
-    private peopleService: PeopleService,
   ) {
     this.user = this.auth.user;
   }
 
   ngOnInit() {
-    this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
+    this.attributes$ = this.person$.pipe(
+      map((person) => person.attributes || [])
+    );
+    this.subscription = this.person$.subscribe((person) => this.person = person);
   }
 
-  ngOnChanges() {
-    this.attributes$ = this.peopleService.getPersonAttributes(this.person.id);
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   isOwnerOrCan(access: string): boolean {
