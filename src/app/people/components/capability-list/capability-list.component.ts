@@ -33,10 +33,17 @@ export class CapabilityListComponent {
     const second = this.person.attributes.find((att) => att.type === capability.attributeTwo);
     const third = this.person.attributes.find((att) => att.type === capability.attributeThree);
     const skill =  capability.value;
-    console.log('Roll?', first, second, third, skill);
 
     if (first && second && third) {
-      this.dice.rollSkillCheck(first.current, second.current, third.current, skill);
+      const modifier = parseInt(window.prompt('Mofikator eingeben', '0'), 10);
+      this.dice.rollSkillCheck(
+        first.current,
+        second.current,
+        third.current,
+        skill,
+        !Number.isNaN(modifier) ? modifier : 0,
+        capability.name
+      );
     }
   }
 }

@@ -9,7 +9,7 @@
         *ngIf="allowedAttributes[att.type].rollType"
         type="button"
         class="btn-text value"
-        (click)="rollAttribute(att)"
+        (click)="rollAttribute(att, allowedAttributes[att.type].name)"
         title="Probe würfeln"
       >
         <div *ngIf="att.max !== att.current">

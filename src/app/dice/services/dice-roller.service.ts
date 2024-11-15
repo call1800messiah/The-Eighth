@@ -51,13 +51,14 @@ export class DiceRollerService {
 
 
 
-  rollAttributeCheck(attribute: number, modifier: number = 0): number {
+  rollAttributeCheck(attribute: number, modifier: number = 0, name?: string): number {
     const result = this.roll(Die.D20);
     this.store({
       attribute,
       created: new Date(),
       isPrivate: false,
       modifier,
+      name,
       owner: this.user.id,
       roll: result,
       type: RollType.Attribute,
@@ -77,25 +78,27 @@ export class DiceRollerService {
       rolls: results,
       type: RollType.Damage,
     });
-    return results.reduce((total, roll ) => total += roll, 0) + modifier;
+    return results.reduce((total, roll ) => total + roll, 0) + modifier;
   }
 
 
-  rollDice(amount: number, type: Die): number[] {
+  rollDice(amount: number, type: Die, log = true): number[] {
     const results = [];
 
     for (let i = 0; i < amount; i++) {
       results.push(this.roll(type));
     }
 
-    this.store({
-      created: new Date(),
-      diceType: type,
-      isPrivate: false,
-      owner: this.user.id,
-      rolls: results,
-      type: RollType.Dice,
-    });
+    if(log) {
+      this.store({
+        created: new Date(),
+        diceType: type,
+        isPrivate: false,
+        owner: this.user.id,
+        rolls: results,
+        type: RollType.Dice,
+      });
+    }
     return results;
   }
 
@@ -106,22 +109,24 @@ export class DiceRollerService {
     third: number,
     skill: number,
     modifier: number = 0,
+    name?: string,
   ): number {
     const roll: SkillRoll = {
       attributes: [first, second, third],
       created: new Date(),
       isPrivate: false,
       modifier,
+      name,
       owner: this.user.id,
-      rolls: this.rollDice(3, Die.D20) as [number, number, number],
+      rolls: this.rollDice(3, Die.D20, false) as [number, number, number],
       skillPoints: skill,
-      type: RollType.Skill,
+      type: this.rules.edition === 5 ? RollType.Skill5 : RollType.Skill,
     };
     this.store(roll);
-    switch(this.rules.edition) {
-      case 4:
+    switch(roll.type) {
+      case RollType.Skill:
         return this.validateSkillCheck(roll);
-      case 5:
+      case RollType.Skill5:
         return this.validateSkill5Check(roll);
       default:
         return this.validateSkillCheck(roll);
@@ -243,6 +248,7 @@ export class DiceRollerService {
           };
           break;
         case RollType.Skill:
+        case RollType.Skill5:
           roll = {
             ...roll,
             attributes: rollData.attributes,

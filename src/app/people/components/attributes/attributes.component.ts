@@ -70,8 +70,8 @@ export class AttributesComponent implements OnInit {
   }
 
 
-  rollAttribute(attribute: Attribute) {
-    // TODO: Implement a modifier popup
-    this.dice.rollAttributeCheck(attribute.current);
+  rollAttribute(attribute: Attribute, name: string) {
+    const modifier = parseInt(window.prompt('Mofikator eingeben', '0'), 10);
+    this.dice.rollAttributeCheck(attribute.current, !Number.isNaN(modifier) ? modifier : 0, name);
   }
 }
