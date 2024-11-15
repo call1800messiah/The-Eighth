@@ -7,15 +7,25 @@ import { PersonSummaryComponent } from './components/person-summary/person-summa
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 import { PersonComponent } from './components/person/person.component';
+import { AttributesComponent } from './components/attributes/attributes.component';
+import { CapabilityListComponent } from './components/capability-list/capability-list.component';
+import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
+import { StatsComponent } from './components/stats/stats.component';
+import { PersonSelectorComponent } from './components/person-selector/person-selector.component';
 
 
 
 @NgModule({
   declarations: [
-    ListComponent,
-    PersonSummaryComponent,
+    AttributesComponent,
+    CapabilityListComponent,
+    EditCapabilityComponent,
     EditPersonComponent,
+    ListComponent,
     PersonComponent,
+    PersonSelectorComponent,
+    PersonSummaryComponent,
+    StatsComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +34,8 @@ import { PersonComponent } from './components/person/person.component';
   ],
   exports: [
     EditPersonComponent,
+    PersonSelectorComponent,
+    StatsComponent,
   ]
 })
 export class PeopleModule { }

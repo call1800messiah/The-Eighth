@@ -3,12 +3,12 @@ import { combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
-import type { Person } from '../../people/models/person';
+import type { Person } from '../../people';
+import type { CombatState } from '../../shared';
+import type { Rules } from '../../rules';
 import { ApiService } from '../../core/services/api.service';
-import { CombatState } from '../../shared/models/combat-state';
 import { PeopleService } from '../../people/services/people.service';
-import { RulesService } from '../../core/services/rules.service';
-import { Rules } from '../../shared/models/rules';
+import { RulesService } from '../../rules/services/rules.service';
 import { DataService } from '../../core/services/data.service';
 
 
@@ -17,7 +17,7 @@ import { DataService } from '../../core/services/data.service';
   providedIn: 'root',
 })
 export class CombatService {
-  readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
+  static readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
   private readonly combatants$: Observable<Combatant[]>;
   private rules: Rules;
 
@@ -29,11 +29,11 @@ export class CombatService {
   ) {
     this.combatants$ = combineLatest([
       this.peopleService.getPeople(),
-      this.api.getDataFromCollection(this.combatCollection),
+      this.api.getDataFromCollection(CombatService.combatCollection),
     ]).pipe(
       map(([people, fighters]) => this.transformCombatants(people, fighters)),
     );
-    this.rulesService.getRules().then((rules) => this.rules = rules);
+    this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }
 
 
@@ -49,11 +49,11 @@ export class CombatService {
         name: combatant,
         attributes: []
       };
-      if (this.rules?.barTypes?.includes('lep')) {
+      if (this.rules?.allowedAttributes?.find((att) => att.shortCode === 'lep')) {
         newFighter.attributes.push({ type: 'lep', current: 30, max: 30 });
       }
     }
-    this.api.addDocumentToCollection(newFighter, this.combatCollection).then();
+    this.api.addDocumentToCollection(newFighter, CombatService.combatCollection).then();
   }
 
 
@@ -70,7 +70,7 @@ export class CombatService {
 
 
   removeCombatant(id: string) {
-    this.api.deleteDocumentFromCollection(id, this.combatCollection);
+    this.api.deleteDocumentFromCollection(id, CombatService.combatCollection);
   }
 
 
@@ -89,7 +89,7 @@ export class CombatService {
   setInitiative(combatantId: string, initiative: number, active: boolean) {
     return this.api.updateDocumentInCollection(
       combatantId,
-      this.combatCollection,
+      CombatService.combatCollection,
       {
         active,
         initiative,
@@ -101,7 +101,7 @@ export class CombatService {
   setStates(combatantId: string, states: CombatState[]) {
     return this.api.updateDocumentInCollection(
       combatantId,
-      this.combatCollection,
+      CombatService.combatCollection,
       {
         states
       }
@@ -110,7 +110,7 @@ export class CombatService {
 
 
   store(combatant: Combatant, combatantId: string) {
-    return this.data.store(combatant, this.combatCollection, combatantId);
+    return this.data.store(combatant, CombatService.combatCollection, combatantId);
   }
 
 
@@ -127,9 +127,7 @@ export class CombatService {
         states: fighterData.states ? fighterData.states : null,
       };
       if (fighter.person) {
-        fighter.attributes = this.peopleService.getPersonValues(fighter.person.id).pipe(
-          map((values) => values.attributes),
-        );
+        fighter.attributes = from([fighter.person.attributes || []]);
       }
       all.push(fighter);
       return all;

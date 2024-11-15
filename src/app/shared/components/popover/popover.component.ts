@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
+import type { PopoverChild } from '../../models';
 import { PopoverService } from '../../../core/services/popover.service';
-import { PopoverChild } from '../../models/popover-child';
 
 
 

@@ -68,6 +68,26 @@
         </div>
       </ng-container>
     </div>
+
+    <div *ngSwitchCase="'skill5'">
+      hat eine {{roll.name ? roll.name : 'Talent'}}-Probe
+      <span *ngIf="roll.modifier !== 0">(<span *ngIf="roll.modifier > 0">+</span>{{roll.modifier}})</span>
+      gewürfelt:<br>
+      <ng-container *appTplVar="validateSkill5Check(roll) as netSkill" [ngSwitch]="getSkillCheckResultType(roll)">
+        <ng-container *ngSwitchCase="1">
+          <span class="success">Meisterlich!</span>
+        </ng-container>
+        <ng-container *ngSwitchCase="-1">
+          <span class="failure">Patzer!</span>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <ng-container *ngIf="validateSkill5Check(roll) > 0; then success; else failure"></ng-container>
+        </ng-container>
+        <div class="details">
+          ({{netSkill}}/{{roll.skillPoints}} | {{roll.rolls[0]}}/{{roll.attributes[0]}}, {{roll.rolls[1]}}/{{roll.attributes[1]}}, {{roll.rolls[2]}}/{{roll.attributes[2]}})
+        </div>
+      </ng-container>
+    </div>
   </div>
 </ng-container>
 

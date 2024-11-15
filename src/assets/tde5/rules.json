@@ -1,5 +1,186 @@
 {
-  "barTypes": ["asp", "kap", "lep"],
+  "addableRuleTypes": {
+    "advantage": {
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "disadvantage": {
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "feat": {
+      "category": "string",
+      "combatTechniques": "string",
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "requirements": "string",
+      "requiresDetails": "boolean",
+      "usage": "string"
+    },
+    "skill": {
+      "applications": "string",
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "encumbrance": "string",
+      "increaseFactor": "string"
+    },
+    "spell": {
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "castingTime": "string",
+      "cost": "string",
+      "description": "string",
+      "duration": "string",
+      "increaseFactor": "string",
+      "modifier": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    }
+  },
+  "allowedAttributes": [
+    {
+      "displayStyle": "number",
+      "name": "Mut",
+      "order": 1,
+      "rollType": "attribute",
+      "shortCode": "mu"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Klugheit",
+      "order": 2,
+      "rollType": "attribute",
+      "shortCode": "kl"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Intuition",
+      "order": 3,
+      "rollType": "attribute",
+      "shortCode": "in"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Charisma",
+      "order": 4,
+      "rollType": "attribute",
+      "shortCode": "ch"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Fingerfertigkeit",
+      "order": 5,
+      "rollType": "attribute",
+      "shortCode": "ff"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Gewandtheit",
+      "order": 6,
+      "rollType": "attribute",
+      "shortCode": "ge"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Konsitution",
+      "order": 7,
+      "rollType": "attribute",
+      "shortCode": "ko"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Körperkraft",
+      "order": 8,
+      "rollType": "attribute",
+      "shortCode": "kk"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Lebensenergie",
+      "order": 9,
+      "shortCode": "lep"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Astralenergie",
+      "order": 10,
+      "shortCode": "asp"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Karmaenergie",
+      "order": 11,
+      "shortCode": "kep"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Seelenkraft",
+      "order": 12,
+      "shortCode": "sk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Zähigkeit",
+      "order": 13,
+      "shortCode": "zk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Ausweichen",
+      "order": 14,
+      "rollType": "attribute",
+      "shortCode": "au"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Initiative",
+      "order": 15,
+      "shortCode": "ini"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Geschwindigkeit",
+      "order": 16,
+      "shortCode": "gs"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Wundschwelle",
+      "order": 17,
+      "shortCode": "ws"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Schicksalspunkte",
+      "order": 18,
+      "shortCode": "sp"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Rüstungsschutz",
+      "order": 19,
+      "shortCode": "rs"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Behinderung",
+      "order": 20,
+      "shortCode": "be"
+    }
+  ],
+  "edition": 5,
   "hitLocations": {
     "1": "Kopf",
     "2": "Kopf",

@@ -1,4 +1,4 @@
-import { Modifier } from './modifier';
+import type { Modifier } from './modifier';
 
 export interface CombatState {
   exclusive?: boolean;

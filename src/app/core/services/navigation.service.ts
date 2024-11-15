@@ -7,6 +7,7 @@ import {
   faFistRaised,
   faMeteor,
   faNoteSticky,
+  faScaleBalanced,
   faShoppingBag,
   faTrophy,
   faUsers,
@@ -72,6 +73,11 @@ export class NavigationService {
       label: 'Notizen',
       icon: faNoteSticky,
       link: '/notes'
+    },
+    {
+      label: 'Regeln',
+      icon: faScaleBalanced,
+      link: '/rules'
     },
   ];
 

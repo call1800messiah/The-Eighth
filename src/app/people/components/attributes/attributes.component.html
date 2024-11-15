@@ -1,0 +1,28 @@
+<ng-container *ngIf="(attributes$ | async) as attributes">
+  <div class="attributes box" *ngIf="attributes.length > 0">
+    <div class="attribute" *ngFor="let att of attributes">
+      <button type="button" class="btn-text label" (click)="editAttribute(att)" title="Attribut bearbeiten">
+        {{allowedAttributes[att.type].name}}
+      </button>
+
+      <button
+        *ngIf="allowedAttributes[att.type].rollType"
+        type="button"
+        class="btn-text value"
+        (click)="rollAttribute(att, allowedAttributes[att.type].name)"
+        title="Probe würfeln"
+      >
+        <div *ngIf="att.max !== att.current">
+          {{att.max}} |
+        </div>
+        {{att.current}}
+      </button>
+      <div class="value" *ngIf="!allowedAttributes[att.type].rollType">
+        <div *ngIf="att.max !== att.current">
+          {{att.max}} |
+        </div>
+        {{att.current}}
+      </div>
+    </div>
+  </div>
+</ng-container>

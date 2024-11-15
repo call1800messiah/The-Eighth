@@ -6,13 +6,11 @@
 footer {
   background: var(--footer-background);
   border-top: var(--footer-border-top);
-  bottom: 0;
   height: var(--footer-height);
-  left: 0;
+  position: relative;
   padding: 5px 0;
-  position: fixed;
-  right: 0;
   text-align: center;
+  width: 100%;
   z-index: 100;
 
   button {

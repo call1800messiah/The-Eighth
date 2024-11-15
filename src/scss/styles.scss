@@ -17,13 +17,16 @@ body {
   --body-color: var(--color-primary);
   background: var(--body-background);
   color: var(--body-color);
+  display: flex;
   font-family: var(--base-body-font-family);
   font-size: var(--base-body-font-size);
+  flex-direction: column;
+  height: 100vh;
+  justify-content: stretch;
   line-height: var(--base-body-line-height);
   margin: 0;
-  min-height: 100vh;
   min-width: 320px;
-  padding: var(--header-height) 0 var(--footer-height);
+  overflow: hidden;
 }
 
 a {
@@ -129,6 +132,30 @@ h2 {
     background-color: var(--color-primary);
     color: var(--color-dark);
   }
+
+  &.small {
+    height: calc(var(--mobile-interactive-height) * 0.8);
+    line-height: calc(var(--mobile-interactive-height) * 0.8 - 2px);
+    width: calc(var(--mobile-interactive-height) * 0.8);
+
+    &.borderless {
+      line-height: calc(var(--mobile-interactive-height) * 0.8);
+    }
+  }
+}
+
+.btn-text {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  color: var(--color-primary);
+  font: var(--base-body-font-family);
+  font-size: var(--base-body-font-size);
+  line-height: var(--base-body-line-height);
+  padding: 0;
 }
 
 .unstyled-list {
@@ -143,11 +170,8 @@ h2 {
   box-shadow: var(--page-header-box-shadow);
   color: var(--page-header-color);
   height: var(--header-height);
-  left: 0;
   padding: 0 6rem;
-  position: fixed;
-  right: 0;
-  top: 0;
+  width: 100%;
   z-index: 90;
 
   h1 {
@@ -169,7 +193,6 @@ h2 {
   border: var(--box-border);
   border-radius: var(--box-border-radius);
   box-shadow: var(--box-shadow);
-  height: 100%;
   padding: var(--item-padding);
   position: relative;
 

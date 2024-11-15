@@ -41,12 +41,17 @@ export class RecentRollsComponent implements OnInit {
 
 
   total(rolls: number[], modifier: number = 0) {
-    return rolls.reduce((total, roll) => total += roll, 0) + modifier;
+    return rolls.reduce((total, roll) => total + roll, 0) + modifier;
   }
 
 
   validateSkillCheck(roll: SkillRoll): number {
     return this.dice.validateSkillCheck(roll);
+  }
+
+
+  validateSkill5Check(roll: SkillRoll): number {
+    return this.dice.validateSkill5Check(roll);
   }
 
 

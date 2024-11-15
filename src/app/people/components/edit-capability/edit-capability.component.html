@@ -1,0 +1,72 @@
+<div>
+  <form [formGroup]="capabilityForm" (ngSubmit)="save()">
+    <div class="form-group">
+      <select id="type" formControlName="type" required (change)="onTypeChanged()">
+        <option [ngValue]="type.key" *ngFor="let type of addableRuleTypes | keyvalue; let i = index">
+          {{ruleTypes[type.key]}}
+        </option>
+      </select>
+      <label for="type">Art *</label>
+    </div>
+
+    <div class="form-group" *ngIf="(filteredRules$ | async) as filteredRules">
+      @if (capabilityForm.get('type').value === '') {
+        <input type="hidden" formControlName="rule" required>
+      } @else if (filteredRules.length === 0 && !props.capability) {
+        <div>
+          Alle {{ruleTypes[capabilityForm.get('type').value]}} sind bereits hinzugefügt.
+          <input type="hidden" formControlName="rule" required>
+        </div>
+      } @else {
+        <select id="rule" formControlName="rule" required (change)="onRuleChanged()">
+          <option [ngValue]="rule.id" *ngFor="let rule of filteredRules; let i = index">
+            {{rule.name}}
+          </option>
+        </select>
+        <label for="rule">Name *</label>
+      }
+    </div>
+
+
+    @if (selectedRule && (selectedRule.type === 'spell' || selectedRule.type === 'skill')) {
+      <div class="form-group">
+        <input type="number" step="1" id="value" formControlName="value" required>
+        <label for="value">Wert *</label>
+      </div>
+    }
+
+    @if (
+      selectedRule
+        && (selectedRule.type === 'advantage' || selectedRule.type === 'disadvantage' || selectedRule.type === 'feat')
+        && selectedRule.requiresDetails
+      ) {
+      <div class="form-group">
+        <input type="text" step="1" id="details" formControlName="details" required>
+        <label for="details">Details *</label>
+      </div>
+    }
+
+    @if (
+      selectedRule
+      && (selectedRule.type === 'advantage' || selectedRule.type === 'disadvantage' || selectedRule.type === 'feat')
+        && selectedRule.hasLevels
+      ) {
+      <div class="form-group">
+        <input type="text" step="1" id="level" formControlName="level" required>
+        <label for="level">Stufe *</label>
+      </div>
+    }
+
+    <div class="locked-input" *ngIf="props.capability">
+      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+
+      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+        Löschen
+      </button>
+    </div>
+
+    <button type="submit" class="btn" [disabled]="!capabilityForm.valid">
+      Speichern
+    </button>
+  </form>
+</div>

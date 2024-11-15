@@ -82,6 +82,11 @@ body.tde5 {
     --page-header-color: var(--color-dark);
   }
 
+
+  app-attributes {
+    --attribute-border-radius: 5px;
+  }
+
   app-avatar {
     --avatar-border: none;
     --avatar-box-shadow: inset 1px 1px 1px rgba(var(--color-primary-rgb), 0.3), 0 0 40px rgba(var(--color-primary-rgb), 0.3);
@@ -93,6 +98,10 @@ body.tde5 {
     --bar-box-shadow: inset 2px 2px 6px rgba(255, 255, 255, 0.6), 3px 3px 10px rgba(0, 0, 0, 0.5);
     --bar-height: 24px;
     --bar-margin-top: 5px;
+  }
+
+  app-capability-list {
+    --capability-border-radius: 5px;
   }
 
   app-context-menu {

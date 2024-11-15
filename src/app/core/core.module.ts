@@ -12,28 +12,33 @@ import { environment } from '../../environments/environment';
 import { SharedModule } from '../shared/shared.module';
 import { FooterComponent } from './components/footer/footer.component';
 import { DiceModule } from '../dice/dice.module';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { PeopleModule } from '../people/people.module';
 
 
 
 @NgModule({
   declarations: [
+    FooterComponent,
     HeaderComponent,
     PageNotFoundComponent,
-    FooterComponent,
+    SidebarComponent,
   ],
   exports: [
     FooterComponent,
     HeaderComponent,
     PageNotFoundComponent,
+    SidebarComponent,
   ],
   imports: [
-    CommonModule,
-    DiceModule,
-    RouterModule,
-    SharedModule,
     AngularFireModule.initializeApp(environment.tenantData[environment.tenant].firebase),
     AngularFirestoreModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    CommonModule,
+    DiceModule,
+    PeopleModule,
+    RouterModule,
+    SharedModule,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi())

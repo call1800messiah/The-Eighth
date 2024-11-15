@@ -21,6 +21,11 @@ export class UtilService {
   }
 
 
+  static orderByOrder(a: { order?: number }, b: { order?: number }): 1 | -1 | 0 {
+    return UtilService.orderByObjectProperty(a, b, 'order', true);
+  }
+
+
   static orderByRequiredPoints(a: { requiredPoints: number }, b: { requiredPoints: number }): 1 | -1 | 0 {
     return UtilService.orderByObjectProperty(a, b, 'requiredPoints', true);
   }

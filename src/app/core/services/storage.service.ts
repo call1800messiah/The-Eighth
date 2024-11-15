@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { finalize, take } from 'rxjs/operators';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
 import { firstValueFrom, Observable } from 'rxjs';
 
@@ -33,7 +33,7 @@ export class StorageService {
 
 
   getDownloadURL(fileName: string): Observable<string> {
-    return this.storage.ref(fileName).getDownloadURL();
+    return this.storage.ref(fileName).getDownloadURL().pipe(take(1));
   }
 
 
@@ -44,7 +44,7 @@ export class StorageService {
     task.percentageChanges().pipe(
       finalize(() => {
         if (updateRef) {
-          fileRef.getDownloadURL().subscribe(() => {
+          fileRef.getDownloadURL().pipe(take(1)).subscribe(() => {
             const update = { [updateRef.attribute]: fileName };
             this.api.updateDocumentInCollection(updateRef.id, updateRef.collection, update).catch((error) => {
               console.error(error);

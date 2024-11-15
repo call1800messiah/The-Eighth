@@ -1,5 +1,209 @@
 {
-  "barTypes": ["aup", "asp", "erp", "kap", "lep"],
+  "addableRuleTypes": {
+    "advantage": {
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "disadvantage": {
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "feat": {
+      "category": "string",
+      "combatTechniques": "string",
+      "cost": "string",
+      "description": "string",
+      "hasLevels": "boolean",
+      "prevalence": "string",
+      "requirements": "string",
+      "requiresDetails": "boolean"
+    },
+    "skill": {
+      "alternatives": "string",
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "encumbrance": "string",
+      "increaseFactor": "string",
+      "specializations": "string"
+    },
+    "spell": {
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "category": "string",
+      "castingTime": "string",
+      "cost": "string",
+      "description": "string",
+      "duration": "string",
+      "increaseFactor": "string",
+      "modifier": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    }
+  },
+  "allowedAttributes": [
+    {
+      "displayStyle": "number",
+      "name": "Mut",
+      "order": 1,
+      "rollType": "attribute",
+      "shortCode": "mu"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Klugheit",
+      "order": 2,
+      "rollType": "attribute",
+      "shortCode": "kl"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Intuition",
+      "order": 3,
+      "rollType": "attribute",
+      "shortCode": "in"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Charisma",
+      "order": 4,
+      "rollType": "attribute",
+      "shortCode": "ch"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Fingerfertigkeit",
+      "order": 5,
+      "rollType": "attribute",
+      "shortCode": "ff"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Gewandtheit",
+      "order": 6,
+      "rollType": "attribute",
+      "shortCode": "ge"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Konsitution",
+      "order": 7,
+      "rollType": "attribute",
+      "shortCode": "ko"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Körperkraft",
+      "order": 8,
+      "rollType": "attribute",
+      "shortCode": "kk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Geschwindigkeit",
+      "order": 9,
+      "shortCode": "gs"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Lebensenergie",
+      "order": 10,
+      "shortCode": "lep"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Ausdauer",
+      "order": 11,
+      "shortCode": "aup"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Astralenergie",
+      "order": 12,
+      "shortCode": "asp"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Karmaenergie",
+      "order": 13,
+      "shortCode": "kep"
+    },
+    {
+      "displayStyle": "bar",
+      "name": "Erschöpfung",
+      "order": 14,
+      "shortCode": "erp"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Magieresistenz",
+      "order": 15,
+      "rollType": "attribute",
+      "shortCode": "mr"
+    },
+    {
+      "displayStyle": "number",
+      "name": "INI-Basiswert",
+      "order": 16,
+      "shortCode": "ini"
+    },
+    {
+      "displayStyle": "number",
+      "name": "AT-Basiswert",
+      "order": 17,
+      "rollType": "attribute",
+      "shortCode": "at"
+    },
+    {
+      "displayStyle": "number",
+      "name": "PA-Basiswert",
+      "order": 18,
+      "rollType": "attribute",
+      "shortCode": "pa"
+    },
+    {
+      "displayStyle": "number",
+      "name": "FK-Basiswert",
+      "order": 19,
+      "rollType": "attribute",
+      "shortCode": "fk"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Wundschwelle",
+      "order": 20,
+      "shortCode": "ws"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Ausweichen",
+      "order": 21,
+      "rollType": "attribute",
+      "shortCode": "au"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Rüstungsschutz",
+      "order": 22,
+      "shortCode": "rs"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Behinderung",
+      "order": 23,
+      "shortCode": "be"
+    }
+  ],
+  "edition": 4,
   "hitLocations": {
     "1": "Linkes Bein",
     "2": "Rechtes Bein",

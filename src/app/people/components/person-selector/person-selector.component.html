@@ -1,0 +1,8 @@
+<form [formGroup]="personForm">
+  <div class="form-group">
+    <select formControlName="selectedPersonId" id="selectedPersonId">
+      <option *ngFor="let person of people$ | async" [ngValue]="person.id">{{person.name}}</option>
+    </select>
+    <label for="selectedPersonId">Werte für</label>
+  </div>
+</form>

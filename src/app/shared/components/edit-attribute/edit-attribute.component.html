@@ -1,11 +1,15 @@
 <div>
   <form [formGroup]="attributeForm" (ngSubmit)="save()">
-    <div class="form-group" *ngIf="!this.props.attribute">
-      <select formControlName="type" id="type">
-        <option *ngFor="let type of types" [value]="type">{{ type }}</option>
-      </select>
-      <label for="type">Typ</label>
-    </div>
+    @if(!props.attribute) {
+      <div class="form-group">
+        <select formControlName="type" id="type">
+          <option *ngFor="let att of allowedAttributes | keyvalue" [value]="att.key">{{ att.value }}</option>
+        </select>
+        <label for="type">Typ</label>
+      </div>
+    } @else {
+      <input type="hidden" formControlName="type" value="{{props.attribute.type}}">
+    }
 
     <div [ngClass]="{'locked-input': props.attribute}">
       <app-unlock-button (toggle)="toggleMax()" *ngIf="props.attribute"></app-unlock-button>
@@ -15,7 +19,6 @@
           id="max"
           formControlName="max"
           type="number"
-          min="1"
           step="1"
           required
           appSelectOnFocus
@@ -40,5 +43,13 @@
     <button type="submit" class="btn" [disabled]="!attributeForm.valid">
       Speichern
     </button>
+
+    <div class="locked-input" *ngIf="props.attribute && !props.altCollection">
+      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+
+      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+        Löschen
+      </button>
+    </div>
   </form>
 </div>

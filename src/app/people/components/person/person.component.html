@@ -73,19 +73,12 @@
       </ng-container>
     </dl>
 
-    <div class="tags" *ngIf="person.tags">
+    <div class="tags" *ngIf="person.tags && person.tags.length > 0">
       <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
     </div>
   </div>
 
-  <div *ngIf="values$ | async as values" class="values">
-    <div *ngIf="isOwnerOrCan('viewHitPoints') && values.attributes && values.attributes.length > 0" class="attributes">
-      <app-bar *ngFor="let bar of values.attributes"
-               [bar]="bar"
-               (barClicked)="editAttribute(bar)"
-      ></app-bar>
-    </div>
-  </div>
+  <app-stats [person$]="person$"></app-stats>
 
   <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
     <div class="heading">Verwandte</div>

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from './core/services/auth.service';
 import { environment } from '../environments/environment';
+import { ConfigService } from './core/services/config.service';
 
 
 
@@ -13,11 +14,14 @@ import { environment } from '../environments/environment';
 })
 export class AppComponent {
   isLoggedIn$: Observable<boolean>;
+  sidebarOpen$: Observable<boolean>;
 
   constructor(
-    private auth: AuthService
+    private auth: AuthService,
+    private config: ConfigService,
   ) {
     this.isLoggedIn$ = this.auth.isLoggedIn();
+    this.sidebarOpen$ = this.config.sidebarOpen$;
     document.body.classList.add(environment.tenant);
   }
 }

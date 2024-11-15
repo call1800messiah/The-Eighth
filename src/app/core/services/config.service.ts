@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { ICropperSettings } from 'ngx-img-cropper';
 import { customAlphabet } from 'nanoid';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +49,27 @@ export class ConfigService {
       preserveSize: true,
     }
   };
+  sidebarOpen$: BehaviorSubject<boolean>;
+  private sidebarOpen = false;
 
-  constructor() { }
+  constructor() {
+    const sidebarSetting = localStorage.getItem('sidebar-open');
+    if (sidebarSetting !== null) {
+      this.sidebarOpen = JSON.parse(sidebarSetting);
+    }
+    this.sidebarOpen$ = new BehaviorSubject<boolean>(this.sidebarOpen);
+  }
+
+
+
+  toggleSidebar(open?: boolean): void {
+    if (open !== undefined) {
+      this.sidebarOpen = open;
+    } else {
+      this.sidebarOpen = !this.sidebarOpen;
+    }
+    console.log(this.sidebarOpen);
+    this.sidebarOpen$.next(this.sidebarOpen);
+    localStorage.setItem('sidebar-open', JSON.stringify(this.sidebarOpen));
+  }
 }

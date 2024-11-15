@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import type { PopoverChild } from '../../../shared/models/popover-child';
+import type { CombatState, PopoverChild } from '../../../shared';
 import type { Combatant } from '../../models/combatant';
-import { CombatState } from '../../../shared/models/combat-state';
 import { CombatService } from '../../services/combat.service';
-import { RulesService } from '../../../core/services/rules.service';
+import { RulesService } from '../../../rules/services/rules.service';
 import { UtilService } from '../../../core/services/util.service';
 
 @Component({
@@ -20,7 +19,7 @@ export class EditStatesComponent implements OnInit, PopoverChild {
     private combatService: CombatService,
     private rulesService: RulesService,
   ) {
-    this.rulesService.getRules().then((rules) => {
+    this.rulesService.getRulesConfig().then((rules) => {
       this.states = rules.states.sort(UtilService.orderByName);
     });
   }
@@ -33,7 +32,7 @@ export class EditStatesComponent implements OnInit, PopoverChild {
   }
 
 
-  setCombatantStates(states) {
-    this.combatService.setStates(this.props.id, states);
+  setCombatantStates(states: CombatState[]) {
+    this.combatService.setStates(this.props.id, states).then();
   }
 }

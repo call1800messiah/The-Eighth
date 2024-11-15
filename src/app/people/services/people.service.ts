@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
-import type { Person } from '../models/person';
-import type { Values } from '../../shared/models/values';
+import type { Advantage, Disadvantage, Feat, Person, PersonDB, Relative, Skill } from '../models';
+import type { Attribute } from '../../shared';
+import type { AddableRule } from '../../rules';
 import type { AuthUser } from '../../auth/models/auth-user';
-import type { Relative } from '../models/relative';
-import type { PersonDB } from '../models/person.db';
 import type { Place } from '../../places/models/place';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,6 +13,7 @@ import { StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
 import { DataService } from '../../core/services/data.service';
 import { PlaceService } from '../../places/services/place.service';
+import { RulesService } from '../../rules/services/rules.service';
 
 
 
@@ -28,6 +28,7 @@ export class PeopleService {
     partners: 'Partner',
     siblings: 'Geschwister',
   };
+  private attributeMap: Record<string, Observable<Attribute[]>> = {};
   private people$: BehaviorSubject<Person[]>;
   private user: AuthUser;
 
@@ -36,6 +37,7 @@ export class PeopleService {
     private auth: AuthService,
     private data: DataService,
     private place: PlaceService,
+    private rules: RulesService,
     private storage: StorageService,
   ) {
     this.user = this.auth.user;
@@ -61,23 +63,120 @@ export class PeopleService {
   }
 
 
-  private static transformValues(id: string, data: any): Values {
-    return {
-      person: id,
-      attributes: data.reduce((all, entry) => {
-        const attribute = entry.payload.doc.data();
-        all.push({
-          id: entry.payload.doc.id,
-          current: attribute.current,
-          max: attribute.max,
-          type: attribute.type,
-        });
+  private static resolveRules(person: Person, personData: PersonDB, rules: AddableRule[]): Person {
+    const resolvedPerson = { ...person };
 
-        return all;
-      }, []).sort(UtilService.orderByType),
-    };
+    if (personData.advantages) {
+      resolvedPerson.advantages = Object.entries(personData.advantages).reduce((acc, [id, data]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'advantage') {
+          const advantage: Advantage = {
+            id,
+            name: rule.name,
+          };
+          if (data.level) {
+            advantage.level = data.level;
+          }
+          if (data.details) {
+            advantage.details = data.details;
+          }
+          acc.push(advantage);
+        }
+        return acc;
+      }, [] as Advantage[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.disadvantages) {
+      resolvedPerson.disadvantages = Object.entries(personData.disadvantages).reduce((acc, [id, data]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'disadvantage') {
+          const disadvantage: Disadvantage = {
+            id,
+            name: rule.name,
+          };
+          if (data.level) {
+            disadvantage.level = data.level;
+          }
+          if (data.details) {
+            disadvantage.details = data.details;
+          }
+          acc.push(disadvantage);
+        }
+        return acc;
+      }, [] as Disadvantage[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.feats) {
+      resolvedPerson.feats = Object.entries(personData.feats).reduce((acc, [id, data]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'feat') {
+          const feat: Feat = {
+            id,
+            name: rule.name,
+          };
+          if (data.level) {
+            feat.level = data.level;
+          }
+          if (data.details) {
+            feat.details = data.details;
+          }
+          acc.push(feat);
+        }
+        return acc;
+      }, [] as Feat[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.skills) {
+      resolvedPerson.skills = Object.entries(personData.skills).reduce((acc, [id, value]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'skill') {
+          acc.push({
+            attributeOne: rule.attributeOne,
+            attributeThree: rule.attributeThree,
+            attributeTwo: rule.attributeTwo,
+            id,
+            name: rule.name,
+            value,
+          });
+        }
+        return acc;
+      }, [] as Skill[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.spells) {
+      resolvedPerson.spells = Object.entries(personData.spells).reduce((acc, [id, value]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'spell') {
+          acc.push({
+            attributeOne: rule.attributeOne,
+            attributeThree: rule.attributeThree,
+            attributeTwo: rule.attributeTwo,
+            id,
+            name: rule.name,
+            value,
+          });
+        }
+        return acc;
+      }, [] as Skill[]).sort(UtilService.orderByName);
+    }
+
+    return resolvedPerson;
   }
 
+
+
+  deleteAttribute(personId: string, type: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getPersonById(personId).pipe(take(1)).subscribe((person) => {
+        const personUpdate = {
+          attributes: person.attributes.filter((a) => a.type !== type),
+        };
+        this.data.store(personUpdate, PeopleService.collection, personId).then(() => {
+          resolve(true);
+        });
+      });
+    });
+  }
 
 
   getPeople(): Observable<Person[]> {
@@ -94,7 +193,8 @@ export class PeopleService {
             return all;
           }, {}) as Record<string, Place>),
         )),
-        map(this.transformPeople.bind(this)),
+        withLatestFrom(this.rules.getDynamicRules()),
+        map(this.deserializePeople.bind(this)),
         map(PeopleService.resolveAllRelatives),
         map((people: Person[]) => people.sort(UtilService.orderByName)),
       ).subscribe((people) => {
@@ -112,26 +212,33 @@ export class PeopleService {
   }
 
 
-  getPersonValues(id: string, altCollection?: string): Observable<Values> {
-    const collection = `${altCollection ? altCollection : PeopleService.collection}/${id}/attributes`;
-    return this.api.getDataFromCollection(
-      collection,
-    ).pipe(
-      map((values) => PeopleService.transformValues(id, values)),
-    );
-  }
-
-
   store(person: Partial<Person>, personId?: string) {
     return this.data.store(person, PeopleService.collection, personId);
   }
 
 
+  updateAttribute(personId: string, attribute: Attribute): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getPersonById(personId).pipe(take(1)).subscribe((person) => {
+        const personUpdate = {
+          attributes: [
+            ...(person.attributes ? person.attributes.filter((a) => a.type !== attribute.type) : []),
+            attribute,
+          ],
+        };
+        this.data.store(personUpdate, PeopleService.collection, personId).then(() => {
+          resolve(true);
+        });
+      });
+    });
+  }
 
-  private transformPeople([people, placeMap]): Person[] {
+
+
+  private deserializePeople([[people, placeMap], rules]): Person[] {
     return people.reduce((all, entry) => {
       const personData = entry.payload.doc.data() as PersonDB;
-      const person: Person = {
+      let person: Person = {
         access: personData.access,
         banner: null,
         birthday: personData.birthday || null,
@@ -153,6 +260,9 @@ export class PeopleService {
         title: personData.title || null,
         xp: personData.xp || 0
       };
+
+      person = PeopleService.resolveRules(person, personData, rules);
+
       if (personData.image && personData.image !== '') {
         this.storage.getDownloadURL(personData.image).subscribe((url) => {
           person.image = url;
@@ -175,6 +285,9 @@ export class PeopleService {
         Object.entries(personData.relatives).forEach(([type, relativeList]) => {
           person.relatives[type] = relativeList.map((id) => ({ id, name: id }));
         });
+      }
+      if (personData.attributes) {
+        person.attributes = personData.attributes;
       }
 
       all.push(person);

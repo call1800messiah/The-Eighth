@@ -56,6 +56,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'rules',
+    loadChildren: () => import('./rules/rules.module').then(m => m.RulesModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: '',
     redirectTo: '/overview',
     pathMatch: 'full'

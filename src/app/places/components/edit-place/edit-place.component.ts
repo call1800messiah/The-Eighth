@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 
 import type { Place } from '../../models/place';
 import type { PlaceDB } from '../../models/place.db';
-import { PopoverChild } from '../../../shared/models/popover-child';
+import type { PopoverChild } from '../../../shared';
 import { AuthService } from '../../../core/services/auth.service';
 import { PlaceService } from '../../services/place.service';
 

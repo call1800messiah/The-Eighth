@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { faBars, faCommentAlt, faDice, faMusic } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCommentAlt, faDice, faMusic, faPerson } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
+import type { NavEntry } from '../../models/nav-entry';
 import { NavigationService } from '../../services/navigation.service';
-import { NavEntry } from '../../models/nav-entry';
 import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../services/config.service';
 
 
 
@@ -20,12 +21,14 @@ export class FooterComponent implements OnInit {
   faCommentAlt = faCommentAlt;
   faDice = faDice;
   faMusic = faMusic;
+  faPerson = faPerson;
   hasAudio = environment.tenantData[environment.tenant].audioFiles?.length > 0 ;
   messagesVisible = false;
   navigation: NavEntry[];
   navVisible$: Observable<boolean>;
 
   constructor(
+    private config: ConfigService,
     private nav: NavigationService,
   ) {
     this.navVisible$ = this.nav.navVisible$;
@@ -73,4 +76,8 @@ export class FooterComponent implements OnInit {
     this.nav.toggleNavigation();
   }
 
+
+  toggleSidebar(): void {
+    this.config.toggleSidebar();
+  }
 }

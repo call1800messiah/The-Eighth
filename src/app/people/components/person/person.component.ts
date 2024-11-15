@@ -1,19 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subscription } from 'rxjs';
+import { from, Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import type { Person } from '../../models/person';
-import type { Info } from '../../../shared/models/info';
-import type { Values } from '../../../shared/models/values';
-import type { Attribute } from '../../../shared/models/attribute';
-import type { Menu } from '../../../shared/models/menu';
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { EditAttributeProps } from '../../../shared/models/edit-attribute-props';
-import type { EditInfoProps } from '../../../shared/models/edit-info-props';
-import type { EditAccessProps } from '../../../shared/models/edit-access-props';
-import type { EditImageProps } from '../../../shared/models/edit-image-props';
+import type { Person } from '../../models';
+import type {
+  EditAccessProps,
+  EditAttributeProps,
+  EditImageProps,
+  EditInfoProps,
+  Info,
+  Menu,
+} from '../../../shared';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
@@ -28,6 +28,7 @@ import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
+import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
 
 
 
@@ -57,6 +58,11 @@ export class PersonComponent implements OnInit, OnDestroy {
         restricted: true,
       },
       {
+        label: 'Neue Fähigkeit',
+        action: this.addCapability.bind(this),
+        restricted: true,
+      },
+      {
         label: 'Banner ändern',
         action: this.editBanner.bind(this),
         restricted: true,
@@ -79,9 +85,9 @@ export class PersonComponent implements OnInit, OnDestroy {
   };
   menuOpen = false;
   person: Person;
+  person$: Observable<Person>;
   relativeTypes = PeopleService.relativeTypes;
   user: AuthUser;
-  values$: Observable<Values>;
   private personSub: Subscription;
 
   constructor(
@@ -100,14 +106,13 @@ export class PersonComponent implements OnInit, OnDestroy {
     // TODO: Check if the person can be loaded by a resolver as an observable
     this.personSub = this.route.paramMap.pipe(
       switchMap(params => {
-        return this.peopleService.getPersonById(params.get('id'));
+        return this.person$ = this.peopleService.getPersonById(params.get('id'));
       }),
     ).subscribe((person) => {
       if (person) {
         this.person = person;
         this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
-        this.values$ = this.peopleService.getPersonValues(this.person.id);
       }
     });
   }
@@ -116,16 +121,6 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.personSub.unsubscribe();
   }
 
-
-
-  editAttribute(attribute: Attribute) {
-    if (this.isOwnerOrCan('editHitPoints')) {
-      this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, {
-        personId: this.person.id,
-        attribute,
-      });
-    }
-  }
 
 
   editDetail(info: Info) {
@@ -156,7 +151,13 @@ export class PersonComponent implements OnInit, OnDestroy {
   private addAttribute() {
     this.popover.showPopover<EditAttributeProps>('Neuer Wert', EditAttributeComponent, {
       personId: this.person.id,
+      filterAttributes$: from([this.person.attributes ? this.person.attributes.map((att) => att.type) : []]),
     });
+  }
+
+
+  private addCapability() {
+    this.popover.showPopover('Fähigkeit hinzufügen', EditCapabilityComponent, { person: this.person });
   }
 
 

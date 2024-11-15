@@ -1,0 +1,8 @@
+<ng-container *ngIf="(attributes$ | async) as attributes">
+  <div class="bar-attributes" *ngIf="attributes.length > 0">
+    <app-bar *ngFor="let attribute of attributes"
+             [bar]="attribute"
+             (barClicked)="editAttribute(attribute)"
+    ></app-bar>
+  </div>
+</ng-container>

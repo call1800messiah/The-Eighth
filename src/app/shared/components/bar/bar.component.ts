@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 
-import type { Bar } from '../../models/bar';
+import type { Bar } from '../../models';
 
 
 

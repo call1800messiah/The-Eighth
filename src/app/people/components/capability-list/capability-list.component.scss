@@ -1,0 +1,73 @@
+:host {
+  --capability-border-radius: 0;
+
+  .box {
+    margin-top: var(--item-padding);
+
+    .heading {
+      padding-right: var(--mobile-interactive-height);
+    }
+  }
+}
+
+.attributes {
+  text-transform: uppercase;
+}
+
+.skill,
+.spell {
+  border-radius: var(--capability-border-radius);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex: 0 1 auto;
+  overflow: hidden;
+
+  .label {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    flex: 1 1 auto;
+    padding: 5px 0 5px 5px;
+    text-align: left;
+    transition: background-color var(--animation-time);
+    width: 70%;
+
+    &:hover {
+      background-color: rgba(var(--color-primary-rgb), 0.2);
+    }
+  }
+
+  .value {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+    flex: 1 0 auto;
+    min-width: 50px;
+    padding: 5px 5px 5px 0;
+    transition: background-color var(--animation-time);
+    width: 30%;
+
+    &:hover {
+      background-color: rgba(var(--color-primary-rgb), 0.2);
+    }
+  }
+}
+
+.advantage,
+.disadvantage,
+.feat {
+  display: inline-block;
+
+  &:after {
+    content: ',';
+    margin-right: 5px;
+  }
+
+  &:last-child:after {
+    content: '';
+    margin-right: 0;
+  }
+}
+
+.btn-add {
+  position: absolute;
+  right: calc(var(--item-padding) / 2);
+  top: calc(var(--item-padding) / 2);
+}

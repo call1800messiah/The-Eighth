@@ -1,17 +1,17 @@
 import { Component, Input } from '@angular/core';
 import { faDizzy, faUserNinja } from '@fortawesome/free-solid-svg-icons';
+
 import type { Combatant } from '../../models/combatant';
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { Attribute } from '../../../shared/models/attribute';
-import type { EditAttributeProps } from '../../../shared/models/edit-attribute-props';
 import { environment } from '../../../../environments/environment';
-import { EditAttributeComponent } from '../../../shared/components/edit-attribute/edit-attribute.component';
 import { EditInitiativeComponent } from '../edit-initiative/edit-initiative.component';
-import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CombatantMenuComponent } from '../combatant-menu/combatant-menu.component';
 import { EditStatesComponent } from '../edit-states/edit-states.component';
+import { CombatService } from '../../services/combat.service';
+
+
 
 @Component({
   selector: 'app-combatant',
@@ -28,26 +28,10 @@ export class CombatantComponent {
 
   constructor(
     private auth: AuthService,
-    private combatService: CombatService,
     private popover: PopoverService,
   ) {
     this.displayAsBox = environment.tenant === 'tde5';
     this.user = this.auth.user;
-  }
-
-
-  editAttribute(attribute: Attribute, fighter: Combatant) {
-    const data: EditAttributeProps = {
-      altCollection: null,
-      personId: fighter.person ? fighter.person.id : fighter.id,
-      attribute,
-    };
-    if (!fighter.person) {
-      data.altCollection = this.combatService.combatCollection;
-    }
-    if (this.isOwnerOrCan('editHitPoints', fighter.person?.owner)) {
-      this.popover.showPopover<EditAttributeProps>('Wert editieren', EditAttributeComponent, data);
-    }
   }
 
 
@@ -92,4 +76,6 @@ export class CombatantComponent {
       this.popover.showPopover(this.combatant.name, CombatantMenuComponent, this.combatant);
     }
   }
+
+  protected readonly CombatService = CombatService;
 }
