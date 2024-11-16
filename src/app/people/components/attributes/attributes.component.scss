@@ -26,7 +26,7 @@
     padding: 5px 0 5px 5px;
     text-align: left;
     transition: background-color var(--animation-time);
-    width: 70%;
+    width: 80%;
 
     &:hover {
       background-color: rgba(var(--color-primary-rgb), 0.2);
@@ -39,10 +39,10 @@
     flex: 1 0 auto;
     gap: 5px;
     justify-content: flex-end;
-    min-width: 50px;
+    min-width: 65px;
     padding: 5px 5px 5px 0;
     transition: background-color var(--animation-time);
-    width: 30%;
+    width: 20%;
 
     &.btn-text {
       background-color: rgba(var(--color-primary-rgb), 0.1);
@@ -56,7 +56,7 @@
 
 
 
-@container(max-width: 480px) {
+@container(max-width: 465px) {
   .attribute {
     width: 100%;
   }

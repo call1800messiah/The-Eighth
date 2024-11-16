@@ -44,6 +44,10 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
       this.selectedType$,
     ]).pipe(
       map(([rules, type]) => rules.filter(rule => {
+        if (!this.props.person[`${type}s`]) {
+          return (type === '' || rule.type === type);
+        }
+
         return (type === '' || rule.type === type)
           && (this.props.person[`${type}s`]?.findIndex((capability) => capability.id === rule.id) === -1 || rule.id === this.props.capability?.id);
       })),
@@ -138,6 +142,9 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
 
   private getSerializedCapabilities(): Record<string, Partial<Capability> | number> {
     const type = this.capabilityForm.get('type').value;
+    if (!this.props.person[`${type}s`]) {
+      return {};
+    }
     return this.props.person[`${type}s`].reduce((acc, capability: Capability) => {
       const id = capability.id;
       switch(type) {

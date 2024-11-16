@@ -63,7 +63,11 @@ export class EditRuleComponent implements OnInit, PopoverChild {
 
 
   save() {
-    this.rulesService.store(this.ruleForm.value, this.props.id).then(() => {
+    const rule = {
+      ...this.ruleForm.value,
+      name: this.ruleForm.value.name.trim(),
+    }
+    this.rulesService.store(rule, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

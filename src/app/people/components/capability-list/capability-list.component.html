@@ -6,7 +6,7 @@
   <div class="skill" *ngFor="let skill of person.skills">
     <button type="button" class="btn-text label" (click)="editCapability(skill, 'skill')" title="Talent bearbeiten">
       {{skill.name}}
-      <span class="attributes">({{skill.attributeOne}} | {{skill.attributeTwo}} | {{skill.attributeThree}})</span>
+      <span class="attributes">({{skill.attributeOne}}|{{skill.attributeTwo}}|{{skill.attributeThree}})</span>
     </button>
     <button
       type="button"
@@ -27,7 +27,7 @@
   <div class="spell" *ngFor="let spell of person.spells">
     <button type="button" class="btn-text label" (click)="editCapability(spell, 'spell')" title="Zauber bearbeiten">
       {{spell.name}}
-      <span class="attributes">({{spell.attributeOne}} | {{spell.attributeTwo}} | {{spell.attributeThree}})</span>
+      <span class="attributes">({{spell.attributeOne}}|{{spell.attributeTwo}}|{{spell.attributeThree}})</span>
     </button>
     <button
       type="button"

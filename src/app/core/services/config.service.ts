@@ -68,7 +68,6 @@ export class ConfigService {
     } else {
       this.sidebarOpen = !this.sidebarOpen;
     }
-    console.log(this.sidebarOpen);
     this.sidebarOpen$.next(this.sidebarOpen);
     localStorage.setItem('sidebar-open', JSON.stringify(this.sidebarOpen));
   }

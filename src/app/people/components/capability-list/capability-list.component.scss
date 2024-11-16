@@ -24,11 +24,15 @@
 
   .label {
     background-color: rgba(var(--color-primary-rgb), 0.1);
+    display: flex;
     flex: 1 1 auto;
-    padding: 5px 0 5px 5px;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: space-between;
+    padding: 5px;
     text-align: left;
     transition: background-color var(--animation-time);
-    width: 70%;
+    width: 80%;
 
     &:hover {
       background-color: rgba(var(--color-primary-rgb), 0.2);
@@ -39,10 +43,10 @@
     background-color: rgba(var(--color-primary-rgb), 0.1);
     box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
     flex: 1 0 auto;
-    min-width: 50px;
+    min-width: 65px;
     padding: 5px 5px 5px 0;
     transition: background-color var(--animation-time);
-    width: 30%;
+    width: 20%;
 
     &:hover {
       background-color: rgba(var(--color-primary-rgb), 0.2);

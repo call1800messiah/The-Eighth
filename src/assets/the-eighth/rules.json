@@ -201,6 +201,12 @@
       "name": "Behinderung",
       "order": 23,
       "shortCode": "be"
+    },
+    {
+      "displayStyle": "number",
+      "name": "Sozialstatus",
+      "order": 24,
+      "shortCode": "so"
     }
   ],
   "edition": 4,

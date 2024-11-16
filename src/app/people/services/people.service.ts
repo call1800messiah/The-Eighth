@@ -28,7 +28,6 @@ export class PeopleService {
     partners: 'Partner',
     siblings: 'Geschwister',
   };
-  private attributeMap: Record<string, Observable<Attribute[]>> = {};
   private people$: BehaviorSubject<Person[]>;
   private user: AuthUser;
 
