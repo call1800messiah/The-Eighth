@@ -40,6 +40,29 @@
   </div>
 </div>
 
+<div class="box spells" *ngIf="person.liturgys">
+  <div class="heading">Liturgien</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('liturgy')" title="Liturgie hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="spell" *ngFor="let liturgy of person.liturgys">
+    <button type="button" class="btn-text label" (click)="editCapability(liturgy, 'liturgy')" title="Liturgie bearbeiten">
+      {{liturgy.name}}
+      <span class="attributes" *ngIf="liturgy.attributeOne || liturgy.attributeTwo || liturgy.attributeThree">
+        ({{liturgy.attributeOne}}|{{liturgy.attributeTwo}}|{{liturgy.attributeThree}})
+      </span>
+    </button>
+    <button
+      type="button"
+      class="btn-text value"
+      (click)="rollCapability(liturgy)"
+      title="Probe würfeln"
+    >
+      {{liturgy.value}}
+    </button>
+  </div>
+</div>
+
 <div class="box feats" *ngIf="person.feats">
   <div class="heading">Sonderfertigkeiten</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('feat')" title="Sonderfertigkeit hinzufügen">

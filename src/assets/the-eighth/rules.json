@@ -24,6 +24,16 @@
       "requirements": "string",
       "requiresDetails": "boolean"
     },
+    "liturgy": {
+      "category": "string",
+      "castingTime": "string",
+      "description": "string",
+      "duration": "string",
+      "level": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    },
     "skill": {
       "alternatives": "string",
       "attributeOne": "string",

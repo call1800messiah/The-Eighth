@@ -3,7 +3,7 @@ export type AddableRule = {
   name: string;
   rules?: string;
   type: string;
-} & (AdvantageMeta | DisadvantageMeta | FeatMeta | SkillMeta | SpellMeta);
+} & (AdvantageMeta | DisadvantageMeta | FeatMeta | LiturgyMeta | SkillMeta | SpellMeta);
 
 export interface AdvantageMeta {
   cost: string;
@@ -34,6 +34,23 @@ export interface FeatMeta {
   requiresDetails?: boolean;                // For feats that can be customized like skill specializations
   type: 'feat';
   usage?: 'passive' | 'basic' | 'special';  // Only for 5e combat feats: Whether the feat is passive or active
+}
+
+export interface LiturgyMeta {
+  attributeOne?: string;                    // Only 5e
+  attributeTwo?: string;                    // Only 5e
+  attributeThree?: string;                  // Only 5e
+  category?: string;
+  castingTime: string;
+  cost?: string;                            // Only 5e
+  description?: string;
+  duration: string;
+  increaseFactor?: string;                  // Only 5e
+  level?: string;                           // Only 4e
+  prevalence?: string;
+  range: string;
+  target?: string;
+  type: 'liturgy';
 }
 
 export interface SkillMeta {

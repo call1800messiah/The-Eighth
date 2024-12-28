@@ -28,7 +28,7 @@
     </div>
 
 
-    @if (selectedRule && (selectedRule.type === 'spell' || selectedRule.type === 'skill')) {
+    @if (selectedRule && (selectedRule.type === 'spell' || selectedRule.type === 'skill' || selectedRule.type === 'liturgy')) {
       <div class="form-group">
         <input type="number" step="1" id="value" formControlName="value" required>
         <label for="value">Wert *</label>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import type { Advantage, Disadvantage, Feat, Person, PersonDB, Relative, Skill } from '../models';
+import type { Advantage, Disadvantage, Feat, Liturgy, Person, PersonDB, Relative, Skill } from '../models';
 import type { Attribute } from '../../shared';
 import type { AddableRule } from '../../rules';
 import type { AuthUser } from '../../auth/models/auth-user';
@@ -123,6 +123,30 @@ export class PeopleService {
         }
         return acc;
       }, [] as Feat[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.liturgys) {
+      resolvedPerson.liturgys = Object.entries(personData.liturgys).reduce((acc, [id, value]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'liturgy') {
+          const liturgy: Liturgy = {
+            id,
+            name: rule.name,
+            value,
+          };
+          if (rule.attributeOne) {
+            liturgy.attributeOne = rule.attributeOne;
+          }
+          if (rule.attributeTwo) {
+            liturgy.attributeTwo = rule.attributeTwo;
+          }
+          if (rule.attributeThree) {
+            liturgy.attributeThree = rule.attributeThree;
+          }
+          acc.push(liturgy);
+        }
+        return acc;
+      }, [] as Liturgy[]).sort(UtilService.orderByName);
     }
 
     if (personData.skills) {

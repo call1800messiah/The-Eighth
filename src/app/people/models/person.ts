@@ -7,6 +7,7 @@ import type { Disadvantage } from './disadvantage';
 import type { Feat } from './feat';
 import type { Skill } from './skill';
 import type { Spell } from './spell';
+import type { Liturgy } from './liturgy';
 
 export interface Person extends AccessControlledItem {
   id: string;
@@ -22,6 +23,7 @@ export interface Person extends AccessControlledItem {
   feats?: Feat[];
   height: number;
   image: string;
+  liturgys?: Liturgy[];
   location?: Location;
   name: string;
   parents?: Relative[];

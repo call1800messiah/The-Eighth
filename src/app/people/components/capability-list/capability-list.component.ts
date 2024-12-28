@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import type { Capability, Person, Skill, Spell } from '../../models';
+import type { Capability, Liturgy, Person, Skill, Spell } from '../../models';
 import type { AddableRule } from '../../../rules';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
@@ -28,7 +28,7 @@ export class CapabilityListComponent {
     this.popover.showPopover('Fähigkeit bearbeiten', EditCapabilityComponent, { capability, person: this.person, type });
   }
 
-  rollCapability(capability: Spell | Skill): void {
+  rollCapability(capability: Spell | Skill | Liturgy): void {
     const first = this.person.attributes.find((att) => att.type === capability.attributeOne);
     const second = this.person.attributes.find((att) => att.type === capability.attributeTwo);
     const third = this.person.attributes.find((att) => att.type === capability.attributeThree);

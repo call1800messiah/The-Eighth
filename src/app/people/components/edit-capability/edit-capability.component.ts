@@ -5,7 +5,7 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { PopoverChild } from '../../../shared';
-import type { Capability, EditCapabilityProps, Skill, Spell } from '../../models';
+import type { Capability, EditCapabilityProps, Liturgy, Skill, Spell } from '../../models';
 import type { AddableRule } from '../../../rules';
 import { RulesService } from '../../../rules/services/rules.service';
 import { PeopleService } from '../../services/people.service';
@@ -106,6 +106,7 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
     switch(this.selectedRule.type) {
       case 'skill':
       case 'spell':
+      case 'liturgy':
         value = this.capabilityForm.value.value;
         break;
       case 'advantage':
@@ -148,6 +149,9 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
     return this.props.person[`${type}s`].reduce((acc, capability: Capability) => {
       const id = capability.id;
       switch(type) {
+        case 'liturgy':
+          acc[id] = (capability as Liturgy).value;
+          break;
         case 'spell':
           acc[id] = (capability as Spell).value;
           break;
@@ -173,7 +177,7 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
       }
     });
 
-    if (this.selectedRule.type === 'skill' || this.selectedRule.type === 'spell') {
+    if (this.selectedRule.type === 'skill' || this.selectedRule.type === 'spell' || this.selectedRule.type === 'liturgy') {
       this.capabilityForm.addControl('value', new UntypedFormControl(0));
     }
 

@@ -20,6 +20,7 @@ export class RulesService {
     'advantage': 'Vorteile',
     'disadvantage': 'Nachteile',
     'feat': 'Sonderfertigkeiten',
+    'liturgy': 'Liturgien',
     'skill': 'Talente',
     'spell': 'Zauber',
   };

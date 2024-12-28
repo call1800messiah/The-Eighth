@@ -56,7 +56,7 @@
     @if (hasField('castingTime')) {
       <div class="form-group">
         <input type="text" id="castingTime" formControlName="castingTime">
-        <label for="castingTime">Zauberdauer</label>
+        <label for="castingTime">Zauberdauer/Liturgiedauer</label>
       </div>
     }
     @if (hasField('category')) {
@@ -105,6 +105,12 @@
       <div class="form-group">
         <input type="text" id="increaseFactor" formControlName="increaseFactor">
         <label for="increaseFactor">Steigerungsfaktor</label>
+      </div>
+    }
+    @if (hasField('level')) {
+      <div class="form-group">
+        <input type="text" id="level" formControlName="level">
+        <label for="level">Grad</label>
       </div>
     }
     @if (hasField('modifier')) {

@@ -23,6 +23,7 @@ export interface PersonDB {
   }>;
   height: number;
   image: string;
+  liturgys?: Record<string, number>;
   location?: string;
   name: string;
   owner: string;

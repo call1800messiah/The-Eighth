@@ -3,6 +3,7 @@ export * from './capability';
 export * from './disadvantage';
 export * from './edit-capability-props';
 export * from './feat';
+export * from './liturgy';
 export * from './location';
 export * from './person';
 export * from './person.db';

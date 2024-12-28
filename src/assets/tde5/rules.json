@@ -24,6 +24,19 @@
       "requiresDetails": "boolean",
       "usage": "string"
     },
+    "liturgy": {
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "castingTime": "string",
+      "cost": "string",
+      "description": "string",
+      "duration": "string",
+      "increaseFactor": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    },
     "skill": {
       "applications": "string",
       "attributeOne": "string",
