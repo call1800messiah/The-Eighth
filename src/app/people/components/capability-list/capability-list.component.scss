@@ -57,16 +57,16 @@
 .advantage,
 .disadvantage,
 .feat {
-  display: inline-block;
+  .label {
+    text-align: left;
 
-  &:after {
-    content: ',';
-    margin-right: 5px;
+    &:after {
+      content: ',';
+    }
   }
 
-  &:last-child:after {
+  &:last-child .label:after {
     content: '';
-    margin-right: 0;
   }
 }
 

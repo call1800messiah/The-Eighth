@@ -70,10 +70,7 @@
   </button>
   <div class="feat" *ngFor="let feat of person.feats">
     <button type="button" class="btn-text label" (click)="editCapability(feat, 'feat')" title="Sonderfertigkeit bearbeiten">
-      {{feat.name}}
-      {{feat.details ? ' (' + feat.details + ')' : ''}}
-      {{feat.level ? ' ' + feat.level : ''}}
-    </button>
+      {{feat.name}}{{feat.details ? ' (' + feat.details + ')' : ''}}{{feat.level ? ' ' + feat.level : ''}}</button>
   </div>
 </div>
 
@@ -84,10 +81,7 @@
   </button>
   <div class="advantage" *ngFor="let advantage of person.advantages">
     <button type="button" class="btn-text label" (click)="editCapability(advantage, 'advantage')" title="Vorteil bearbeiten">
-      {{advantage.name}}
-      {{advantage.details ? ' (' + advantage.details + ')' : ''}}
-      {{advantage.level ? ' ' + advantage.level : ''}}
-    </button>
+      {{advantage.name}}{{advantage.details ? ' (' + advantage.details + ')' : ''}}{{advantage.level ? ' ' + advantage.level : ''}}</button>
   </div>
 </div>
 
@@ -98,9 +92,6 @@
   </button>
   <div class="disadvantage" *ngFor="let disadvantage of person.disadvantages">
     <button type="button" class="btn-text label" (click)="editCapability(disadvantage, 'disadvantage')" title="Nachteil bearbeiten">
-      {{disadvantage.name}}
-      {{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}
-      {{disadvantage.level ? ' ' + disadvantage.level : ''}}
-    </button>
+      {{disadvantage.name}}{{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}{{disadvantage.level ? ' ' + disadvantage.level : ''}}</button>
   </div>
 </div>
