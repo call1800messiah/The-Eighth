@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
 import { deleteField } from '@angular/fire/firestore';
+import { Observable, Subscription } from 'rxjs';
 
-import type { Quest } from '../../models/quest';
+import type { Quest, QuestDB } from '../../models';
+import type { PopoverChild } from '../../../shared';
 import { QuestsService } from '../../services/quests.service';
-import { PopoverChild } from '../../../shared/models/popover-child';
 import { AuthService } from '../../../core/services/auth.service';
-import { QuestDB } from '../../models/quest.db';
 
 
 

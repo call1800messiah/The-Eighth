@@ -3,8 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
-import { StorageService } from './storage.service';
-import { Info } from '../../shared/models/info';
+import { Info } from '../../shared';
 import { InfoType } from '../enums/info-type.enum';
 import { AuthService } from './auth.service';
 import { AuthUser } from '../../auth/models/auth-user';
@@ -23,7 +22,6 @@ export class DataService {
   constructor(
     private api: ApiService,
     private auth: AuthService,
-    private storage: StorageService,
     private userService: UserService,
   ) {
     this.user = this.auth.user;
