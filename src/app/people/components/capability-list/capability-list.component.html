@@ -4,7 +4,14 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="skill" *ngFor="let skill of person.skills">
-    <button type="button" class="btn-text label" (click)="editCapability(skill, 'skill')" title="Talent bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(skill, 'skill')"
+      (mouseover)="toggleRule(skill.id)"
+      (mouseout)="toggleRule()"
+      title="Talent bearbeiten"
+    >
       {{skill.name}}
       <span class="attributes">({{skill.attributeOne}}|{{skill.attributeTwo}}|{{skill.attributeThree}})</span>
     </button>
@@ -25,7 +32,14 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="spell" *ngFor="let spell of person.spells">
-    <button type="button" class="btn-text label" (click)="editCapability(spell, 'spell')" title="Zauber bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(spell, 'spell')"
+      (mouseover)="toggleRule(spell.id)"
+      (mouseout)="toggleRule()"
+      title="Zauber bearbeiten"
+    >
       {{spell.name}}
       <span class="attributes">({{spell.attributeOne}}|{{spell.attributeTwo}}|{{spell.attributeThree}})</span>
     </button>
@@ -46,7 +60,14 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="spell" *ngFor="let liturgy of person.liturgys">
-    <button type="button" class="btn-text label" (click)="editCapability(liturgy, 'liturgy')" title="Liturgie bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(liturgy, 'liturgy')"
+      (mouseover)="toggleRule(liturgy.id)"
+      (mouseout)="toggleRule()"
+      title="Liturgie bearbeiten"
+    >
       {{liturgy.name}}
       <span class="attributes" *ngIf="liturgy.attributeOne || liturgy.attributeTwo || liturgy.attributeThree">
         ({{liturgy.attributeOne}}|{{liturgy.attributeTwo}}|{{liturgy.attributeThree}})
@@ -69,7 +90,14 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="feat" *ngFor="let feat of person.feats">
-    <button type="button" class="btn-text label" (click)="editCapability(feat, 'feat')" title="Sonderfertigkeit bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(feat, 'feat')"
+      (mouseover)="toggleRule(feat.id)"
+      (mouseout)="toggleRule()"
+      title="Sonderfertigkeit bearbeiten"
+    >
       {{feat.name}}{{feat.details ? ' (' + feat.details + ')' : ''}}{{feat.level ? ' ' + feat.level : ''}}</button>
   </div>
 </div>
@@ -80,7 +108,14 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="advantage" *ngFor="let advantage of person.advantages">
-    <button type="button" class="btn-text label" (click)="editCapability(advantage, 'advantage')" title="Vorteil bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(advantage, 'advantage')"
+      (mouseover)="toggleRule(advantage.id)"
+      (mouseout)="toggleRule()"
+      title="Vorteil bearbeiten"
+    >
       {{advantage.name}}{{advantage.details ? ' (' + advantage.details + ')' : ''}}{{advantage.level ? ' ' + advantage.level : ''}}</button>
   </div>
 </div>
@@ -91,7 +126,16 @@
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
   <div class="disadvantage" *ngFor="let disadvantage of person.disadvantages">
-    <button type="button" class="btn-text label" (click)="editCapability(disadvantage, 'disadvantage')" title="Nachteil bearbeiten">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(disadvantage, 'disadvantage')"
+      (mouseover)="toggleRule(disadvantage.id)"
+      (mouseout)="toggleRule()"
+      title="Nachteil bearbeiten"
+    >
       {{disadvantage.name}}{{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}{{disadvantage.level ? ' ' + disadvantage.level : ''}}</button>
   </div>
 </div>
+
+<app-rule-card *ngIf="(displayRule$ | async) as displayRule" [rule]="displayRule"></app-rule-card>

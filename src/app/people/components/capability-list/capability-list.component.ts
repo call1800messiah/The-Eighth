@@ -1,10 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import type { Capability, Liturgy, Person, Skill, Spell } from '../../models';
 import type { AddableRule } from '../../../rules';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
 import { DiceRollerService } from '../../../dice/services/dice-roller.service';
+import { RulesService } from '../../../rules/services/rules.service';
 
 @Component({
   selector: 'app-capability-list',
@@ -13,12 +16,20 @@ import { DiceRollerService } from '../../../dice/services/dice-roller.service';
 })
 export class CapabilityListComponent {
   @Input() person: Person;
+  displayRule$: Observable<AddableRule | undefined>;
   faPlus = faPlus;
+  private selectedRule$: BehaviorSubject<string | undefined>;
 
   constructor(
     private popover: PopoverService,
     private dice: DiceRollerService,
-  ) {}
+    private rules: RulesService,
+  ) {
+    this.selectedRule$ = new BehaviorSubject(undefined);
+    this.displayRule$ = combineLatest([this.rules.getDynamicRules(), this.selectedRule$]).pipe(
+      map(([rules, selectedRule]) => rules.find((rule) => rule.id === selectedRule))
+    );
+  }
 
   addCapability(type?: AddableRule['type']): void {
     this.popover.showPopover('Fähigkeit hinzufügen', EditCapabilityComponent, { person: this.person, type });
@@ -45,5 +56,9 @@ export class CapabilityListComponent {
         capability.name
       );
     }
+  }
+
+  toggleRule(rule?: string): void {
+    this.selectedRule$.next(rule);
   }
 }

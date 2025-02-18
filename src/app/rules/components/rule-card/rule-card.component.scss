@@ -1,0 +1,11 @@
+.rule-card {
+  background-color: var(--body-background);
+  left: calc(clamp(370px, 25%, 550px) + var(--item-padding));
+  max-height: calc(100dvh - var(--item-padding));
+  max-width: 40rem;
+  overflow-y: auto;
+  position: fixed;
+  top: calc(var(--item-padding) + var(--header-height));
+  width: calc(100dvh - var(--item-padding));
+  z-index: 100;
+}
