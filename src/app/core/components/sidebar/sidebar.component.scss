@@ -1,6 +1,15 @@
+@import '../../../../scss/variables.scss';
+
 aside {
-  border-right: var(--border-line-width) solid var(--color-primary);
   height: 100%;
   overflow-y: auto;
   padding: var(--container-horizontal-padding);
+}
+
+
+
+@media(min-width: $break-sm) {
+  aside {
+    border-right: var(--border-line-width) solid var(--color-primary);
+  }
 }
