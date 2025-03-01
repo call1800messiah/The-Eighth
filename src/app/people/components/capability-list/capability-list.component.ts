@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faHandsPraying, faPersonSwimming, faPlus, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type { Capability, Liturgy, Person, Skill, Spell } from '../../models';
@@ -17,7 +17,13 @@ import { RulesService } from '../../../rules/services/rules.service';
 export class CapabilityListComponent {
   @Input() person: Person;
   displayRule$: Observable<AddableRule | undefined>;
+  faBolt = faBolt;
+  faHandsPraying = faHandsPraying;
+  faPersonSwimming = faPersonSwimming
   faPlus = faPlus;
+  faThumbsDown = faThumbsDown;
+  faThumbsUp = faThumbsUp;
+  faWandSparkles = faWandSparkles;
   private selectedRule$: BehaviorSubject<string | undefined>;
 
   constructor(
