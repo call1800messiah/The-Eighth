@@ -3,7 +3,7 @@
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('skill')" title="Talent hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="skill" *ngFor="let skill of person.skills">
+  <div class="capability" *ngFor="let skill of person.skills">
     <button
       type="button"
       class="btn-text label"
@@ -36,7 +36,7 @@
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('spell')" title="Zauber hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="spell" *ngFor="let spell of person.spells">
+  <div class="capability" *ngFor="let spell of person.spells">
     <button
       type="button"
       class="btn-text label"
@@ -64,12 +64,12 @@
   </div>
 </div>
 
-<div class="box spells" *ngIf="person.liturgys">
+<div class="box liturgys" *ngIf="person.liturgys">
   <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faHandsPraying"></fa-icon> Liturgien</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('liturgy')" title="Liturgie hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="spell" *ngFor="let liturgy of person.liturgys">
+  <div class="capability" *ngFor="let liturgy of person.liturgys">
     <button
       type="button"
       class="btn-text label"
@@ -105,15 +105,23 @@
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('feat')" title="Sonderfertigkeit hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="feat" *ngFor="let feat of person.feats">
+  <div class="capability" *ngFor="let feat of person.feats">
     <button
       type="button"
       class="btn-text label"
       (click)="editCapability(feat, 'feat')"
-      (mouseover)="toggleRule(feat.id)"
       title="Sonderfertigkeit bearbeiten"
     >
-      {{feat.name}}{{feat.details ? ' (' + feat.details + ')' : ''}}{{feat.level ? ' ' + feat.level : ''}}</button>
+      {{feat.name}}{{feat.details ? ' (' + feat.details + ')' : ''}}{{feat.level ? ' ' + feat.level : ''}}
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(feat.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
+    </button>
   </div>
 </div>
 
@@ -122,15 +130,23 @@
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('advantage')" title="Vorteil hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="advantage" *ngFor="let advantage of person.advantages">
+  <div class="capability" *ngFor="let advantage of person.advantages">
     <button
       type="button"
       class="btn-text label"
       (click)="editCapability(advantage, 'advantage')"
-      (mouseover)="toggleRule(advantage.id)"
       title="Vorteil bearbeiten"
     >
-      {{advantage.name}}{{advantage.details ? ' (' + advantage.details + ')' : ''}}{{advantage.level ? ' ' + advantage.level : ''}}</button>
+      {{advantage.name}}{{advantage.details ? ' (' + advantage.details + ')' : ''}}{{advantage.level ? ' ' + advantage.level : ''}}
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(advantage.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
+    </button>
   </div>
 </div>
 
@@ -139,15 +155,23 @@
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('disadvantage')" title="Nachteil hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
-  <div class="disadvantage" *ngFor="let disadvantage of person.disadvantages">
+  <div class="capability" *ngFor="let disadvantage of person.disadvantages">
     <button
       type="button"
       class="btn-text label"
       (click)="editCapability(disadvantage, 'disadvantage')"
-      (mouseover)="toggleRule(disadvantage.id)"
       title="Nachteil bearbeiten"
     >
-      {{disadvantage.name}}{{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}{{disadvantage.level ? ' ' + disadvantage.level : ''}}</button>
+      {{disadvantage.name}}{{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}{{disadvantage.level ? ' ' + disadvantage.level : ''}}
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(disadvantage.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
+    </button>
   </div>
 </div>
 

@@ -15,7 +15,7 @@
 .rule-card {
   background-color: var(--body-background);
   max-height: calc(100dvh - var(--item-padding));
-  max-width: 50rem;
+  max-width: 60rem;
   overflow-y: auto;
   width: 100%;
 }
@@ -47,14 +47,19 @@
   display: grid;
   gap: 0.3rem;
   grid-template-columns: minmax(16rem, 1fr) 4fr;
+  margin: 0;
 
   dd {
     margin: 0;
+
+    &:last-child {
+      margin-bottom: var(--item-padding);
+    }
   }
 }
 
 .rules {
-  margin-top: var(--item-padding);
+  white-space: pre-line;
 }
 
 @media(min-width: $break-sm) {

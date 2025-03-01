@@ -10,68 +10,51 @@
   }
 }
 
-.skill,
-.spell {
+.capability {
   border-radius: var(--capability-border-radius);
   box-shadow: var(--box-shadow);
   display: flex;
   flex: 0 1 auto;
   overflow: hidden;
+}
 
-  .label,
-  .info,
-  .value {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-    min-width: 0;
-    overflow: hidden;
-    padding: 5px;
-    transition: background-color var(--animation-time);
+.label,
+.info,
+.value {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  min-width: 0;
+  overflow: hidden;
+  padding: 5px;
+  transition: background-color var(--animation-time);
 
-    &:hover {
-      background-color: rgba(var(--color-primary-rgb), 0.2);
-    }
-  }
-
-  .label {
-    display: flex;
-    flex: 1 1 auto;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: space-between;
-    text-align: left;
-    text-overflow: ellipsis;
-    width: 70%;
-  }
-
-  .info {
-    box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
-    flex: 0 0 auto;
-    width: 10%;
-  }
-
-  .value {
-    box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
-    flex: 1 0 auto;
-    min-width: 65px;
-    padding-left: 0;
-    width: 20%;
+  &:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.2);
   }
 }
 
-.advantage,
-.disadvantage,
-.feat {
-  .label {
-    text-align: left;
+.label {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: space-between;
+  text-align: left;
+  text-overflow: ellipsis;
+  width: 70%;
+}
 
-    &:after {
-      content: ',';
-    }
-  }
+.info {
+  box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+  flex: 0 0 auto;
+  width: 10%;
+}
 
-  &:last-child .label:after {
-    content: '';
-  }
+.value {
+  box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+  flex: 1 0 auto;
+  min-width: 65px;
+  padding-left: 0;
+  width: 20%;
 }
 
 .btn-add {
