@@ -8,12 +8,17 @@
       type="button"
       class="btn-text label"
       (click)="editCapability(skill, 'skill')"
-      (mouseover)="toggleRule(skill.id)"
-      (mouseout)="toggleRule()"
       title="Talent bearbeiten"
     >
       {{skill.name}}
-      <span class="attributes">({{skill.attributeOne}}|{{skill.attributeTwo}}|{{skill.attributeThree}})</span>
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(skill.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
     </button>
     <button
       type="button"
@@ -36,12 +41,17 @@
       type="button"
       class="btn-text label"
       (click)="editCapability(spell, 'spell')"
-      (mouseover)="toggleRule(spell.id)"
-      (mouseout)="toggleRule()"
       title="Zauber bearbeiten"
     >
       {{spell.name}}
-      <span class="attributes">({{spell.attributeOne}}|{{spell.attributeTwo}}|{{spell.attributeThree}})</span>
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(spell.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
     </button>
     <button
       type="button"
@@ -64,14 +74,20 @@
       type="button"
       class="btn-text label"
       (click)="editCapability(liturgy, 'liturgy')"
-      (mouseover)="toggleRule(liturgy.id)"
-      (mouseout)="toggleRule()"
       title="Liturgie bearbeiten"
     >
       {{liturgy.name}}
       <span class="attributes" *ngIf="liturgy.attributeOne || liturgy.attributeTwo || liturgy.attributeThree">
         ({{liturgy.attributeOne}}|{{liturgy.attributeTwo}}|{{liturgy.attributeThree}})
       </span>
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(liturgy.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
     </button>
     <button
       type="button"
@@ -95,7 +111,6 @@
       class="btn-text label"
       (click)="editCapability(feat, 'feat')"
       (mouseover)="toggleRule(feat.id)"
-      (mouseout)="toggleRule()"
       title="Sonderfertigkeit bearbeiten"
     >
       {{feat.name}}{{feat.details ? ' (' + feat.details + ')' : ''}}{{feat.level ? ' ' + feat.level : ''}}</button>
@@ -113,7 +128,6 @@
       class="btn-text label"
       (click)="editCapability(advantage, 'advantage')"
       (mouseover)="toggleRule(advantage.id)"
-      (mouseout)="toggleRule()"
       title="Vorteil bearbeiten"
     >
       {{advantage.name}}{{advantage.details ? ' (' + advantage.details + ')' : ''}}{{advantage.level ? ' ' + advantage.level : ''}}</button>
@@ -131,11 +145,14 @@
       class="btn-text label"
       (click)="editCapability(disadvantage, 'disadvantage')"
       (mouseover)="toggleRule(disadvantage.id)"
-      (mouseout)="toggleRule()"
       title="Nachteil bearbeiten"
     >
       {{disadvantage.name}}{{disadvantage.details ? ' (' + disadvantage.details + ')' : ''}}{{disadvantage.level ? ' ' + disadvantage.level : ''}}</button>
   </div>
 </div>
 
-<app-rule-card *ngIf="(displayRule$ | async) as displayRule" [rule]="displayRule"></app-rule-card>
+<app-rule-card
+  *ngIf="(displayRule$ | async) as displayRule"
+  [rule]="displayRule"
+  (ruleClicked)="toggleRule()"
+></app-rule-card>

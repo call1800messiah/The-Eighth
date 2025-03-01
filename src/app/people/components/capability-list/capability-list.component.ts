@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { faBolt, faHandsPraying, faPersonSwimming, faPlus, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faHandsPraying, faInfo, faPersonSwimming, faPlus, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type { Capability, Liturgy, Person, Skill, Spell } from '../../models';
@@ -19,6 +19,7 @@ export class CapabilityListComponent {
   displayRule$: Observable<AddableRule | undefined>;
   faBolt = faBolt;
   faHandsPraying = faHandsPraying;
+  faInfo = faInfo;
   faPersonSwimming = faPersonSwimming
   faPlus = faPlus;
   faThumbsDown = faThumbsDown;
@@ -65,6 +66,10 @@ export class CapabilityListComponent {
   }
 
   toggleRule(rule?: string): void {
-    this.selectedRule$.next(rule);
+    if (this.selectedRule$.value === rule) {
+      this.selectedRule$.next(undefined);
+    } else {
+      this.selectedRule$.next(rule);
+    }
   }
 }

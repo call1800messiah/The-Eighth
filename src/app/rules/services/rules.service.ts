@@ -24,6 +24,11 @@ export class RulesService {
     'skill': 'Talente',
     'spell': 'Zauber',
   };
+  static featUsageTypes = {
+    'passive': 'Passiv',
+    'basic': 'Basismanöver',
+    'special': 'Spezialmanöver',
+  };
   private rulesConfig: Rules;
   private dynamicRules$: BehaviorSubject<AddableRule[]>;
 

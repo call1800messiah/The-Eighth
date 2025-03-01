@@ -10,10 +10,6 @@
   }
 }
 
-.attributes {
-  text-transform: uppercase;
-}
-
 .skill,
 .spell {
   border-radius: var(--capability-border-radius);
@@ -22,35 +18,43 @@
   flex: 0 1 auto;
   overflow: hidden;
 
-  .label {
+  .label,
+  .info,
+  .value {
     background-color: rgba(var(--color-primary-rgb), 0.1);
-    display: flex;
-    flex: 1 1 auto;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: space-between;
+    min-width: 0;
+    overflow: hidden;
     padding: 5px;
-    text-align: left;
     transition: background-color var(--animation-time);
-    width: 80%;
 
     &:hover {
       background-color: rgba(var(--color-primary-rgb), 0.2);
     }
   }
 
+  .label {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: space-between;
+    text-align: left;
+    text-overflow: ellipsis;
+    width: 70%;
+  }
+
+  .info {
+    box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+    flex: 0 0 auto;
+    width: 10%;
+  }
+
   .value {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
     box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
     flex: 1 0 auto;
     min-width: 65px;
-    padding: 5px 5px 5px 0;
-    transition: background-color var(--animation-time);
+    padding-left: 0;
     width: 20%;
-
-    &:hover {
-      background-color: rgba(var(--color-primary-rgb), 0.2);
-    }
   }
 }
 

@@ -1,11 +1,64 @@
+@import '../../../../scss/variables.scss';
+
+.rule-card-wrapper {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  bottom: 0;
+  left: 0;
+  padding: var(--item-padding);
+  position: fixed;
+  right: 0;
+  top: var(--header-height);
+  z-index: 110;
+}
+
 .rule-card {
   background-color: var(--body-background);
-  left: calc(clamp(370px, 25%, 550px) + var(--item-padding));
   max-height: calc(100dvh - var(--item-padding));
-  max-width: 40rem;
+  max-width: 50rem;
   overflow-y: auto;
-  position: fixed;
-  top: calc(var(--item-padding) + var(--header-height));
-  width: calc(100dvh - var(--item-padding));
-  z-index: 100;
+  width: 100%;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.attributes {
+  text-transform: uppercase;
+}
+
+.attribute {
+  &:first-child:before {
+    content: '(';
+  }
+
+  &:after {
+    content: '|';
+  }
+
+  &:last-child:after {
+    content: ')';
+  }
+}
+
+.meta {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: minmax(16rem, 1fr) 4fr;
+
+  dd {
+    margin: 0;
+  }
+}
+
+.rules {
+  margin-top: var(--item-padding);
+}
+
+@media(min-width: $break-sm) {
+  .rule-card-wrapper {
+    left: clamp(370px, 25%, 550px);
+  }
 }
