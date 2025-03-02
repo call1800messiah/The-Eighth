@@ -56,7 +56,8 @@ export class RulesListComponent {
   private filterRulesByText([rules, text]: [AddableRule[], string]): AddableRule[] {
     const lowerCaseText = text.toLowerCase();
     return rules.filter((rule) => {
-      return text === '' || rule.name.toLowerCase().includes(lowerCaseText);
+      return text === '' || rule.name.toLowerCase().includes(lowerCaseText)
+        || RulesService.ruleTypes[rule.type].label.toLowerCase().includes(lowerCaseText);
     });
   }
 
