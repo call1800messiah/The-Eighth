@@ -1,5 +1,5 @@
 <div class="box skills" *ngIf="person.skills">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faPersonSwimming"></fa-icon> Talente</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.skill.icon"></fa-icon> Talente</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('skill')" title="Talent hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
@@ -32,7 +32,7 @@
 </div>
 
 <div class="box spells" *ngIf="person.spells">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faWandSparkles"></fa-icon> Zauber</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.spell.icon"></fa-icon> Zauber</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('spell')" title="Zauber hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
@@ -65,7 +65,7 @@
 </div>
 
 <div class="box liturgys" *ngIf="person.liturgys">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faHandsPraying"></fa-icon> Liturgien</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.liturgy.icon"></fa-icon> Liturgien</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('liturgy')" title="Liturgie hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
@@ -101,7 +101,7 @@
 </div>
 
 <div class="box feats" *ngIf="person.feats">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faBolt"></fa-icon> Sonderfertigkeiten</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.feat.icon"></fa-icon> Sonderfertigkeiten</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('feat')" title="Sonderfertigkeit hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
@@ -126,7 +126,7 @@
 </div>
 
 <div class="box advantages" *ngIf="person.advantages">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faThumbsUp"></fa-icon> Vorteile</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.advantage.icon"></fa-icon> Vorteile</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('advantage')" title="Vorteil hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>
@@ -151,7 +151,7 @@
 </div>
 
 <div class="box disadvantages" *ngIf="person.disadvantages">
-  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="faThumbsDown"></fa-icon> Nachteile</div>
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.disadvantage.icon"></fa-icon> Nachteile</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('disadvantage')" title="Nachteil hinzufügen">
     <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
   </button>

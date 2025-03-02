@@ -3,7 +3,7 @@
     <div class="form-group">
       <select id="type" formControlName="type" required (change)="onTypeChanged()">
         <option [ngValue]="type.key" *ngFor="let type of addableRuleTypes | keyvalue; let i = index">
-          {{ruleTypes[type.key]}}
+          {{ruleTypes[type.key].label}}
         </option>
       </select>
       <label for="type">Art *</label>
@@ -14,7 +14,7 @@
         <input type="hidden" formControlName="rule" required>
       } @else if (filteredRules.length === 0 && !props.capability) {
         <div>
-          Alle {{ruleTypes[capabilityForm.get('type').value]}} sind bereits hinzugefügt.
+          Alle {{ruleTypes[capabilityForm.get('type').value].label}} sind bereits hinzugefügt.
           <input type="hidden" formControlName="rule" required>
         </div>
       } @else {

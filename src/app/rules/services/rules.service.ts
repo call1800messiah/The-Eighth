@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { faBolt, faHandsPraying, faPersonSwimming, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
 
 import type { AddableRule, Rules } from '../models';
 import { environment } from '../../../environments/environment';
@@ -17,12 +18,30 @@ import { UtilService } from '../../core/services/util.service';
 export class RulesService {
   static readonly collection = 'rules';
   static ruleTypes = {
-    'advantage': 'Vorteile',
-    'disadvantage': 'Nachteile',
-    'feat': 'Sonderfertigkeiten',
-    'liturgy': 'Liturgien',
-    'skill': 'Talente',
-    'spell': 'Zauber',
+    'advantage': {
+      label: 'Vorteile',
+      icon: faThumbsUp
+    },
+    'disadvantage': {
+      label: 'Nachteile',
+      icon: faThumbsDown
+    },
+    'feat': {
+      label: 'Sonderfertigkeiten',
+      icon: faBolt
+    },
+    'liturgy': {
+      label: 'Liturgien',
+      icon: faHandsPraying
+    },
+    'skill': {
+      label: 'Talente',
+      icon: faPersonSwimming
+    },
+    'spell': {
+      label: 'Zauber',
+      icon: faWandSparkles
+    },
   };
   static featUsageTypes = {
     'passive': 'Passiv',

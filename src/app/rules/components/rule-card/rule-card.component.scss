@@ -25,11 +25,14 @@
   justify-content: space-between;
 }
 
-.attributes {
-  text-transform: uppercase;
+.top-right {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .attribute {
+  text-transform: uppercase;
+
   &:first-child:before {
     content: '(';
   }

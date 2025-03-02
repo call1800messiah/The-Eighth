@@ -8,7 +8,8 @@
 
   <ul class="unstyled-list">
     <li *ngFor="let type of filteredRules$ | async | keyvalue" class="category">
-      {{type.key}}
+      <fa-icon style="float: right;" [icon]="ruleTypes[type.key].icon" [fixedWidth]="true"></fa-icon>
+      {{ruleTypes[type.key].label}}
 
       <ul class="unstyled-list rules">
         <li class="rule" *ngFor="let rule of type.value" (click)="editRule(rule)">

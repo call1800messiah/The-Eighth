@@ -11,4 +11,5 @@ export class RuleCardComponent {
   @Input() rule: AddableRule;
   @Output() ruleClicked: EventEmitter<AddableRule> = new EventEmitter<AddableRule>();
   usageTypes = RulesService.featUsageTypes;
+  ruleTypes = RulesService.ruleTypes;
 }

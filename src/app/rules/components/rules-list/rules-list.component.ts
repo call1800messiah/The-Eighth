@@ -19,6 +19,7 @@ export class RulesListComponent {
   filteredRules$: Observable<Record<string,AddableRule[]>>;
   filterText$: BehaviorSubject<string>;
   initialFilterText: string;
+  ruleTypes = RulesService.ruleTypes;
 
   constructor(
     private popover: PopoverService,
@@ -62,7 +63,7 @@ export class RulesListComponent {
 
   private groupByTypeAndCategory(rules: AddableRule[]): Record<string, AddableRule[]> {
     return rules.reduce((acc, rule) => {
-      const key = RulesService.ruleTypes[rule.type];
+      const key = rule.type;
       if (!acc[key]) {
         acc[key] = [];
       }
