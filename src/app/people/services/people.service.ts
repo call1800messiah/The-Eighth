@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import type { Advantage, Disadvantage, Feat, Liturgy, Person, PersonDB, Relative, Skill } from '../models';
+import type { Advantage, Cantrip, Disadvantage, Feat, Liturgy, Person, PersonDB, Relative, Skill } from '../models';
 import type { Attribute } from '../../shared';
 import type { AddableRule } from '../../rules';
 import type { AuthUser } from '../../auth/models/auth-user';
@@ -83,6 +83,20 @@ export class PeopleService {
         }
         return acc;
       }, [] as Advantage[]).sort(UtilService.orderByName);
+    }
+
+    if (personData.cantrips) {
+      resolvedPerson.cantrips = Object.entries(personData.cantrips).reduce((acc, [id]) => {
+        const rule = rules.find(r => r.id === id);
+        if (rule && rule.type === 'cantrip') {
+          const cantrip: Cantrip = {
+            id,
+            name: rule.name,
+          };
+          acc.push(cantrip);
+        }
+        return acc;
+      }, [] as Cantrip[]).sort(UtilService.orderByName);
     }
 
     if (personData.disadvantages) {

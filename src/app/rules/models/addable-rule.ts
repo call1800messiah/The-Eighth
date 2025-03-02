@@ -3,7 +3,7 @@ export type AddableRule = {
   name: string;
   rules?: string;
   type: string;
-} & (AdvantageMeta | DisadvantageMeta | FeatMeta | LiturgyMeta | SkillMeta | SpellMeta);
+} & (AdvantageMeta | CantripMeta | DisadvantageMeta | FeatMeta | LiturgyMeta | SkillMeta | SpellMeta);
 
 export interface AdvantageMeta {
   cost: string;
@@ -12,6 +12,15 @@ export interface AdvantageMeta {
   requirements?: string;
   requiresDetails?: boolean;                // For advantages that can be customized like immunities
   type: 'advantage';
+}
+
+export interface CantripMeta {
+  category?: string;
+  duration?: string;
+  prevalence?: string;
+  range?: string;
+  target?: string;
+  type: 'cantrip';
 }
 
 export interface DisadvantageMeta {

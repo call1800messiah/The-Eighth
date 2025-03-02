@@ -31,6 +31,31 @@
   </div>
 </div>
 
+<div class="box cantrips" *ngIf="person.cantrips">
+  <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.cantrip.icon"></fa-icon> Zaubertricks</div>
+  <button type="button" class="btn-icon small btn-add" (click)="addCapability('cantrip')" title="Zaubertrick hinzufügen">
+    <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
+  </button>
+  <div class="capability" *ngFor="let cantrip of person.cantrips">
+    <button
+      type="button"
+      class="btn-text label"
+      (click)="editCapability(cantrip, 'cantrip')"
+      title="Zaubertrick bearbeiten"
+    >
+      {{cantrip.name}}
+    </button>
+    <button
+      type="button"
+      class="btn-text info"
+      (click)="toggleRule(cantrip.id)"
+      title="Regeln anzeigen"
+    >
+      <fa-icon [fixedWidth]="true" [icon]="faInfo"></fa-icon>
+    </button>
+  </div>
+</div>
+
 <div class="box spells" *ngIf="person.spells">
   <div class="heading"><fa-icon [fixedWidth]="true" [icon]="ruleTypes.spell.icon"></fa-icon> Zauber</div>
   <button type="button" class="btn-icon small btn-add" (click)="addCapability('spell')" title="Zauber hinzufügen">

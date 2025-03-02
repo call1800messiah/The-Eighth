@@ -18,16 +18,16 @@
       <ng-container *ngIf="rule.type === 'liturgy' && rule.level">
         <dt>Stufe</dt><dd>{{rule.level}}</dd>
       </ng-container>
-      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'liturgy') && rule.range">
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.range">
         <dt>Reichweite</dt><dd>{{rule.range}}</dd>
       </ng-container>
-      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'liturgy') && rule.target">
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.target">
         <dt>Ziel</dt><dd>{{rule.target}}</dd>
       </ng-container>
       <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'liturgy') && rule.castingTime">
         <dt>Dauer</dt><dd>{{rule.castingTime}}</dd>
       </ng-container>
-      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'liturgy') && rule.duration">
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.duration">
         <dt>Wirkungsdauer</dt><dd>{{rule.duration}}</dd>
       </ng-container>
       <ng-container *ngIf="(rule.type === 'liturgy' || rule.type ==='spell') && rule.cost">
@@ -39,7 +39,7 @@
       <ng-container *ngIf="rule.type === 'feat' && rule.combatTechniques">
         <dt>Kampftechniken</dt><dd>{{rule.combatTechniques}}</dd>
       </ng-container>
-      <ng-container *ngIf="(rule.type === 'skill' || rule.type === 'spell' || rule.type === 'liturgy') && rule.category">
+      <ng-container *ngIf="(rule.type === 'skill' || rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.category">
         <dt>Kategorie</dt><dd>{{rule.category}}</dd>
       </ng-container>
       <ng-container *ngIf="rule.type === 'skill' && rule.encumbrance">

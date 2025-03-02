@@ -120,6 +120,9 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
           value['level'] = this.capabilityForm.value.level;
         }
         break;
+      case 'cantrip':
+        value = 0;
+        break;
     }
 
     const person = {
@@ -149,6 +152,9 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
     return this.props.person[`${type}s`].reduce((acc, capability: Capability) => {
       const id = capability.id;
       switch(type) {
+        case 'cantrip':
+          acc[id] = 0;
+          break;
         case 'liturgy':
           acc[id] = (capability as Liturgy).value;
           break;

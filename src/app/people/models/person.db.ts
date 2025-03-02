@@ -10,6 +10,7 @@ export interface PersonDB {
   banner?: string;
   birthday: string;
   birthyear: number;
+  cantrips?: Record<string, number>;
   children?: string[];
   culture: string;
   deathday: string;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { faBolt, faHandsPraying, faPersonSwimming, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faHandSparkles, faHandsPraying, faPersonSwimming, faThumbsDown, faThumbsUp, faWandSparkles } from '@fortawesome/free-solid-svg-icons';
 
 import type { AddableRule, Rules } from '../models';
 import { environment } from '../../../environments/environment';
@@ -21,6 +21,10 @@ export class RulesService {
     'advantage': {
       label: 'Vorteile',
       icon: faThumbsUp
+    },
+    'cantrip': {
+      label: 'Zaubertricks',
+      icon: faHandSparkles
     },
     'disadvantage': {
       label: 'Nachteile',

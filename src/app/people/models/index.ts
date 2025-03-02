@@ -1,4 +1,5 @@
 export * from './advantage';
+export * from './cantrip';
 export * from './capability';
 export * from './disadvantage';
 export * from './edit-capability-props';
