@@ -155,6 +155,18 @@
         <label for="target">Zielgruppe/Zielobjekt</label>
       </div>
     }
+    @if (hasField('reversalis')) {
+      <div class="form-group">
+        <textarea type="text" id="reversalis" formControlName="reversalis"></textarea>
+        <label for="range">Reversalis</label>
+      </div>
+    }
+    @if (hasField('variants')) {
+      <div class="form-group">
+        <textarea type="text" id="variants" formControlName="variants"></textarea>
+        <label for="target">Varianten/Zauberereweiterungen</label>
+      </div>
+    }
     @if (hasField('usage')) {
       <div class="form-group">
         <select id="usage" formControlName="usage">

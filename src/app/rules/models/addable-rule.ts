@@ -79,6 +79,8 @@ export interface SpellMeta {
   modifier?: string;                        // Only for spells that can be passively resisted
   prevalence?: string;
   range: string;
+  reversalis?: string;
   target?: string;
   type: 'spell';
+  vaiants?: string;
 }
