@@ -7,6 +7,13 @@
       "requirements": "string",
       "requiresDetails": "boolean"
     },
+    "cantrip": {
+      "category": "string",
+      "duration": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
+    },
     "disadvantage": {
       "cost": "string",
       "description": "string",
@@ -23,6 +30,19 @@
       "requirements": "string",
       "requiresDetails": "boolean",
       "usage": "string"
+    },
+    "liturgy": {
+      "attributeOne": "string",
+      "attributeTwo": "string",
+      "attributeThree": "string",
+      "castingTime": "string",
+      "cost": "string",
+      "description": "string",
+      "duration": "string",
+      "increaseFactor": "string",
+      "prevalence": "string",
+      "range": "string",
+      "target": "string"
     },
     "skill": {
       "applications": "string",
@@ -46,7 +66,9 @@
       "modifier": "string",
       "prevalence": "string",
       "range": "string",
-      "target": "string"
+      "reversalis": "string",
+      "target": "string",
+      "variants": "string"
     }
   },
   "allowedAttributes": [

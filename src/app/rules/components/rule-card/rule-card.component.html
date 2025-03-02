@@ -1,0 +1,61 @@
+<div class="rule-card-wrapper" (click)="ruleClicked.emit(rule)">
+  <div class="rule-card box">
+    <div class="heading">
+      {{rule.name}}
+
+      <div class="top-right">
+        <span *ngIf="rule.type === 'skill' || rule.type === 'spell' || rule.type === 'liturgy'">
+          <span class="attribute" *ngIf="rule.attributeOne">{{rule.attributeOne}}</span>
+          <span class="attribute" *ngIf="rule.attributeTwo">{{rule.attributeTwo}}</span>
+          <span class="attribute" *ngIf="rule.attributeThree">{{rule.attributeThree}}</span>
+          <span *ngIf="rule.type==='spell' && rule.modifier">+ {{rule.modifier}}</span>
+        </span>
+        <fa-icon [fixedWidth]="true" [icon]="ruleTypes[rule.type].icon"></fa-icon>
+      </div>
+    </div>
+
+    <dl class="meta">
+      <ng-container *ngIf="rule.type === 'liturgy' && rule.level">
+        <dt>Stufe</dt><dd>{{rule.level}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.range">
+        <dt>Reichweite</dt><dd>{{rule.range}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.target">
+        <dt>Ziel</dt><dd>{{rule.target}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'liturgy') && rule.castingTime">
+        <dt>Dauer</dt><dd>{{rule.castingTime}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.duration">
+        <dt>Wirkungsdauer</dt><dd>{{rule.duration}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'liturgy' || rule.type ==='spell') && rule.cost">
+        <dt>Kosten</dt><dd>{{rule.cost}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'feat' && rule.usage">
+        <dt>Art</dt><dd>{{usageTypes[rule.usage]}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'feat' && rule.combatTechniques">
+        <dt>Kampftechniken</dt><dd>{{rule.combatTechniques}}</dd>
+      </ng-container>
+      <ng-container *ngIf="(rule.type === 'skill' || rule.type === 'spell' || rule.type === 'cantrip' || rule.type === 'liturgy') && rule.category">
+        <dt>Kategorie</dt><dd>{{rule.category}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'skill' && rule.encumbrance">
+        <dt>Behinderung</dt><dd>{{rule.encumbrance}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'skill' && rule.alternatives">
+        <dt>Ausweichen</dt><dd>{{rule.alternatives}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'skill' && rule.specializations">
+        <dt>Spezialisierungen</dt><dd>{{rule.specializations}}</dd>
+      </ng-container>
+      <ng-container *ngIf="rule.type === 'skill' && rule.applications">
+        <dt>Anwendungsgebiete</dt><dd>{{rule.applications}}</dd>
+      </ng-container>
+    </dl>
+
+    <div class="rules">{{rule.rules}}</div>
+  </div>
+</div>

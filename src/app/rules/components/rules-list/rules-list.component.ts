@@ -19,6 +19,7 @@ export class RulesListComponent {
   filteredRules$: Observable<Record<string,AddableRule[]>>;
   filterText$: BehaviorSubject<string>;
   initialFilterText: string;
+  ruleTypes = RulesService.ruleTypes;
 
   constructor(
     private popover: PopoverService,
@@ -55,14 +56,15 @@ export class RulesListComponent {
   private filterRulesByText([rules, text]: [AddableRule[], string]): AddableRule[] {
     const lowerCaseText = text.toLowerCase();
     return rules.filter((rule) => {
-      return text === '' || rule.name.toLowerCase().includes(lowerCaseText);
+      return text === '' || rule.name.toLowerCase().includes(lowerCaseText)
+        || RulesService.ruleTypes[rule.type].label.toLowerCase().includes(lowerCaseText);
     });
   }
 
 
   private groupByTypeAndCategory(rules: AddableRule[]): Record<string, AddableRule[]> {
     return rules.reduce((acc, rule) => {
-      const key = RulesService.ruleTypes[rule.type];
+      const key = rule.type;
       if (!acc[key]) {
         acc[key] = [];
       }

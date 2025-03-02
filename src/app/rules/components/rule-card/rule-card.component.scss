@@ -1,0 +1,72 @@
+@import '../../../../scss/variables.scss';
+
+.rule-card-wrapper {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  bottom: 0;
+  left: 0;
+  padding: var(--item-padding);
+  position: fixed;
+  right: 0;
+  top: var(--header-height);
+  z-index: 110;
+}
+
+.rule-card {
+  background-color: var(--body-background);
+  max-height: calc(100dvh - var(--item-padding));
+  max-width: 60rem;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.attribute {
+  text-transform: uppercase;
+
+  &:first-child:before {
+    content: '(';
+  }
+
+  &:after {
+    content: '|';
+  }
+
+  &:last-child:after {
+    content: ')';
+  }
+}
+
+.meta {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: minmax(16rem, 1fr) 4fr;
+  margin: 0;
+
+  dd {
+    margin: 0;
+
+    &:last-child {
+      margin-bottom: var(--item-padding);
+    }
+  }
+}
+
+.rules {
+  white-space: pre-line;
+}
+
+@media(min-width: $break-sm) {
+  .rule-card-wrapper {
+    left: clamp(370px, 25%, 550px);
+  }
+}

@@ -3,7 +3,7 @@ export type AddableRule = {
   name: string;
   rules?: string;
   type: string;
-} & (AdvantageMeta | DisadvantageMeta | FeatMeta | SkillMeta | SpellMeta);
+} & (AdvantageMeta | CantripMeta | DisadvantageMeta | FeatMeta | LiturgyMeta | SkillMeta | SpellMeta);
 
 export interface AdvantageMeta {
   cost: string;
@@ -12,6 +12,15 @@ export interface AdvantageMeta {
   requirements?: string;
   requiresDetails?: boolean;                // For advantages that can be customized like immunities
   type: 'advantage';
+}
+
+export interface CantripMeta {
+  category?: string;
+  duration?: string;
+  prevalence?: string;
+  range?: string;
+  target?: string;
+  type: 'cantrip';
 }
 
 export interface DisadvantageMeta {
@@ -34,6 +43,23 @@ export interface FeatMeta {
   requiresDetails?: boolean;                // For feats that can be customized like skill specializations
   type: 'feat';
   usage?: 'passive' | 'basic' | 'special';  // Only for 5e combat feats: Whether the feat is passive or active
+}
+
+export interface LiturgyMeta {
+  attributeOne?: string;                    // Only 5e
+  attributeTwo?: string;                    // Only 5e
+  attributeThree?: string;                  // Only 5e
+  category?: string;
+  castingTime: string;
+  cost?: string;                            // Only 5e
+  description?: string;
+  duration: string;
+  increaseFactor?: string;                  // Only 5e
+  level?: string;                           // Only 4e
+  prevalence?: string;
+  range: string;
+  target?: string;
+  type: 'liturgy';
 }
 
 export interface SkillMeta {
@@ -62,6 +88,8 @@ export interface SpellMeta {
   modifier?: string;                        // Only for spells that can be passively resisted
   prevalence?: string;
   range: string;
+  reversalis?: string;
   target?: string;
   type: 'spell';
+  vaiants?: string;
 }

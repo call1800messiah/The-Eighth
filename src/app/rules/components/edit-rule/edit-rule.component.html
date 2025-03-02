@@ -6,7 +6,7 @@
       <div class="form-group">
         <select id="type" formControlName="type" required (change)="onTypeChanged()">
           <option [ngValue]="type.key" *ngFor="let type of addableRuleTypes | keyvalue; let i = index">
-            {{ruleTypes[type.key]}}
+            {{ruleTypes[type.key].label}}
           </option>
         </select>
         <label for="type">Art *</label>
@@ -56,7 +56,7 @@
     @if (hasField('castingTime')) {
       <div class="form-group">
         <input type="text" id="castingTime" formControlName="castingTime">
-        <label for="castingTime">Zauberdauer</label>
+        <label for="castingTime">Zauberdauer/Liturgiedauer</label>
       </div>
     }
     @if (hasField('category')) {
@@ -107,6 +107,12 @@
         <label for="increaseFactor">Steigerungsfaktor</label>
       </div>
     }
+    @if (hasField('level')) {
+      <div class="form-group">
+        <input type="text" id="level" formControlName="level">
+        <label for="level">Grad</label>
+      </div>
+    }
     @if (hasField('modifier')) {
       <div class="form-group">
         <input type="text" id="modifier" formControlName="modifier">
@@ -147,6 +153,18 @@
       <div class="form-group">
         <input type="text" id="target" formControlName="target">
         <label for="target">Zielgruppe/Zielobjekt</label>
+      </div>
+    }
+    @if (hasField('reversalis')) {
+      <div class="form-group">
+        <textarea type="text" id="reversalis" formControlName="reversalis"></textarea>
+        <label for="range">Reversalis</label>
+      </div>
+    }
+    @if (hasField('variants')) {
+      <div class="form-group">
+        <textarea type="text" id="variants" formControlName="variants"></textarea>
+        <label for="target">Varianten/Zauberereweiterungen</label>
       </div>
     }
     @if (hasField('usage')) {

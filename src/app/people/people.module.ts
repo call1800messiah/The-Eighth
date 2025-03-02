@@ -12,6 +12,7 @@ import { CapabilityListComponent } from './components/capability-list/capability
 import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { PersonSelectorComponent } from './components/person-selector/person-selector.component';
+import { RulesModule } from '../rules/rules.module';
 
 
 
@@ -31,6 +32,7 @@ import { PersonSelectorComponent } from './components/person-selector/person-sel
     CommonModule,
     PeopleRoutingModule,
     SharedModule,
+    RulesModule,
   ],
   exports: [
     EditPersonComponent,

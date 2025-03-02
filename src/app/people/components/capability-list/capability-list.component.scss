@@ -10,64 +10,51 @@
   }
 }
 
-.attributes {
-  text-transform: uppercase;
-}
-
-.skill,
-.spell {
+.capability {
   border-radius: var(--capability-border-radius);
   box-shadow: var(--box-shadow);
   display: flex;
   flex: 0 1 auto;
   overflow: hidden;
+}
 
-  .label {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-    display: flex;
-    flex: 1 1 auto;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: space-between;
-    padding: 5px;
-    text-align: left;
-    transition: background-color var(--animation-time);
-    width: 80%;
+.label,
+.info,
+.value {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  min-width: 0;
+  overflow: hidden;
+  padding: 5px;
+  transition: background-color var(--animation-time);
 
-    &:hover {
-      background-color: rgba(var(--color-primary-rgb), 0.2);
-    }
-  }
-
-  .value {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-    box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
-    flex: 1 0 auto;
-    min-width: 65px;
-    padding: 5px 5px 5px 0;
-    transition: background-color var(--animation-time);
-    width: 20%;
-
-    &:hover {
-      background-color: rgba(var(--color-primary-rgb), 0.2);
-    }
+  &:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.2);
   }
 }
 
-.advantage,
-.disadvantage,
-.feat {
-  display: inline-block;
+.label {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: space-between;
+  text-align: left;
+  text-overflow: ellipsis;
+  width: 70%;
+}
 
-  &:after {
-    content: ',';
-    margin-right: 5px;
-  }
+.info {
+  box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+  flex: 0 0 auto;
+  width: 10%;
+}
 
-  &:last-child:after {
-    content: '';
-    margin-right: 0;
-  }
+.value {
+  box-shadow: inset 1px 0 1px rgba(var(--color-primary-rgb), 0.3);
+  flex: 1 0 auto;
+  min-width: 65px;
+  padding-left: 0;
+  width: 20%;
 }
 
 .btn-add {
