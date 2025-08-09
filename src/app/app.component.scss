@@ -55,6 +55,7 @@ main {
     &.sidebar-closed {
       app-sidebar {
         width: 0;
+        min-width: 0;
       }
     }
   }
