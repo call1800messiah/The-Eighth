@@ -1,3 +1,5 @@
+@import '../../../../scss/variables.scss';
+
 .popover-wrapper {
   background-color: var(--color-dark);
   height: 100%;
@@ -33,4 +35,21 @@
 
 .wrapper {
   padding: calc(var(--header-height) + var(--container-horizontal-padding)) var(--container-horizontal-padding) var(--container-horizontal-padding);
+}
+
+
+
+@media(min-width: $break-xl) {
+  .popover-wrapper {
+    border-left: var(--border-line-width) solid var(--color-primary);
+    left: auto;
+    max-width: 550px;
+    min-width: 370px;
+    right: 0;
+    width: 25%;
+
+    &.visible .page-header {
+      position: static;
+    }
+  }
 }

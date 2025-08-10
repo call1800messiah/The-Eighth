@@ -4,6 +4,10 @@
   height: 100%;
 }
 
+.app {
+  height: 100%;
+}
+
 .page {
   display: flex;
   flex: 1 1 auto;
@@ -71,5 +75,16 @@ main {
   main {
     height: 100%;
     width: 75%;
+  }
+}
+
+@media(min-width: $break-xl) {
+  .app {
+    padding-right: 0;
+    transition: padding-right var(--animation-time);
+
+    &.popover-open {
+      padding-right: min(550px, max(25%, 330px));
+    }
   }
 }
