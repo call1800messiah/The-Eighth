@@ -25,7 +25,14 @@
 
 
 @media (min-width: $break-sm) {
-  :host ::ng-deep button {
-    margin-left: var(--item-padding);
+  :host {
+    background: var(--body-background);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    ::ng-deep button {
+      margin-left: var(--item-padding);
+    }
   }
 }
