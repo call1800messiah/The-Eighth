@@ -18,7 +18,7 @@
   </div>
 
   <app-bar-attributes
-    *ngIf="isOwnerOrCan('viewHitPoints', combatant.person?.owner)"
+    *ngIf="combatant.person?.pc || isOwnerOrCan('viewHitPoints', combatant.person?.owner)"
     [attributeValues$]="combatant.attributes"
     [altCollection]="combatant.person ? null : CombatService.combatCollection"
     [canEdit]="isOwnerOrCan('editHitPoints', combatant.person?.owner)"
