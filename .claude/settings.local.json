@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:supabase.com)",
+      "WebFetch(domain:firebase.google.com/)",
+      "WebFetch(domain:angular.dev)",
+      "Bash(npx nx run:*)",
+      "Bash(npx nx:*)",
+      "Bash(npx nx build:*)",
+      "Bash(npx nx test:*)",
+      "Bash(npx nx lint:*)",
+      "Bash(npx nx e2e:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx cypress:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(ls:*)",
+      "Skill(feature:*)",
+      "Skill(architect:*)",
+      "Skill(implement:*)",
+      "Skill(test:*)",
+      "Skill(codestyle:*)",
+      "Bash(mkdir:*)",
+    ]
+  }
+}
