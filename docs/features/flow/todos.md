@@ -1,6 +1,6 @@
 # Flow Feature - TODOs
 
-**Status**: Phase 1 - Discussion
+**Status**: Phase 5 - Implementation
 **Last Updated**: 2026-01-07
 
 ## Active TODOs
@@ -48,14 +48,57 @@
 - [x] Document test execution order
 
 ### Phase 5: IMPLEMENT
-- [ ] Create data models
-- [ ] Create FlowService
-- [ ] Create flow components
-- [ ] Add routing
-- [ ] Implement drag and drop
-- [ ] Add to navigation menu
-- [ ] Write tests
-- [ ] Verify build/lint/test
+
+#### Step 1: Setup
+- [x] Install @angular/cdk dependency
+- [x] Create flow module structure
+
+#### Step 2: Data Models
+- [x] Create FlowItemType enum
+- [x] Create flow.db.ts (Firestore schema)
+- [x] Create flow.ts (Application model)
+- [x] Create flow-item.ts (FlowItem types)
+- [x] Create models index.ts
+
+#### Step 3: Service Layer
+- [x] Create FlowService with CRUD methods
+- [x] Implement combineLatest entity resolution
+- [x] Handle deleted entities (entity === null)
+
+#### Step 4: Components
+- [x] Create FlowViewComponent (main page)
+- [x] Create FlowItemComponent (display item)
+- [x] Create AddFlowItemComponent (add modal)
+- [x] Create SessionMarkerComponent (session divider)
+- [x] Create GeneralNoteComponent (inline note)
+
+#### Step 5: Routing & Navigation
+- [x] Create flow-routing.module.ts
+- [x] Create flow.module.ts
+- [x] Add route to app-routing.module.ts
+- [x] Add "Session Flow" to NavigationService menu
+- [x] Create flow index.ts
+
+#### Step 6: Drag & Drop
+- [x] Import DragDropModule from @angular/cdk
+- [x] Implement cdkDropList in FlowViewComponent
+- [x] Implement cdkDrag in flow items
+- [x] Wire up drop handler to FlowService.reorderItems
+
+#### Step 7: Tests
+- [x] Write FlowService unit tests (5 critical tests created)
+- [x] Write FlowViewComponent tests (5 tests created)
+- [x] Write FlowItemComponent tests (5 tests created)
+- [x] Write AddFlowItemComponent tests (7 tests created)
+- [x] Write SessionMarkerComponent tests (2 tests created)
+- [x] Write GeneralNoteComponent tests (4 tests created)
+
+#### Step 8: Verification
+- [ ] Run build (ng build)
+- [ ] Run lint (ng lint)
+- [ ] Run tests (ng test)
+- [ ] Run codestyle check
+- [ ] Verify quality standards
 
 ## Known Issues
 None yet.

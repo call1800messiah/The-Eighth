@@ -1,0 +1,47 @@
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.empty-state-content {
+  text-align: center;
+
+  fa-icon {
+    opacity: 0.3;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+  }
+}
+
+.flow-items {
+  margin-top: 1rem;
+}
+
+.flow-item-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.cdk-drag-preview {
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.flow-items.cdk-drop-list-dragging .flow-item-wrapper:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

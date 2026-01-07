@@ -1,0 +1,38 @@
+<div class="general-note" [class.editing]="editing">
+  <div class="note-header">
+    <div class="note-icon">
+      <fa-icon [icon]="faStickyNote"></fa-icon>
+    </div>
+    <div class="note-label">Notiz</div>
+    <div class="note-actions" *ngIf="!editing">
+      <button type="button" class="btn-icon" (click)="startEdit()" title="Bearbeiten">
+        <fa-icon [icon]="faEdit"></fa-icon>
+      </button>
+      <button type="button" class="btn-icon" (click)="removeNote()" title="Entfernen">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+    <div class="note-actions" *ngIf="editing">
+      <button type="button" class="btn-icon" (click)="saveEdit()" title="Speichern">
+        <fa-icon [icon]="faCheck"></fa-icon>
+      </button>
+      <button type="button" class="btn-icon" (click)="cancelEdit()" title="Abbrechen">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="note-content" *ngIf="!editing">
+    <p *ngIf="item.content">{{ item.content }}</p>
+    <p *ngIf="!item.content" class="empty-note">Leere Notiz - klicke zum Bearbeiten</p>
+  </div>
+
+  <div class="note-edit" *ngIf="editing">
+    <textarea
+      class="note-textarea"
+      [(ngModel)]="editContent"
+      rows="4"
+      placeholder="Notizinhalt eingeben..."
+    ></textarea>
+  </div>
+</div>

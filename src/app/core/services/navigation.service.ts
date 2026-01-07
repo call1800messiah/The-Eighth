@@ -9,6 +9,7 @@ import {
   faNoteSticky,
   faScaleBalanced,
   faShoppingBag,
+  faStream,
   faTrophy,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +39,11 @@ export class NavigationService {
       label: 'Kampf',
       icon: faFistRaised,
       link: '/combat'
+    },
+    {
+      label: 'Session Flow',
+      icon: faStream,
+      link: '/flow'
     },
     {
       label: 'Orte',

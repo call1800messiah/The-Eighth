@@ -1,0 +1,126 @@
+.add-flow-item-modal {
+  width: 600px;
+  max-width: 90vw;
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+
+  h3 {
+    margin: 0;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--hover-background);
+  }
+
+  &.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.tab-content {
+  .search-input,
+  .date-input,
+  .note-textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+  }
+
+  .note-textarea {
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+}
+
+.entity-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.entity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--hover-background);
+  }
+
+  &.selected {
+    background: var(--primary-light);
+  }
+
+  input[type="checkbox"] {
+    flex-shrink: 0;
+  }
+
+  .entity-name {
+    flex: 1;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}

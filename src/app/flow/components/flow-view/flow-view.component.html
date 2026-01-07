@@ -1,0 +1,64 @@
+<app-container width="medium">
+  <app-top-bar-filter placeholder="Flow durchsuchen...">
+    <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen">
+      <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
+    </button>
+
+    <button type="button" class="btn-icon" (click)="addSessionMarker()" title="Session-Marker hinzufügen">
+      <fa-icon [icon]="faCalendar" [fixedWidth]="true"></fa-icon>
+    </button>
+
+    <button type="button" class="btn-icon" (click)="addGeneralNote()" title="Notiz hinzufügen">
+      <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Lade Flow...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button type="button" class="btn" (click)="ngOnInit()">Erneut versuchen</button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="(enrichedFlowItems$ | async)?.length === 0 && !loading && !error" class="empty-state">
+    <div class="empty-state-content">
+      <fa-icon [icon]="faStickyNote" size="3x"></fa-icon>
+      <p>Du hast noch keine Elemente zu deinem Session-Flow hinzugefügt</p>
+      <button type="button" class="btn" (click)="showAddItemModal()">Erstes Element hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- Flow Items -->
+  <div
+    *ngIf="(enrichedFlowItems$ | async)?.length > 0 && !loading"
+    cdkDropList
+    [cdkDropListData]="enrichedFlowItems$ | async"
+    (cdkDropListDropped)="onDrop($event)"
+    class="flow-items"
+  >
+    <div *ngFor="let item of enrichedFlowItems$ | async" cdkDrag class="flow-item-wrapper">
+      <app-session-marker
+        *ngIf="item.type === 'session-marker'"
+        [item]="item"
+        (remove)="removeItem($event)"
+      ></app-session-marker>
+
+      <app-general-note
+        *ngIf="item.type === 'general-note'"
+        [item]="item"
+        (remove)="removeItem($event)"
+      ></app-general-note>
+
+      <app-flow-item
+        *ngIf="item.type === 'quest' || item.type === 'person' || item.type === 'place'"
+        [item]="item"
+        (remove)="removeItem($event)"
+      ></app-flow-item>
+    </div>
+  </div>
+</app-container>

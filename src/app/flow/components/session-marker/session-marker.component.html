@@ -1,0 +1,12 @@
+<div class="session-marker">
+  <div class="marker-icon">
+    <fa-icon [icon]="faCalendar"></fa-icon>
+  </div>
+  <div class="marker-content">
+    <strong>Session</strong>
+    <span class="marker-date">{{ getFormattedDate() }}</span>
+  </div>
+  <button type="button" class="btn-icon remove-btn" (click)="removeMarker()" title="Entfernen">
+    <fa-icon [icon]="faTimes"></fa-icon>
+  </button>
+</div>

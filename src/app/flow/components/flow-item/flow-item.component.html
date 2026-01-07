@@ -1,0 +1,48 @@
+<div class="flow-item" [class.expanded]="expanded" [class.deleted]="!hasEntity()">
+  <div class="flow-item-header">
+    <div class="drag-handle" cdkDragHandle>
+      <fa-icon [icon]="faGripVertical"></fa-icon>
+    </div>
+
+    <div class="item-icon">
+      <app-avatar *ngIf="item.type === 'person' && hasEntity()" [person]="$any(item).entity"></app-avatar>
+      <span *ngIf="item.type === 'quest'">🗡️</span>
+      <span *ngIf="item.type === 'place'">📍</span>
+    </div>
+
+    <div class="item-content" (click)="toggleExpand()">
+      <div class="item-name">{{ getEntityName() }}</div>
+      <div class="item-type">{{ getTypeLabel() }}</div>
+    </div>
+
+    <button type="button" class="btn-icon expand-btn" (click)="toggleExpand()" [title]="expanded ? 'Einklappen' : 'Ausklappen'">
+      <fa-icon [icon]="expanded ? faChevronDown : faChevronRight"></fa-icon>
+    </button>
+
+    <button type="button" class="btn-icon menu-btn" (click)="toggleContextMenu()" title="Menü">
+      <fa-icon [icon]="faBars"></fa-icon>
+    </button>
+  </div>
+
+  <div class="flow-item-details" *ngIf="expanded && hasEntity()">
+    <div class="detail-section" *ngIf="$any(item).entity.description">
+      <strong>Beschreibung:</strong>
+      <p>{{ $any(item).entity.description }}</p>
+    </div>
+
+    <div class="detail-section" *ngIf="item.type === 'quest' && $any(item).entity.parent">
+      <strong>Übergeordnete Quest:</strong>
+      <p>{{ $any(item).entity.parent.name }}</p>
+    </div>
+
+    <button type="button" class="btn view-full-btn" (click)="navigateToEntity()">
+      Gesamte Seite anzeigen →
+    </button>
+  </div>
+
+  <div class="flow-item-deleted" *ngIf="expanded && !hasEntity()">
+    <p>Dieses Element wurde gelöscht und kann nicht mehr angezeigt werden.</p>
+  </div>
+
+  <app-context-menu *ngIf="menuOpen" [menu]="menu" (closeMenu)="toggleContextMenu()"></app-context-menu>
+</div>
