@@ -127,13 +127,6 @@ import { ConfigService } from '../../../core/services/config.service';
 | Test ID naming | T-{FEAT}-{NUM} format     | WARNING |
 | Co-located tests | Tests next to source      | WARNING |
 
-**Detection:**
-```
-# Hook without test
-libs/react/shared/src/tree/hooks/use-tree.ts EXISTS
-libs/react/shared/src/tree/hooks/use-tree.test.ts MISSING
-→ WARNING: Hook missing test file
-```
 
 ---
 

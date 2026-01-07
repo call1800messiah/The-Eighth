@@ -551,14 +551,13 @@ Start with description.md using this structure:
 
 ### What to Identify
 
-| Category | Question | Example |
-|----------|----------|---------|
-| **Data Model** | Tree/Leaf/Schema or new entity? | `Leaf` with `project-settings` schema |
-| **Existing Code** | What can we reuse? | `useTree` hook, `Button` component |
-| **New Routes** | What routes/screens? | `/tree/$treeId/edit` |
-| **New Components** | What UI pieces? | `TreeEditor`, `NodeForm` |
-| **New Hooks** | What state/logic? | `useNodeUpdate` |
-| **Dependencies** | NPM packages? | `@dnd-kit/core` |
+| Category | Question             | Example                   |
+|----------|----------------------|---------------------------|
+| **Data Model** | New models           | `Roll`                    |
+| **Existing Code** | What can we reuse?   | `Avatar` component        |
+| **New Routes** | What routes/screens? | `/flow`                   |
+| **New Components** | What UI pieces?      | `ItemList`, `ItemDetails` |
+| **Dependencies** | NPM packages?        | `nanoid`                  |
 
 ### BOM Section Format
 
@@ -581,7 +580,7 @@ Add to description.md:
 ### Dependencies to Add
 | Package | Version | Purpose |
 |---------|---------|---------|
-| @dnd-kit/core | ^6.0.0 | Drag and drop |
+| @angular/cdk | ^18.2.14 | Drag and drop |
 ```
 
 ## Phase 3: INTERFACES
@@ -695,7 +694,7 @@ Only after all prerequisites are met, call `/test` skill:
 **After implementation, run codestyle check:**
 
 ```
-/codestyle --integration apps/web-react/src/features/{feature-name}/
+/codestyle --integration src/app/{feature-name}/
 ```
 
 ### Cross-Reference Update (MANDATORY - After Implementation)

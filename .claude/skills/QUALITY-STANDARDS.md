@@ -94,13 +94,6 @@ Check these BEFORE creating new:
 | `Dashboard`         | `src/app/shared/components/dashboard`                     | Router outlet for module start component      |
 | `Info box`          | `src/app/shared/components/info-box`                      | Displaying any info element                   |
 | `Top bar filter`    | `src/app/shared/components/top-bar-filter`                | Any list that needs to be filtered            |
-| `Breadcrumbs`       | `apps/web-react/src/shared/components/breadcrumbs`        | Navigation breadcrumbs                        |
-| `SchemaRender`      | `apps/web-react/src/shared/components/schema-render`      | JSONForms rendering                           |
-| `VirtualTable`      | `apps/web-react/src/shared/components/virtual-table`      | Large data tables                             |
-| `Skeleton`          | `apps/web-react/src/shared/components/skeleton`           | Loading states                                |
-| `ConfirmableButton` | `apps/web-react/src/shared/components/confirmable-button` | Delete confirmations                          |
-| `FeatureZone`       | `apps/web-react/src/shared/components/feature-zone`       | Feature sections                              |
-| `PageBar`           | `apps/web-react/src/shared/components/page-bar`           | Page headers                                  |
 
 ---
 

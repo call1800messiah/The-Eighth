@@ -295,8 +295,8 @@ Present wireframes to user BEFORE proceeding to interface design:
 {wireframe diagrams}
 
 ### Existing Patterns Reused
-- Tree navigation pattern from existing tree view
-- JSONForms pattern from settings
+- Dashboard component for route start
+- Top bar for filtering
 
 ### Field Visibility (Confirmed)
 | Field | List View | Detail View |
