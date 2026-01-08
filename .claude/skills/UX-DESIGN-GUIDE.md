@@ -6,8 +6,53 @@ This guide defines UX patterns for consistent user experience across features.
 
 ## Styling Approach
 
+### Responsive Design
+- Use mobile-first design principles. Base styles should target mobile devices, with media queries for larger screens.
+- Use CSS media queries in SCSS files for responsiveness, using the breakpoints defined in `src/scss/variables.scss`.
+- Don't hardcode widths/heights. Use relative units (%, em, rem) and flexbox/grid layouts. If absolutely necessary, use max-width/max-height with CSS variables.
+
 ### CSS Variables
 Use existing CSS variables for colors, spacing, animations as seen in `src/scss/tde5.scss` and `src/scss/the-eighth.scss`.
+
+### Forms
+All forms should use the global CSS classes defined in src/scss/forms.scss for consistent styling.
+
+* Every form element (input, select, textarea, checkbox, radio) should be wrapped in a `.form-group` div for proper spacing and alignment.
+* Every input/select/textarea must have an associated `<label>` for accessibility. The label element always comes after the input element in the HTML structure.
+
+Examples:
+```html
+<!-- Input Field -->
+<div class="form-group">
+  <input type="text" id="name" formControlName="name" required>
+  <label for="name">Name *</label>
+</div>
+
+<!-- Text area -->
+<div class="form-group">
+  <textarea type="text" id="description" formControlName="description" required></textarea>
+  <label for="description">Beschreibung *</label>
+</div>
+
+<!-- Select Field -->
+<div class="form-group">
+  <select id="people" formControlName="people" multiple [compareWith]="comparePCs">
+    <option [ngValue]="pc" *ngFor="let pc of playerCharacter$ | async">
+      {{pc.name}}
+    </option>
+  </select>
+  <label for="people">Charaktere</label>
+</div>
+
+<!-- Checkbox -->
+<div class="form-group">
+  <input type="checkbox" id="active" formControlName="active">
+  <label for="active">Aktiv</label>
+</div>
+```
+
+### Filters
+Every filter should use the Top Bar Filter component defined in `src/app/shared/components/top-bar-filter/top-bar-filter.component.ts`.
 
 ---
 
