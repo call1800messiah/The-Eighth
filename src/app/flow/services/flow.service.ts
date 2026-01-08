@@ -4,7 +4,15 @@ import { map } from 'rxjs/operators';
 import type { Timestamp } from '@angular/fire/firestore';
 
 import type { AuthUser } from '../../auth/models/auth-user';
-import type { Flow, FlowDB, FlowItem, EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem } from '../models';
+import type {
+  EnrichedFlowItem,
+  EnrichedPersonFlowItem,
+  EnrichedPlaceFlowItem,
+  EnrichedQuestFlowItem,
+  Flow,
+  FlowDB,
+  FlowItem
+} from '../models';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
@@ -34,7 +42,7 @@ export class FlowService {
   }
 
   private static transformFlow(flowData: any, flowId: string): Flow {
-    const flow: Flow = {
+    return {
       id: flowId,
       campaignId: flowData.campaignId || '',
       createdBy: flowData.createdBy || '',
@@ -47,7 +55,6 @@ export class FlowService {
       })),
       collection: 'flows'
     };
-    return flow;
   }
 
   /**

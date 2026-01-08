@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { faBars, faChevronDown, faChevronRight, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem } from '../../models';
-import type { Menu } from '../../../shared/models/menu';
-import { DataService } from '../../../core/services/data.service';
+import type { Menu } from '../../../shared';
 
 @Component({
   selector: 'app-flow-item',
@@ -26,7 +25,6 @@ export class FlowItemComponent {
 
   constructor(
     private router: Router,
-    private data: DataService
   ) {
     this.menu = {
       actions: [

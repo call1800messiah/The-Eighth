@@ -1,12 +1,39 @@
-<div class="session-marker">
-  <div class="marker-icon">
-    <fa-icon [icon]="faCalendar"></fa-icon>
+<div class="session-marker" [class.editing]="editing">
+  <div class="marker-header">
+    <div class="marker-icon">
+      <fa-icon [icon]="faCalendar"></fa-icon>
+    </div>
+    <div class="marker-label">Session</div>
+    <div class="marker-actions" *ngIf="!editing">
+      <button type="button" class="btn-icon" (click)="startEdit()" title="Bearbeiten">
+        <fa-icon [icon]="faEdit"></fa-icon>
+      </button>
+      <button type="button" class="btn-icon" (click)="removeMarker()" title="Entfernen">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+    <div class="marker-actions" *ngIf="editing">
+      <button type="button" class="btn-icon" (click)="saveEdit()" title="Speichern">
+        <fa-icon [icon]="faCheck"></fa-icon>
+      </button>
+      <button type="button" class="btn-icon" (click)="cancelEdit()" title="Abbrechen">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
   </div>
-  <div class="marker-content">
-    <strong>Session</strong>
+
+  <div class="marker-content" *ngIf="!editing">
     <span class="marker-date">{{ getFormattedDate() }}</span>
   </div>
-  <button type="button" class="btn-icon remove-btn" (click)="removeMarker()" title="Entfernen">
-    <fa-icon [icon]="faTimes"></fa-icon>
-  </button>
+
+  <div class="marker-edit" *ngIf="editing">
+    <div class="form-group">
+      <input
+        type="date"
+        id="session-date-{{item.id}}"
+        [(ngModel)]="editDate"
+      />
+      <label for="session-date-{{item.id}}">Sessiondatum</label>
+    </div>
+  </div>
 </div>

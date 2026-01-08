@@ -8,7 +8,6 @@ import { FlowService } from '../../services/flow.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { AddFlowItemComponent } from '../add-flow-item/add-flow-item.component';
-import { ConfigService } from '../../../core/services/config.service';
 
 @Component({
   selector: 'app-flow-view',
@@ -87,12 +86,10 @@ export class FlowViewComponent implements OnInit {
   }
 
   removeItem(itemId: string): void {
-    if (confirm('Are you sure you want to remove this item from the flow?')) {
-      this.flowService.removeItem(itemId).then(success => {
-        if (!success) {
-          console.error('Failed to remove item');
-        }
-      });
-    }
+    this.flowService.removeItem(itemId).then(success => {
+      if (!success) {
+        console.error('Failed to remove item');
+      }
+    });
   }
 }

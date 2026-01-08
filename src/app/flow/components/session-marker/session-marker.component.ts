@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { faCalendar, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faTimes, faEdit, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import type { SessionMarkerFlowItem } from '../../models';
+import { FlowService } from '../../services/flow.service';
 
 @Component({
   selector: 'app-session-marker',
@@ -14,11 +15,43 @@ export class SessionMarkerComponent {
 
   faCalendar = faCalendar;
   faTimes = faTimes;
+  faEdit = faEdit;
+  faCheck = faCheck;
+
+  editing = false;
+  editDate: string = '';
+
+  constructor(private flowService: FlowService) {}
+
+  startEdit(): void {
+    this.editing = true;
+    // Convert Date to YYYY-MM-DD format for input[type="date"]
+    const date = typeof this.item.date === 'string' ? new Date(this.item.date) : this.item.date;
+    this.editDate = this.formatDateForInput(date);
+  }
+
+  cancelEdit(): void {
+    this.editing = false;
+    this.editDate = '';
+  }
+
+  async saveEdit(): Promise<void> {
+    if (this.editDate) {
+      const newDate = new Date(this.editDate);
+      await this.flowService.updateSessionMarker(this.item.id, newDate as any);
+      this.editing = false;
+    }
+  }
 
   removeMarker(): void {
-    if (confirm('Session-Marker entfernen?')) {
-      this.remove.emit(this.item.id);
-    }
+    this.remove.emit(this.item.id);
+  }
+
+  private formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   getFormattedDate(): string {

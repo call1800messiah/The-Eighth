@@ -41,8 +41,6 @@ export class GeneralNoteComponent {
   }
 
   removeNote(): void {
-    if (confirm('Notiz entfernen?')) {
-      this.remove.emit(this.item.id);
-    }
+    this.remove.emit(this.item.id);
   }
 }
