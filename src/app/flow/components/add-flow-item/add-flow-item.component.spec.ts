@@ -79,31 +79,6 @@ describe('AddFlowItemComponent', () => {
     expect(popoverServiceSpy.dismissPopover).toHaveBeenCalled();
   });
 
-  it('T-FLOW-C32: should add session marker', async () => {
-    flowServiceSpy.addItem.and.returnValue(Promise.resolve(true));
-    component.sessionDate = new Date('2026-01-15');
-
-    await component.addSessionMarker();
-
-    expect(flowServiceSpy.addItem).toHaveBeenCalledWith(jasmine.objectContaining({
-      type: 'session-marker'
-    }));
-    expect(popoverServiceSpy.dismissPopover).toHaveBeenCalled();
-  });
-
-  it('T-FLOW-C33: should add general note', async () => {
-    flowServiceSpy.addItem.and.returnValue(Promise.resolve(true));
-    component.noteContent = 'Test note';
-
-    await component.addGeneralNote();
-
-    expect(flowServiceSpy.addItem).toHaveBeenCalledWith({
-      type: 'general-note',
-      content: 'Test note'
-    });
-    expect(popoverServiceSpy.dismissPopover).toHaveBeenCalled();
-  });
-
   it('T-FLOW-C34: should close modal on cancel', () => {
     component.close();
     expect(popoverServiceSpy.dismissPopover).toHaveBeenCalled();

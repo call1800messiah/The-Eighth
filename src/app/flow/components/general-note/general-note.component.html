@@ -28,11 +28,13 @@
   </div>
 
   <div class="note-edit" *ngIf="editing">
-    <textarea
-      class="note-textarea"
-      [(ngModel)]="editContent"
-      rows="4"
-      placeholder="Notizinhalt eingeben..."
-    ></textarea>
+    <div class="form-group">
+      <textarea
+        id="note-content-{{item.id}}"
+        [(ngModel)]="editContent"
+        rows="4"
+      ></textarea>
+      <label for="note-content-{{item.id}}">Notizinhalt</label>
+    </div>
   </div>
 </div>

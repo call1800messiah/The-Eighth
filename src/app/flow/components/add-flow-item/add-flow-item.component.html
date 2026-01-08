@@ -1,9 +1,4 @@
 <div class="add-flow-item-modal">
-  <div class="modal-header">
-    <h3>Element hinzufügen</h3>
-    <button type="button" class="btn-close" (click)="close()">&times;</button>
-  </div>
-
   <div class="modal-tabs">
     <button
       type="button"
@@ -29,126 +24,84 @@
     >
       Ort
     </button>
-    <button
-      type="button"
-      class="tab-btn"
-      [class.active]="activeTab === 'session'"
-      (click)="switchTab('session')"
-    >
-      Session
-    </button>
-    <button
-      type="button"
-      class="tab-btn"
-      [class.active]="activeTab === 'note'"
-      (click)="switchTab('note')"
-    >
-      Notiz
-    </button>
   </div>
 
   <div class="modal-body">
     <!-- Quest Tab -->
     <div *ngIf="activeTab === 'quest'" class="tab-content">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Quest suchen..."
-        [value]="searchText$ | async"
-        (input)="onSearchChange($event.target.value)"
-      />
+      <div class="form-group">
+        <input
+          type="text"
+          id="quest-search"
+          [value]="searchText$ | async"
+          (input)="onSearchChange($event.target.value)"
+        />
+        <label for="quest-search">Quest suchen...</label>
+      </div>
 
       <div class="entity-list">
         <div
-          *ngFor="let quest of quests$ | async"
-          class="entity-item"
+          *ngFor="let quest of filteredQuests$ | async"
+          class="entity-item form-group"
           [class.selected]="isSelected(quest.id)"
-          (click)="toggleSelection(quest.id)"
         >
-          <input type="checkbox" [checked]="isSelected(quest.id)" />
-          <span class="entity-name">{{ quest.name }}</span>
+          <input id="quest-{{quest.id}}" type="checkbox" [checked]="isSelected(quest.id)" (click)="toggleSelection(quest.id)" />
+          <label class="entity-name" for="quest-{{quest.id}}">{{ quest.name }}</label>
         </div>
       </div>
     </div>
 
     <!-- Person Tab -->
     <div *ngIf="activeTab === 'person'" class="tab-content">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Person suchen..."
-        [value]="searchText$ | async"
-        (input)="onSearchChange($event.target.value)"
-      />
+      <div class="form-group">
+        <input
+          type="text"
+          id="person-search"
+          [value]="searchText$ | async"
+          (input)="onSearchChange($event.target.value)"
+        />
+        <label for="person-search">Person suchen...</label>
+      </div>
 
       <div class="entity-list">
         <div
-          *ngFor="let person of people$ | async"
-          class="entity-item"
+          *ngFor="let person of filteredPeople$ | async"
+          class="entity-item form-group"
           [class.selected]="isSelected(person.id)"
-          (click)="toggleSelection(person.id)"
         >
-          <input type="checkbox" [checked]="isSelected(person.id)" />
+          <input id="person-{{person.id}}" type="checkbox" [checked]="isSelected(person.id)" (click)="toggleSelection(person.id)" />
+          <label class="entity-name" for="person-{{person.id}}">{{ person.name }}</label>
           <app-avatar [person]="person"></app-avatar>
-          <span class="entity-name">{{ person.name }}</span>
         </div>
       </div>
     </div>
 
     <!-- Place Tab -->
     <div *ngIf="activeTab === 'place'" class="tab-content">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Ort suchen..."
-        [value]="searchText$ | async"
-        (input)="onSearchChange($event.target.value)"
-      />
+      <div class="form-group">
+        <input
+          type="text"
+          id="place-search"
+          [value]="searchText$ | async"
+          (input)="onSearchChange($event.target.value)"
+        />
+        <label for="place-search">Ort suchen...</label>
+      </div>
 
       <div class="entity-list">
         <div
-          *ngFor="let place of places$ | async"
-          class="entity-item"
+          *ngFor="let place of filteredPlaces$ | async"
+          class="entity-item form-group"
           [class.selected]="isSelected(place.id)"
-          (click)="toggleSelection(place.id)"
         >
-          <input type="checkbox" [checked]="isSelected(place.id)" />
-          <span class="entity-name">{{ place.name }}</span>
+          <input id="place-{{place.id}}" type="checkbox" [checked]="isSelected(place.id)" (click)="toggleSelection(place.id)" />
+          <label class="entity-name" for="place-{{place.id}}">{{ place.name }}</label>
         </div>
       </div>
     </div>
-
-    <!-- Session Tab -->
-    <div *ngIf="activeTab === 'session'" class="tab-content">
-      <label for="session-date">Sessiondatum:</label>
-      <input
-        type="date"
-        id="session-date"
-        class="date-input"
-        [(ngModel)]="sessionDate"
-      />
-      <button type="button" class="btn btn-primary" (click)="addSessionMarker()">
-        Session-Marker hinzufügen
-      </button>
-    </div>
-
-    <!-- Note Tab -->
-    <div *ngIf="activeTab === 'note'" class="tab-content">
-      <label for="note-content">Notiz:</label>
-      <textarea
-        id="note-content"
-        class="note-textarea"
-        placeholder="Notizinhalt eingeben..."
-        [(ngModel)]="noteContent"
-        rows="5"
-      ></textarea>
-      <button type="button" class="btn btn-primary" (click)="addGeneralNote()">
-        Notiz hinzufügen
-      </button>
-    </div>
   </div>
 
-  <div class="modal-footer" *ngIf="activeTab === 'quest' || activeTab === 'person' || activeTab === 'place'">
+  <div class="modal-footer">
     <button type="button" class="btn" (click)="close()">Abbrechen</button>
     <button
       type="button"

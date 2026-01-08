@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import type { Quest } from '../../../quests/models/quest';
-import type { Person } from '../../../people/models/person';
+import type { Quest } from '../../../quests';
+import type { Person } from '../../../people';
 import type { Place } from '../../../places/models/place';
 import { FlowService } from '../../services/flow.service';
 import { QuestsService } from '../../../quests/services/quests.service';
@@ -17,7 +17,7 @@ import { PopoverService } from '../../../core/services/popover.service';
   styleUrls: ['./add-flow-item.component.scss']
 })
 export class AddFlowItemComponent implements OnInit {
-  activeTab: 'quest' | 'person' | 'place' | 'session' | 'note' = 'quest';
+  activeTab: 'quest' | 'person' | 'place' = 'quest';
   searchText$ = new BehaviorSubject<string>('');
 
   quests$: Observable<Quest[]>;
@@ -28,8 +28,6 @@ export class AddFlowItemComponent implements OnInit {
   filteredPlaces$: Observable<Place[]>;
 
   selectedItems: string[] = [];
-  sessionDate: Date = new Date();
-  noteContent = '';
 
   constructor(
     private flowService: FlowService,
@@ -45,35 +43,38 @@ export class AddFlowItemComponent implements OnInit {
     this.places$ = this.placesService.getPlaces();
 
     // Setup filtered observables
-    this.filteredQuests$ = this.searchText$.pipe(
-      map(searchText => searchText.toLowerCase()),
-      map(searchText => {
-        return this.filterBySearch(this.quests$, searchText, 'name');
-      })
+    this.filteredQuests$ = combineLatest([
+      this.quests$,
+      this.searchText$
+    ]).pipe(
+      map(([quests, searchText]) => this.filterBySearch(quests, searchText.toLowerCase(), 'name'))
     );
 
-    this.filteredPeople$ = this.searchText$.pipe(
-      map(searchText => searchText.toLowerCase()),
-      map(searchText => {
-        return this.filterBySearch(this.people$, searchText, 'name');
-      })
+    this.filteredPeople$ = combineLatest([
+      this.people$,
+      this.searchText$
+    ]).pipe(
+      map(([people, searchText]) => this.filterBySearch(people, searchText.toLowerCase(), 'name'))
     );
 
-    this.filteredPlaces$ = this.searchText$.pipe(
-      map(searchText => searchText.toLowerCase()),
-      map(searchText => {
-        return this.filterBySearch(this.places$, searchText, 'name');
-      })
+    this.filteredPlaces$ = combineLatest([
+      this.places$,
+      this.searchText$
+    ]).pipe(
+      map(([places, searchText]) => this.filterBySearch(places, searchText.toLowerCase(), 'name'))
     );
   }
 
-  private filterBySearch(source$: Observable<any[]>, searchText: string, field: string): any[] {
-    // Note: This is a simplified filter. In a real app, you'd combine the observable properly.
-    // For now, returning empty array as placeholder
-    return [];
+  private filterBySearch(items: any[], searchText: string, field: string): any[] {
+    if (!searchText || searchText.trim() === '') {
+      return items;
+    }
+    return items.filter(item =>
+      item[field]?.toLowerCase().includes(searchText)
+    );
   }
 
-  switchTab(tab: 'quest' | 'person' | 'place' | 'session' | 'note'): void {
+  switchTab(tab: 'quest' | 'person' | 'place'): void {
     this.activeTab = tab;
     this.selectedItems = [];
     this.searchText$.next('');
@@ -114,26 +115,6 @@ export class AddFlowItemComponent implements OnInit {
     });
 
     await Promise.all(promises);
-    this.close();
-  }
-
-  async addSessionMarker(): Promise<void> {
-    await this.flowService.addItem({
-      type: 'session-marker',
-      date: this.sessionDate
-    });
-    this.close();
-  }
-
-  async addGeneralNote(): Promise<void> {
-    if (!this.noteContent.trim()) {
-      return;
-    }
-
-    await this.flowService.addItem({
-      type: 'general-note',
-      content: this.noteContent
-    });
     this.close();
   }
 
