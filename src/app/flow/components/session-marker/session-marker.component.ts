@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { faCalendar, faTimes, faEdit, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faTimes, faEdit, faCheck, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 import type { SessionMarkerFlowItem } from '../../models';
 import { FlowService } from '../../services/flow.service';
@@ -17,6 +17,7 @@ export class SessionMarkerComponent {
   faTimes = faTimes;
   faEdit = faEdit;
   faCheck = faCheck;
+  faGripVertical = faGripVertical;
 
   editing = false;
   editDate: string = '';

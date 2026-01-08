@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { faStickyNote, faEdit, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faStickyNote, faEdit, faTimes, faCheck, faGripVertical } from '@fortawesome/free-solid-svg-icons';
 
 import type { GeneralNoteFlowItem } from '../../models';
 import { FlowService } from '../../services/flow.service';
@@ -17,6 +17,7 @@ export class GeneralNoteComponent {
   faEdit = faEdit;
   faTimes = faTimes;
   faCheck = faCheck;
+  faGripVertical = faGripVertical;
 
   editing = false;
   editContent = '';

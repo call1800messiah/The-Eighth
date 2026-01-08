@@ -1,9 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { faBars, faChevronDown, faChevronRight, faGripVertical } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faChevronDown, faChevronRight, faGripVertical, faMeteor, faUsers, faCompass } from '@fortawesome/free-solid-svg-icons';
 
 import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem } from '../../models';
-import type { Menu } from '../../../shared';
 
 @Component({
   selector: 'app-flow-item',
@@ -14,27 +13,19 @@ export class FlowItemComponent {
   @Input() item: EnrichedFlowItem;
   @Output() remove = new EventEmitter<string>();
 
-  faBars = faBars;
+  faTimes = faTimes;
   faChevronDown = faChevronDown;
   faChevronRight = faChevronRight;
   faGripVertical = faGripVertical;
+  faMeteor = faMeteor;
+  faUsers = faUsers;
+  faCompass = faCompass;
 
   expanded = false;
-  menu: Menu;
-  menuOpen = false;
 
   constructor(
     private router: Router,
-  ) {
-    this.menu = {
-      actions: [
-        {
-          label: 'Aus Flow entfernen',
-          action: this.removeItem.bind(this)
-        }
-      ]
-    };
-  }
+  ) {}
 
   toggleExpand(): void {
     this.expanded = !this.expanded;
@@ -54,10 +45,6 @@ export class FlowItemComponent {
     }
   }
 
-  toggleContextMenu(): void {
-    this.menuOpen = !this.menuOpen;
-  }
-
   removeItem(): void {
     this.remove.emit(this.item.id);
   }
@@ -68,19 +55,6 @@ export class FlowItemComponent {
       return 'Gelöschtes Element';
     }
     return entity.name || 'Unbenannt';
-  }
-
-  getTypeLabel(): string {
-    switch (this.item.type) {
-      case 'quest':
-        return 'Quest';
-      case 'person':
-        return 'Person';
-      case 'place':
-        return 'Ort';
-      default:
-        return '';
-    }
   }
 
   hasEntity(): boolean {

@@ -2,7 +2,7 @@
   background: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  padding: 1rem;
+  margin-bottom: var(--item-padding);
   position: relative;
 
   &.deleted {
@@ -14,7 +14,11 @@
 .flow-item-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--item-padding);
+
+  app-avatar {
+    width: 4rem;
+  }
 }
 
 .drag-handle {
@@ -35,7 +39,10 @@
 .item-icon {
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
+  justify-content: center;
+  width: 3rem;
+  font-size: 2rem;
+  color: var(--text-secondary);
 }
 
 .item-content {
@@ -51,13 +58,8 @@
   white-space: nowrap;
 }
 
-.item-type {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
 .expand-btn,
-.menu-btn {
+.btn-icon {
   flex-shrink: 0;
 }
 

@@ -2,14 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { FlowItemComponent } from './flow-item.component';
-import { DataService } from '../../../core/services/data.service';
 import type { EnrichedQuestFlowItem } from '../../models';
 
 describe('FlowItemComponent', () => {
   let component: FlowItemComponent;
   let fixture: ComponentFixture<FlowItemComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let dataServiceSpy: jasmine.SpyObj<DataService>;
 
   const mockQuestItem: EnrichedQuestFlowItem = {
     id: 'item1',
@@ -38,19 +36,16 @@ describe('FlowItemComponent', () => {
 
   beforeEach(async () => {
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
-    const dataServiceSpyObj = jasmine.createSpyObj('DataService', ['store']);
 
     await TestBed.configureTestingModule({
       declarations: [ FlowItemComponent ],
       providers: [
-        { provide: Router, useValue: routerSpyObj },
-        { provide: DataService, useValue: dataServiceSpyObj }
+        { provide: Router, useValue: routerSpyObj }
       ]
     })
     .compileComponents();
 
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    dataServiceSpy = TestBed.inject(DataService) as jasmine.SpyObj<DataService>;
   });
 
   beforeEach(() => {
@@ -62,11 +57,10 @@ describe('FlowItemComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('T-FLOW-C11: should display quest item with name and type', () => {
+  it('T-FLOW-C11: should display quest item with name', () => {
     component.item = mockQuestItem;
     fixture.detectChanges();
     expect(component.getEntityName()).toBe('Test Quest');
-    expect(component.getTypeLabel()).toBe('Quest');
   });
 
   it('T-FLOW-C14: should show placeholder for deleted entity', () => {

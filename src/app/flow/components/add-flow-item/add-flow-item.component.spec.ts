@@ -15,7 +15,7 @@ describe('AddFlowItemComponent', () => {
   let popoverServiceSpy: jasmine.SpyObj<PopoverService>;
 
   beforeEach(async () => {
-    const flowSpy = jasmine.createSpyObj('FlowService', ['addItem']);
+    const flowSpy = jasmine.createSpyObj('FlowService', ['addItem', 'addItems']);
     const questsSpy = jasmine.createSpyObj('QuestsService', ['getQuests']);
     const peopleSpy = jasmine.createSpyObj('PeopleService', ['getPeople']);
     const placesSpy = jasmine.createSpyObj('PlaceService', ['getPlaces']);
@@ -69,13 +69,17 @@ describe('AddFlowItemComponent', () => {
   });
 
   it('T-FLOW-C31: should add selected items and close modal', async () => {
-    flowServiceSpy.addItem.and.returnValue(Promise.resolve(true));
+    flowServiceSpy.addItems.and.returnValue(Promise.resolve(true));
     component.activeTab = 'quest';
     component.selectedItems = ['quest1', 'quest2'];
 
     await component.addSelected();
 
-    expect(flowServiceSpy.addItem).toHaveBeenCalledTimes(2);
+    expect(flowServiceSpy.addItems).toHaveBeenCalledTimes(1);
+    expect(flowServiceSpy.addItems).toHaveBeenCalledWith([
+      { type: 'quest', questId: 'quest1' },
+      { type: 'quest', questId: 'quest2' }
+    ]);
     expect(popoverServiceSpy.dismissPopover).toHaveBeenCalled();
   });
 

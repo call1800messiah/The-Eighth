@@ -102,19 +102,20 @@ export class AddFlowItemComponent implements OnInit {
       return;
     }
 
-    const promises = this.selectedItems.map(id => {
-      let itemData: any = {};
+    // Build all items first
+    const itemsToAdd = this.selectedItems.map(id => {
       if (this.activeTab === 'quest') {
-        itemData = { type: 'quest', questId: id };
+        return { type: 'quest' as const, questId: id };
       } else if (this.activeTab === 'person') {
-        itemData = { type: 'person', personId: id };
+        return { type: 'person' as const, personId: id };
       } else if (this.activeTab === 'place') {
-        itemData = { type: 'place', placeId: id };
+        return { type: 'place' as const, placeId: id };
       }
-      return this.flowService.addItem(itemData);
-    });
+      return null;
+    }).filter(item => item !== null);
 
-    await Promise.all(promises);
+    // Add all items in a single Firebase write
+    await this.flowService.addItems(itemsToAdd);
     this.close();
   }
 

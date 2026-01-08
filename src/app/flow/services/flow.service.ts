@@ -181,6 +181,13 @@ export class FlowService {
    * Add item to flow
    */
   async addItem(item: Partial<FlowItem>): Promise<boolean> {
+    return this.addItems([item]);
+  }
+
+  /**
+   * Add multiple items to flow in a single write operation
+   */
+  async addItems(items: Partial<FlowItem>[]): Promise<boolean> {
     const flow = this.flow$.value;
     if (!flow) {
       // Create flow first
@@ -188,54 +195,64 @@ export class FlowService {
       // Wait for flow to be loaded
       return new Promise((resolve) => {
         setTimeout(async () => {
-          const result = await this.addItem(item);
+          const result = await this.addItems(items);
           resolve(result);
         }, 500);
       });
     }
 
-    // Build item object based on type to avoid undefined fields
-    let newItem: FlowItem;
-    const baseItem = {
-      id: ConfigService.nanoid(),
-      order: flow.items.length
-    };
+    // Build all new items
+    const newItems: FlowItem[] = [];
+    let currentOrder = flow.items.length;
 
-    if (item.type === 'quest') {
-      newItem = {
-        ...baseItem,
-        type: 'quest',
-        questId: (item as any).questId
+    for (const item of items) {
+      const baseItem = {
+        id: ConfigService.nanoid(),
+        order: currentOrder++
       };
-    } else if (item.type === 'person') {
-      newItem = {
-        ...baseItem,
-        type: 'person',
-        personId: (item as any).personId
-      };
-    } else if (item.type === 'place') {
-      newItem = {
-        ...baseItem,
-        type: 'place',
-        placeId: (item as any).placeId
-      };
-    } else if (item.type === 'session-marker') {
-      newItem = {
-        ...baseItem,
-        type: 'session-marker',
-        date: (item as any).date
-      };
-    } else if (item.type === 'general-note') {
-      newItem = {
-        ...baseItem,
-        type: 'general-note',
-        content: (item as any).content || ''
-      };
-    } else {
+
+      let newItem: FlowItem;
+      if (item.type === 'quest') {
+        newItem = {
+          ...baseItem,
+          type: 'quest',
+          questId: (item as any).questId
+        };
+      } else if (item.type === 'person') {
+        newItem = {
+          ...baseItem,
+          type: 'person',
+          personId: (item as any).personId
+        };
+      } else if (item.type === 'place') {
+        newItem = {
+          ...baseItem,
+          type: 'place',
+          placeId: (item as any).placeId
+        };
+      } else if (item.type === 'session-marker') {
+        newItem = {
+          ...baseItem,
+          type: 'session-marker',
+          date: (item as any).date
+        };
+      } else if (item.type === 'general-note') {
+        newItem = {
+          ...baseItem,
+          type: 'general-note',
+          content: (item as any).content || ''
+        };
+      } else {
+        continue; // Skip invalid items
+      }
+      newItems.push(newItem);
+    }
+
+    if (newItems.length === 0) {
       return Promise.resolve(false);
     }
 
-    const updatedItems = [...flow.items, newItem].map(item => FlowService.sanitizeItem(item));
+    const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
 

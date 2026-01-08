@@ -1,5 +1,9 @@
 <div class="general-note" [class.editing]="editing">
   <div class="note-header">
+    <div class="drag-handle" cdkDragHandle>
+      <fa-icon [icon]="faGripVertical"></fa-icon>
+    </div>
+
     <div class="note-icon">
       <fa-icon [icon]="faStickyNote"></fa-icon>
     </div>

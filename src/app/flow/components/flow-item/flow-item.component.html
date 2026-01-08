@@ -6,21 +6,21 @@
 
     <div class="item-icon">
       <app-avatar *ngIf="item.type === 'person' && hasEntity()" [person]="$any(item).entity"></app-avatar>
-      <span *ngIf="item.type === 'quest'">🗡️</span>
-      <span *ngIf="item.type === 'place'">📍</span>
+      <fa-icon *ngIf="item.type === 'quest'" [icon]="faMeteor"></fa-icon>
+      <fa-icon *ngIf="item.type === 'person' && !hasEntity()" [icon]="faUsers"></fa-icon>
+      <fa-icon *ngIf="item.type === 'place'" [icon]="faCompass"></fa-icon>
     </div>
 
     <div class="item-content" (click)="toggleExpand()">
       <div class="item-name">{{ getEntityName() }}</div>
-      <div class="item-type">{{ getTypeLabel() }}</div>
     </div>
 
     <button type="button" class="btn-icon expand-btn" (click)="toggleExpand()" [title]="expanded ? 'Einklappen' : 'Ausklappen'">
       <fa-icon [icon]="expanded ? faChevronDown : faChevronRight"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon menu-btn" (click)="toggleContextMenu()" title="Menü">
-      <fa-icon [icon]="faBars"></fa-icon>
+    <button type="button" class="btn-icon" (click)="removeItem()" title="Entfernen">
+      <fa-icon [icon]="faTimes"></fa-icon>
     </button>
   </div>
 
@@ -43,6 +43,4 @@
   <div class="flow-item-deleted" *ngIf="expanded && !hasEntity()">
     <p>Dieses Element wurde gelöscht und kann nicht mehr angezeigt werden.</p>
   </div>
-
-  <app-context-menu *ngIf="menuOpen" [menu]="menu" (close)="toggleContextMenu()"></app-context-menu>
 </div>
