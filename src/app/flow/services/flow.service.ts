@@ -4,9 +4,6 @@ import { map } from 'rxjs/operators';
 import type { Timestamp } from '@angular/fire/firestore';
 
 import type { AuthUser } from '../../auth/models/auth-user';
-import type { Quest } from '../../quests/models/quest';
-import type { Person } from '../../people/models/person';
-import type { Place } from '../../places/models/place';
 import type { Flow, FlowDB, FlowItem, EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem } from '../models';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -29,7 +26,6 @@ export class FlowService {
     private api: ApiService,
     private auth: AuthService,
     private data: DataService,
-    private config: ConfigService,
     private quests: QuestsService,
     private people: PeopleService,
     private places: PlaceService
@@ -52,6 +48,39 @@ export class FlowService {
       collection: 'flows'
     };
     return flow;
+  }
+
+  /**
+   * Strip enriched data (entity field) from flow items before saving
+   */
+  private static stripEnrichedData(item: EnrichedFlowItem): FlowItem {
+    const { entity, ...baseItem } = item as any;
+    return baseItem as FlowItem;
+  }
+
+  /**
+   * Sanitize flow item to remove undefined fields before saving to Firestore
+   */
+  private static sanitizeItem(item: FlowItem): any {
+    const sanitized: any = {
+      id: item.id,
+      type: item.type,
+      order: item.order
+    };
+
+    if (item.type === 'quest') {
+      sanitized.questId = (item as any).questId;
+    } else if (item.type === 'person') {
+      sanitized.personId = (item as any).personId;
+    } else if (item.type === 'place') {
+      sanitized.placeId = (item as any).placeId;
+    } else if (item.type === 'session-marker') {
+      sanitized.date = (item as any).date;
+    } else if (item.type === 'general-note') {
+      sanitized.content = (item as any).content;
+    }
+
+    return sanitized;
   }
 
   /**
@@ -158,13 +187,48 @@ export class FlowService {
       });
     }
 
-    const newItem: FlowItem = {
+    // Build item object based on type to avoid undefined fields
+    let newItem: FlowItem;
+    const baseItem = {
       id: ConfigService.nanoid(),
-      order: flow.items.length,
-      ...item
-    } as FlowItem;
+      order: flow.items.length
+    };
 
-    const updatedItems = [...flow.items, newItem];
+    if (item.type === 'quest') {
+      newItem = {
+        ...baseItem,
+        type: 'quest',
+        questId: (item as any).questId
+      };
+    } else if (item.type === 'person') {
+      newItem = {
+        ...baseItem,
+        type: 'person',
+        personId: (item as any).personId
+      };
+    } else if (item.type === 'place') {
+      newItem = {
+        ...baseItem,
+        type: 'place',
+        placeId: (item as any).placeId
+      };
+    } else if (item.type === 'session-marker') {
+      newItem = {
+        ...baseItem,
+        type: 'session-marker',
+        date: (item as any).date
+      };
+    } else if (item.type === 'general-note') {
+      newItem = {
+        ...baseItem,
+        type: 'general-note',
+        content: (item as any).content || ''
+      };
+    } else {
+      return Promise.resolve(false);
+    }
+
+    const updatedItems = [...flow.items, newItem].map(item => FlowService.sanitizeItem(item));
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
 
@@ -179,7 +243,8 @@ export class FlowService {
 
     const updatedItems = flow.items
       .filter(item => item.id !== itemId)
-      .map((item, index) => ({ ...item, order: index }));
+      .map((item, index) => ({ ...item, order: index }))
+      .map(item => FlowService.sanitizeItem(item));
 
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
@@ -187,13 +252,18 @@ export class FlowService {
   /**
    * Reorder items (after drag and drop)
    */
-  reorderItems(items: FlowItem[]): Promise<boolean> {
+  reorderItems(items: EnrichedFlowItem[]): Promise<boolean> {
     const flow = this.flow$.value;
     if (!flow) {
       return Promise.resolve(false);
     }
 
-    const updatedItems = items.map((item, index) => ({ ...item, order: index }));
+    // Strip enriched data, update order, and sanitize
+    const updatedItems = items
+      .map(item => FlowService.stripEnrichedData(item))
+      .map((item, index) => ({ ...item, order: index }))
+      .map(item => FlowService.sanitizeItem(item));
+
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
 
@@ -206,12 +276,14 @@ export class FlowService {
       return Promise.resolve(false);
     }
 
-    const updatedItems = flow.items.map(item => {
-      if (item.id === itemId && item.type === 'session-marker') {
-        return { ...item, date: date as any };
-      }
-      return item;
-    });
+    const updatedItems = flow.items
+      .map(item => {
+        if (item.id === itemId && item.type === 'session-marker') {
+          return { ...item, date: date as any };
+        }
+        return item;
+      })
+      .map(item => FlowService.sanitizeItem(item));
 
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
@@ -225,12 +297,14 @@ export class FlowService {
       return Promise.resolve(false);
     }
 
-    const updatedItems = flow.items.map(item => {
-      if (item.id === itemId && item.type === 'general-note') {
-        return { ...item, content };
-      }
-      return item;
-    });
+    const updatedItems = flow.items
+      .map(item => {
+        if (item.id === itemId && item.type === 'general-note') {
+          return { ...item, content };
+        }
+        return item;
+      })
+      .map(item => FlowService.sanitizeItem(item));
 
     return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
   }
