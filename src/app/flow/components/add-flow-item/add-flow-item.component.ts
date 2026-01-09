@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,12 +14,18 @@ import { NotesService } from '../../../notes/services/notes.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditNoteComponent } from '../../../notes/components/edit-note/edit-note.component';
 
+export interface AddFlowItemProps {
+  flowId: string;
+}
+
 @Component({
   selector: 'app-add-flow-item',
   templateUrl: './add-flow-item.component.html',
   styleUrls: ['./add-flow-item.component.scss']
 })
 export class AddFlowItemComponent implements OnInit {
+  @Input() props: AddFlowItemProps;
+
   activeTab: 'quest' | 'person' | 'place' | 'note' = 'quest';
   searchText$ = new BehaviorSubject<string>('');
 
@@ -142,7 +148,7 @@ export class AddFlowItemComponent implements OnInit {
     }).filter(item => item !== null);
 
     // Add all items in a single Firebase write
-    await this.flowService.addItems(itemsToAdd);
+    await this.flowService.addItems(this.props.flowId, itemsToAdd);
     this.close();
   }
 

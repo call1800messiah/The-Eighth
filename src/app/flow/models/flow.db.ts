@@ -1,19 +1,21 @@
 import type { Timestamp } from '@angular/fire/firestore';
 
 export interface FlowDB {
+  access: string[];
   campaignId: string;
   createdBy: string;
+  date: Timestamp;
   createdAt: Timestamp;
-  updatedAt: Timestamp;
-  access: string[];
   items: FlowItemDB[];
+  owner: string;
+  updatedAt: Timestamp;
+  title?: string;
 }
 
 export type FlowItemDB =
   | QuestFlowItemDB
   | PersonFlowItemDB
   | PlaceFlowItemDB
-  | SessionMarkerFlowItemDB
   | NoteFlowItemDB;
 
 interface BaseFlowItemDB {
@@ -34,11 +36,6 @@ export interface PersonFlowItemDB extends BaseFlowItemDB {
 export interface PlaceFlowItemDB extends BaseFlowItemDB {
   type: 'place';
   placeId: string;
-}
-
-export interface SessionMarkerFlowItemDB extends BaseFlowItemDB {
-  type: 'session-marker';
-  date: Timestamp;
 }
 
 export interface NoteFlowItemDB extends BaseFlowItemDB {

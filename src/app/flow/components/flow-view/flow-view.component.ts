@@ -1,49 +1,85 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { faPlus, faCalendar, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faStickyNote, faEdit } from '@fortawesome/free-solid-svg-icons';
 
-import type { EnrichedFlowItem } from '../../models';
+import type { EnrichedFlowItem, Flow } from '../../models';
 import { FlowService } from '../../services/flow.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { AddFlowItemComponent } from '../add-flow-item/add-flow-item.component';
 import { EditNoteComponent } from '../../../notes/components/edit-note/edit-note.component';
+import { EditFlowComponent } from '../edit-flow/edit-flow.component';
 
 @Component({
   selector: 'app-flow-view',
   templateUrl: './flow-view.component.html',
   styleUrls: ['./flow-view.component.scss']
 })
-export class FlowViewComponent implements OnInit {
+export class FlowViewComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
-  faCalendar = faCalendar;
   faStickyNote = faStickyNote;
+  faEdit = faEdit;
 
+  flowId: string;
+  flow$: Observable<Flow | null>;
   enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
   loading = true;
   error: string | null = null;
 
+  private subscription = new Subscription();
+
   constructor(
     private flowService: FlowService,
     private popover: PopoverService,
-    private navigation: NavigationService
+    private navigation: NavigationService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.navigation.setPageLabel('Session Flow');
-    this.enrichedFlowItems$ = this.flowService.getEnrichedFlowItems();
+    // Get flowId from route params
+    this.subscription.add(
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.flowId = id;
+          this.loadFlow();
+        } else {
+          this.error = 'Keine Flow-ID angegeben';
+          this.loading = false;
+        }
+      })
+    );
+  }
 
-    // Subscribe to check loading state
-    this.enrichedFlowItems$.subscribe(
-      () => {
-        this.loading = false;
-      },
-      (error) => {
-        this.loading = false;
-        this.error = 'Failed to load flow. Please try again.';
-        console.error('Error loading flow:', error);
-      }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private loadFlow(): void {
+    this.flow$ = this.flowService.getFlowById(this.flowId);
+    this.enrichedFlowItems$ = this.flowService.getEnrichedFlowItems(this.flowId);
+
+    // Update page label with flow date/title
+    this.subscription.add(
+      this.flow$.subscribe(flow => {
+        if (flow) {
+          const label = flow.title
+            ? `${flow.title} (${flow.date.toLocaleDateString('de-DE')})`
+            : flow.date.toLocaleDateString('de-DE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              });
+          this.navigation.setPageLabel(label, '/flow');
+          this.loading = false;
+        } else {
+          this.error = 'Flow nicht gefunden';
+          this.loading = false;
+        }
+      })
     );
   }
 
@@ -52,7 +88,7 @@ export class FlowViewComponent implements OnInit {
     moveItemInArray(items, event.previousIndex, event.currentIndex);
 
     // Update order in Firestore
-    this.flowService.reorderItems(items).then(success => {
+    this.flowService.reorderItems(this.flowId, items).then(success => {
       if (!success) {
         console.error('Failed to reorder items');
       }
@@ -60,31 +96,32 @@ export class FlowViewComponent implements OnInit {
   }
 
   showAddItemModal(): void {
-    this.popover.showPopover('Element hinzufügen', AddFlowItemComponent, {});
+    this.popover.showPopover('Element hinzufügen', AddFlowItemComponent, {
+      flowId: this.flowId
+    });
   }
 
   showAddNoteModal(): void {
     this.popover.showPopover('Notiz hinzufügen', EditNoteComponent, {
       onSave: async (note) => {
         // Automatically add the newly created note to the flow
-        await this.flowService.addItem({ type: 'note', noteId: note.id });
+        await this.flowService.addItem(this.flowId, { type: 'note', noteId: note.id });
       }
     });
   }
 
-  addSessionMarker(): void {
-    this.flowService.addItem({
-      type: 'session-marker',
-      date: new Date()
-    }).then(success => {
-      if (!success) {
-        console.error('Failed to add session marker');
-      }
-    });
+  showEditFlowModal(): void {
+    this.subscription.add(
+      this.flow$.pipe(take(1)).subscribe(flow => {
+        if (flow) {
+          this.popover.showPopover('Session bearbeiten', EditFlowComponent, flow);
+        }
+      })
+    );
   }
 
   removeItem(itemId: string): void {
-    this.flowService.removeItem(itemId).then(success => {
+    this.flowService.removeItem(this.flowId, itemId).then(success => {
       if (!success) {
         console.error('Failed to remove item');
       }

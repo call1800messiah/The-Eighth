@@ -7,7 +7,6 @@ export type FlowItem =
   | QuestFlowItem
   | PersonFlowItem
   | PlaceFlowItem
-  | SessionMarkerFlowItem
   | NoteFlowItem;
 
 interface BaseFlowItem {
@@ -30,11 +29,6 @@ export interface PlaceFlowItem extends BaseFlowItem {
   placeId: string;
 }
 
-export interface SessionMarkerFlowItem extends BaseFlowItem {
-  type: 'session-marker';
-  date: Date;
-}
-
 export interface NoteFlowItem extends BaseFlowItem {
   type: 'note';
   noteId: string;
@@ -45,7 +39,6 @@ export type EnrichedFlowItem =
   | EnrichedQuestFlowItem
   | EnrichedPersonFlowItem
   | EnrichedPlaceFlowItem
-  | SessionMarkerFlowItem
   | EnrichedNoteFlowItem;
 
 export interface EnrichedQuestFlowItem extends QuestFlowItem {

@@ -1,6 +1,69 @@
 # Flow Feature - Scratchpad
 
-## Implementation Complete: Dynamic Detail Views
+## Latest Change: Multiple Session Flows per Campaign
+
+### Architecture Change (January 2026)
+Converted from single flow with session markers to multiple independent session flows:
+- Each flow now represents one game session
+- Flow model includes `date: Date` and optional `title?: string`
+- Session markers removed entirely
+- List/detail routing pattern implemented
+
+### Data Model Changes
+- **Flow**: Added `date` and `title?` fields
+- **FlowDB**: Added `date: Timestamp` and `title?: string` for Firestore
+- **Removed**: SessionMarkerFlowItem, SessionMarkerFlowItemDB
+- **FlowItemType enum**: Removed SessionMarker, now only: Quest, Person, Place, Note
+
+### Service Layer Updates
+- **FlowService**: Complete refactor
+  - Changed from `flow$: BehaviorSubject<Flow | null>` to `flows$: BehaviorSubject<Flow[]>`
+  - New methods: `getFlows()`, `getFlowById(id)`, `updateFlow(id, updates)`
+  - Updated methods now accept flowId parameter: `addItem(flowId, ...)`, `addItems(flowId, ...)`, `removeItem(flowId, ...)`, `reorderItems(flowId, ...)`
+  - Removed: `updateSessionMarker()`
+  - Query removed `.limit(1)` - now fetches all flows
+  - Flows sorted newest first by date
+
+### New Components
+- **FlowListComponent**: List view showing all session flows
+  - Displays date, optional title, item count
+  - Filter by date or title (localStorage persistence)
+  - Create new session button
+  - Click to navigate to detail view
+- **EditFlowComponent**: Create/edit flow metadata
+  - Date picker (required)
+  - Title input (optional)
+  - Used in list (create) and detail view (edit)
+
+### Updated Components
+- **FlowViewComponent**:
+  - Now loads specific flow by route param `:id`
+  - Displays flow date/title in page label
+  - Passes flowId to all operations
+  - Added edit button, removed session marker button
+- **AddFlowItemComponent**:
+  - Now accepts `props: { flowId: string }`
+  - Passes flowId to service methods
+- **SessionMarkerComponent**: Deleted entirely
+
+### Routing Changes
+- `/flow` → FlowListComponent (list of all sessions)
+- `/flow/:id` → FlowViewComponent (specific session detail)
+- Follows standard dashboard pattern like quests/people/places
+
+### Build Status
+- ✓ Build successful (ng build)
+- Flow module size: 650.91 kB (up from 636.89 kB - expected increase with new components)
+- No TypeScript errors
+- Only existing warnings (slugify, g-sheets-api dependencies)
+
+### Migration Considerations
+- **Current Firestore data**: Existing flows have session markers as items
+- **Migration needed**: Split existing flows by session markers into separate flow documents
+- **Migration script**: Out of scope for this implementation - needs separate admin tool
+- **Data preservation**: Each new flow should maintain original access/campaignId/createdBy
+
+## Previous Implementation: Dynamic Detail Views
 
 ### Detail Components Refactored
 All detail components now support both routed and embedded usage:

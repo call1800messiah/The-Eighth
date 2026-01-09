@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import type { Timestamp } from '@angular/fire/firestore';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../auth/models/auth-user';
 import type {
@@ -11,7 +10,6 @@ import type {
   EnrichedPlaceFlowItem,
   EnrichedQuestFlowItem,
   Flow,
-  FlowDB,
   FlowItem
 } from '../models';
 import { ApiService } from '../../core/services/api.service';
@@ -28,8 +26,7 @@ import { NotesService } from '../../notes/services/notes.service';
 })
 export class FlowService {
   static readonly collection = 'flows';
-  private flow$: BehaviorSubject<Flow | null>;
-  private enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
+  private flows$: BehaviorSubject<Flow[]>;
   private user: AuthUser;
 
   constructor(
@@ -46,17 +43,17 @@ export class FlowService {
 
   private static transformFlow(flowData: any, flowId: string): Flow {
     return {
-      id: flowId,
-      campaignId: flowData.campaignId || '',
-      createdBy: flowData.createdBy || '',
-      createdAt: flowData.createdAt?.toDate() || new Date(),
-      updatedAt: flowData.updatedAt?.toDate() || new Date(),
       access: flowData.access || [],
-      items: (flowData.items || []).map((item: any) => ({
-        ...item,
-        date: item.date?.toDate ? item.date.toDate() : item.date
-      })),
-      collection: 'flows'
+      campaignId: flowData.campaignId || '',
+      collection: FlowService.collection,
+      createdAt: flowData.createdAt?.toDate() || new Date(),
+      createdBy: flowData.createdBy || '',
+      date: flowData.date,
+      id: flowId,
+      items: flowData.items,
+      owner: flowData.owner,
+      title: flowData.title || '',
+      updatedAt: flowData.updatedAt?.toDate() || new Date()
     };
   }
 
@@ -84,8 +81,6 @@ export class FlowService {
       sanitized.personId = (item as any).personId;
     } else if (item.type === 'place') {
       sanitized.placeId = (item as any).placeId;
-    } else if (item.type === 'session-marker') {
-      sanitized.date = (item as any).date;
     } else if (item.type === 'note') {
       sanitized.noteId = (item as any).noteId;
     }
@@ -94,231 +89,206 @@ export class FlowService {
   }
 
   /**
-   * Get flow for current campaign (single campaign app)
+   * Get all flows for current user (multiple flows per campaign)
    */
-  getFlow(): Observable<Flow | null> {
-    if (!this.flow$) {
-      this.flow$ = new BehaviorSubject<Flow | null>(null);
-      // Query for flow by user access
+  getFlows(): Observable<Flow[]> {
+    if (!this.flows$) {
+      this.flows$ = new BehaviorSubject<Flow[]>([]);
+      // Query for all flows by user access
       this.api.getDataFromCollection(
         FlowService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
-          .limit(1)
+        (ref) => ref.where('access', 'array-contains', this.user.id)
       ).pipe(
         map((flows) => {
           if (flows && flows.length > 0) {
-            const flowDoc = flows[0].payload.doc;
-            return FlowService.transformFlow(flowDoc.data(), flowDoc.id);
+            return flows.map(flow => {
+              const flowDoc = flow.payload.doc;
+              return FlowService.transformFlow(flowDoc.data(), flowDoc.id);
+            }).sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort newest first
           }
-          return null;
+          return [];
         })
-      ).subscribe((flow) => {
-        this.flow$.next(flow);
+      ).subscribe((flows) => {
+        this.flows$.next(flows);
       });
     }
-    return this.flow$;
+    return this.flows$;
   }
 
   /**
-   * Get flow items enriched with entity data
+   * Get specific flow by ID
    */
-  getEnrichedFlowItems(): Observable<EnrichedFlowItem[]> {
-    if (!this.enrichedFlowItems$) {
-      this.enrichedFlowItems$ = combineLatest([
-        this.getFlow(),
-        this.quests.getQuests(),
-        this.people.getPeople(),
-        this.places.getPlaces(),
-        this.notes.getNotes()
-      ]).pipe(
-        map(([flow, quests, people, places, notes]) => {
-          if (!flow || !flow.items) {
-            return [];
+  getFlowById(id: string): Observable<Flow | null> {
+    return this.getFlows().pipe(
+      map(flows => flows.find(flow => flow.id === id) || null)
+    );
+  }
+
+  /**
+   * Get flow items enriched with entity data for specific flow
+   */
+  getEnrichedFlowItems(flowId: string): Observable<EnrichedFlowItem[]> {
+    return combineLatest([
+      this.getFlowById(flowId),
+      this.quests.getQuests(),
+      this.people.getPeople(),
+      this.places.getPlaces(),
+      this.notes.getNotes()
+    ]).pipe(
+      map(([flow, quests, people, places, notes]) => {
+        if (!flow || !flow.items) {
+          return [];
+        }
+
+        return flow.items.map((item): EnrichedFlowItem => {
+          if (item.type === 'quest') {
+            const quest = quests.find(q => q.id === (item as any).questId);
+            return {
+              ...item,
+              entity: quest || null
+            } as EnrichedQuestFlowItem;
+          } else if (item.type === 'person') {
+            const person = people.find(p => p.id === (item as any).personId);
+            return {
+              ...item,
+              entity: person || null
+            } as EnrichedPersonFlowItem;
+          } else if (item.type === 'place') {
+            const place = places.find(pl => pl.id === (item as any).placeId);
+            return {
+              ...item,
+              entity: place || null
+            } as EnrichedPlaceFlowItem;
+          } else if (item.type === 'note') {
+            const note = notes.find(n => n.id === (item as any).noteId);
+            return {
+              ...item,
+              entity: note || null
+            } as EnrichedNoteFlowItem;
+          }
+          return item as EnrichedFlowItem;
+        });
+      })
+    );
+  }
+
+  storeFlow(flow: Partial<Flow>, flowId?: string): Promise<{ success: boolean; id?: string }> {
+    return this.data.store(flow, FlowService.collection, flowId);
+  }
+
+  /**
+   * Add item to specific flow
+   */
+  async addItem(flowId: string, item: Partial<FlowItem>): Promise<boolean> {
+    return this.addItems(flowId, [item]);
+  }
+
+  /**
+   * Add multiple items to specific flow in a single write operation
+   */
+  async addItems(flowId: string, items: Partial<FlowItem>[]): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getFlowById(flowId).pipe(
+        switchMap(flow => {
+          if (!flow) {
+            resolve(false);
+            return of(null);
           }
 
-          return flow.items.map((item): EnrichedFlowItem => {
+          // Build all new items
+          const newItems: FlowItem[] = [];
+          let currentOrder = flow.items.length;
+
+          for (const item of items) {
+            const baseItem = {
+              id: ConfigService.nanoid(),
+              order: currentOrder++
+            };
+
+            let newItem: FlowItem;
             if (item.type === 'quest') {
-              const quest = quests.find(q => q.id === (item as any).questId);
-              return {
-                ...item,
-                entity: quest || null
-              } as EnrichedQuestFlowItem;
+              newItem = {
+                ...baseItem,
+                type: 'quest',
+                questId: (item as any).questId
+              };
             } else if (item.type === 'person') {
-              const person = people.find(p => p.id === (item as any).personId);
-              return {
-                ...item,
-                entity: person || null
-              } as EnrichedPersonFlowItem;
+              newItem = {
+                ...baseItem,
+                type: 'person',
+                personId: (item as any).personId
+              };
             } else if (item.type === 'place') {
-              const place = places.find(pl => pl.id === (item as any).placeId);
-              return {
-                ...item,
-                entity: place || null
-              } as EnrichedPlaceFlowItem;
+              newItem = {
+                ...baseItem,
+                type: 'place',
+                placeId: (item as any).placeId
+              };
             } else if (item.type === 'note') {
-              const note = notes.find(n => n.id === (item as any).noteId);
-              return {
-                ...item,
-                entity: note || null
-              } as EnrichedNoteFlowItem;
+              newItem = {
+                ...baseItem,
+                type: 'note',
+                noteId: (item as any).noteId
+              };
+            } else {
+              continue; // Skip invalid items
             }
-            // Session markers pass through
-            return item as EnrichedFlowItem;
-          });
+            newItems.push(newItem);
+          }
+
+          if (newItems.length === 0) {
+            resolve(false);
+            return of(null);
+          }
+
+          const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
+          return this.data.store({ items: updatedItems }, FlowService.collection, flowId);
         })
-      );
-    }
-    return this.enrichedFlowItems$;
-  }
-
-  /**
-   * Create flow if it doesn't exist
-   */
-  createFlow(campaignId: string): Promise<boolean> {
-    const flowData: FlowDB = {
-      campaignId,
-      createdBy: this.user.id,
-      createdAt: null as any, // Firestore serverTimestamp
-      updatedAt: null as any,
-      access: this.data['getInitialDocumentPermissions'](this.user.id),
-      items: []
-    };
-    return this.data.store(flowData, FlowService.collection).then(result => result.success);
-  }
-
-  /**
-   * Add item to flow
-   */
-  async addItem(item: Partial<FlowItem>): Promise<boolean> {
-    return this.addItems([item]);
-  }
-
-  /**
-   * Add multiple items to flow in a single write operation
-   */
-  async addItems(items: Partial<FlowItem>[]): Promise<boolean> {
-    const flow = this.flow$.value;
-    if (!flow) {
-      // Create flow first
-      await this.createFlow('default-campaign');
-      // Wait for flow to be loaded
-      return new Promise((resolve) => {
-        setTimeout(async () => {
-          const result = await this.addItems(items);
-          resolve(result);
-        }, 500);
+      ).subscribe((result) => {
+        if (result) {
+          resolve(result.success);
+        }
       });
-    }
-
-    // Build all new items
-    const newItems: FlowItem[] = [];
-    let currentOrder = flow.items.length;
-
-    for (const item of items) {
-      const baseItem = {
-        id: ConfigService.nanoid(),
-        order: currentOrder++
-      };
-
-      let newItem: FlowItem;
-      if (item.type === 'quest') {
-        newItem = {
-          ...baseItem,
-          type: 'quest',
-          questId: (item as any).questId
-        };
-      } else if (item.type === 'person') {
-        newItem = {
-          ...baseItem,
-          type: 'person',
-          personId: (item as any).personId
-        };
-      } else if (item.type === 'place') {
-        newItem = {
-          ...baseItem,
-          type: 'place',
-          placeId: (item as any).placeId
-        };
-      } else if (item.type === 'session-marker') {
-        newItem = {
-          ...baseItem,
-          type: 'session-marker',
-          date: (item as any).date
-        };
-      } else if (item.type === 'note') {
-        newItem = {
-          ...baseItem,
-          type: 'note',
-          noteId: (item as any).noteId
-        };
-      } else {
-        continue; // Skip invalid items
-      }
-      newItems.push(newItem);
-    }
-
-    if (newItems.length === 0) {
-      return Promise.resolve(false);
-    }
-
-    const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
+    });
   }
 
   /**
-   * Remove item from flow
+   * Remove item from specific flow
    */
-  removeItem(itemId: string): Promise<boolean> {
-    const flow = this.flow$.value;
-    if (!flow) {
-      return Promise.resolve(false);
-    }
+  removeItem(flowId: string, itemId: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.getFlowById(flowId).pipe(
+        switchMap(flow => {
+          if (!flow) {
+            resolve(false);
+            return of(null);
+          }
 
-    const updatedItems = flow.items
-      .filter(item => item.id !== itemId)
-      .map((item, index) => ({ ...item, order: index }))
-      .map(item => FlowService.sanitizeItem(item));
+          const updatedItems = flow.items
+            .filter(item => item.id !== itemId)
+            .map((item, index) => ({ ...item, order: index }))
+            .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
+          return this.data.store({ items: updatedItems }, FlowService.collection, flowId);
+        })
+      ).subscribe((result) => {
+        if (result) {
+          resolve(result.success);
+        }
+      });
+    });
   }
 
   /**
-   * Reorder items (after drag and drop)
+   * Reorder items for specific flow (after drag and drop)
    */
-  reorderItems(items: EnrichedFlowItem[]): Promise<boolean> {
-    const flow = this.flow$.value;
-    if (!flow) {
-      return Promise.resolve(false);
-    }
-
+  reorderItems(flowId: string, items: EnrichedFlowItem[]): Promise<boolean> {
     // Strip enriched data, update order, and sanitize
     const updatedItems = items
       .map(item => FlowService.stripEnrichedData(item))
       .map((item, index) => ({ ...item, order: index }))
       .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
-  }
-
-  /**
-   * Update session marker date
-   */
-  updateSessionMarker(itemId: string, date: Timestamp): Promise<boolean> {
-    const flow = this.flow$.value;
-    if (!flow) {
-      return Promise.resolve(false);
-    }
-
-    const updatedItems = flow.items
-      .map(item => {
-        if (item.id === itemId && item.type === 'session-marker') {
-          return { ...item, date: date as any };
-        }
-        return item;
-      })
-      .map(item => FlowService.sanitizeItem(item));
-
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
+    return this.data.store({ items: updatedItems }, FlowService.collection, flowId).then(result => result.success);
   }
 }

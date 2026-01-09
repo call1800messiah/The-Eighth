@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthGuardService } from '../core/services/auth-guard.service';
 import { DashboardComponent } from '../shared/components/dashboard/dashboard.component';
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
+import { FlowListComponent } from './components/flow-list/flow-list.component';
 
 const routes: Routes = [{
   canActivateChild: [AuthGuardService],
@@ -11,8 +12,12 @@ const routes: Routes = [{
   component: DashboardComponent,
   children: [
     {
-      path: '',
+      path: ':id',
       component: FlowViewComponent,
+    },
+    {
+      path: '',
+      component: FlowListComponent,
     }
   ]
 }];

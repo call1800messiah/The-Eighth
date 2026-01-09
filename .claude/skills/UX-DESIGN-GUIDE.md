@@ -19,6 +19,7 @@ All forms should use the global CSS classes defined in src/scss/forms.scss for c
 
 * Every form element (input, select, textarea, checkbox, radio) should be wrapped in a `.form-group` div for proper spacing and alignment.
 * Every input/select/textarea must have an associated `<label>` for accessibility. The label element always comes after the input element in the HTML structure.
+* Do not use additional styling on form elements unless absolutely necessary. Rely on the global styles.
 
 Examples:
 ```html

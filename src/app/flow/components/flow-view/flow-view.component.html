@@ -4,12 +4,12 @@
       <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon" (click)="addSessionMarker()" title="Session-Marker hinzufügen">
-      <fa-icon [icon]="faCalendar" [fixedWidth]="true"></fa-icon>
-    </button>
-
     <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen">
       <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
+    </button>
+
+    <button type="button" class="btn-icon" (click)="showEditFlowModal()" title="Session bearbeiten">
+      <fa-icon [icon]="faEdit" [fixedWidth]="true"></fa-icon>
     </button>
   </app-top-bar-filter>
 
@@ -21,7 +21,6 @@
   <!-- Error State -->
   <div *ngIf="error && !loading" class="error-state">
     <p>{{ error }}</p>
-    <button type="button" class="btn" (click)="ngOnInit()">Erneut versuchen</button>
   </div>
 
   <!-- Empty State -->
@@ -42,14 +41,7 @@
     class="flow-items"
   >
     <div *ngFor="let item of enrichedFlowItems$ | async" cdkDrag class="flow-item-wrapper">
-      <app-session-marker
-        *ngIf="item.type === 'session-marker'"
-        [item]="item"
-        (remove)="removeItem($event)"
-      ></app-session-marker>
-
       <app-flow-item
-        *ngIf="item.type === 'quest' || item.type === 'person' || item.type === 'place' || item.type === 'note'"
         [item]="item"
         (remove)="removeItem($event)"
       ></app-flow-item>

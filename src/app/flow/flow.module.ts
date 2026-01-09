@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -14,18 +14,21 @@ import { NotesModule } from '../notes/notes.module';
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
 import { FlowItemComponent } from './components/flow-item/flow-item.component';
 import { AddFlowItemComponent } from './components/add-flow-item/add-flow-item.component';
-import { SessionMarkerComponent } from './components/session-marker/session-marker.component';
+import { FlowListComponent } from './components/flow-list/flow-list.component';
+import { EditFlowComponent } from './components/edit-flow/edit-flow.component';
 
 @NgModule({
   declarations: [
     FlowViewComponent,
     FlowItemComponent,
     AddFlowItemComponent,
-    SessionMarkerComponent
+    FlowListComponent,
+    EditFlowComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     DragDropModule,
     FontAwesomeModule,
     FlowRoutingModule,
