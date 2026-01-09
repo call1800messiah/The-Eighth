@@ -36,6 +36,7 @@ import { RulesModule } from '../rules/rules.module';
   ],
   exports: [
     EditPersonComponent,
+    PersonComponent,
     PersonSelectorComponent,
     StatsComponent,
   ]

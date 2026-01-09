@@ -93,7 +93,20 @@
 - [x] Write SessionMarkerComponent tests (2 tests created)
 - [x] Write GeneralNoteComponent tests (4 tests created)
 
-#### Step 8: Verification
+#### Step 8: Dynamic Detail View Loading
+- [x] Research existing detail components (quest-detail, person-detail, place-detail)
+- [x] Refactor QuestComponent to accept optional @Input() entityId
+- [x] Refactor PersonComponent to accept optional @Input() entityId
+- [x] Refactor PlaceComponent to accept optional @Input() entityId
+- [x] Update FlowItemComponent to use dynamic component loading
+- [x] Implement ViewContainerRef for inline component insertion
+- [x] Add component destruction on collapse
+- [x] Export detail components from their modules
+- [x] Import required modules into FlowModule
+- [ ] Test subscription cleanup (no memory leaks)
+- [ ] Update FlowItemComponent tests
+
+#### Step 9: Verification
 - [ ] Run build (ng build)
 - [ ] Run lint (ng lint)
 - [ ] Run tests (ng test)

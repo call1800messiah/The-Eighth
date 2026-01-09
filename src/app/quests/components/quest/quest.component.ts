@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import type { Quest } from '../../models/quest';
@@ -24,6 +24,7 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
   styleUrls: ['./quest.component.scss']
 })
 export class QuestComponent implements OnInit, OnDestroy {
+  @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
   menu: Menu = {
@@ -56,21 +57,26 @@ export class QuestComponent implements OnInit, OnDestroy {
     private questService: QuestsService,
     private route: ActivatedRoute,
   ) {
-    // TODO: Check if the quest can be loaded by a resolver as an observable
-    this.questSub = this.route.paramMap.pipe(
-      switchMap(params => {
-        return this.questService.getQuestById(params.get('id'));
-      }),
-    ).subscribe((quest) => {
-      if (quest) {
-        this.quest = quest;
-        this.navigation.setPageLabel(this.quest.name, '/quests');
-        this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
-      }
-    });
   }
 
   ngOnInit(): void {
+    // Support both routed and embedded usage
+    const idSource$ = this.entityId
+      ? of(this.entityId)
+      : this.route.paramMap.pipe(switchMap(params => of(params.get('id'))));
+
+    this.questSub = idSource$.pipe(
+      switchMap(id => this.questService.getQuestById(id)),
+    ).subscribe((quest) => {
+      if (quest) {
+        this.quest = quest;
+        // Only set page label when used in routed context
+        if (!this.entityId) {
+          this.navigation.setPageLabel(this.quest.name, '/quests');
+        }
+        this.infos$ = this.data.getInfos(this.quest.id, QuestsService.collection);
+      }
+    });
   }
 
   ngOnDestroy() {

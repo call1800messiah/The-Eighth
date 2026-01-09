@@ -112,11 +112,14 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Click on quest/person/place in flow] --> B{Action}
-    B -->|Click| C[Navigate to entity detail page]
-    B -->|Edit notes| D[Edit entity's own notes]
-    C --> E[View/edit entity]
-    E --> F[Return to flow]
+    A[Click on quest/person/place in flow] --> B[Toggle expansion]
+    B -->|Expand| C[Dynamically load detail component]
+    C --> D[Show full detail view inline]
+    D --> E{User interaction}
+    E -->|Edit entity| F[Use detail view's edit functionality]
+    E -->|Collapse| G[Destroy detail component]
+    G --> H[Clean up subscriptions]
+    E -->|Navigate to full page| I[Navigate to entity detail route]
 ```
 
 ## Flow: Session Marker Management

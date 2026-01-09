@@ -145,8 +145,8 @@ interface GeneralNoteFlowItem extends BaseFlowItem {
 | src/app/flow/components/flow-view/flow-view.component.html | Template | Flow view template |
 | src/app/flow/components/flow-view/flow-view.component.scss | Styles | Flow view styles |
 | src/app/flow/components/flow-view/flow-view.component.spec.ts | Test | Flow view tests |
-| src/app/flow/components/flow-item/flow-item.component.ts | Component | Display single flow item |
-| src/app/flow/components/flow-item/flow-item.component.html | Template | Flow item template |
+| src/app/flow/components/flow-item/flow-item.component.ts | Component | Display single flow item, dynamically load detail views |
+| src/app/flow/components/flow-item/flow-item.component.html | Template | Flow item template with ViewContainerRef |
 | src/app/flow/components/flow-item/flow-item.component.scss | Styles | Flow item styles |
 | src/app/flow/components/flow-item/flow-item.component.spec.ts | Test | Flow item tests |
 | src/app/flow/components/add-flow-item/add-flow-item.component.ts | Component | Add item popover UI |
@@ -210,8 +210,8 @@ This feature is in the **campaign management** domain.
 **Rationale**: Consistent UX, reuse ContainerComponent, TopBarFilterComponent, standard layouts
 
 ### Entity Interaction
-**Decision**: Expand inline on click (not navigate)
-**Rationale**: Keep user in flow context, show description + notes + related entities inline
+**Decision**: Dynamically load full detail view inline when expanded
+**Rationale**: Keep user in flow context, show complete entity detail view (same as detail pages), lazy load only when expanded, destroy when collapsed to avoid keeping Firestore subscriptions open
 
 ### Add Item UX
 **Decision**: Single modal with tabs for each item type

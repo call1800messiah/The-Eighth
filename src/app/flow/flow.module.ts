@@ -6,6 +6,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { FlowRoutingModule } from './flow-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { QuestsModule } from '../quests/quests.module';
+import { PeopleModule } from '../people/people.module';
+import { PlacesModule } from '../places/places.module';
 
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
 import { FlowItemComponent } from './components/flow-item/flow-item.component';
@@ -27,7 +30,10 @@ import { GeneralNoteComponent } from './components/general-note/general-note.com
     DragDropModule,
     FontAwesomeModule,
     FlowRoutingModule,
-    SharedModule
+    SharedModule,
+    QuestsModule,
+    PeopleModule,
+    PlacesModule
   ]
 })
 export class FlowModule { }

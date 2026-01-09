@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { from, Observable, Subscription } from 'rxjs';
+import { from, Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
@@ -38,6 +38,7 @@ import { EditCapabilityComponent } from '../edit-capability/edit-capability.comp
   styleUrls: ['./person.component.scss']
 })
 export class PersonComponent implements OnInit, OnDestroy {
+  @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
   menu: Menu = {
@@ -103,15 +104,22 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // TODO: Check if the person can be loaded by a resolver as an observable
-    this.personSub = this.route.paramMap.pipe(
-      switchMap(params => {
-        return this.person$ = this.peopleService.getPersonById(params.get('id'));
+    // Support both routed and embedded usage
+    const idSource$ = this.entityId
+      ? of(this.entityId)
+      : this.route.paramMap.pipe(switchMap(params => of(params.get('id'))));
+
+    this.personSub = idSource$.pipe(
+      switchMap(id => {
+        return this.person$ = this.peopleService.getPersonById(id);
       }),
     ).subscribe((person) => {
       if (person) {
         this.person = person;
-        this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
+        // Only set page label when used in routed context
+        if (!this.entityId) {
+          this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
+        }
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
       }
     });

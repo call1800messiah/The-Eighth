@@ -20,6 +20,9 @@ import { QuestSummaryComponent } from './components/quest-summary/quest-summary.
     CommonModule,
     SharedModule,
     QuestsRoutingModule
+  ],
+  exports: [
+    QuestComponent
   ]
 })
 export class QuestsModule { }

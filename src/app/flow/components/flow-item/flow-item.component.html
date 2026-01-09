@@ -25,19 +25,8 @@
   </div>
 
   <div class="flow-item-details" *ngIf="expanded && hasEntity()">
-    <div class="detail-section" *ngIf="$any(item).entity.description">
-      <strong>Beschreibung:</strong>
-      <p>{{ $any(item).entity.description }}</p>
-    </div>
-
-    <div class="detail-section" *ngIf="item.type === 'quest' && $any(item).entity.parent">
-      <strong>Übergeordnete Quest:</strong>
-      <p>{{ $any(item).entity.parent.name }}</p>
-    </div>
-
-    <button type="button" class="btn view-full-btn" (click)="navigateToEntity()">
-      Gesamte Seite anzeigen →
-    </button>
+    <!-- Dynamically loaded detail component will be inserted here -->
+    <ng-container #detailContainer></ng-container>
   </div>
 
   <div class="flow-item-deleted" *ngIf="expanded && !hasEntity()">
