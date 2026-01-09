@@ -9,20 +9,19 @@ import { SharedModule } from '../shared/shared.module';
 import { QuestsModule } from '../quests/quests.module';
 import { PeopleModule } from '../people/people.module';
 import { PlacesModule } from '../places/places.module';
+import { NotesModule } from '../notes/notes.module';
 
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
 import { FlowItemComponent } from './components/flow-item/flow-item.component';
 import { AddFlowItemComponent } from './components/add-flow-item/add-flow-item.component';
 import { SessionMarkerComponent } from './components/session-marker/session-marker.component';
-import { GeneralNoteComponent } from './components/general-note/general-note.component';
 
 @NgModule({
   declarations: [
     FlowViewComponent,
     FlowItemComponent,
     AddFlowItemComponent,
-    SessionMarkerComponent,
-    GeneralNoteComponent
+    SessionMarkerComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +32,8 @@ import { GeneralNoteComponent } from './components/general-note/general-note.com
     SharedModule,
     QuestsModule,
     PeopleModule,
-    PlacesModule
+    PlacesModule,
+    NotesModule
   ]
 })
 export class FlowModule { }

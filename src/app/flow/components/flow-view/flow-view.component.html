@@ -8,7 +8,7 @@
       <fa-icon [icon]="faCalendar" [fixedWidth]="true"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon" (click)="addGeneralNote()" title="Notiz hinzufügen">
+    <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen">
       <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
     </button>
   </app-top-bar-filter>
@@ -48,14 +48,8 @@
         (remove)="removeItem($event)"
       ></app-session-marker>
 
-      <app-general-note
-        *ngIf="item.type === 'general-note'"
-        [item]="item"
-        (remove)="removeItem($event)"
-      ></app-general-note>
-
       <app-flow-item
-        *ngIf="item.type === 'quest' || item.type === 'person' || item.type === 'place'"
+        *ngIf="item.type === 'quest' || item.type === 'person' || item.type === 'place' || item.type === 'note'"
         [item]="item"
         (remove)="removeItem($event)"
       ></app-flow-item>

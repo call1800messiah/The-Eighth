@@ -1,13 +1,14 @@
 import type { Quest } from '../../quests/models/quest';
 import type { Person } from '../../people/models/person';
 import type { Place } from '../../places/models/place';
+import type { Note } from '../../notes/models/note';
 
 export type FlowItem =
   | QuestFlowItem
   | PersonFlowItem
   | PlaceFlowItem
   | SessionMarkerFlowItem
-  | GeneralNoteFlowItem;
+  | NoteFlowItem;
 
 interface BaseFlowItem {
   id: string;
@@ -34,9 +35,9 @@ export interface SessionMarkerFlowItem extends BaseFlowItem {
   date: Date;
 }
 
-export interface GeneralNoteFlowItem extends BaseFlowItem {
-  type: 'general-note';
-  content: string;
+export interface NoteFlowItem extends BaseFlowItem {
+  type: 'note';
+  noteId: string;
 }
 
 // Enriched types (with resolved entity data)
@@ -45,7 +46,7 @@ export type EnrichedFlowItem =
   | EnrichedPersonFlowItem
   | EnrichedPlaceFlowItem
   | SessionMarkerFlowItem
-  | GeneralNoteFlowItem;
+  | EnrichedNoteFlowItem;
 
 export interface EnrichedQuestFlowItem extends QuestFlowItem {
   entity: Quest | null; // null if quest deleted
@@ -57,4 +58,8 @@ export interface EnrichedPersonFlowItem extends PersonFlowItem {
 
 export interface EnrichedPlaceFlowItem extends PlaceFlowItem {
   entity: Place | null;
+}
+
+export interface EnrichedNoteFlowItem extends NoteFlowItem {
+  entity: Note | null;
 }

@@ -6,6 +6,7 @@ import type { Timestamp } from '@angular/fire/firestore';
 import type { AuthUser } from '../../auth/models/auth-user';
 import type {
   EnrichedFlowItem,
+  EnrichedNoteFlowItem,
   EnrichedPersonFlowItem,
   EnrichedPlaceFlowItem,
   EnrichedQuestFlowItem,
@@ -20,6 +21,7 @@ import { ConfigService } from '../../core/services/config.service';
 import { QuestsService } from '../../quests/services/quests.service';
 import { PeopleService } from '../../people/services/people.service';
 import { PlaceService } from '../../places/services/place.service';
+import { NotesService } from '../../notes/services/notes.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +38,8 @@ export class FlowService {
     private data: DataService,
     private quests: QuestsService,
     private people: PeopleService,
-    private places: PlaceService
+    private places: PlaceService,
+    private notes: NotesService
   ) {
     this.user = this.auth.user;
   }
@@ -83,8 +86,8 @@ export class FlowService {
       sanitized.placeId = (item as any).placeId;
     } else if (item.type === 'session-marker') {
       sanitized.date = (item as any).date;
-    } else if (item.type === 'general-note') {
-      sanitized.content = (item as any).content;
+    } else if (item.type === 'note') {
+      sanitized.noteId = (item as any).noteId;
     }
 
     return sanitized;
@@ -126,9 +129,10 @@ export class FlowService {
         this.getFlow(),
         this.quests.getQuests(),
         this.people.getPeople(),
-        this.places.getPlaces()
+        this.places.getPlaces(),
+        this.notes.getNotes()
       ]).pipe(
-        map(([flow, quests, people, places]) => {
+        map(([flow, quests, people, places, notes]) => {
           if (!flow || !flow.items) {
             return [];
           }
@@ -152,8 +156,14 @@ export class FlowService {
                 ...item,
                 entity: place || null
               } as EnrichedPlaceFlowItem;
+            } else if (item.type === 'note') {
+              const note = notes.find(n => n.id === (item as any).noteId);
+              return {
+                ...item,
+                entity: note || null
+              } as EnrichedNoteFlowItem;
             }
-            // Session markers and general notes pass through
+            // Session markers pass through
             return item as EnrichedFlowItem;
           });
         })
@@ -174,7 +184,7 @@ export class FlowService {
       access: this.data['getInitialDocumentPermissions'](this.user.id),
       items: []
     };
-    return this.data.store(flowData, FlowService.collection);
+    return this.data.store(flowData, FlowService.collection).then(result => result.success);
   }
 
   /**
@@ -236,11 +246,11 @@ export class FlowService {
           type: 'session-marker',
           date: (item as any).date
         };
-      } else if (item.type === 'general-note') {
+      } else if (item.type === 'note') {
         newItem = {
           ...baseItem,
-          type: 'general-note',
-          content: (item as any).content || ''
+          type: 'note',
+          noteId: (item as any).noteId
         };
       } else {
         continue; // Skip invalid items
@@ -253,7 +263,7 @@ export class FlowService {
     }
 
     const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
+    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
   }
 
   /**
@@ -270,7 +280,7 @@ export class FlowService {
       .map((item, index) => ({ ...item, order: index }))
       .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
+    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
   }
 
   /**
@@ -288,7 +298,7 @@ export class FlowService {
       .map((item, index) => ({ ...item, order: index }))
       .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
+    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
   }
 
   /**
@@ -309,27 +319,6 @@ export class FlowService {
       })
       .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
-  }
-
-  /**
-   * Update general note content
-   */
-  updateGeneralNote(itemId: string, content: string): Promise<boolean> {
-    const flow = this.flow$.value;
-    if (!flow) {
-      return Promise.resolve(false);
-    }
-
-    const updatedItems = flow.items
-      .map(item => {
-        if (item.id === itemId && item.type === 'general-note') {
-          return { ...item, content };
-        }
-        return item;
-      })
-      .map(item => FlowService.sanitizeItem(item));
-
-    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id);
+    return this.data.store({ items: updatedItems }, FlowService.collection, flow.id).then(result => result.success);
   }
 }

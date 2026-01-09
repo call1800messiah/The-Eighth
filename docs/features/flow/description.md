@@ -5,24 +5,24 @@ A session flow planner that allows GMs to create an ordered, editable sequence o
 
 ## Requirements
 - [ ] Single continuous flow per campaign
-- [ ] Support multiple item types: quests, people, places, session markers, general notes
+- [ ] Support multiple item types: quests, people, places, session markers, notes
 - [ ] Drag and drop reordering
 - [ ] Multiple methods to add items:
-  - Search and add existing entities
-  - Drag from sidebar
-  - Quick create + add new entities
+  - Search and add existing entities from modal
+  - Quick create new notes from modal
 - [ ] Session start markers with date/timestamp
-- [ ] General notes (not attached to entities)
+- [ ] Notes from existing notes feature (not separate)
 - [ ] Fully editable during and after sessions
 - [ ] Auto-remove items when referenced entities are deleted
 - [ ] GM-only access (no player view)
 - [ ] Dedicated route: `/flow`
+- [ ] Inline detail views on expand (dynamically loaded)
 
 ## User Stories
 - As a GM, I want to plan my session by creating an ordered list of quest steps so that I can stay organized during play
 - As a GM, I want to link NPCs and places to quest steps so that I have quick access to relevant information
 - As a GM, I want to add session start markers so that I can track what happened in each session
-- As a GM, I want to add general notes between items so that I can remember important details or improvised content
+- As a GM, I want to add notes from my existing notes collection so that I can reference important details or improvised content
 - As a GM, I want to reorder items with drag and drop so that I can adjust my session plan easily
 - As a GM, I want to add items in multiple ways (search, drag, quick create) so that I can work efficiently
 
@@ -87,17 +87,20 @@ interface GeneralNoteFlowItem extends BaseFlowItem {
 ## Constraints
 - One flow per campaign (1:1 relationship)
 - Only GMs can create/edit flows
-- Flow items reference existing entities (quests, people, places)
+- Flow items reference existing entities (quests, people, places, notes)
 - When an entity is deleted, its flow item is auto-removed
-- General notes are the only flow items with their own data
-- All other notes are edited on the entity itself, not in the flow
+- Notes are managed through the existing notes feature
+- Detail views are dynamically loaded inline to avoid keeping subscriptions open
+- All entities are edited through their existing edit modals, not inline in the flow
 
 ## Integration
 - **Campaigns**: Each campaign can have one flow
-- **Quests**: Quests can be added to flow, changes reflected immediately
-- **People**: People can be added to flow
-- **Places**: Places can be added to flow
+- **Quests**: Quests can be added to flow, changes reflected immediately, detail view shown inline
+- **People**: People can be added to flow, detail view shown inline
+- **Places**: Places can be added to flow, detail view shown inline
+- **Notes**: Notes from notes feature can be added to flow, detail view shown inline
 - **Navigation**: Add "Session Flow" to main navigation menu
+- **Dynamic Components**: Detail components (Quest/Person/Place/Note) refactored to support embedded usage
 
 ## Bill of Materials
 

@@ -1,0 +1,15 @@
+<div class="note-detail" *ngIf="note">
+  <div class="note-content">
+    {{ note.content }}
+  </div>
+
+  <div class="note-actions">
+    <button type="button" class="btn" (click)="editNote()">
+      Bearbeiten
+    </button>
+  </div>
+</div>
+
+<div class="note-not-found" *ngIf="!note">
+  <p>Notiz nicht gefunden</p>
+</div>

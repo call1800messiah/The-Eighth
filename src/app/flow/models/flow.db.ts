@@ -14,7 +14,7 @@ export type FlowItemDB =
   | PersonFlowItemDB
   | PlaceFlowItemDB
   | SessionMarkerFlowItemDB
-  | GeneralNoteFlowItemDB;
+  | NoteFlowItemDB;
 
 interface BaseFlowItemDB {
   id: string;
@@ -41,7 +41,7 @@ export interface SessionMarkerFlowItemDB extends BaseFlowItemDB {
   date: Timestamp;
 }
 
-export interface GeneralNoteFlowItemDB extends BaseFlowItemDB {
-  type: 'general-note';
-  content: string;
+export interface NoteFlowItemDB extends BaseFlowItemDB {
+  type: 'note';
+  noteId: string;
 }

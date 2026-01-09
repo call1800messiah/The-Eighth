@@ -3,5 +3,5 @@ export enum FlowItemType {
   Person = 'person',
   Place = 'place',
   SessionMarker = 'session-marker',
-  GeneralNote = 'general-note'
+  Note = 'note'
 }

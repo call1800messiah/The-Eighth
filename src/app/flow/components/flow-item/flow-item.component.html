@@ -9,6 +9,7 @@
       <fa-icon *ngIf="item.type === 'quest'" [icon]="faMeteor"></fa-icon>
       <fa-icon *ngIf="item.type === 'person' && !hasEntity()" [icon]="faUsers"></fa-icon>
       <fa-icon *ngIf="item.type === 'place'" [icon]="faCompass"></fa-icon>
+      <fa-icon *ngIf="item.type === 'note'" [icon]="faStickyNote"></fa-icon>
     </div>
 
     <div class="item-content" (click)="toggleExpand()">

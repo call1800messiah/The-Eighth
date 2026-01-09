@@ -1,55 +1,47 @@
 # Flow Feature - Scratchpad
 
-## Implementation Notes: Dynamic Detail Views
+## Implementation Complete: Dynamic Detail Views
 
-### Components Identified
-- **Quests**: `QuestComponent` (src/app/quests/components/quest/quest.component.ts)
-- **People**: `PersonComponent` (src/app/people/components/person/person.component.ts)
-- **Places**: `PlaceComponent` (src/app/places/components/place/place.component.ts)
+### Detail Components Refactored
+All detail components now support both routed and embedded usage:
+- **QuestComponent**: Accepts `@Input() entityId` for embedded use
+- **PersonComponent**: Accepts `@Input() entityId` for embedded use
+- **PlaceComponent**: Accepts `@Input() entityId` for embedded use
+- **NoteComponent**: Created with `@Input() entityId` for embedded use
 
-### Problem
-These components currently get the entity ID from `ActivatedRoute` route params. They expect to be used in a routed context.
+### FlowItemComponent
+- Uses `ViewContainerRef` to dynamically load detail components
+- On expand: Creates appropriate component (Quest/Person/Place/Note)
+- On collapse: Destroys component via `componentRef.destroy()`
+- Memory-safe: Subscription cleanup handled by component's ngOnDestroy
 
-### Solution: Refactor Detail Components
-Modify each detail component to support both routed and embedded usage:
+### Notes Integration Complete
+- Replaced GeneralNoteFlowItem with NoteFlowItem (references existing notes)
+- Created NoteComponent for inline display
+- Added notes tab to AddFlowItemComponent
+- FlowService enriches notes via combineLatest with NotesService
+- GeneralNoteComponent removed (no longer needed)
 
-1. Add optional `@Input() entityId?: string` to each component
-2. In `ngOnInit()`, check if `entityId` input is provided:
-   - If yes: use it directly to load data
-   - If no: fall back to reading from `ActivatedRoute` (existing behavior)
-3. This allows components to work both ways:
-   - Routed: `/quests/:id` → reads from route
-   - Embedded: `<app-quest [entityId]="'quest123'">` → reads from input
+### Auto-add Notes on Creation
+- EditNoteComponent now supports optional `onSave` callback via props
+- FlowViewComponent's `showAddNoteModal()` passes callback to auto-add note to flow
+- When user creates a note via the sticky note button, it's automatically added to the flow
+- Callback receives the newly created Note with its generated ID from Firebase
 
-### Files to Modify
-- src/app/quests/components/quest/quest.component.ts
-- src/app/people/components/person/person.component.ts
-- src/app/places/components/place/place.component.ts
-
-### FlowItemComponent Implementation
-1. Use `ViewContainerRef` in template
-2. On expand: `ViewContainerRef.createComponent()` to dynamically create component
-3. Set `entityId` input via `componentRef.setInput('entityId', id)`
-4. Store ComponentRef to destroy later
-5. On collapse: call `componentRef.destroy()` to clean up subscriptions
-
-### Memory Management
-- ComponentRef.destroy() will trigger ngOnDestroy on the child component
-- Existing subscription cleanup in detail components will handle Firestore unsubscribes
-- Verify with Chrome DevTools Memory profiler
-
-## Implementation Complete
-Dynamic detail view loading has been implemented:
-- QuestComponent, PersonComponent, PlaceComponent now support embedded usage via `@Input() entityId`
-- FlowItemComponent dynamically loads detail components on expand
-- Components are properly destroyed on collapse to prevent memory leaks
-- Modules updated to export and import detail components
+### DataService.store() Refactoring
+- Updated return type from `Promise<boolean>` to `Promise<{ success: boolean; id?: string }>`
+- Ensures newly created documents return their Firebase-generated ID
+- Maintains proper access rights initialization by letting Firebase generate IDs
+- Updated all service wrappers: NotesService, FlowService, ProjectService, RulesService
+- All FlowService methods now extract `.success` from store result
+- Build verified successfully - no breaking changes to existing code
 
 ## Verification Pending
-- Build check (ng build)
+- Build check (ng build) ✓ PASSED
 - Lint check (ng lint)
 - All tests passing (ng test)
 - Manual testing of expand/collapse functionality
+- Manual testing of notes tab in add modal
 - Memory leak verification (Chrome DevTools)
 - Code style review
 - Quality standards verification

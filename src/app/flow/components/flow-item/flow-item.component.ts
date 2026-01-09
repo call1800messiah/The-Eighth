@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, ComponentRef, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { faTimes, faChevronDown, faChevronRight, faGripVertical, faMeteor, faUsers, faCompass } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faChevronDown, faChevronRight, faGripVertical, faMeteor, faUsers, faCompass, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
-import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem } from '../../models';
+import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem, EnrichedNoteFlowItem } from '../../models';
 import { QuestComponent } from '../../../quests/components/quest/quest.component';
 import { PersonComponent } from '../../../people/components/person/person.component';
 import { PlaceComponent } from '../../../places/components/place/place.component';
+import { NoteComponent } from '../../../notes/components/note/note.component';
 
 @Component({
   selector: 'app-flow-item',
@@ -24,13 +24,12 @@ export class FlowItemComponent implements OnDestroy {
   faMeteor = faMeteor;
   faUsers = faUsers;
   faCompass = faCompass;
+  faStickyNote = faStickyNote;
 
   expanded = false;
   private componentRef: ComponentRef<any> | null = null;
 
-  constructor(
-    private router: Router,
-  ) {}
+  constructor() {}
 
   ngOnDestroy(): void {
     this.destroyDetailComponent();
@@ -69,6 +68,10 @@ export class FlowItemComponent implements OnDestroy {
         component = PlaceComponent;
         entityId = (this.item as EnrichedPlaceFlowItem).placeId;
         break;
+      case 'note':
+        component = NoteComponent;
+        entityId = (this.item as EnrichedNoteFlowItem).noteId;
+        break;
       default:
         return;
     }
@@ -90,20 +93,6 @@ export class FlowItemComponent implements OnDestroy {
     }
   }
 
-  navigateToEntity(): void {
-    if (!this.item || !(this.item as any).entity) {
-      return;
-    }
-
-    if (this.item.type === 'quest') {
-      this.router.navigate(['/quests', (this.item as EnrichedQuestFlowItem).questId]);
-    } else if (this.item.type === 'person') {
-      this.router.navigate(['/people', (this.item as EnrichedPersonFlowItem).personId]);
-    } else if (this.item.type === 'place') {
-      this.router.navigate(['/places', (this.item as EnrichedPlaceFlowItem).placeId]);
-    }
-  }
-
   removeItem(): void {
     this.remove.emit(this.item.id);
   }
@@ -113,7 +102,7 @@ export class FlowItemComponent implements OnDestroy {
     if (!entity) {
       return 'Gelöschtes Element';
     }
-    return entity.name || 'Unbenannt';
+    return entity.name || entity.title || 'Unbenannt';
   }
 
   hasEntity(): boolean {

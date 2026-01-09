@@ -8,6 +8,7 @@ import { FlowService } from '../../services/flow.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { AddFlowItemComponent } from '../add-flow-item/add-flow-item.component';
+import { EditNoteComponent } from '../../../notes/components/edit-note/edit-note.component';
 
 @Component({
   selector: 'app-flow-view',
@@ -62,6 +63,15 @@ export class FlowViewComponent implements OnInit {
     this.popover.showPopover('Element hinzufügen', AddFlowItemComponent, {});
   }
 
+  showAddNoteModal(): void {
+    this.popover.showPopover('Notiz hinzufügen', EditNoteComponent, {
+      onSave: async (note) => {
+        // Automatically add the newly created note to the flow
+        await this.flowService.addItem({ type: 'note', noteId: note.id });
+      }
+    });
+  }
+
   addSessionMarker(): void {
     this.flowService.addItem({
       type: 'session-marker',
@@ -69,18 +79,6 @@ export class FlowViewComponent implements OnInit {
     }).then(success => {
       if (!success) {
         console.error('Failed to add session marker');
-      }
-    });
-  }
-
-  addGeneralNote(): void {
-    // Add empty note that can be edited inline
-    this.flowService.addItem({
-      type: 'general-note',
-      content: ''
-    }).then(success => {
-      if (!success) {
-        console.error('Failed to add general note');
       }
     });
   }

@@ -44,6 +44,13 @@
     pointer-events: none;
     width: 4rem;
   }
+
+  label.entity-name {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 }
 
 .modal-footer {

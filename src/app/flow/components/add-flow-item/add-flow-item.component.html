@@ -24,6 +24,14 @@
     >
       Ort
     </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab === 'note'"
+      (click)="switchTab('note')"
+    >
+      Notiz
+    </button>
   </div>
 
   <div class="modal-body">
@@ -96,6 +104,36 @@
         >
           <input id="place-{{place.id}}" type="checkbox" [checked]="isSelected(place.id)" (click)="toggleSelection(place.id)" />
           <label class="entity-name" for="place-{{place.id}}">{{ place.name }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note Tab -->
+    <div *ngIf="activeTab === 'note'" class="tab-content">
+      <div class="form-group">
+        <input
+          type="text"
+          id="note-search"
+          [value]="searchText$ | async"
+          (input)="onSearchChange($event.target.value)"
+        />
+        <label for="note-search">Notiz suchen...</label>
+      </div>
+
+      <div class="entity-list">
+        <div
+          *ngFor="let note of filteredNotes$ | async"
+          class="entity-item form-group"
+          [class.selected]="isSelected(note.id)"
+        >
+          <input id="note-{{note.id}}" type="checkbox" [checked]="isSelected(note.id)" (click)="toggleSelection(note.id)" />
+          <label class="entity-name" for="note-{{note.id}}">
+            <div>
+              <span class="note-title" *ngIf="note.title">{{ note.title }}</span>
+              <span class="note-content" *ngIf="!note.title">{{ note.content.slice(0,35) }}</span>
+            </div>
+            <div class="note-category" *ngIf="note.category">[{{ note.category }}]</div>
+          </label>
         </div>
       </div>
     </div>
