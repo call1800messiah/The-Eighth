@@ -1,0 +1,14 @@
+<div class="tabs">
+  <button
+    *ngFor="let panel of tabPanels"
+    type="button"
+    class="tab-btn"
+    [class.active]="activeTabId === panel.id"
+    (click)="selectTab(panel.id)"
+  >
+    {{ panel.label }}
+  </button>
+</div>
+<div class="tab-content">
+  <ng-content></ng-content>
+</div>

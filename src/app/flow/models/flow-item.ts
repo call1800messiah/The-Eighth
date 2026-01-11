@@ -1,5 +1,5 @@
-import type { Quest } from '../../quests/models/quest';
-import type { Person } from '../../people/models/person';
+import type { Quest } from '../../quests';
+import type { Person } from '../../people';
 import type { Place } from '../../places/models/place';
 import type { Note } from '../../notes/models/note';
 

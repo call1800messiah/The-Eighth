@@ -32,6 +32,8 @@ import { EditTagsComponent } from './components/edit-tags/edit-tags.component';
 import { AccessIndicatorComponent } from './components/access-indicator/access-indicator.component';
 import { LoadingTriggerComponent } from './components/loading-trigger/loading-trigger.component';
 import { BarAttributesComponent } from './components/bar-attributes/bar-attributes.component';
+import { TabsComponent } from './components/tabs/tabs.component';
+import { TabPanelComponent } from './components/tabs/tab-panel.component';
 
 
 
@@ -64,6 +66,8 @@ import { BarAttributesComponent } from './components/bar-attributes/bar-attribut
     EditAccessComponent,
     EditTagsComponent,
     AccessIndicatorComponent,
+    TabsComponent,
+    TabPanelComponent,
   ],
   imports: [
     CommonModule,
@@ -100,6 +104,8 @@ import { BarAttributesComponent } from './components/bar-attributes/bar-attribut
     ProgressBarComponent,
     ReactiveFormsModule,
     SelectOnFocusDirective,
+    TabsComponent,
+    TabPanelComponent,
     TimelineComponent,
     TopBarFilterComponent,
     TplVarDirective,

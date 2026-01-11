@@ -26,7 +26,7 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
   @Input() props: AddFlowItemProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
 
-  activeTab: 'quest' | 'person' | 'place' | 'note' = 'quest';
+  activeTab = 'quest';
   searchText$ = new BehaviorSubject<string>('');
 
   quests$: Observable<Quest[]>;
@@ -104,8 +104,8 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
     );
   }
 
-  switchTab(tab: 'quest' | 'person' | 'place' | 'note'): void {
-    this.activeTab = tab;
+  onTabChange(tabId: string): void {
+    this.activeTab = tabId;
     this.selectedItems = [];
     this.searchText$.next('');
   }
