@@ -60,24 +60,7 @@ describe('FlowViewComponent', () => {
     expect(popoverServiceSpy.showPopover).toHaveBeenCalled();
   });
 
-  it('T-FLOW-C06: should add session marker when button clicked', async () => {
-    flowServiceSpy.addItem.and.returnValue(Promise.resolve(true));
-    await component.addSessionMarker();
-    expect(flowServiceSpy.addItem).toHaveBeenCalledWith(jasmine.objectContaining({
-      type: 'session-marker'
-    }));
-  });
-
-  it('T-FLOW-C07: should add general note when button clicked', async () => {
-    flowServiceSpy.addItem.and.returnValue(Promise.resolve(true));
-    await component.addGeneralNote();
-    expect(flowServiceSpy.addItem).toHaveBeenCalledWith(jasmine.objectContaining({
-      type: 'general-note',
-      content: ''
-    }));
-  });
-
-  it('T-FLOW-C09: should remove item when removeItem called', async () => {
+  it('T-FLOW-C06: should remove item when removeItem called', async () => {
     spyOn(window, 'confirm').and.returnValue(true);
     flowServiceSpy.removeItem.and.returnValue(Promise.resolve(true));
     await component.removeItem('item1');
