@@ -44,16 +44,12 @@ export class FlowService {
   private static transformFlow(flowData: any, flowId: string): Flow {
     return {
       access: flowData.access || [],
-      campaignId: flowData.campaignId || '',
       collection: FlowService.collection,
-      createdAt: flowData.createdAt?.toDate() || new Date(),
-      createdBy: flowData.createdBy || '',
       date: new Date(flowData.date),
       id: flowId,
       items: flowData.items,
       owner: flowData.owner,
       title: flowData.title || '',
-      updatedAt: flowData.updatedAt?.toDate() || new Date()
     };
   }
 
@@ -243,7 +239,7 @@ export class FlowService {
           }
 
           const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
-          return this.data.store({ items: updatedItems }, FlowService.collection, flowId);
+          return this.storeFlow({ items: updatedItems }, flowId);
         })
       ).subscribe((result) => {
         if (result) {
@@ -271,7 +267,7 @@ export class FlowService {
             .map((item, index) => ({ ...item, order: index }))
             .map(item => FlowService.sanitizeItem(item));
 
-          return this.data.store({ items: updatedItems }, FlowService.collection, flowId);
+          return this.storeFlow({ items: updatedItems }, flowId);
         })
       ).subscribe((result) => {
         if (result) {
@@ -291,6 +287,6 @@ export class FlowService {
       .map((item, index) => ({ ...item, order: index }))
       .map(item => FlowService.sanitizeItem(item));
 
-    return this.data.store({ items: updatedItems }, FlowService.collection, flowId).then(result => result.success);
+    return this.storeFlow({ items: updatedItems }, flowId).then(result => result.success);
   }
 }

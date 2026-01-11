@@ -2,13 +2,9 @@ import type { Timestamp } from '@angular/fire/firestore';
 
 export interface FlowDB {
   access: string[];
-  campaignId: string;
-  createdBy: string;
   date: Timestamp;
-  createdAt: Timestamp;
   items: FlowItemDB[];
   owner: string;
-  updatedAt: Timestamp;
   title?: string;
 }
 
