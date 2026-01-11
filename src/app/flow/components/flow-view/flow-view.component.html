@@ -1,5 +1,9 @@
 <app-container width="medium">
-  <app-top-bar-filter placeholder="Flow durchsuchen...">
+  <app-top-bar-filter
+    [text]="initialFilterText"
+    placeholder="Flow durchsuchen..."
+    (filterChanged)="onFilterChanged($event)"
+  >
     <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen" *ngIf="user.isGM">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
     </button>
@@ -23,7 +27,7 @@
     <p>{{ error }}</p>
   </div>
 
-  <!-- Empty State -->
+  <!-- Empty State (no items at all) -->
   <div *ngIf="(enrichedFlowItems$ | async)?.length === 0 && !loading && !error" class="empty-state">
     <div class="empty-state-content">
       <fa-icon [icon]="faStickyNote" size="3x"></fa-icon>
@@ -32,16 +36,24 @@
     </div>
   </div>
 
+  <!-- No Results State (items exist but none match filter) -->
+  <div *ngIf="(enrichedFlowItems$ | async)?.length > 0 && (filteredFlowItems$ | async)?.length === 0 && !loading && !error" class="empty-state">
+    <div class="empty-state-content">
+      <p>Keine Ergebnisse gefunden</p>
+    </div>
+  </div>
+
   <!-- Flow Items -->
   <div
-    *ngIf="(enrichedFlowItems$ | async)?.length > 0 && !loading"
+    *ngIf="(filteredFlowItems$ | async)?.length > 0 && !loading"
     cdkDropList
-    [cdkDropListData]="enrichedFlowItems$ | async"
+    [cdkDropListData]="filteredFlowItems$ | async"
     (cdkDropListDropped)="onDrop($event)"
     class="flow-items"
   >
-    <div *ngFor="let item of enrichedFlowItems$ | async" cdkDrag class="flow-item-wrapper">
+    <div *ngFor="let item of filteredFlowItems$ | async" cdkDrag class="flow-item-wrapper">
       <app-flow-item
+        [dragEnabled]="filterText$.value ===''"
         [item]="item"
         (remove)="removeItem($event)"
       ></app-flow-item>

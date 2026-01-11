@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { faPlus, faStickyNote, faEdit } from '@fortawesome/free-solid-svg-icons';
 
@@ -28,6 +28,9 @@ export class FlowViewComponent implements OnInit, OnDestroy {
   flowId: string;
   flow$: Observable<Flow | null>;
   enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
+  filteredFlowItems$: Observable<EnrichedFlowItem[]>;
+  filterText$: BehaviorSubject<string>;
+  initialFilterText: string;
   loading = true;
   error: string | null = null;
   user: AuthUser;
@@ -42,6 +45,8 @@ export class FlowViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     this.user = this.auth.user;
+    this.initialFilterText = localStorage.getItem('flow-view-filter') || '';
+    this.filterText$ = new BehaviorSubject<string>(this.initialFilterText);
   }
 
   ngOnInit(): void {
@@ -67,6 +72,14 @@ export class FlowViewComponent implements OnInit, OnDestroy {
   private loadFlow(): void {
     this.flow$ = this.flowService.getFlowById(this.flowId);
     this.enrichedFlowItems$ = this.flowService.getEnrichedFlowItems(this.flowId);
+
+    // Setup filtered observable
+    this.filteredFlowItems$ = combineLatest([
+      this.enrichedFlowItems$,
+      this.filterText$
+    ]).pipe(
+      map(([items, filterText]) => this.filterItems(items, filterText))
+    );
 
     // Update page label with flow date/title
     this.subscription.add(
@@ -132,6 +145,43 @@ export class FlowViewComponent implements OnInit, OnDestroy {
       if (!success) {
         console.error('Failed to remove item');
       }
+    });
+  }
+
+  onFilterChanged(text: string): void {
+    localStorage.setItem('flow-view-filter', text);
+    this.filterText$.next(text);
+  }
+
+  private filterItems(items: EnrichedFlowItem[], filterText: string): EnrichedFlowItem[] {
+    const text = filterText.trim().toLowerCase();
+    if (!text) {
+      return items;
+    }
+
+    return items.filter(item => {
+      if (item.type === 'quest' || item.type === 'person' || item.type === 'place' || item.type === 'note') {
+        const entity = (item as any).entity;
+        if (!entity) {
+          return false;
+        }
+        // Search in name/title
+        if (entity.name?.toLowerCase().includes(text)) {
+          return true;
+        }
+        if (entity.title?.toLowerCase().includes(text)) {
+          return true;
+        }
+        // Search in description/content
+        if (entity.description?.toLowerCase().includes(text)) {
+          return true;
+        }
+        if (entity.content?.toLowerCase().includes(text)) {
+          return true;
+        }
+        return false;
+      }
+      return false;
     });
   }
 }

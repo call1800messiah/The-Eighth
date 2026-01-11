@@ -1,6 +1,6 @@
 <div class="flow-item" [class.expanded]="expanded" [class.deleted]="!hasEntity()" *ngIf="hasEntity() || user.isGM">
   <div class="flow-item-header">
-    <div class="drag-handle" cdkDragHandle *ngIf="user.isGM">
+    <div class="drag-handle" cdkDragHandle *ngIf="dragEnabled && user.isGM">
       <fa-icon [icon]="faGripVertical"></fa-icon>
     </div>
 

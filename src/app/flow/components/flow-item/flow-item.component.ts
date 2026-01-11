@@ -16,6 +16,7 @@ import { AuthUser } from '../../../auth/models/auth-user';
 })
 export class FlowItemComponent implements OnDestroy {
   @Input() item: EnrichedFlowItem;
+  @Input() dragEnabled: boolean = true;
   @Output() remove = new EventEmitter<string>();
   @ViewChild('detailContainer', { read: ViewContainerRef }) detailContainer: ViewContainerRef;
 
