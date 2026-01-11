@@ -41,7 +41,7 @@ export class NavigationService {
       link: '/combat'
     },
     {
-      label: 'Session Flow',
+      label: 'Sessions',
       icon: faStream,
       link: '/flow'
     },
