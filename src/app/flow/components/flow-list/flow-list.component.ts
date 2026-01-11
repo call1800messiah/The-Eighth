@@ -9,6 +9,8 @@ import { FlowService } from '../../services/flow.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
 import { EditFlowComponent } from '../edit-flow/edit-flow.component';
+import { AuthUser } from '../../../auth/models/auth-user';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-flow-list',
@@ -23,16 +25,19 @@ export class FlowListComponent implements OnInit {
   filteredFlows$: Observable<Flow[]>;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
+  user: AuthUser;
 
   constructor(
+    private auth: AuthService,
     private flowService: FlowService,
     private popover: PopoverService,
     private navigation: NavigationService,
-    private router: Router
+    private router: Router,
   ) {
     // Load filter from localStorage
     this.initialFilterText = localStorage.getItem('flows-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);
+    this.user = this.auth.user;
 
     // Setup filtered observable
     this.flows$ = this.flowService.getFlows();
@@ -59,10 +64,6 @@ export class FlowListComponent implements OnInit {
         this.router.navigate(['/flow', flow.id]);
       }
     });
-  }
-
-  navigateToFlow(flowId: string): void {
-    this.router.navigate(['/flow', flowId]);
   }
 
   getFormattedDate(date: Date): string {

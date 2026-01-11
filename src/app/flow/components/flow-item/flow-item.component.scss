@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   gap: var(--item-padding);
+  min-height: var(--mobile-interactive-height);
 
   app-avatar {
     width: 4rem;
@@ -37,17 +38,21 @@
 }
 
 .item-icon {
-  display: flex;
   align-items: center;
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 2rem;
   justify-content: center;
   width: 3rem;
-  font-size: 2rem;
-  color: var(--text-secondary);
+
+  app-avatar {
+    pointer-events: none;
+  }
 }
 
 .item-content {
-  flex: 1;
   cursor: pointer;
+  flex: 1;
   min-width: 0;
 }
 
@@ -58,37 +63,6 @@
   white-space: nowrap;
 }
 
-.expand-btn,
-.btn-icon {
-  flex-shrink: 0;
-}
-
-.flow-item-details,
-.flow-item-deleted {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.detail-section {
-  margin-bottom: 1rem;
-
-  strong {
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-
-  p {
-    margin: 0;
-    color: var(--text-secondary);
-  }
-}
-
-.view-full-btn {
-  margin-top: 0.5rem;
-}
-
-.flow-item-deleted p {
-  color: var(--error-color);
-  font-style: italic;
+.flow-item-details {
+  margin: var(--item-padding) 0;
 }

@@ -30,7 +30,7 @@
       "Skill(implement:*)",
       "Skill(test:*)",
       "Skill(codestyle:*)",
-      "Bash(mkdir:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }

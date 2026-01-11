@@ -1,6 +1,6 @@
-<div class="flow-item" [class.expanded]="expanded" [class.deleted]="!hasEntity()">
+<div class="flow-item" [class.expanded]="expanded" [class.deleted]="!hasEntity()" *ngIf="hasEntity() || user.isGM">
   <div class="flow-item-header">
-    <div class="drag-handle" cdkDragHandle>
+    <div class="drag-handle" cdkDragHandle *ngIf="user.isGM">
       <fa-icon [icon]="faGripVertical"></fa-icon>
     </div>
 
@@ -16,11 +16,17 @@
       <div class="item-name">{{ getEntityName() }}</div>
     </div>
 
-    <button type="button" class="btn-icon expand-btn" (click)="toggleExpand()" [title]="expanded ? 'Einklappen' : 'Ausklappen'">
+    <button
+      type="button"
+      class="btn-icon"
+      (click)="toggleExpand()"
+      [title]="expanded ? 'Einklappen' : 'Ausklappen'"
+      *ngIf="hasEntity()"
+    >
       <fa-icon [icon]="expanded ? faChevronDown : faChevronRight"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon" (click)="removeItem()" title="Entfernen">
+    <button type="button" class="btn-icon" (click)="removeItem()" title="Entfernen" *ngIf="user.isGM">
       <fa-icon [icon]="faTimes"></fa-icon>
     </button>
   </div>
@@ -28,9 +34,5 @@
   <div class="flow-item-details" *ngIf="expanded && hasEntity()">
     <!-- Dynamically loaded detail component will be inserted here -->
     <ng-container #detailContainer></ng-container>
-  </div>
-
-  <div class="flow-item-deleted" *ngIf="expanded && !hasEntity()">
-    <p>Dieses Element wurde gelöscht und kann nicht mehr angezeigt werden.</p>
   </div>
 </div>

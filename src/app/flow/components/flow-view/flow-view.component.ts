@@ -12,6 +12,8 @@ import { NavigationService } from '../../../core/services/navigation.service';
 import { AddFlowItemComponent } from '../add-flow-item/add-flow-item.component';
 import { EditNoteComponent } from '../../../notes/components/edit-note/edit-note.component';
 import { EditFlowComponent } from '../edit-flow/edit-flow.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthUser } from '../../../auth/models/auth-user';
 
 @Component({
   selector: 'app-flow-view',
@@ -28,15 +30,19 @@ export class FlowViewComponent implements OnInit, OnDestroy {
   enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
   loading = true;
   error: string | null = null;
+  user: AuthUser;
 
   private subscription = new Subscription();
 
   constructor(
+    private auth: AuthService,
     private flowService: FlowService,
     private popover: PopoverService,
     private navigation: NavigationService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    this.user = this.auth.user;
+  }
 
   ngOnInit(): void {
     // Get flowId from route params
@@ -74,6 +80,7 @@ export class FlowViewComponent implements OnInit, OnDestroy {
                 day: 'numeric'
               });
           this.navigation.setPageLabel(label, '/flow');
+          this.error = null;
           this.loading = false;
         } else {
           this.error = 'Flow nicht gefunden';

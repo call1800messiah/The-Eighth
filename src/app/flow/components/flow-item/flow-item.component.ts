@@ -6,6 +6,8 @@ import { QuestComponent } from '../../../quests/components/quest/quest.component
 import { PersonComponent } from '../../../people/components/person/person.component';
 import { PlaceComponent } from '../../../places/components/place/place.component';
 import { NoteComponent } from '../../../notes/components/note/note.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthUser } from '../../../auth/models/auth-user';
 
 @Component({
   selector: 'app-flow-item',
@@ -27,9 +29,14 @@ export class FlowItemComponent implements OnDestroy {
   faStickyNote = faStickyNote;
 
   expanded = false;
+  user: AuthUser;
   private componentRef: ComponentRef<any> | null = null;
 
-  constructor() {}
+  constructor(
+    private auth: AuthService
+  ) {
+    this.user = this.auth.user;
+  }
 
   ngOnDestroy(): void {
     this.destroyDetailComponent();
@@ -100,7 +107,7 @@ export class FlowItemComponent implements OnDestroy {
   getEntityName(): string {
     const entity = (this.item as any).entity;
     if (!entity) {
-      return 'Gelöschtes Element';
+      return 'Unbekanntes Element';
     }
     return entity.name || entity.title || 'Unbenannt';
   }

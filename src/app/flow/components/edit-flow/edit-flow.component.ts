@@ -68,6 +68,7 @@ export class EditFlowComponent implements OnInit, OnDestroy, PopoverChild {
       flow.owner = this.props.owner;
     } else {
       flow.owner = this.userID;
+      flow.items = [];
     }
 
     const date = new Date(this.flowForm.value.date);

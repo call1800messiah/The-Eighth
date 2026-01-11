@@ -3,7 +3,7 @@
     [text]="initialFilterText"
     (filterChanged)="onFilterChanged($event)"
   >
-    <button class="btn-icon" (click)="showCreateFlowDialog()">
+    <button class="btn-icon" (click)="showCreateFlowDialog()" *ngIf="user.isGM">
       <fa-icon [icon]="faPlus"></fa-icon>
     </button>
   </app-top-bar-filter>
@@ -15,13 +15,13 @@
       <p *ngIf="(flows$ | async)?.length > 0">Keine Flows gefunden</p>
     </div>
 
-    <div *ngFor="let flow of filteredFlows$ | async" class="flow-card" (click)="navigateToFlow(flow.id)">
-      <div class="flow-header">
-        <div class="flow-info">
-          <h3 class="flow-title" *ngIf="flow.title">{{ flow.title }}</h3>
-          <p class="flow-date">{{ getFormattedDate(flow.date) }}</p>
-        </div>
-      </div>
+    <div *ngFor="let flow of filteredFlows$ | async" class="flow">
+      <a class="details" [routerLink]="[flow.id]">
+        <div class="flow-date">{{ getFormattedDate(flow.date) }}</div>
+        <div class="flow-title" *ngIf="flow.title">{{ flow.title }}</div>
+      </a>
+
+      <app-access-indicator [item]="flow"></app-access-indicator>
     </div>
   </div>
 </app-container>

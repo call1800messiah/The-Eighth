@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -11,8 +11,7 @@ import { QuestsService } from '../../../quests/services/quests.service';
 import { PeopleService } from '../../../people/services/people.service';
 import { PlaceService } from '../../../places/services/place.service';
 import { NotesService } from '../../../notes/services/notes.service';
-import { PopoverService } from '../../../core/services/popover.service';
-import { EditNoteComponent } from '../../../notes/components/edit-note/edit-note.component';
+import { PopoverChild } from '../../../shared';
 
 export interface AddFlowItemProps {
   flowId: string;
@@ -23,8 +22,9 @@ export interface AddFlowItemProps {
   templateUrl: './add-flow-item.component.html',
   styleUrls: ['./add-flow-item.component.scss']
 })
-export class AddFlowItemComponent implements OnInit {
+export class AddFlowItemComponent implements OnInit, PopoverChild {
   @Input() props: AddFlowItemProps;
+  @Output() dismissPopover = new EventEmitter<boolean>();
 
   activeTab: 'quest' | 'person' | 'place' | 'note' = 'quest';
   searchText$ = new BehaviorSubject<string>('');
@@ -46,7 +46,6 @@ export class AddFlowItemComponent implements OnInit {
     private peopleService: PeopleService,
     private placesService: PlaceService,
     private notesService: NotesService,
-    private popover: PopoverService
   ) {}
 
   ngOnInit(): void {
@@ -149,10 +148,6 @@ export class AddFlowItemComponent implements OnInit {
 
     // Add all items in a single Firebase write
     await this.flowService.addItems(this.props.flowId, itemsToAdd);
-    this.close();
-  }
-
-  close(): void {
-    this.popover.dismissPopover();
+    this.dismissPopover.emit(true);
   }
 }

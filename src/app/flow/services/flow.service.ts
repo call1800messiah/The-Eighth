@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
 
 import type { AuthUser } from '../../auth/models/auth-user';
 import type {
@@ -48,7 +48,7 @@ export class FlowService {
       collection: FlowService.collection,
       createdAt: flowData.createdAt?.toDate() || new Date(),
       createdBy: flowData.createdBy || '',
-      date: flowData.date,
+      date: new Date(flowData.date),
       id: flowId,
       items: flowData.items,
       owner: flowData.owner,
@@ -189,6 +189,7 @@ export class FlowService {
   async addItems(flowId: string, items: Partial<FlowItem>[]): Promise<boolean> {
     return new Promise((resolve) => {
       this.getFlowById(flowId).pipe(
+        take(1),
         switchMap(flow => {
           if (!flow) {
             resolve(false);
@@ -197,7 +198,7 @@ export class FlowService {
 
           // Build all new items
           const newItems: FlowItem[] = [];
-          let currentOrder = flow.items.length;
+          let currentOrder = flow.items?.length || 0;
 
           for (const item of items) {
             const baseItem = {
@@ -258,6 +259,7 @@ export class FlowService {
   removeItem(flowId: string, itemId: string): Promise<boolean> {
     return new Promise((resolve) => {
       this.getFlowById(flowId).pipe(
+        take(1),
         switchMap(flow => {
           if (!flow) {
             resolve(false);

@@ -1,14 +1,14 @@
 <app-container width="medium">
   <app-top-bar-filter placeholder="Flow durchsuchen...">
-    <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen">
+    <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen" *ngIf="user.isGM">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen">
+    <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen" *ngIf="user.isGM">
       <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
     </button>
 
-    <button type="button" class="btn-icon" (click)="showEditFlowModal()" title="Session bearbeiten">
+    <button type="button" class="btn-icon" (click)="showEditFlowModal()" title="Session bearbeiten" *ngIf="user.isGM">
       <fa-icon [icon]="faEdit" [fixedWidth]="true"></fa-icon>
     </button>
   </app-top-bar-filter>
