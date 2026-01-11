@@ -78,30 +78,36 @@
     </div>
   </div>
 
-  <app-stats [person$]="person$"></app-stats>
-
-  <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
-    <div class="heading">Verwandte</div>
-    <div class="relatives-list">
-      <ul class="unstyled-list">
-        <li *ngFor="let relatives of person.relatives | keyvalue">
-          {{relativeTypes[relatives.key]}}
-          <ul>
-            <li *ngFor=" let relative of relatives.value">
-              <a [routerLink]="['/people', relative.id]" *ngIf="relative.id" class="location">{{relative.name}}</a>
-              <span *ngIf="!relative.id">{{relative.name}}</span>
+  <app-tabs>
+    <app-tab-panel id="info" label="Informationen">
+      <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
+        <div class="heading">Verwandte</div>
+        <div class="relatives-list">
+          <ul class="unstyled-list">
+            <li *ngFor="let relatives of person.relatives | keyvalue">
+              {{relativeTypes[relatives.key]}}
+              <ul>
+                <li *ngFor=" let relative of relatives.value">
+                  <a [routerLink]="['/people', relative.id]" *ngIf="relative.id" class="location">{{relative.name}}</a>
+                  <span *ngIf="!relative.id">{{relative.name}}</span>
+                </li>
+              </ul>
             </li>
           </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <div class="detail-info" *ngIf="infos$">
-    <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
-                  [key]="infoList.key"
-                  [infos]="infoList.value"
-                  (editDetail)="editDetail($event)"
-    ></app-info-box>
-  </div>
+      <div class="detail-info" *ngIf="infos$">
+        <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
+                      [key]="infoList.key"
+                      [infos]="infoList.value"
+                      (editDetail)="editDetail($event)"
+        ></app-info-box>
+      </div>
+    </app-tab-panel>
+
+    <app-tab-panel id="stats" label="Werte" *ngIf="isOwnerOrCan('viewStats')">
+      <app-stats [person$]="person$"></app-stats>
+    </app-tab-panel>
+  </app-tabs>
 </app-container>
