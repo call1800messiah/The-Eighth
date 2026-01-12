@@ -16,14 +16,8 @@
   transition: all 0.2s;
   white-space: nowrap;
 
-  &:hover {
-    background: var(--hover-background);
-    color: var(--text-primary);
-  }
-
   &.active {
     border-bottom-color: var(--primary-color);
-    color: var(--primary-color);
   }
 }
 
