@@ -51,7 +51,7 @@ export class ProjectService {
   }
 
 
-  store(project: Partial<Project>, projectId?: string): Promise<boolean> {
+  store(project: Partial<Project>, projectId?: string): Promise<{ success: boolean; id?: string }> {
     return this.data.store(this.serializeProject(project, projectId), ProjectService.collection, projectId);
   }
 

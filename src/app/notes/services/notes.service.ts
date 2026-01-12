@@ -47,7 +47,7 @@ export class NotesService {
   }
 
 
-  store(note: Partial<Note>, noteId?: string) {
+  store(note: Partial<Note>, noteId?: string): Promise<{ success: boolean; id?: string }> {
     return this.data.store(note, NotesService.collection, noteId);
   }
 

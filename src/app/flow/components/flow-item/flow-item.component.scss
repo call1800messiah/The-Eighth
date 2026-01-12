@@ -1,0 +1,68 @@
+.flow-item {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: var(--item-padding);
+  position: relative;
+
+  &.deleted {
+    opacity: 0.6;
+    border-color: var(--error-color);
+  }
+}
+
+.flow-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--item-padding);
+  min-height: var(--mobile-interactive-height);
+
+  app-avatar {
+    width: 4rem;
+  }
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.item-icon {
+  align-items: center;
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 2rem;
+  justify-content: center;
+  width: 3rem;
+
+  app-avatar {
+    pointer-events: none;
+  }
+}
+
+.item-content {
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow-item-details {
+  margin: var(--item-padding) 0;
+}

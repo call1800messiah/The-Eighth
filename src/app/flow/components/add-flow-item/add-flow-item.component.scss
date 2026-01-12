@@ -1,0 +1,46 @@
+.add-flow-item-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  app-tabs {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+.entity-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.entity-item {
+  display: flex;
+  min-height: 0;
+  padding-right: 1rem;
+
+  app-avatar {
+    pointer-events: none;
+    width: 4rem;
+  }
+
+  label.entity-name {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modal-footer {
+  flex: 0 0 auto;
+}

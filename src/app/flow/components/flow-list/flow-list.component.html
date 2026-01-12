@@ -1,0 +1,27 @@
+<app-container width="medium">
+  <app-top-bar-filter
+    [text]="initialFilterText"
+    (filterChanged)="onFilterChanged($event)"
+  >
+    <button class="btn-icon" (click)="showCreateFlowDialog()" *ngIf="user.isGM">
+      <fa-icon [icon]="faPlus"></fa-icon>
+    </button>
+  </app-top-bar-filter>
+
+  <div class="flow-list">
+    <div *ngIf="(filteredFlows$ | async)?.length === 0" class="empty-state">
+      <fa-icon [icon]="faCalendar" class="empty-icon"></fa-icon>
+      <p *ngIf="(flows$ | async)?.length === 0">Noch keine Session-Flows erstellt</p>
+      <p *ngIf="(flows$ | async)?.length > 0">Keine Flows gefunden</p>
+    </div>
+
+    <div *ngFor="let flow of filteredFlows$ | async" class="flow">
+      <a class="details" [routerLink]="[flow.id]">
+        <div class="flow-date">{{ getFormattedDate(flow.date) }}</div>
+        <div class="flow-title" *ngIf="flow.title">{{ flow.title }}</div>
+      </a>
+
+      <app-access-indicator [item]="flow"></app-access-indicator>
+    </div>
+  </div>
+</app-container>

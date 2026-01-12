@@ -1,0 +1,38 @@
+<div class="flow-item" [class.expanded]="expanded" [class.deleted]="!hasEntity()" *ngIf="hasEntity() || user.isGM">
+  <div class="flow-item-header">
+    <div class="drag-handle" cdkDragHandle *ngIf="dragEnabled && user.isGM">
+      <fa-icon [icon]="faGripVertical"></fa-icon>
+    </div>
+
+    <div class="item-icon">
+      <app-avatar *ngIf="item.type === 'person' && hasEntity()" [person]="$any(item).entity"></app-avatar>
+      <fa-icon *ngIf="item.type === 'quest'" [icon]="faMeteor"></fa-icon>
+      <fa-icon *ngIf="item.type === 'person' && !hasEntity()" [icon]="faUsers"></fa-icon>
+      <fa-icon *ngIf="item.type === 'place'" [icon]="faCompass"></fa-icon>
+      <fa-icon *ngIf="item.type === 'note'" [icon]="faStickyNote"></fa-icon>
+    </div>
+
+    <div class="item-content" (click)="toggleExpand()">
+      <div class="item-name">{{ getEntityName() }}</div>
+    </div>
+
+    <button
+      type="button"
+      class="btn-icon"
+      (click)="toggleExpand()"
+      [title]="expanded ? 'Einklappen' : 'Ausklappen'"
+      *ngIf="hasEntity()"
+    >
+      <fa-icon [icon]="expanded ? faChevronDown : faChevronRight"></fa-icon>
+    </button>
+
+    <button type="button" class="btn-icon" (click)="removeItem()" title="Entfernen" *ngIf="user.isGM">
+      <fa-icon [icon]="faTimes"></fa-icon>
+    </button>
+  </div>
+
+  <div class="flow-item-details" *ngIf="expanded && hasEntity()">
+    <!-- Dynamically loaded detail component will be inserted here -->
+    <ng-container #detailContainer></ng-container>
+  </div>
+</div>

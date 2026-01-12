@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,6 +26,7 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
   styleUrls: ['./place.component.scss']
 })
 export class PlaceComponent implements OnInit, OnDestroy {
+  @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
   menu: Menu = {
@@ -67,15 +68,21 @@ export class PlaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Support both routed and embedded usage
+    const idSource$ = this.entityId
+      ? of(this.entityId)
+      : this.route.paramMap.pipe(switchMap(params => of(params.get('id'))));
+
     this.subscription.add(
-      this.route.paramMap.pipe(
-        switchMap(params => {
-          return this.placeService.getPlaceById(params.get('id'));
-        }),
+      idSource$.pipe(
+        switchMap(id => this.placeService.getPlaceById(id)),
       ).subscribe((place) => {
         if (place) {
           this.place = place;
-          this.navigation.setPageLabel(this.place.name, '/places');
+          // Only set page label when used in routed context
+          if (!this.entityId) {
+            this.navigation.setPageLabel(this.place.name, '/places');
+          }
           this.infos$ = this.placeService.getPlaceInfos(this.place.id);
         }
       })

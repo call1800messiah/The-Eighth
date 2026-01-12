@@ -63,7 +63,7 @@ export class DataService {
   }
 
 
-  store(item: any, collection: string, id?: string): Promise<boolean> {
+  store(item: any, collection: string, id?: string): Promise<{ success: boolean; id?: string }> {
     const storeItem = { ...item };
     if (!id) {
       // Set access for new items
@@ -82,21 +82,22 @@ export class DataService {
     return new Promise((resolve) => {
       if (id) {
         this.api.updateDocumentInCollection(id, collection, storeItem).then(() => {
-          resolve(true);
+          resolve({ success: true, id });
         }).catch((error) => {
           console.error(error);
-          resolve(false);
+          resolve({ success: false });
         });
       } else {
         this.api.addDocumentToCollection(storeItem, collection).then((reference) => {
-          if (reference) {
-            resolve(true);
+          console.log(reference);
+          if (reference && reference.id) {
+            resolve({ success: true, id: reference.id });
           } else {
-            resolve(false);
+            resolve({ success: false });
           }
         }).catch((error) => {
           console.error(error);
-          resolve(false);
+          resolve({ success: false });
         });
       }
     });

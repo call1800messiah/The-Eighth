@@ -21,6 +21,9 @@ import { PlaceSummaryComponent } from './components/place-summary/place-summary.
     CommonModule,
     SharedModule,
     PlacesRoutingModule,
+  ],
+  exports: [
+    PlaceComponent
   ]
 })
 export class PlacesModule { }

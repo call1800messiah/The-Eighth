@@ -3,12 +3,15 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import type { Note } from '../../models/note';
-import { PopoverChild } from '../../../shared/models/popover-child';
+import { PopoverChild } from '../../../shared';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotesService } from '../../services/notes.service';
 import { DataService } from '../../../core/services/data.service';
 import { InfoType } from '../../../core/enums/info-type.enum';
 
+export interface EditNoteProps extends Partial<Note> {
+  onSave?: (note: Note) => void;
+}
 
 @Component({
   selector: 'app-edit-note',
@@ -16,7 +19,7 @@ import { InfoType } from '../../../core/enums/info-type.enum';
   styleUrl: './edit-note.component.scss'
 })
 export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
-  @Input() props: Note;
+  @Input() props: EditNoteProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
   noteForm = new UntypedFormGroup({
@@ -60,6 +63,8 @@ export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
   }
 
   save() {
+    const isNewNote = !this.props.id;
+
     const note: Note = {
       ...this.noteForm.value,
       type: InfoType.Note,
@@ -69,7 +74,18 @@ export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
     } else {
       note.owner = this.userID;
     }
-    this.noteService.store(note, this.props.id).then(() => {
+
+    this.noteService.store(note, this.props.id).then((result) => {
+      // If this is a new note and we have an onSave callback, call it
+      if (isNewNote && result.success && result.id && this.props.onSave) {
+        const savedNote: Note = {
+          ...note,
+          id: result.id,
+          collection: NotesService.collection
+        };
+        this.props.onSave(savedNote);
+      }
+
       this.dismissPopover.emit(true);
     });
   }

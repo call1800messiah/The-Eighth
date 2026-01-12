@@ -1,13 +1,11 @@
 <div *ngIf="attributes$ && person" class="values">
   <app-attributes
-    *ngIf="isOwnerOrCan('viewStats')"
     [attributeValues$]="attributes$"
     [canEdit]="isOwnerOrCan('editStats')"
     [personId]="person.id"
   ></app-attributes>
 
   <app-bar-attributes
-    *ngIf="isOwnerOrCan('viewHitPoints')"
     [attributeValues$]="attributes$"
     [canEdit]="isOwnerOrCan('editHitPoints')"
     [personId]="person.id"

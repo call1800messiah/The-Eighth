@@ -93,7 +93,7 @@ export class RulesService {
   }
 
 
-  store(rule: AddableRule, id?: string): Promise<boolean> {
+  store(rule: AddableRule, id?: string): Promise<{ success: boolean; id?: string }> {
     return this.data.store(rule, RulesService.collection, id);
   }
 
