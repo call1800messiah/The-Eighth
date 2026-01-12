@@ -1,19 +1,20 @@
 # Flow Feature - User Journeys
 
 ## Entry Points
-- Route: `/flow` (dedicated page)
-- Navigation: "Session Flow" menu item in main navigation
+- Route: `/flow` (session list)
+- Route: `/flow/:id` (specific session)
+- Navigation: "Sessions" menu item in main navigation
 
 ## Code Reference Table
 
 | ID            | Component/Service      | File                                                                                                                                              |
 |---------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| FlowList      | FlowListComponent      | [src/app/flow/components/flow-list/flow-list.component.ts](../../../src/app/flow/components/flow-list/flow-list.component.ts)                     |
 | FlowView      | FlowViewComponent      | [src/app/flow/components/flow-view/flow-view.component.ts](../../../src/app/flow/components/flow-view/flow-view.component.ts)                     |
+| EditFlow      | EditFlowComponent      | [src/app/flow/components/edit-flow/edit-flow.component.ts](../../../src/app/flow/components/edit-flow/edit-flow.component.ts)                     |
 | FlowService   | FlowService            | [src/app/flow/services/flow.service.ts](../../../src/app/flow/services/flow.service.ts)                                                           |
 | FlowItem      | FlowItemComponent      | [src/app/flow/components/flow-item/flow-item.component.ts](../../../src/app/flow/components/flow-item/flow-item.component.ts)                     |
 | AddItem       | AddFlowItemComponent   | [src/app/flow/components/add-flow-item/add-flow-item.component.ts](../../../src/app/flow/components/add-flow-item/add-flow-item.component.ts)     |
-| SessionMarker | SessionMarkerComponent | [src/app/flow/components/session-marker/session-marker.component.ts](../../../src/app/flow/components/session-marker/session-marker.component.ts) |
-| GeneralNote   | GeneralNoteComponent   | [src/app/flow/components/general-note/general-note.component.ts](../../../src/app/flow/components/general-note/general-note.component.ts)         |
 
 ## Architecture: Data Flow
 
@@ -79,33 +80,32 @@ enrichedFlowItems$ = combineLatest([
 );
 ```
 
-## Primary Flow: View and Edit Session Flow
+## Primary Flow: Session Management
 
 ```mermaid
 graph TD
-    A[Navigate to /flow] --> B{Flow exists for campaign?}
-    B -->|No| C[Show empty state with 'Create Flow' button]
-    B -->|Yes| D[Display flow items in order]
-    C --> E[Create flow document]
-    E --> D
-    D --> F{User action}
-    F -->|Add item| G[Show add item options]
-    F -->|Reorder| H[Drag and drop items]
-    F -->|Remove item| I[Delete item from flow]
-    F -->|Add session marker| J[Insert session marker with date]
-    F -->|Add general note| K[Insert general note item]
-    G --> L{Add method}
-    L -->|Search| M[Search for quest/person/place]
-    L -->|Drag from sidebar| N[Drag entity from sidebar list]
-    L -->|Quick create| O[Create new entity and add]
-    M --> P[Add reference to flow]
-    N --> P
-    O --> P
-    P --> D
-    H --> D
-    I --> D
-    J --> D
-    K --> D
+    A[Navigate to /flow] --> B[FlowListComponent: Show all sessions]
+    B --> C{User action}
+    C -->|Create new session| D[Show EditFlowComponent modal]
+    D --> E[Enter date and optional title]
+    E --> F[Save session]
+    F --> G[Navigate to /flow/:id]
+    C -->|Click existing session| G
+    G --> H[FlowViewComponent: Display session items]
+    H --> I{User action}
+    I -->|Add item| J[Show AddFlowItemComponent modal]
+    J --> K[Search and select quest/person/place/note]
+    K --> L[Add item to session]
+    L --> H
+    I -->|Reorder items| M[Drag and drop]
+    M --> H
+    I -->|Expand item| N[Dynamically load detail component]
+    N --> O[Show inline detail view]
+    I -->|Remove item| P[Delete item from session]
+    P --> H
+    I -->|Edit session| Q[Show EditFlowComponent modal]
+    Q --> R[Update date/title]
+    R --> H
 ```
 
 ## Secondary Flow: Entity Interaction
@@ -122,49 +122,35 @@ graph TD
     E -->|Navigate to full page| I[Navigate to entity detail route]
 ```
 
-## Flow: Session Marker Management
-
-```mermaid
-graph TD
-    A[Click 'Add Session Marker'] --> B[Select or enter date]
-    B --> C[Insert marker at current position or end]
-    C --> D[Flow shows visual session divider]
-    D --> E{During session}
-    E -->|Add items| F[Items added after current marker]
-    E -->|End session| G[Add new session marker]
-```
-
 ## Flow: Auto-Remove on Entity Delete
 
 ```mermaid
 graph TD
-    A[Entity deleted from Firestore] --> B[Check if entity in any flow]
-    B -->|Yes| C[Remove flow item with matching ID]
-    C --> D[Reorder remaining items]
-    B -->|No| E[No action needed]
+    A[Entity deleted from Firestore] --> B[FlowService enrichment resolves entity to null]
+    B --> C[FlowItemComponent detects null entity]
+    C --> D[Shows placeholder or hide item]
+    D --> E[GM can manually remove item]
 ```
 
 ## States
 
-### Empty State
-- Message: "You haven't created a session flow yet"
-- Action: "Create Flow" button
+### Session List (FlowListComponent)
+- **Empty State**: "No sessions yet" with "Create Session" button
+- **Loading State**: Skeleton loaders
+- **List State**: Cards showing date, title, item count
+- **Filtered State**: Search results
 
-### Loading State
-- Skeleton loader for flow items
-
-### Flow with Items
-- List of flow items in order
-- Each item shows:
-  - Quest: Quest name, icon
+### Session View (FlowViewComponent)
+- **Empty State**: "No items in this session" with "Add Item" button
+- **Loading State**: Skeleton loader for items
+- **Items State**: List of flow items in order, each showing:
+  - Quest: Quest name, icon, status
   - Person: Person name, avatar
   - Place: Place name, icon
-  - Session marker: Date, visual divider
-  - General note: Note content (editable inline)
-
-### Error State
-- Message if flow fails to load
-- Retry button
+  - Note: Note title, preview
+- **Collapsed Item**: Compact view with drag handle
+- **Expanded Item**: Inline detail component loaded dynamically
+- **Error State**: Message if flow fails to load
 
 ---
 
@@ -178,8 +164,7 @@ graph TD
 })
 export class FlowService {
   static readonly collection = 'flows';
-  private flow$: BehaviorSubject<Flow | null>;
-  private enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
+  private flows$: BehaviorSubject<Flow[]>;
 
   constructor(
     private api: ApiService,
@@ -188,36 +173,63 @@ export class FlowService {
     private quests: QuestsService,
     private people: PeopleService,
     private places: PlaceService,
-    private config: ConfigService
+    private notes: NotesService
   ) {}
 
-  // Get flow for current campaign (single campaign app)
-  getFlow(): Observable<Flow | null>;
+  // Get all flows for current user
+  getFlows(): Observable<Flow[]>;
+
+  // Get single flow by ID
+  getFlowById(id: string): Observable<Flow | null>;
 
   // Get flow items enriched with entity data
-  getEnrichedFlowItems(): Observable<EnrichedFlowItem[]>;
+  getEnrichedFlowItems(flowId: string): Observable<EnrichedFlowItem[]>;
+
+  // Create or update flow
+  storeFlow(flow: Partial<Flow>, id?: string): Promise<{ success: boolean; id?: string }>;
 
   // Add item to flow
-  addItem(item: Partial<FlowItem>): Promise<boolean>;
+  addItem(flowId: string, item: Partial<FlowItem>): Promise<boolean>;
 
   // Remove item from flow
-  removeItem(itemId: string): Promise<boolean>;
+  removeItem(flowId: string, itemId: string): Promise<boolean>;
 
   // Reorder items (after drag and drop)
-  reorderItems(items: FlowItem[]): Promise<boolean>;
+  reorderItems(flowId: string, items: FlowItem[]): Promise<boolean>;
 
-  // Update session marker date
-  updateSessionMarker(itemId: string, date: Timestamp): Promise<boolean>;
-
-  // Update general note content
-  updateGeneralNote(itemId: string, content: string): Promise<boolean>;
-
-  // Create flow if it doesn't exist
-  createFlow(campaignId: string): Promise<boolean>;
+  // Delete flow
+  deleteFlow(flowId: string): Promise<boolean>;
 }
 ```
 
 ### Component Interfaces
+
+#### FlowListComponent
+
+```typescript
+@Component({
+  selector: 'app-flow-list',
+  templateUrl: './flow-list.component.html',
+  styleUrls: ['./flow-list.component.scss']
+})
+export class FlowListComponent implements OnInit {
+  flows$: Observable<Flow[]>;
+  filteredFlows$: Observable<Flow[]>;
+  filterText: BehaviorSubject<string>;
+
+  constructor(
+    private flowService: FlowService,
+    private popover: PopoverService,
+    private navigation: NavigationService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void;
+  onFilterChanged(text: string): void;
+  showCreateFlowDialog(): void;
+  getFormattedDate(date: Date): string;
+}
+```
 
 #### FlowViewComponent
 
@@ -228,11 +240,12 @@ export class FlowService {
   styleUrls: ['./flow-view.component.scss']
 })
 export class FlowViewComponent implements OnInit {
+  flow$: Observable<Flow | null>;
   enrichedFlowItems$: Observable<EnrichedFlowItem[]>;
-  loading = true;
-  error: string | null = null;
+  flowId: string;
 
   constructor(
+    private route: ActivatedRoute,
     private flowService: FlowService,
     private popover: PopoverService,
     private navigation: NavigationService
@@ -241,9 +254,34 @@ export class FlowViewComponent implements OnInit {
   ngOnInit(): void;
   onDrop(event: CdkDragDrop<EnrichedFlowItem[]>): void;
   showAddItemModal(): void;
-  addSessionMarker(): void;
-  addGeneralNote(): void;
+  showEditFlowModal(): void;
   removeItem(itemId: string): void;
+  deleteFlow(): void;
+}
+```
+
+#### EditFlowComponent
+
+```typescript
+@Component({
+  selector: 'app-edit-flow',
+  templateUrl: './edit-flow.component.html',
+  styleUrls: ['./edit-flow.component.scss']
+})
+export class EditFlowComponent implements OnInit, PopoverChild {
+  @Input() props: EditFlowProps;
+  @Output() dismissPopover = new EventEmitter<boolean>();
+
+  flowForm: UntypedFormGroup;
+
+  constructor(
+    private auth: AuthService,
+    private flowService: FlowService
+  ) {}
+
+  ngOnInit(): void;
+  save(): void;
+  formatDateForInput(date: Date): string;
 }
 ```
 
@@ -281,26 +319,31 @@ export class FlowItemComponent {
   templateUrl: './add-flow-item.component.html',
   styleUrls: ['./add-flow-item.component.scss']
 })
-export class AddFlowItemComponent implements OnInit {
-  activeTab: 'quest' | 'person' | 'place' | 'session' | 'note' = 'quest';
+export class AddFlowItemComponent implements OnInit, PopoverChild {
+  @Input() props: { flowId: string };
+  @Output() dismissPopover = new EventEmitter<boolean>();
+
+  activeTab: 'quest' | 'person' | 'place' | 'note' = 'quest';
   searchText = '';
 
   quests$: Observable<Quest[]>;
   people$: Observable<Person[]>;
   places$: Observable<Place[]>;
+  notes$: Observable<Note[]>;
+
   filteredQuests$: Observable<Quest[]>;
   filteredPeople$: Observable<Person[]>;
   filteredPlaces$: Observable<Place[]>;
+  filteredNotes$: Observable<Note[]>;
 
   selectedItems: string[] = [];
-  sessionDate: Date = new Date();
-  noteContent = '';
 
   constructor(
     private flowService: FlowService,
     private questsService: QuestsService,
     private peopleService: PeopleService,
     private placesService: PlaceService,
+    private notesService: NotesService,
     private popover: PopoverService
   ) {}
 
@@ -309,8 +352,6 @@ export class AddFlowItemComponent implements OnInit {
   onSearchChange(text: string): void;
   toggleSelection(id: string): void;
   addSelected(): void;
-  addSessionMarker(): void;
-  addGeneralNote(): void;
   close(): void;
 }
 ```
@@ -320,13 +361,12 @@ export class AddFlowItemComponent implements OnInit {
 #### FlowDB (Firestore Schema)
 
 ```typescript
-import type { FieldValue, Timestamp } from '@angular/fire/firestore';
+import type { Timestamp } from '@angular/fire/firestore';
 
 export interface FlowDB {
-  campaignId: string;
-  createdBy: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  date: Timestamp; // Session date
+  title?: string; // Optional session title
+  owner: string;
   access: string[];
   items: FlowItemDB[];
 }
@@ -335,8 +375,7 @@ export type FlowItemDB =
   | QuestFlowItemDB
   | PersonFlowItemDB
   | PlaceFlowItemDB
-  | SessionMarkerFlowItemDB
-  | GeneralNoteFlowItemDB;
+  | NoteFlowItemDB;
 
 interface BaseFlowItemDB {
   id: string;
@@ -358,41 +397,28 @@ export interface PlaceFlowItemDB extends BaseFlowItemDB {
   placeId: string;
 }
 
-export interface SessionMarkerFlowItemDB extends BaseFlowItemDB {
-  type: 'session-marker';
-  date: Timestamp;
-}
-
-export interface GeneralNoteFlowItemDB extends BaseFlowItemDB {
-  type: 'general-note';
-  content: string;
+export interface NoteFlowItemDB extends BaseFlowItemDB {
+  type: 'note';
+  noteId: string;
 }
 ```
 
 #### Flow (Application Model)
 
 ```typescript
-import type { Quest } from '../../quests/models/quest';
-import type { Person } from '../../people/models/person';
-import type { Place } from '../../places/models/place';
+import type { AccessControlledItem } from '../../core/models/access-controlled-item';
 
-export interface Flow {
-  id: string;
-  campaignId: string;
-  createdBy: string;
-  createdAt: Date;
-  updatedAt: Date;
-  access: string[];
+export interface Flow extends AccessControlledItem {
+  date: Date; // Session date
+  title?: string; // Optional session title
   items: FlowItem[];
-  collection: 'flows';
 }
 
 export type FlowItem =
   | QuestFlowItem
   | PersonFlowItem
   | PlaceFlowItem
-  | SessionMarkerFlowItem
-  | GeneralNoteFlowItem;
+  | NoteFlowItem;
 
 interface BaseFlowItem {
   id: string;
@@ -414,14 +440,9 @@ export interface PlaceFlowItem extends BaseFlowItem {
   placeId: string;
 }
 
-export interface SessionMarkerFlowItem extends BaseFlowItem {
-  type: 'session-marker';
-  date: Date;
-}
-
-export interface GeneralNoteFlowItem extends BaseFlowItem {
-  type: 'general-note';
-  content: string;
+export interface NoteFlowItem extends BaseFlowItem {
+  type: 'note';
+  noteId: string;
 }
 
 // Enriched types (with resolved entity data)
@@ -429,8 +450,7 @@ export type EnrichedFlowItem =
   | EnrichedQuestFlowItem
   | EnrichedPersonFlowItem
   | EnrichedPlaceFlowItem
-  | SessionMarkerFlowItem
-  | GeneralNoteFlowItem;
+  | EnrichedNoteFlowItem;
 
 export interface EnrichedQuestFlowItem extends QuestFlowItem {
   entity: Quest | null; // null if quest deleted
@@ -443,16 +463,16 @@ export interface EnrichedPersonFlowItem extends PersonFlowItem {
 export interface EnrichedPlaceFlowItem extends PlaceFlowItem {
   entity: Place | null;
 }
-```
 
-#### FlowItemType Enum
-
-```typescript
-export enum FlowItemType {
-  Quest = 'quest',
-  Person = 'person',
-  Place = 'place',
-  SessionMarker = 'session-marker',
-  GeneralNote = 'general-note'
+export interface EnrichedNoteFlowItem extends NoteFlowItem {
+  entity: Note | null;
 }
 ```
+
+#### FlowItemType (no enum, using string literals)
+
+Flow items use TypeScript discriminated unions with string literal types:
+- `'quest'`
+- `'person'`
+- `'place'`
+- `'note'`

@@ -1,45 +1,45 @@
 # Session Flow Specification
 
 ## Overview
-A session flow planner that allows GMs to create an ordered, editable sequence of quest steps with linked NPCs and places. The flow is a lightweight organizational tool per campaign that stores only item order and general notes, with session start markers to indicate session boundaries.
+A session flow planner that allows GMs to create multiple sessions, each with an ordered, editable sequence of items (quests, people, places, notes). Each flow represents a single game session with a date and optional title. This is a lightweight organizational tool that stores only item references and order.
 
 ## Requirements
-- [ ] Single continuous flow per campaign
-- [ ] Support multiple item types: quests, people, places, session markers, notes
-- [ ] Drag and drop reordering
-- [ ] Multiple methods to add items:
-  - Search and add existing entities from modal
-  - Quick create new notes from modal
-- [ ] Session start markers with date/timestamp
-- [ ] Notes from existing notes feature (not separate)
-- [ ] Fully editable during and after sessions
-- [ ] Auto-remove items when referenced entities are deleted
-- [ ] GM-only access (no player view)
-- [ ] Dedicated route: `/flow`
-- [ ] Inline detail views on expand (dynamically loaded)
+- [x] Multiple flows (sessions) per campaign
+- [x] Each flow has a date and optional title
+- [x] Support multiple item types: quests, people, places, notes
+- [x] Drag and drop reordering within a session
+- [x] Search and add existing entities from modal
+- [x] Reference existing notes from notes feature
+- [x] Fully editable during and after sessions
+- [x] Auto-remove items when referenced entities are deleted
+- [x] GM-only access (no player view)
+- [x] Dedicated routes: `/flow` (list), `/flow/:id` (session detail)
+- [x] Inline detail views on expand (dynamically loaded)
 
 ## User Stories
-- As a GM, I want to plan my session by creating an ordered list of quest steps so that I can stay organized during play
-- As a GM, I want to link NPCs and places to quest steps so that I have quick access to relevant information
-- As a GM, I want to add session start markers so that I can track what happened in each session
+- As a GM, I want to create multiple sessions with dates so that I can plan and track each game session separately
+- As a GM, I want to plan each session by creating an ordered list of quests, NPCs, places, and notes so that I can stay organized during play
+- As a GM, I want to link NPCs and places to my session so that I have quick access to relevant information
 - As a GM, I want to add notes from my existing notes collection so that I can reference important details or improvised content
 - As a GM, I want to reorder items with drag and drop so that I can adjust my session plan easily
-- As a GM, I want to add items in multiple ways (search, drag, quick create) so that I can work efficiently
+- As a GM, I want to see a list of all my sessions so that I can review past sessions and access upcoming plans
 
 ## Data Model
 
 ### Flow Document (Firestore)
 Collection: `flows`
 
+Each flow represents a single game session.
+
 ```typescript
-interface Flow {
+interface Flow extends AccessControlledItem {
   id: string;
-  campaignId: string; // Reference to campaign
-  createdBy: string; // User ID
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  date: Date; // Session date
+  title?: string; // Optional session title
+  owner: string; // User ID
   access: string[]; // GM users only
   items: FlowItem[]; // Ordered array
+  collection: 'flows';
 }
 ```
 
@@ -50,8 +50,7 @@ type FlowItem =
   | QuestFlowItem
   | PersonFlowItem
   | PlaceFlowItem
-  | SessionMarkerFlowItem
-  | GeneralNoteFlowItem;
+  | NoteFlowItem;
 
 interface BaseFlowItem {
   id: string; // nanoid for item
@@ -73,33 +72,28 @@ interface PlaceFlowItem extends BaseFlowItem {
   placeId: string; // Reference to place document
 }
 
-interface SessionMarkerFlowItem extends BaseFlowItem {
-  type: 'session-marker';
-  date: Timestamp; // Session date
-}
-
-interface GeneralNoteFlowItem extends BaseFlowItem {
-  type: 'general-note';
-  content: string; // Markdown text
+interface NoteFlowItem extends BaseFlowItem {
+  type: 'note';
+  noteId: string; // Reference to note document
 }
 ```
 
 ## Constraints
-- One flow per campaign (1:1 relationship)
+- Multiple flows per user (many sessions)
 - Only GMs can create/edit flows
 - Flow items reference existing entities (quests, people, places, notes)
 - When an entity is deleted, its flow item is auto-removed
-- Notes are managed through the existing notes feature
+- Notes reference existing notes from the notes feature (no inline notes)
 - Detail views are dynamically loaded inline to avoid keeping subscriptions open
 - All entities are edited through their existing edit modals, not inline in the flow
 
 ## Integration
-- **Campaigns**: Each campaign can have one flow
-- **Quests**: Quests can be added to flow, changes reflected immediately, detail view shown inline
-- **People**: People can be added to flow, detail view shown inline
-- **Places**: Places can be added to flow, detail view shown inline
-- **Notes**: Notes from notes feature can be added to flow, detail view shown inline
-- **Navigation**: Add "Session Flow" to main navigation menu
+- **Campaigns**: Users can create multiple sessions (flows)
+- **Quests**: Quests can be added to sessions, changes reflected immediately, detail view shown inline
+- **People**: People can be added to sessions, detail view shown inline
+- **Places**: Places can be added to sessions, detail view shown inline
+- **Notes**: Notes from notes feature can be added to sessions, detail view shown inline
+- **Navigation**: "Sessions" menu item in main navigation
 - **Dynamic Components**: Detail components (Quest/Person/Place/Note) refactored to support embedded usage
 
 ## Bill of Materials
@@ -128,7 +122,7 @@ interface GeneralNoteFlowItem extends BaseFlowItem {
 | Routing pattern | src/app/quests/quests-routing.module.ts | DashboardComponent wrapper with child routes |
 | Service pattern | src/app/quests/services/quests.service.ts | BehaviorSubject state management |
 
-### New Files to Create
+### New Files Created
 | File | Type | Purpose |
 |------|------|---------|
 | **Module** | | |
@@ -138,71 +132,51 @@ interface GeneralNoteFlowItem extends BaseFlowItem {
 | **Models** | | |
 | src/app/flow/models/index.ts | Barrel | Model exports |
 | src/app/flow/models/flow.ts | Interface | Flow entity (app model) |
-| src/app/flow/models/flow.db.ts | Interface | FlowDB (Firestore schema) |
 | src/app/flow/models/flow-item.ts | Type/Interface | FlowItem union type and interfaces |
-| src/app/flow/models/flow-item-type.enum.ts | Enum | FlowItem type enum |
 | **Services** | | |
-| src/app/flow/services/flow.service.ts | Service | Flow CRUD, BehaviorSubject state |
+| src/app/flow/services/flow.service.ts | Service | Flow CRUD, BehaviorSubject state, entity enrichment |
 | **Components** | | |
-| src/app/flow/components/flow-view/flow-view.component.ts | Component | Main flow page (list all items) |
-| src/app/flow/components/flow-view/flow-view.component.html | Template | Flow view template |
-| src/app/flow/components/flow-view/flow-view.component.scss | Styles | Flow view styles |
-| src/app/flow/components/flow-view/flow-view.component.spec.ts | Test | Flow view tests |
-| src/app/flow/components/flow-item/flow-item.component.ts | Component | Display single flow item, dynamically load detail views |
-| src/app/flow/components/flow-item/flow-item.component.html | Template | Flow item template with ViewContainerRef |
-| src/app/flow/components/flow-item/flow-item.component.scss | Styles | Flow item styles |
-| src/app/flow/components/flow-item/flow-item.component.spec.ts | Test | Flow item tests |
-| src/app/flow/components/add-flow-item/add-flow-item.component.ts | Component | Add item popover UI |
-| src/app/flow/components/add-flow-item/add-flow-item.component.html | Template | Add item template |
-| src/app/flow/components/add-flow-item/add-flow-item.component.scss | Styles | Add item styles |
-| src/app/flow/components/add-flow-item/add-flow-item.component.spec.ts | Test | Add item tests |
-| src/app/flow/components/session-marker/session-marker.component.ts | Component | Display session marker |
-| src/app/flow/components/session-marker/session-marker.component.html | Template | Session marker template |
-| src/app/flow/components/session-marker/session-marker.component.scss | Styles | Session marker styles |
-| src/app/flow/components/session-marker/session-marker.component.spec.ts | Test | Session marker tests |
-| src/app/flow/components/general-note/general-note.component.ts | Component | Display/edit general note |
-| src/app/flow/components/general-note/general-note.component.html | Template | General note template |
-| src/app/flow/components/general-note/general-note.component.scss | Styles | General note styles |
-| src/app/flow/components/general-note/general-note.component.spec.ts | Test | General note tests |
+| src/app/flow/components/flow-list/flow-list.component.* | Component | List all sessions with search/filter |
+| src/app/flow/components/flow-view/flow-view.component.* | Component | View single session's items |
+| src/app/flow/components/flow-item/flow-item.component.* | Component | Display single flow item, dynamically load detail views |
+| src/app/flow/components/add-flow-item/add-flow-item.component.* | Component | Add item popover UI with tabs |
+| src/app/flow/components/edit-flow/edit-flow.component.* | Component | Create/edit flow metadata (date, title) |
 
 ### Dependencies to Add
 | Package | Version | Purpose |
 |---------|---------|---------|
 | @angular/cdk | ^18.0.0 | Drag and drop functionality (cdkDrag, cdkDropList) |
 
-### Routing Changes
-| File | Change |
-|------|--------|
-| src/app/app-routing.module.ts | Add flow lazy-loaded route |
-| src/app/core/services/navigation.service.ts | Add "Session Flow" menu entry with icon |
+### Routing
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| /flow | FlowListComponent | List all sessions |
+| /flow/:id | FlowViewComponent | View specific session |
 
 ### Related Features
 This feature is in the **campaign management** domain.
 
 | Feature | Relationship | Shared Patterns |
 |---------|--------------|-----------------|
-| quests | References quests in flow | Service pattern, BehaviorSubject, DashboardComponent |
-| people | References people in flow | Service pattern, BehaviorSubject, AvatarComponent |
-| places | References places in flow | Service pattern, BehaviorSubject |
-| overview | Campaign context | Campaign-based filtering |
+| quests | References quests in sessions | Service pattern, BehaviorSubject, DashboardComponent, dynamic loading |
+| people | References people in sessions | Service pattern, BehaviorSubject, AvatarComponent, dynamic loading |
+| places | References places in sessions | Service pattern, BehaviorSubject, dynamic loading |
+| notes | References notes in sessions | Service pattern, BehaviorSubject, dynamic loading |
+| overview | Campaign context | Access control filtering |
 
 ## Architecture Decisions
 
-### Data Storage
-**Decision**: Embedded array in Flow document
-**Rationale**: Simpler queries, atomic updates, sufficient for expected item count (<1000)
+### Session Model
+**Decision**: Each flow is a separate session with date and optional title
+**Rationale**: Clear separation between sessions, allows chronological organization, easier to archive/search by date
 
-### Campaign Association
-**Decision**: `campaignId` field on Flow document
-**Rationale**: Simple query pattern, single campaign per app simplifies logic
+### Data Storage
+**Decision**: Embedded array of items in each Flow document
+**Rationale**: Simpler queries, atomic updates, sufficient for expected item count per session (<100)
 
 ### Data Resolution
 **Decision**: Client-side join with `combineLatest`
-**Rationale**: Reuses existing QuestsService, PeopleService, PlaceService BehaviorSubjects, always fresh data without duplication
-
-### Campaign Context
-**Decision**: Single campaign only (no selection needed)
-**Rationale**: App architecture supports only one campaign, simplifies flow loading
+**Rationale**: Reuses existing QuestsService, PeopleService, PlaceService, NotesService BehaviorSubjects, always fresh data without duplication
 
 ### Drag and Drop
 **Decision**: Angular CDK (`@angular/cdk/drag-drop`)
@@ -214,11 +188,12 @@ This feature is in the **campaign management** domain.
 
 ### Entity Interaction
 **Decision**: Dynamically load full detail view inline when expanded
-**Rationale**: Keep user in flow context, show complete entity detail view (same as detail pages), lazy load only when expanded, destroy when collapsed to avoid keeping Firestore subscriptions open
+**Rationale**: Keep user in session context, show complete entity detail view (same as detail pages), lazy load only when expanded, destroy when collapsed to avoid keeping Firestore subscriptions open
 
 ### Add Item UX
 **Decision**: Single modal with tabs for each item type
 **Rationale**: Cleaner UI than multiple buttons, supports search/select pattern for entities
 
-## Open Questions
-None - all requirements clarified during discussion phase.
+### Notes Integration
+**Decision**: Reference existing notes via noteId (not inline notes)
+**Rationale**: Single source of truth, notes can be updated independently, reuse existing notes feature
