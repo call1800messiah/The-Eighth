@@ -171,3 +171,11 @@ firebase deploy
 - Run in Chrome by default
 - Coverage reports: `./coverage/The-Eighth/`
 - Test pattern: `*.spec.ts` files alongside source files
+
+## Quality Standards
+
+### Security & Privacy
+- **User ID Exposure**: Do not unnecessarily expose user/owner IDs in file paths, URLs, or other client-visible locations
+  - **Bad**: `/storage/users/{userId}/avatar.jpg` - exposes user ID in path
+  - **Good**: `/storage/avatars/{randomId}.jpg` - uses non-identifying random ID
+  - **Rationale**: User IDs are internal identifiers and exposing them unnecessarily can lead to privacy concerns, enumeration attacks, or unintended information disclosure

@@ -871,13 +871,15 @@ Script: `scripts/migrate-storage.ts`
    // Total files: ~XXX (check Firebase console)
    ```
 
-4. **Upload to Supabase Storage with new path structure**:
-   - `people/{id}/image.jpg` → `avatars/{ownerId}/{id}.jpg`
-   - `people/{id}/banner.jpg` → `banners/{ownerId}/{id}.jpg`
-   - `places/{id}/image.jpg` → `places/{ownerId}/{id}.jpg`
-   - `achievements/{id}/icon.png` → `achievements/{ownerId}/{id}.png`
+4. **Upload to Supabase Storage (paths unchanged)**:
+   - `people/balan-cantara.jpg` → `people/balan-cantara.jpg` (unchanged)
+   - `places/havena.jpg` → `places/havena.jpg` (unchanged)
+   - `achievements/first-quest.png` → `achievements/first-quest.png` (unchanged)
+   - `audio/santana.mp3` → `audio/santana.mp3` (unchanged)
 
-5. **Update database paths** (SQL UPDATE statements to rewrite image/banner/icon paths)
+   **Note**: Paths use entity names (slugs), not IDs. No transformation needed.
+
+5. **Update database paths** - NOT NEEDED (paths staying the same format)
 
 6. **Validation**:
    ```typescript
@@ -885,15 +887,13 @@ Script: `scripts/migrate-storage.ts`
    const supabaseFiles = await supabase.storage.from('the-eighth').list();
    console.log(`Migrated ${supabaseFiles.length} files`);
 
-   // Verify all database paths updated
-   const orphanedPaths = await supabase
+   // Verify database paths are correct (no updates needed since format unchanged)
+   const { data: people } = await supabase
      .from('people')
-     .select('id, image')
-     .like('image', 'people/%'); // Old Firebase format
+     .select('id, image, banner')
+     .or('image.is.not.null,banner.is.not.null');
 
-   if (orphanedPaths.data.length > 0) {
-     console.error('Found unmigrated paths:', orphanedPaths.data);
-   }
+   console.log(`People with image/banner paths: ${people.length}`);
    ```
 
 ### Phase 5: Data Validation
@@ -904,8 +904,9 @@ Run validation queries:
 - Test RLS policies with sample users
 - Test hierarchical queries (places, quests)
 - Verify junction table data integrity
-- **Verify storage files migrated** (file counts match)
-- **Verify database paths updated** (no old Firebase Storage paths remain)
+- **Verify storage files migrated** (file counts match, paths unchanged)
+- **Verify audio files migrated** (check audio/ folder, test AudioPlayerListComponent)
+- **Test storage RLS policies** (upload/update/delete with correct ownership checks)
 
 ## Critical Implementation Details
 
@@ -1068,21 +1069,25 @@ Image/file paths stored as strings in these fields:
 - `people.banner` - Person banner image
 - `places.image` - Place image
 - `achievements.icon` - Achievement icon
+- `environment.tenantData[tenant].audioFiles[]` - Tenant-level audio files (shared assets)
 
 #### Supabase Storage Structure
 
 **Bucket organization**:
 ```
 the-eighth (bucket)
-├── avatars/          # people.image
-│   └── {user_id}/{person_id}.{ext}
-├── banners/          # people.banner
-│   └── {user_id}/{person_id}.{ext}
+├── people/           # people.image and people.banner
+│   ├── balan-cantara.jpg       # Person avatar
+│   └── thorwal-banner.jpg      # Person banner
 ├── places/           # places.image
-│   └── {user_id}/{place_id}.{ext}
-└── achievements/     # achievements.icon
-    └── {user_id}/{achievement_id}.{ext}
+│   └── havena.jpg
+├── achievements/     # achievements.icon
+│   └── first-quest.png
+└── audio/            # Tenant-level shared audio files
+    └── santana.mp3   # Public read, GM write
 ```
+
+**Note**: Paths use entity names (slugs), not IDs. Format: `{collection}/{entity-name}.{ext}`
 
 #### Storage Bucket Configuration
 
@@ -1096,25 +1101,114 @@ CREATE POLICY "Public read access"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'the-eighth');
 
-CREATE POLICY "Authenticated users can upload"
+CREATE POLICY "Authenticated users can upload own entity files"
 ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'the-eighth'
   AND auth.role() = 'authenticated'
+  AND (
+    -- People files: path is "people/entity-name.ext"
+    -- Check if path matches image or banner field in people table
+    (name LIKE 'people/%' AND
+      name IN (
+        SELECT image FROM people WHERE owner_id = auth.user_id() AND image IS NOT NULL
+        UNION
+        SELECT banner FROM people WHERE owner_id = auth.user_id() AND banner IS NOT NULL
+      )
+    )
+    OR
+    -- Places files: path is "places/entity-name.ext"
+    (name LIKE 'places/%' AND
+      name IN (
+        SELECT image FROM places WHERE owner_id = auth.user_id() AND image IS NOT NULL
+      )
+    )
+    OR
+    -- Achievements files: path is "achievements/entity-name.ext"
+    (name LIKE 'achievements/%' AND
+      name IN (
+        SELECT icon FROM achievements WHERE owner_id = auth.user_id() AND icon IS NOT NULL
+      )
+    )
+  )
 );
 
-CREATE POLICY "Users can update own files"
+CREATE POLICY "GMs can upload audio files"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'the-eighth'
+  AND name LIKE 'audio/%'
+  AND auth.is_gm()
+);
+
+CREATE POLICY "Users can update own entity files"
 ON storage.objects FOR UPDATE
 USING (
   bucket_id = 'the-eighth'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (
+    (name LIKE 'people/%' AND
+      name IN (
+        SELECT image FROM people WHERE owner_id = auth.user_id() AND image IS NOT NULL
+        UNION
+        SELECT banner FROM people WHERE owner_id = auth.user_id() AND banner IS NOT NULL
+      )
+    )
+    OR
+    (name LIKE 'places/%' AND
+      name IN (
+        SELECT image FROM places WHERE owner_id = auth.user_id() AND image IS NOT NULL
+      )
+    )
+    OR
+    (name LIKE 'achievements/%' AND
+      name IN (
+        SELECT icon FROM achievements WHERE owner_id = auth.user_id() AND icon IS NOT NULL
+      )
+    )
+  )
 );
 
-CREATE POLICY "Users can delete own files"
+CREATE POLICY "GMs can update audio files"
+ON storage.objects FOR UPDATE
+USING (
+  bucket_id = 'the-eighth'
+  AND name LIKE 'audio/%'
+  AND auth.is_gm()
+);
+
+CREATE POLICY "Users can delete own entity files"
 ON storage.objects FOR DELETE
 USING (
   bucket_id = 'the-eighth'
-  AND (storage.foldername(name))[1] = auth.uid()::text
+  AND (
+    (name LIKE 'people/%' AND
+      name IN (
+        SELECT image FROM people WHERE owner_id = auth.user_id() AND image IS NOT NULL
+        UNION
+        SELECT banner FROM people WHERE owner_id = auth.user_id() AND banner IS NOT NULL
+      )
+    )
+    OR
+    (name LIKE 'places/%' AND
+      name IN (
+        SELECT image FROM places WHERE owner_id = auth.user_id() AND image IS NOT NULL
+      )
+    )
+    OR
+    (name LIKE 'achievements/%' AND
+      name IN (
+        SELECT icon FROM achievements WHERE owner_id = auth.user_id() AND icon IS NOT NULL
+      )
+    )
+  )
+);
+
+CREATE POLICY "GMs can delete audio files"
+ON storage.objects FOR DELETE
+USING (
+  bucket_id = 'the-eighth'
+  AND name LIKE 'audio/%'
+  AND auth.is_gm()
 );
 ```
 
@@ -1141,27 +1235,10 @@ async function migrateFiles() {
     const tempPath = path.join('/tmp', file.name);
     await file.download({ destination: tempPath });
 
-    // Parse Firebase path: "people/{personId}/image.jpg"
-    const pathParts = file.name.split('/');
-    const [collection, entityId, filename] = pathParts;
-
-    // Map to Supabase path based on collection
-    let supabasePath: string;
-    switch (collection) {
-      case 'people':
-        if (filename.includes('banner')) {
-          supabasePath = `banners/${ownerId}/${entityId}.${getExtension(filename)}`;
-        } else {
-          supabasePath = `avatars/${ownerId}/${entityId}.${getExtension(filename)}`;
-        }
-        break;
-      case 'places':
-        supabasePath = `places/${ownerId}/${entityId}.${getExtension(filename)}`;
-        break;
-      case 'achievements':
-        supabasePath = `achievements/${ownerId}/${entityId}.${getExtension(filename)}`;
-        break;
-    }
+    // Firebase path format: "collection/entity-name.ext"
+    // Example: "places/balan-cantara.jpg"
+    // Keep same path format for Supabase (no transformation needed)
+    const supabasePath = file.name;
 
     // Upload to Supabase Storage
     const fileBuffer = fs.readFileSync(tempPath);
@@ -1175,7 +1252,7 @@ async function migrateFiles() {
     if (error) {
       console.error(`Failed to upload ${file.name}:`, error);
     } else {
-      console.log(`Migrated: ${file.name} → ${supabasePath}`);
+      console.log(`Migrated: ${file.name} (path unchanged)`);
     }
 
     // Clean up temp file
@@ -1186,54 +1263,18 @@ async function migrateFiles() {
 
 **Phase 2: Update Database Paths**
 
-```typescript
-// Update people.image paths
-UPDATE people
-SET image = CONCAT(
-  'avatars/',
-  owner_id::text,
-  '/',
-  id::text,
-  '.',
-  SUBSTRING(image FROM '[^.]+$') -- Extract extension
-)
-WHERE image IS NOT NULL;
+```sql
+-- NO UPDATES NEEDED!
+-- Storage paths are staying the same format: "collection/entity-name.ext"
+-- Examples:
+--   people.image: "people/balan-cantara.jpg" (unchanged)
+--   people.banner: "people/thorwal-banner.jpg" (unchanged)
+--   places.image: "places/havena.jpg" (unchanged)
+--   achievements.icon: "achievements/first-quest.png" (unchanged)
+--   audio files: "audio/santana.mp3" (unchanged)
 
-// Update people.banner paths
-UPDATE people
-SET banner = CONCAT(
-  'banners/',
-  owner_id::text,
-  '/',
-  id::text,
-  '.',
-  SUBSTRING(banner FROM '[^.]+$')
-)
-WHERE banner IS NOT NULL;
-
-// Update places.image paths
-UPDATE places
-SET image = CONCAT(
-  'places/',
-  owner_id::text,
-  '/',
-  id::text,
-  '.',
-  SUBSTRING(image FROM '[^.]+$')
-)
-WHERE image IS NOT NULL;
-
-// Update achievements.icon paths
-UPDATE achievements
-SET icon = CONCAT(
-  'achievements/',
-  owner_id::text,
-  '/',
-  id::text,
-  '.',
-  SUBSTRING(icon FROM '[^.]+$')
-)
-WHERE icon IS NOT NULL;
+-- The database already contains the correct paths
+-- They will work as-is with Supabase Storage
 ```
 
 **Phase 3: Update Angular StorageService**
@@ -1255,12 +1296,11 @@ getPublicUrl(path: string): string {
 // Upload file
 async uploadFile(
   file: File,
-  folder: 'avatars' | 'banners' | 'places' | 'achievements',
-  entityId: string
+  collection: 'people' | 'places' | 'achievements',
+  entityName: string // Slugified entity name (e.g., "balan-cantara")
 ): Promise<string> {
-  const userId = this.auth.user.id;
   const extension = file.name.split('.').pop();
-  const filePath = `${folder}/${userId}/${entityId}.${extension}`;
+  const filePath = `${collection}/${entityName}.${extension}`;
 
   const { data, error } = await supabase.storage
     .from('the-eighth')
@@ -1270,38 +1310,55 @@ async uploadFile(
 
   return filePath; // Store this path in database
 }
+
+// Helper: Generate slug from entity name
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special chars
+    .replace(/[\s_-]+/g, '-') // Replace spaces/underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
 ```
 
 #### Path Format Change
 
-**Firebase Storage paths** (before):
+**Firebase Storage paths** (current):
 ```
-people/{personId}/image.jpg
-people/{personId}/banner.jpg
-places/{placeId}/image.jpg
-achievements/{achievementId}/icon.png
-```
-
-**Supabase Storage paths** (after):
-```
-avatars/{ownerId}/{personId}.jpg
-banners/{ownerId}/{personId}.jpg
-places/{ownerId}/{placeId}.jpg
-achievements/{ownerId}/{achievementId}.png
+people/balan-cantara.jpg
+people/thorwal-banner.jpg
+places/havena.jpg
+achievements/first-quest.png
+audio/santana.mp3
 ```
 
-**Key differences**:
-- Organized by file type (avatars, banners, places, achievements)
-- Owner ID in path for access control
-- Consistent naming: `{ownerId}/{entityId}.{ext}`
+**Note**: Paths use entity names (slugs), not IDs. Format: `{collection}/{entity-name}.{extension}`
+
+**Supabase Storage paths** (proposed - keep same format):
+```
+people/balan-cantara.jpg
+people/thorwal-banner.jpg
+places/havena.jpg
+achievements/first-quest.png
+audio/santana.mp3
+```
+
+**Key considerations**:
+- Keep existing path format: `{collection}/{entity-name}.{ext}`
+- No structural changes needed (simpler migration)
+- Ownership enforced via RLS policies that query database tables
+- **Collision risk**: If two entities have the same name, paths will collide
+  - Could mitigate by appending ID on collision: `places/tavern-{id}.jpg`
+  - Or enforce unique names per collection
 
 #### Accessing Files in Application
 
 ```typescript
-// Component usage
+// Component usage (images)
 <img [src]="getImageUrl(person.image)" />
 
-// Service method
+// Service method (images)
 getImageUrl(storagePath: string): string {
   if (!storagePath) return '/assets/placeholder.png';
 
@@ -1310,6 +1367,19 @@ getImageUrl(storagePath: string): string {
     .getPublicUrl(storagePath)
     .data.publicUrl;
 }
+
+// Audio files (AudioPlayerListComponent)
+// IMPORTANT: Audio paths stay the same (audio/santana.mp3)
+// No changes needed to audio-player-list.component.ts or environment.ts audioFiles array
+const files = environment.tenantData[environment.tenant].audioFiles;
+// files = ['audio/santana.mp3'] - same as before
+files.forEach((file) => {
+  const url = supabase.storage
+    .from('the-eighth')
+    .getPublicUrl(file)
+    .data.publicUrl;
+  // Use url in audio player
+});
 ```
 
 #### Migration Validation
@@ -1333,6 +1403,18 @@ const { data: people } = await supabase
   .not('image', 'is', null);
 
 console.log(`People with images: ${people.length}`);
+
+// Verify audio files migrated
+const { data: audioFiles } = await supabase.storage
+  .from('the-eighth')
+  .list('audio');
+
+console.log(`Audio files in Supabase: ${audioFiles.length}`);
+console.log('Audio files:', audioFiles.map(f => f.name));
+
+// Check against environment config
+const expectedAudioFiles = environment.tenantData[environment.tenant].audioFiles || [];
+console.log(`Expected audio files from config: ${expectedAudioFiles.length}`);
 ```
 
 ## Service Layer Refactoring
@@ -1365,6 +1447,9 @@ console.log(`People with images: ${people.length}`);
      - Delete: `supabase.storage.from(bucket).remove([path])` replaces `afStorage.ref(path).delete()`
    - Path structure changes: See "Storage Migration" section for new path format
    - Update all components that display images to use new `getPublicUrl()` method
+   - **AudioPlayerListComponent** (`src/app/shared/components/audio-player-list/`) - Update to use Supabase Storage
+     - Replace `storage.getDownloadURL()` observable with `supabase.storage.getPublicUrl()` (synchronous)
+     - Audio file paths remain unchanged: `audio/santana.mp3`
 
 **Feature Services** (`src/app/*/services/`):
 
@@ -1791,6 +1876,8 @@ SELECT * FROM rules WHERE category IS NULL;
 - [ ] Real-time subscriptions work
 - [ ] Auth flow works (login/logout)
 - [ ] File storage paths accessible
+- [ ] **Audio files migrated and accessible** (verify audio/ folder in Supabase Storage)
+- [ ] **Audio player component works** (AudioPlayerListComponent loads and plays audio)
 - [ ] Access control works (owners, GMs, explicit grants)
 - [ ] Hybrid permissions tested (role + per-document)
 - [ ] document_access table only has explicit grants (no owners, no GMs)
