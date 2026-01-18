@@ -96,6 +96,46 @@ CREATE TABLE document_access (
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE(entity_type, entity_id, user_id)
 );
+
+-- Rules configuration tables (seeded from assets/{tenant}/rules.json)
+-- These are tenant-level config, not user-editable
+
+-- Allowed attributes for person stats (from rules.json.allowedAttributes)
+CREATE TABLE allowed_attributes (
+  id UUID PRIMARY KEY,
+  tenant TEXT NOT NULL, -- 'tde5', 'the-eighth', etc.
+  name TEXT NOT NULL,
+  short_code TEXT NOT NULL,
+  display_style TEXT NOT NULL, -- 'number' or 'bar'
+  sort_order INTEGER NOT NULL,
+  roll_type TEXT, -- 'attribute' or NULL
+  UNIQUE(tenant, short_code)
+);
+
+-- Hit locations for combat (from rules.json.hitLocations)
+CREATE TABLE hit_locations (
+  id UUID PRIMARY KEY,
+  tenant TEXT NOT NULL,
+  roll_value INTEGER NOT NULL, -- 1-20 on d20
+  location_name TEXT NOT NULL,
+  UNIQUE(tenant, roll_value)
+);
+
+-- Combat states/conditions (from rules.json.states)
+CREATE TABLE combat_states (
+  id UUID PRIMARY KEY,
+  tenant TEXT NOT NULL,
+  name TEXT NOT NULL,
+  UNIQUE(tenant, name)
+);
+
+-- Rules config metadata (from rules.json top-level fields)
+CREATE TABLE rules_config (
+  id UUID PRIMARY KEY,
+  tenant TEXT NOT NULL UNIQUE,
+  edition INTEGER NOT NULL,
+  addable_rule_types JSONB NOT NULL -- Schema for custom rule fields
+);
 ```
 
 ### Entity Tables
@@ -397,6 +437,7 @@ CREATE TABLE campaign (
 CREATE TABLE timelines (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,
+  owner_id UUID REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -617,6 +658,11 @@ CREATE INDEX idx_user_roles_role ON user_roles(role);
 CREATE INDEX idx_document_access_lookup ON document_access(entity_type, entity_id, user_id);
 CREATE INDEX idx_document_access_user ON document_access(user_id);
 
+-- Rules config tables (tenant-scoped lookups)
+CREATE INDEX idx_allowed_attributes_tenant ON allowed_attributes(tenant);
+CREATE INDEX idx_hit_locations_tenant ON hit_locations(tenant);
+CREATE INDEX idx_combat_states_tenant ON combat_states(tenant);
+
 -- People queries
 CREATE INDEX idx_people_owner ON people(owner_id);
 CREATE INDEX idx_people_location ON people(location_id);
@@ -643,7 +689,7 @@ CREATE INDEX idx_inventory_owner ON inventory(owner_id);
 
 -- Notes
 CREATE INDEX idx_notes_owner ON notes(owner_id);
-CREATE INDEX idx_notes_tags ON notes USING GIN(tags); -- Full-text search on tags array
+-- Note: notes.tags was removed - notes don't have tags in this application
 
 -- Rolls
 CREATE INDEX idx_rolls_owner ON rolls(owner_id);
@@ -661,6 +707,7 @@ CREATE INDEX idx_flow_items_order ON flow_items(flow_id, sort_order);
 
 -- Timelines
 CREATE INDEX idx_timelines_name ON timelines(name);
+CREATE INDEX idx_timelines_owner ON timelines(owner_id);
 
 -- Historic events
 CREATE INDEX idx_historic_events_timeline ON historic_events(timeline_id);
@@ -768,6 +815,9 @@ Script: `scripts/transform-and-migrate.ts`
        VALUES ($1, $2, $3, $4)
      `, [pgPersonId, idMap.get(ruleId), data.level, data.details]);
    }
+
+   // NOTE: Firebase has typo 'liturgys' but PostgreSQL table is 'person_liturgies'
+   // Migration script must read person.liturgys and write to person_liturgies
    ```
 
 4. **Subcollections → Global tables**:
@@ -924,8 +974,11 @@ CREATE TABLE combat_sessions (
 );
 
 -- Migrate hardcoded session
-INSERT INTO combat_sessions (id, name)
-VALUES ('tKthlBKLy0JuVaPnXWzY'::uuid, 'Main Combat');
+-- NOTE: Firebase ID 'tKthlBKLy0JuVaPnXWzY' is NOT a valid UUID
+-- Generate a new UUID and maintain a mapping for migration
+INSERT INTO combat_sessions (id, name, is_active)
+VALUES (gen_random_uuid(), 'Main Combat', true);
+-- Migration script must map old Firebase ID to new PostgreSQL UUID
 
 -- Create dynamic combatants table
 CREATE TABLE combatants (
@@ -1069,7 +1122,7 @@ Image/file paths stored as strings in these fields:
 - `people.banner` - Person banner image
 - `places.image` - Place image
 - `achievements.icon` - Achievement icon
-- `environment.tenantData[tenant].audioFiles[]` - Tenant-level audio files (shared assets)
+- `audio/*` - Audio files (listed dynamically from Supabase Storage, not from config)
 
 #### Supabase Storage Structure
 
@@ -1369,14 +1422,17 @@ getImageUrl(storagePath: string): string {
 }
 
 // Audio files (AudioPlayerListComponent)
-// IMPORTANT: Audio paths stay the same (audio/santana.mp3)
-// No changes needed to audio-player-list.component.ts or environment.ts audioFiles array
-const files = environment.tenantData[environment.tenant].audioFiles;
-// files = ['audio/santana.mp3'] - same as before
-files.forEach((file) => {
+// IMPORTANT: Audio files are now listed from Supabase Storage bucket at runtime
+// REMOVED: environment.tenantData[tenant].audioFiles hardcoded config array
+// NEW: List files from audio/ folder in Supabase Storage dynamically
+const { data: audioFiles } = await supabase.storage
+  .from('the-eighth')
+  .list('audio');
+
+audioFiles.forEach((file) => {
   const url = supabase.storage
     .from('the-eighth')
-    .getPublicUrl(file)
+    .getPublicUrl(`audio/${file.name}`)
     .data.publicUrl;
   // Use url in audio player
 });
@@ -1412,9 +1468,9 @@ const { data: audioFiles } = await supabase.storage
 console.log(`Audio files in Supabase: ${audioFiles.length}`);
 console.log('Audio files:', audioFiles.map(f => f.name));
 
-// Check against environment config
-const expectedAudioFiles = environment.tenantData[environment.tenant].audioFiles || [];
-console.log(`Expected audio files from config: ${expectedAudioFiles.length}`);
+// Audio files are now dynamically listed from Supabase Storage
+// No environment.ts audioFiles config to compare against
+// Verify audio folder has expected content by comparing with Firebase export
 ```
 
 ## Service Layer Refactoring
@@ -1638,11 +1694,11 @@ Execute in this sequence to maintain referential integrity:
 
 1. ✅ **Independent tables**: users, user_roles, rules_config, allowed_attributes, hit_locations, combat_states
 2. ✅ **Rules**: Seed static rules from `assets/{tenant}/rules.json` + migrate dynamic rules from Firestore `rules` collection
-3. ✅ **Timelines** (no dependencies)
+3. ✅ **Timelines** (BEFORE campaign - campaign.timeline_id references timelines)
 4. ✅ **Core entities (no FKs yet)**: people, places, quests (all with parent_id/location_id NULL for now), projects, achievements, inventory, notes, rolls
-5. ✅ **Campaign** (AFTER places exists - needs ship_id FK to places)
+5. ✅ **Campaign** (AFTER places AND timelines - needs ship_id FK to places, timeline_id FK to timelines)
 6. ✅ **Flows**: flows, flow_items (after people/places/quests/notes exist)
-7. ✅ **Hierarchical FKs**: Update places.parent_id, quests.parent_id, people.location_id, campaign.ship_id (second pass)
+7. ✅ **Hierarchical FKs**: Update places.parent_id, quests.parent_id, people.location_id, campaign.ship_id, campaign.timeline_id (second pass)
 8. ✅ **Junction tables**: person_attributes, person_tags, person_advantages, person_disadvantages, person_feats, person_skills, person_spells, person_cantrips, person_liturgies, project_milestones, project_requirements, achievement_people
 9. ✅ **Person relationships**: Third pass after all people exist
 10. ✅ **Derived tables**: info_boxes, historic_events
@@ -1874,7 +1930,8 @@ SELECT * FROM rules WHERE category IS NULL;
 - [ ] Hierarchical queries work (places tree, quests tree, no circular references)
 - [ ] Junction table queries return correct data (person skills, advantages, etc.)
 - [ ] Real-time subscriptions work
-- [ ] Auth flow works (login/logout)
+- [ ] Auth flow works (login/logout with manually set passwords)
+- [ ] **isGM computed property works** (UserService correctly derives isGM from user_roles)
 - [ ] File storage paths accessible
 - [ ] **Audio files migrated and accessible** (verify audio/ folder in Supabase Storage)
 - [ ] **Audio player component works** (AudioPlayerListComponent loads and plays audio)
@@ -1885,6 +1942,114 @@ SELECT * FROM rules WHERE category IS NULL;
 - [ ] Project milestones/requirements queries work
 - [ ] Person relationships bidirectional
 - [ ] Rules migration complete (static + custom rules)
+
+## Authentication Migration Strategy
+
+**Decision**: Passwords will be set manually in Supabase Auth database.
+
+Since this is a small user base, the migration approach is:
+
+1. **Create Supabase Auth users manually** with known passwords
+2. **Map Firebase UID to Supabase UUID** via `users.firebase_uid` column
+3. **Distribute new credentials** to users out-of-band (email/message)
+
+**Implementation**:
+
+```sql
+-- Create user in Supabase Auth (via Dashboard or service role API)
+-- Then insert into public.users table with mapping:
+INSERT INTO users (id, firebase_uid, name, ...)
+VALUES (
+  'new-supabase-auth-uuid',  -- From Supabase Auth user creation
+  'old-firebase-uid',         -- From Firebase export
+  'User Name',
+  ...
+);
+```
+
+**Post-migration**: Users log in with email + new password. The `firebase_uid` column is kept for audit trail but not used at runtime.
+
+## isGM Property Migration
+
+**Decision**: Compute `isGM` in UserService from `user_roles` table.
+
+The current codebase uses `user.isGM` in 18+ locations. Rather than updating all templates, the UserService will compute this property when fetching users.
+
+**Implementation in UserService**:
+
+```typescript
+// user.service.ts
+getUsers(): Observable<User[]> {
+  return from(supabase
+    .from('users')
+    .select(`
+      *,
+      user_roles!inner(role)
+    `)
+  ).pipe(
+    map(({ data }) => data.map(user => ({
+      ...user,
+      // Compute isGM from user_roles
+      isGM: user.user_roles?.some(r => r.role === 'gm') ?? false
+    })))
+  );
+}
+```
+
+This ensures backward compatibility with existing template code like `*ngIf="user.isGM"`.
+
+## Environment Configuration
+
+**New environment structure** (replaces Firebase config):
+
+```typescript
+// src/environments/environment.ts
+export const environment = {
+  name: 'dev',
+  production: false,
+  tenant: process.env.NG_APP_TENANT.trim(),
+  supabase: {
+    url: 'http://localhost:54321',  // Local Supabase
+    anonKey: 'eyJ...',              // Local anon key
+  },
+  // REMOVED: tenantData[tenant].firebase
+  // REMOVED: tenantData[tenant].audioFiles (now listed from Storage)
+};
+
+// src/environments/environment.prod.ts
+export const environment = {
+  name: 'prod',
+  production: true,
+  tenant: process.env.NG_APP_TENANT.trim(),
+  supabase: {
+    url: 'https://your-project.supabase.co',
+    anonKey: 'production-anon-key',
+  },
+};
+```
+
+**Supabase client provider** (in CoreModule or standalone):
+
+```typescript
+// src/app/core/supabase.provider.ts
+import { InjectionToken } from '@angular/core';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
+
+export const SUPABASE_CLIENT = new InjectionToken<SupabaseClient>('supabase');
+
+export function supabaseFactory(): SupabaseClient {
+  return createClient(
+    environment.supabase.url,
+    environment.supabase.anonKey
+  );
+}
+
+export const supabaseProvider = {
+  provide: SUPABASE_CLIENT,
+  useFactory: supabaseFactory,
+};
+```
 
 ## Next Steps
 
@@ -1901,10 +2066,11 @@ SELECT * FROM rules WHERE category IS NULL;
    - `supabase/migrations/003_functions_triggers.sql` - Helper functions and triggers
 
 3. **Write migration scripts**:
+   - `scripts/validate-firebase-data.ts` - **PRE-MIGRATION**: Check orphaned refs, circular deps, invalid data
    - `scripts/firebase-export.ts` - Export Firebase data to JSON
    - `scripts/transform-and-migrate.ts` - Transform and load into PostgreSQL
    - `scripts/migrate-storage.ts` - Migrate files from Firebase Storage to Supabase Storage
-   - `scripts/validate-migration.ts` - Compare data integrity
+   - `scripts/validate-migration.ts` - **POST-MIGRATION**: Compare data integrity
 
 4. **Update Angular dependencies**:
    ```bash
@@ -2125,7 +2291,13 @@ describe('PeopleService', () => {
 - `scripts/transform-and-migrate.ts` - Transform and load data into PostgreSQL
 - `scripts/migrate-storage.ts` - Migrate files from Firebase Storage to Supabase Storage
 - `scripts/validate-migration.ts` - Comprehensive data validation
-- `scripts/validate-export.ts` - Validate orphaned refs, circular deps in export
+- `scripts/validate-firebase-data.ts` - **PRE-MIGRATION** validation (must pass before export):
+  - Orphaned `location_id` references (person → deleted place)
+  - Orphaned `parent_id` references (place/quest → deleted parent)
+  - Circular hierarchies in places/quests
+  - Invalid `access` arrays (references to deleted users)
+  - Orphaned flow items (references to deleted entities)
+  - Combatants referencing deleted people
 - `supabase/migrations/001_initial_schema.sql` - All table definitions
 - `supabase/migrations/002_rls_policies.sql` - All RLS policies
 - `supabase/migrations/003_storage_buckets.sql` - Storage bucket and policies
