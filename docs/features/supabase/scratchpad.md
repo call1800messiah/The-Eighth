@@ -7,6 +7,7 @@
 - **Audio files**: List dynamically from Storage bucket
 - **Timeline ownership**: Added owner_id to timelines table
 - **Notes tags**: Removed (not used in this app)
+- **Port config**: Changed from 543xx to 554xx (Windows reserves 54286-54385)
 
 ## Implementation Notes
 

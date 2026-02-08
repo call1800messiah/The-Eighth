@@ -30,7 +30,11 @@
       "Skill(implement:*)",
       "Skill(test:*)",
       "Skill(codestyle:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(docker info:*)",
+      "Bash(npx supabase start)",
+      "Bash(netsh interface ipv4 show excludedportrange:*)",
+      "Bash(findstr:*)"
     ]
   }
 }
