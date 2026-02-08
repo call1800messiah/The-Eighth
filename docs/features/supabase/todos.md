@@ -1,6 +1,6 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 1 Complete, Phase 2 Ready
+**Status**: Phase 2 Complete, Phase 3 Ready
 **Last Updated**: 2026-02-08
 
 ## Phase 1: Infrastructure Setup ✅
@@ -10,26 +10,26 @@
 - [x] Start local Supabase (`npx supabase start`)
 - [x] Install Supabase JS client (`npm install @supabase/supabase-js`)
 
-## Phase 2: Database Schema
+## Phase 2: Database Schema ✅
 
-- [ ] Create `supabase/migrations/001_initial_schema.sql`
-  - [ ] User system tables (users, user_roles, document_access)
-  - [ ] Rules config tables (allowed_attributes, hit_locations, combat_states, rules_config)
-  - [ ] Entity tables (people, places, quests, projects, achievements, inventory, notes, rolls)
-  - [ ] Campaign and timeline tables
-  - [ ] Flow tables (flows, flow_items)
-  - [ ] Junction tables (person_advantages, person_skills, etc.)
-  - [ ] Info boxes table (polymorphic)
-  - [ ] Combat tables (combat_sessions, combatants, combatant_attributes, combatant_states)
-  - [ ] All indexes
-- [ ] Create `supabase/migrations/002_rls_policies.sql`
-  - [ ] Helper functions (auth.user_id, auth.is_gm)
-  - [ ] RLS policies for all entity tables
-- [ ] Create `supabase/migrations/003_storage_buckets.sql`
-  - [ ] Create storage bucket
-  - [ ] Storage RLS policies
-- [ ] Apply migrations (`npx supabase db reset`)
-- [ ] Generate TypeScript types (`npx supabase gen types typescript --local > src/types/supabase.ts`)
+- [x] Create `supabase/migrations/001_initial_schema.sql`
+  - [x] User system tables (users, user_roles, document_access)
+  - [x] Rules config tables (allowed_attributes, hit_locations, combat_states, rules_config)
+  - [x] Entity tables (people, places, quests, projects, achievements, inventory, notes, rolls)
+  - [x] Campaign and timeline tables
+  - [x] Flow tables (flows, flow_items)
+  - [x] Junction tables (person_advantages, person_skills, etc.)
+  - [x] Info boxes table (polymorphic)
+  - [x] Combat tables (combat_sessions, combatants, combatant_attributes, combatant_states)
+  - [x] All indexes
+- [x] Create `supabase/migrations/002_rls_policies.sql`
+  - [x] Helper functions (current_user_id, is_gm)
+  - [x] RLS policies for all entity tables
+- [x] Create `supabase/migrations/003_storage_buckets.sql`
+  - [x] Create storage bucket
+  - [x] Storage RLS policies
+- [x] Apply migrations (`npx supabase db reset`)
+- [x] Generate TypeScript types (`npx supabase gen types typescript --local > src/types/supabase.ts`)
 
 ## Phase 3: Pre-Migration Validation
 
