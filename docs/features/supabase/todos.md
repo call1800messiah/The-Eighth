@@ -31,16 +31,18 @@
 - [x] Apply migrations (`npx supabase db reset`)
 - [x] Generate TypeScript types (`npx supabase gen types typescript --local > src/types/supabase.ts`)
 
-## Phase 3: Pre-Migration Validation
+## Phase 3: Pre-Migration Validation ✅
 
-- [ ] Create `scripts/validate-firebase-data.ts`
-  - [ ] Check orphaned location_id references
-  - [ ] Check orphaned parent_id references (places, quests)
-  - [ ] Detect circular hierarchies
-  - [ ] Check invalid access arrays
-  - [ ] Check orphaned flow items
-  - [ ] Check combatants referencing deleted people
-- [ ] Run validation and fix any issues in Firebase
+- [x] Create `scripts/validate-firebase-data.ts`
+  - [x] Check orphaned location_id references
+  - [x] Check orphaned parent_id references (places, quests)
+  - [x] Detect circular hierarchies
+  - [x] Check invalid access arrays
+  - [x] Check orphaned flow items
+  - [x] Check combatants referencing deleted people
+  - [x] Check orphaned person relationships
+  - [x] Check invalid owner references
+- [ ] Run validation and fix any issues in Firebase (requires service account)
 
 ## Phase 4: Data Export
 
