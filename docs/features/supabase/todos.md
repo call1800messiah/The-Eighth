@@ -66,24 +66,23 @@
 
 ## Phase 5: Data Transformation & Migration
 
-- [ ] Create `scripts/transform-and-migrate.ts`
-  - [ ] Create Firebase ID to PostgreSQL UUID mapping
-  - [ ] Seed rules config from JSON files
-  - [ ] Seed static rules from JSON files
-  - [ ] Migrate users (create in Supabase Auth manually)
-  - [ ] Migrate user_roles
-  - [ ] Migrate timelines
-  - [ ] Migrate core entities (people, places, quests, projects, achievements, inventory, notes, rolls)
-  - [ ] Migrate campaign
-  - [ ] Migrate flows and flow_items
-  - [ ] Second pass: hierarchical FKs (parent_id, location_id, ship_id, timeline_id)
-  - [ ] Migrate junction tables (person_advantages, skills, etc.)
-  - [ ] Migrate person relationships (bidirectional)
-  - [ ] Migrate info_boxes
-  - [ ] Migrate historic_events
-  - [ ] Migrate combat sessions and combatants
-  - [ ] Migrate document_access (explicit grants only, exclude owners/GMs)
-- [ ] Run migration script
+- [x] Create `scripts/transform-and-migrate.ts`
+  - [x] Create Firebase ID to PostgreSQL UUID mapping
+  - [x] Seed rules config from JSON files
+  - [x] Migrate users (create in Supabase Auth + users table + user_roles)
+  - [x] Migrate rules from Firebase export
+  - [x] Migrate timelines
+  - [x] Migrate core entities (people, places, quests, projects, achievements, inventory, notes, rolls)
+  - [x] Migrate campaign (with shipLink→ship_id, timelineId→timeline_id)
+  - [x] Migrate flows and flow_items
+  - [x] Second pass: hierarchical FKs (parent_id, location_id)
+  - [x] Migrate junction tables (person_advantages, disadvantages, feats, skills, spells, cantrips, liturgies, attributes, tags)
+  - [x] Migrate person relationships (from relatives object)
+  - [x] Migrate info_boxes (people, places, quests info subcollections)
+  - [x] Migrate historic_events
+  - [x] Migrate combat sessions and combatants (with states)
+  - [x] Migrate document_access (explicit grants only, exclude owners/GMs)
+- [x] Run migration script (1,477 source docs → 3,000+ rows across all tables)
 
 ## Phase 6: Storage Migration
 

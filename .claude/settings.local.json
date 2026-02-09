@@ -35,7 +35,10 @@
       "Bash(npx supabase start)",
       "Bash(netsh interface ipv4 show excludedportrange:*)",
       "Bash(findstr:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(node -e:*)",
+      "Bash(npx supabase:*)",
+      "Bash(timeout:*)"
     ]
   }
 }
