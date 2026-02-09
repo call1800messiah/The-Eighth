@@ -34,7 +34,8 @@
       "Bash(docker info:*)",
       "Bash(npx supabase start)",
       "Bash(netsh interface ipv4 show excludedportrange:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git rm:*)"
     ]
   }
 }

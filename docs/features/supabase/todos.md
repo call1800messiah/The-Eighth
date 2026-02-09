@@ -1,7 +1,7 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 2 Complete, Phase 3 Ready
-**Last Updated**: 2026-02-08
+**Status**: Phase 3 Complete, Phase 4 In Progress
+**Last Updated**: 2026-02-09
 
 ## Phase 1: Infrastructure Setup ✅
 
@@ -42,27 +42,27 @@
   - [x] Check combatants referencing deleted people
   - [x] Check orphaned person relationships
   - [x] Check invalid owner references
-- [ ] Run validation and fix any issues in Firebase (requires service account)
+- [x] Run validation and fix any issues in Firebase (requires service account)
 
 ## Phase 4: Data Export
 
-- [ ] Create `scripts/firebase-export.ts`
-  - [ ] Export users collection
-  - [ ] Export people collection + subcollections (info)
-  - [ ] Export places collection + subcollections (info)
-  - [ ] Export quests collection + subcollections (info)
-  - [ ] Export projects collection
-  - [ ] Export achievements collection
-  - [ ] Export inventory collection
-  - [ ] Export notes collection
-  - [ ] Export rolls collection
-  - [ ] Export flows collection
-  - [ ] Export rules collection (dynamic)
-  - [ ] Export campaign collection
-  - [ ] Export timelines + events subcollections
-  - [ ] Export combat fighters from hardcoded path
-  - [ ] Exclude isPrivate fields
-- [ ] Run export script
+- [x] Create `scripts/firebase-export.ts`
+  - [x] Export users collection
+  - [x] Export people collection + subcollections (info)
+  - [x] Export places collection + subcollections (info)
+  - [x] Export quests collection + subcollections (info)
+  - [x] Export projects collection
+  - [x] Export achievements collection
+  - [x] Export inventory collection
+  - [x] Export notes collection
+  - [x] Export rolls collection
+  - [x] Export flows collection
+  - [x] Export rules collection (dynamic)
+  - [x] Export campaign collection
+  - [x] Export timelines + events subcollections
+  - [x] Export combat fighters from hardcoded path
+  - [x] Exclude isPrivate fields
+- [x] Run export script (1,477 documents exported)
 
 ## Phase 5: Data Transformation & Migration
 

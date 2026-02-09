@@ -51,3 +51,5 @@ testem.log
 Thumbs.db
 
 .env
+firebase-service-account.json
+/data/export
