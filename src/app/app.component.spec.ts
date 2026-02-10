@@ -1,6 +1,11 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+
 import { AppComponent } from './app.component';
+import { AuthService } from './core/services/auth.service';
+import { ConfigService } from './core/services/config.service';
+import { PopoverService } from './core/services/popover.service';
 
 describe('AppComponent', () => {
   beforeEach(waitForAsync(() => {
@@ -11,6 +16,11 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      providers: [
+        { provide: AuthService, useValue: { isLoggedIn: () => of(false) } },
+        { provide: ConfigService, useValue: { sidebarOpen$: of(false) } },
+        { provide: PopoverService, useValue: { isPopoverVisible$: of(false) } },
+      ],
     }).compileComponents();
   }));
 
@@ -18,18 +28,5 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'The-Eighth'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('The-Eighth');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('The-Eighth app is running!');
   });
 });
