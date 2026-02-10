@@ -14,8 +14,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { DiceModule } from '../dice/dice.module';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { PeopleModule } from '../people/people.module';
-
-
+import { supabaseProvider } from './providers/supabase.provider';
 
 @NgModule({
   declarations: [
@@ -41,7 +40,8 @@ import { PeopleModule } from '../people/people.module';
     SharedModule,
   ],
   providers: [
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+    supabaseProvider,
   ]
 })
 export class CoreModule { }

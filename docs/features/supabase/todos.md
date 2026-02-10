@@ -1,6 +1,6 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 3 Complete, Phase 4 In Progress
+**Status**: Phase 7 Complete, Phase 8 Ready
 **Last Updated**: 2026-02-09
 
 ## Phase 1: Infrastructure Setup ✅
@@ -84,33 +84,33 @@
   - [x] Migrate document_access (explicit grants only, exclude owners/GMs)
 - [x] Run migration script (1,477 source docs → 3,000+ rows across all tables)
 
-## Phase 6: Storage Migration
+## Phase 6: Storage Migration ✅
 
-- [ ] Create `scripts/migrate-storage.ts`
-  - [ ] Download all files from Firebase Storage
-  - [ ] Upload to Supabase Storage (keep same paths)
-  - [ ] Verify file counts match
-- [ ] Run storage migration
+- [x] Create `scripts/migrate-storage.ts`
+  - [x] Download all files from Firebase Storage
+  - [x] Upload to Supabase Storage (keep same paths)
+  - [x] Verify file counts match
+- [x] Run storage migration (112 files, 44.1 MB, 0 failures)
 
-## Phase 7: Post-Migration Validation
+## Phase 7: Post-Migration Validation ✅
 
-- [ ] Create `scripts/validate-migration.ts`
-  - [ ] Row count validation
-  - [ ] Referential integrity validation
-  - [ ] Junction table integrity validation
-  - [ ] Access control validation (no owners/GMs in document_access)
-  - [ ] Hierarchical data validation (no circular refs)
-  - [ ] Combat data validation
-  - [ ] Rules migration validation
-- [ ] Run validation queries
+- [x] Create `scripts/validate-migration.ts`
+  - [x] Row count validation (16 tables, all match)
+  - [x] Referential integrity validation (FK checks for people→places, places→places, quests→quests)
+  - [x] Junction table integrity validation (7 junction tables, 542 rows)
+  - [x] Access control validation (1,000 entries, no owners/GMs in document_access)
+  - [x] Hierarchical data validation (places max depth 4, quests max depth 5, no cycles)
+  - [x] Combat data validation (1 session, 4 combatants)
+  - [x] Rules migration validation (319 rules, 24 attrs, 20 hit locs, 24 states)
+- [x] Run validation queries (14/14 passed, 0 failures, 0 warnings)
 
 ## Phase 8: Angular Service Refactoring
 
 ### Core Infrastructure
-- [ ] Create `src/app/core/supabase.provider.ts`
-- [ ] Update `src/environments/environment.ts` with Supabase config
-- [ ] Update `src/environments/environment.prod.ts` with Supabase config
-- [ ] Update CoreModule to use Supabase provider (remove AngularFire)
+- [x] Create `src/app/core/supabase.provider.ts`
+- [x] Update `src/environments/environment.ts` with Supabase config
+- [x] Update `src/environments/environment.prod.ts` with Supabase config
+- [x] Update CoreModule to use Supabase provider (AngularFire kept until services migrated)
 
 ### Core Services
 - [ ] Rewrite `api.service.ts` for Supabase

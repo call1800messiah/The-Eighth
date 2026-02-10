@@ -38,7 +38,8 @@
       "Bash(git rm:*)",
       "Bash(node -e:*)",
       "Bash(npx supabase:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(npx ng build:*)"
     ]
   }
 }
