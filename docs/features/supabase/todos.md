@@ -1,7 +1,7 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 7 Complete, Phase 8 Ready
-**Last Updated**: 2026-02-09
+**Status**: Phase 8 Complete, Phase 9 Ready
+**Last Updated**: 2026-02-10
 
 ## Phase 1: Infrastructure Setup ✅
 
@@ -113,30 +113,31 @@
 - [x] Update CoreModule to use Supabase provider (AngularFire kept until services migrated)
 
 ### Core Services
-- [ ] Rewrite `api.service.ts` for Supabase
-- [ ] Rewrite `auth.service.ts` for Supabase Auth
-- [ ] Rewrite `storage.service.ts` for Supabase Storage
-- [ ] Update `data.service.ts` (remove access array filters, use RLS)
-- [ ] Update `user.service.ts` (add isGM computed property)
-- [ ] Create `supabase-realtime.service.ts` (reactive wrapper)
+- [x] Rewrite `api.service.ts` for Supabase (from(), getAuthState(), login/logout, storage)
+- [x] Rewrite `auth.service.ts` for Supabase Auth (same public API preserved)
+- [x] Rewrite `storage.service.ts` for Supabase Storage (public bucket, listFiles added)
+- [x] Update `data.service.ts` (removed access array, RLS handles permissions)
+- [x] Update `user.service.ts` (isGM computed from user_roles join)
+- [x] Create `supabase-realtime.service.ts` (watch/watchOne with auto-refetch)
 
 ### Feature Services
-- [ ] Update `people.service.ts` (complex junction table joins)
-- [ ] Update `place.service.ts`
-- [ ] Update `quests.service.ts`
-- [ ] Update `project.service.ts` (milestone/requirement joins)
-- [ ] Update `achievement.service.ts`
-- [ ] Update `flow.service.ts` (flow_items joins)
-- [ ] Update `rules.service.ts` (query from DB, not JSON)
-- [ ] Update `combat.service.ts` (dynamic sessions)
-- [ ] Update `timeline.service.ts` (pagination pattern)
-- [ ] Update `notes.service.ts`
-- [ ] Update `inventory.service.ts`
-- [ ] Update `campaign.service.ts`
-- [ ] Update `dice-roller.service.ts`
+- [x] Update `people.service.ts` (complex junction table joins)
+- [x] Update `place.service.ts`
+- [x] Update `quests.service.ts`
+- [x] Update `project.service.ts` (milestone/requirement joins)
+- [x] Update `achievement.service.ts`
+- [x] Update `flow.service.ts` (flow_items joins)
+- [x] Update `rules.service.ts` (query from DB, not JSON)
+- [x] Update `combat.service.ts` (dynamic sessions)
+- [x] Update `timeline.service.ts` (pagination pattern)
+- [x] Update `notes.service.ts`
+- [x] Update `inventory.service.ts`
+- [x] Update `campaign.service.ts`
+- [x] Update `dice-roller.service.ts`
 
 ### Components
-- [ ] Update `audio-player-list.component.ts` (list from Storage bucket)
+- [x] Update `edit-access.component.ts` (document_access table instead of access[] array)
+- [x] Update `audio-player-list.component.ts` (list from Storage bucket)
 
 ## Phase 9: Testing
 

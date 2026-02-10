@@ -3,11 +3,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import type { Note } from '../models/note';
-import type { AuthUser } from '../../auth/models/auth-user';
-import { ApiService } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
 import { UtilService } from '../../core/services/util.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
+import { InfoType } from '../../core/enums/info-type.enum';
 
 
 
@@ -17,29 +16,25 @@ import { UtilService } from '../../core/services/util.service';
 export class NotesService {
   static readonly collection = 'notes';
   private notes$: BehaviorSubject<Note[]>;
-  private user: AuthUser;
 
   constructor(
-    private api: ApiService,
-    private auth: AuthService,
     private data: DataService,
-  ) {
-    this.user = this.auth.user;
-  }
+    private realtime: RealtimeService,
+  ) {}
 
 
 
   getNotes(): Observable<Note[]> {
     if (!this.notes$) {
       this.notes$ = new BehaviorSubject<Note[]>([]);
-      this.api.getDataFromCollection(
-        NotesService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'notes',
+        undefined,
+        'notes',
       ).pipe(
-        map(this.transformNotes),
-        map((notes) => notes.sort(UtilService.orderByTitle)),
-      ).subscribe((notes) => {
+        map(NotesService.transformNotes),
+        map(notes => notes.sort(UtilService.orderByTitle)),
+      ).subscribe(notes => {
         this.notes$.next(notes);
       });
     }
@@ -53,15 +48,18 @@ export class NotesService {
 
 
 
-  private transformNotes(notes): Note[] {
-    return notes.reduce((all: Note[], note) => {
-      const noteData = note.payload.doc.data()
-      all.push({
-        id: note.payload.doc.id,
-        ...noteData,
-        collection: NotesService.collection,
-      });
-      return all;
-    }, [] as Note[]);
+  private static transformNotes(rows: any[]): Note[] {
+    return rows.map(row => ({
+      access: [],
+      category: row.category,
+      collection: NotesService.collection,
+      content: row.content,
+      created: row.created_at ? new Date(row.created_at) : null,
+      id: row.id,
+      modified: row.modified_at ? new Date(row.modified_at) : null,
+      owner: row.owner_id,
+      title: row.title,
+      type: InfoType.Note,
+    }));
   }
 }

@@ -3,10 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { InventoryItem } from '../models/inventory-item';
-import { ApiService } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
-import { AuthUser } from '../../auth/models/auth-user';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -16,28 +14,24 @@ import { AuthUser } from '../../auth/models/auth-user';
 export class InventoryService {
   public static readonly collection = 'inventory';
   private inventory$: BehaviorSubject<InventoryItem[]>;
-  private user: AuthUser;
 
   constructor(
-    private api: ApiService,
-    private auth: AuthService,
     private data: DataService,
-  ) {
-    this.user = this.auth.user;
-  }
+    private realtime: RealtimeService,
+  ) {}
 
 
 
   getInventory(): Observable<InventoryItem[]> {
     if (!this.inventory$) {
       this.inventory$ = new BehaviorSubject([]);
-      this.api.getDataFromCollection(
-        InventoryService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'inventory',
+        undefined,
+        'inventory',
       ).pipe(
-        map(this.transformInventory)
-      ).subscribe((inventory) => {
+        map(InventoryService.transformInventory),
+      ).subscribe(inventory => {
         this.inventory$.next(inventory);
       });
     }
@@ -51,19 +45,14 @@ export class InventoryService {
 
 
 
-  private transformInventory(inventory: any[]): InventoryItem[] {
-    return inventory.reduce((all, entry) => {
-      const itemData = entry.payload.doc.data();
-      const item = {
-        id: entry.payload.doc.id,
-        amount: itemData.amount,
-        character: itemData.character,
-        isPrivate: itemData.isPrivate,
-        name: itemData.name,
-        owner: itemData.owner,
-      };
-      all.push(item);
-      return all;
-    }, []);
+  private static transformInventory(rows: any[]): InventoryItem[] {
+    return rows.map(row => ({
+      id: row.id,
+      amount: row.amount,
+      character: row.character,
+      isPrivate: false,
+      name: row.name,
+      owner: row.owner_id,
+    }));
   }
 }

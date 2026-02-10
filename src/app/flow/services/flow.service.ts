@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
-import type { AuthUser } from '../../auth/models/auth-user';
 import type {
   EnrichedFlowItem,
   EnrichedNoteFlowItem,
@@ -13,116 +12,57 @@ import type {
   FlowItem
 } from '../models';
 import { ApiService } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
 import { ConfigService } from '../../core/services/config.service';
 import { QuestsService } from '../../quests/services/quests.service';
 import { PeopleService } from '../../people/services/people.service';
 import { PlaceService } from '../../places/services/place.service';
 import { NotesService } from '../../notes/services/notes.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FlowService {
   static readonly collection = 'flows';
+  static readonly itemsCollection = 'flow_items';
   private flows$: BehaviorSubject<Flow[]>;
-  private user: AuthUser;
 
   constructor(
     private api: ApiService,
-    private auth: AuthService,
     private data: DataService,
+    private realtime: RealtimeService,
     private quests: QuestsService,
     private people: PeopleService,
     private places: PlaceService,
     private notes: NotesService
-  ) {
-    this.user = this.auth.user;
-  }
+  ) {}
 
-  private static transformFlow(flowData: any, flowId: string): Flow {
-    return {
-      access: flowData.access || [],
-      collection: FlowService.collection,
-      date: new Date(flowData.date),
-      id: flowId,
-      items: flowData.items,
-      owner: flowData.owner,
-      title: flowData.title || '',
-    };
-  }
 
-  /**
-   * Strip enriched data (entity field) from flow items before saving
-   */
-  private static stripEnrichedData(item: EnrichedFlowItem): FlowItem {
-    const { entity, ...baseItem } = item as any;
-    return baseItem as FlowItem;
-  }
-
-  /**
-   * Sanitize flow item to remove undefined fields before saving to Firestore
-   */
-  private static sanitizeItem(item: FlowItem): any {
-    const sanitized: any = {
-      id: item.id,
-      type: item.type,
-      order: item.order
-    };
-
-    if (item.type === 'quest') {
-      sanitized.questId = (item as any).questId;
-    } else if (item.type === 'person') {
-      sanitized.personId = (item as any).personId;
-    } else if (item.type === 'place') {
-      sanitized.placeId = (item as any).placeId;
-    } else if (item.type === 'note') {
-      sanitized.noteId = (item as any).noteId;
-    }
-
-    return sanitized;
-  }
-
-  /**
-   * Get all flows for current user (multiple flows per campaign)
-   */
   getFlows(): Observable<Flow[]> {
     if (!this.flows$) {
       this.flows$ = new BehaviorSubject<Flow[]>([]);
-      // Query for all flows by user access
-      this.api.getDataFromCollection(
-        FlowService.collection,
-        (ref) => ref.where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'flows',
+        query => query.select('*, flow_items(*)'),
+        'flows',
       ).pipe(
-        map((flows) => {
-          if (flows && flows.length > 0) {
-            return flows.map(flow => {
-              const flowDoc = flow.payload.doc;
-              return FlowService.transformFlow(flowDoc.data(), flowDoc.id);
-            }).sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort newest first
-          }
-          return [];
-        })
-      ).subscribe((flows) => {
+        map(rows => rows.map(row => this.transformFlow(row)).sort((a, b) => b.date.getTime() - a.date.getTime())),
+      ).subscribe(flows => {
         this.flows$.next(flows);
       });
     }
     return this.flows$;
   }
 
-  /**
-   * Get specific flow by ID
-   */
+
   getFlowById(id: string): Observable<Flow | null> {
     return this.getFlows().pipe(
       map(flows => flows.find(flow => flow.id === id) || null)
     );
   }
 
-  /**
-   * Get flow items enriched with entity data for specific flow
-   */
+
   getEnrichedFlowItems(flowId: string): Observable<EnrichedFlowItem[]> {
     return combineLatest([
       this.getFlowById(flowId),
@@ -169,124 +109,115 @@ export class FlowService {
   }
 
   storeFlow(flow: Partial<Flow>, flowId?: string): Promise<{ success: boolean; id?: string }> {
-    return this.data.store(flow, FlowService.collection, flowId);
+    const cleanedFlow: any = { ...flow };
+    delete cleanedFlow.items;
+    return this.data.store(cleanedFlow, FlowService.collection, flowId);
   }
 
-  /**
-   * Add item to specific flow
-   */
+
   async addItem(flowId: string, item: Partial<FlowItem>): Promise<boolean> {
     return this.addItems(flowId, [item]);
   }
 
-  /**
-   * Add multiple items to specific flow in a single write operation
-   */
+
   async addItems(flowId: string, items: Partial<FlowItem>[]): Promise<boolean> {
     return new Promise((resolve) => {
       this.getFlowById(flowId).pipe(
         take(1),
-        switchMap(flow => {
-          if (!flow) {
-            resolve(false);
-            return of(null);
-          }
-
-          // Build all new items
-          const newItems: FlowItem[] = [];
-          let currentOrder = flow.items?.length || 0;
-
-          for (const item of items) {
-            const baseItem = {
-              id: ConfigService.nanoid(),
-              order: currentOrder++
-            };
-
-            let newItem: FlowItem;
-            if (item.type === 'quest') {
-              newItem = {
-                ...baseItem,
-                type: 'quest',
-                questId: (item as any).questId
-              };
-            } else if (item.type === 'person') {
-              newItem = {
-                ...baseItem,
-                type: 'person',
-                personId: (item as any).personId
-              };
-            } else if (item.type === 'place') {
-              newItem = {
-                ...baseItem,
-                type: 'place',
-                placeId: (item as any).placeId
-              };
-            } else if (item.type === 'note') {
-              newItem = {
-                ...baseItem,
-                type: 'note',
-                noteId: (item as any).noteId
-              };
-            } else {
-              continue; // Skip invalid items
-            }
-            newItems.push(newItem);
-          }
-
-          if (newItems.length === 0) {
-            resolve(false);
-            return of(null);
-          }
-
-          const updatedItems = [...flow.items, ...newItems].map(item => FlowService.sanitizeItem(item));
-          return this.storeFlow({ items: updatedItems }, flowId);
-        })
-      ).subscribe((result) => {
-        if (result) {
-          resolve(result.success);
+      ).subscribe(async (flow) => {
+        if (!flow) {
+          resolve(false);
+          return;
         }
+
+        let currentOrder = flow.items?.length || 0;
+        const newRows: any[] = [];
+
+        for (const item of items) {
+          const entityId = this.getEntityId(item);
+          if (!entityId) continue;
+
+          newRows.push({
+            id: ConfigService.nanoid(),
+            flow_id: flowId,
+            type: item.type,
+            entity_id: entityId,
+            sort_order: currentOrder++,
+          });
+        }
+
+        if (newRows.length === 0) {
+          resolve(false);
+          return;
+        }
+
+        const { error } = await this.api.from('flow_items' as any).insert(newRows);
+        resolve(!error);
       });
     });
   }
 
-  /**
-   * Remove item from specific flow
-   */
-  removeItem(flowId: string, itemId: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      this.getFlowById(flowId).pipe(
-        take(1),
-        switchMap(flow => {
-          if (!flow) {
-            resolve(false);
-            return of(null);
-          }
 
-          const updatedItems = flow.items
-            .filter(item => item.id !== itemId)
-            .map((item, index) => ({ ...item, order: index }))
-            .map(item => FlowService.sanitizeItem(item));
-
-          return this.storeFlow({ items: updatedItems }, flowId);
-        })
-      ).subscribe((result) => {
-        if (result) {
-          resolve(result.success);
-        }
-      });
-    });
+  async removeItem(flowId: string, itemId: string): Promise<boolean> {
+    const { error } = await this.api.from('flow_items' as any)
+      .delete()
+      .eq('id', itemId);
+    return !error;
   }
 
-  /**
-   * Reorder items for specific flow (after drag and drop)
-   */
-  reorderItems(flowId: string, items: EnrichedFlowItem[]): Promise<boolean> {
-    // Strip enriched data, update order, and sanitize
-    const updatedItems = items
-      .map(item => FlowService.stripEnrichedData(item))
-      .map((item, index) => ({ ...item, order: index }))
-      .map(item => FlowService.sanitizeItem(item));
 
-    return this.storeFlow({ items: updatedItems }, flowId).then(result => result.success);
+  async reorderItems(flowId: string, items: EnrichedFlowItem[]): Promise<boolean> {
+    for (let i = 0; i < items.length; i++) {
+      const { error } = await this.api.from('flow_items' as any)
+        .update({ sort_order: i })
+        .eq('id', items[i].id);
+      if (error) return false;
+    }
+    return true;
+  }
+
+
+  private transformFlow(row: any): Flow {
+    const flowItems: FlowItem[] = (row.flow_items || [])
+      .sort((a: any, b: any) => a.sort_order - b.sort_order)
+      .map((fi: any) => this.transformFlowItem(fi));
+
+    return {
+      access: [],
+      collection: FlowService.collection,
+      date: new Date(row.date),
+      id: row.id,
+      items: flowItems,
+      owner: row.owner_id,
+      title: row.title || '',
+    };
+  }
+
+
+  private transformFlowItem(row: any): FlowItem {
+    const base = { id: row.id, order: row.sort_order };
+    switch (row.type) {
+      case 'quest':
+        return { ...base, type: 'quest', questId: row.entity_id };
+      case 'person':
+        return { ...base, type: 'person', personId: row.entity_id };
+      case 'place':
+        return { ...base, type: 'place', placeId: row.entity_id };
+      case 'note':
+        return { ...base, type: 'note', noteId: row.entity_id };
+      default:
+        return { ...base, type: row.type, questId: row.entity_id } as any;
+    }
+  }
+
+
+  private getEntityId(item: Partial<FlowItem>): string | null {
+    switch (item.type) {
+      case 'quest': return (item as any).questId || null;
+      case 'person': return (item as any).personId || null;
+      case 'place': return (item as any).placeId || null;
+      case 'note': return (item as any).noteId || null;
+      default: return null;
+    }
   }
 }

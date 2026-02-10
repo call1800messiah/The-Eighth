@@ -3,14 +3,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import type { Place } from '../models/place';
-import type { AuthUser } from '../../auth/models/auth-user';
 import type { Info } from '../../shared/models/info';
 import { UtilService } from '../../core/services/util.service';
 import { StorageService } from '../../core/services/storage.service';
-import { ApiService } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
 import { InfoType } from '../../core/enums/info-type.enum';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -37,16 +35,12 @@ export class PlaceService {
     town: 'Dorf',
   };
   private places$: BehaviorSubject<Place[]>;
-  private user: AuthUser;
 
   constructor(
-    private api: ApiService,
-    private auth: AuthService,
     private data: DataService,
+    private realtime: RealtimeService,
     private storage: StorageService,
-  ) {
-    this.user = this.auth.user;
-  }
+  ) {}
 
 
   getPlaceById(placeId: string): Observable<Place> {
@@ -64,12 +58,12 @@ export class PlaceService {
   getPlaces(): Observable<Place[]> {
     if (!this.places$) {
       this.places$ = new BehaviorSubject<Place[]>([]);
-      this.api.getDataFromCollection(
-        PlaceService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'places',
+        undefined,
+        'places',
       ).pipe(
-        map(this.transformPlaces.bind(this)),
+        map(rows => this.transformPlaces(rows)),
         map(this.resolveParents),
         map((places: Place[]) => places.sort(UtilService.orderByName)),
         map(this.createPlaceTree)
@@ -82,40 +76,40 @@ export class PlaceService {
 
 
   store(place: Partial<Place>, placeId?: string) {
-    const cleanedPlace: Partial<Place> & { parentId?: string } = { ...place };
+    const cleanedPlace: any = { ...place };
     if (place.parent) {
-      cleanedPlace.parentId = place.parent.id;
+      cleanedPlace.parent_id = place.parent.id;
       delete cleanedPlace.parent;
     }
+    delete cleanedPlace.parts;
+    delete cleanedPlace.image;
     return this.data.store(cleanedPlace, PlaceService.collection, placeId);
   }
 
 
 
-  private transformPlaces(places: any): Place[] {
-    return places.reduce((all, entry) => {
-      const placeData = entry.payload.doc.data();
+  private transformPlaces(rows: any[]): Place[] {
+    return rows.map(row => {
       const place: Place = {
-        access: placeData.access,
+        access: [],
         collection: PlaceService.collection,
-        id: entry.payload.doc.id,
+        id: row.id,
         image: null,
-        inhabitants: placeData.inhabitants,
-        name: placeData.name,
-        owner: placeData.owner,
-        type: placeData.type,
+        inhabitants: row.inhabitants,
+        name: row.name,
+        owner: row.owner_id,
+        type: row.type,
       };
-      if (placeData.parentId) {
-        place.parent = { id: placeData.parentId };
+      if (row.parent_id) {
+        place.parent = { id: row.parent_id };
       }
-      if (placeData.image && placeData.image !== '') {
-        this.storage.getDownloadURL(placeData.image).subscribe((url) => {
+      if (row.image && row.image !== '') {
+        this.storage.getDownloadURL(row.image).subscribe((url) => {
           place.image = url;
         });
       }
-      all.push(place);
-      return all;
-    }, []);
+      return place;
+    });
   }
 
 

@@ -7,10 +7,10 @@ import type { AuthUser } from '../../auth/models/auth-user';
 import type { Rules } from '../../rules';
 import { Die } from '../enums/die.enum';
 import { RollType } from '../enums/roll-type.enum';
-import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
 import { RulesService } from '../../rules/services/rules.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 @Injectable({
@@ -24,9 +24,9 @@ export class DiceRollerService {
   private rules: Rules;
 
   constructor(
-    private api: ApiService,
     private auth: AuthService,
     private data: DataService,
+    private realtime: RealtimeService,
     private rulesService: RulesService,
   ) {
     this.user = this.auth.user;
@@ -36,13 +36,15 @@ export class DiceRollerService {
 
   getRecentRolls(limit: number = 100): Observable<Roll[]> {
     if (!this.rolls$) {
-      this.rolls$ = this.api.getDataFromCollection(
-        DiceRollerService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
-          .limit(limit)
+      this.rolls$ = this.realtime.watch<any>(
+        'rolls',
+        query => query
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(limit),
+        'rolls',
       ).pipe(
-        map(this.transformRolls),
+        map(DiceRollerService.transformRolls),
       );
     }
 
@@ -53,13 +55,12 @@ export class DiceRollerService {
 
   rollAttributeCheck(attribute: number, modifier: number = 0, name?: string): number {
     const result = this.roll(Die.D20);
-    this.store({
+    this.storeRoll({
       attribute,
-      created: new Date(),
-      isPrivate: false,
+      created_at: new Date().toISOString(),
       modifier,
       name,
-      owner: this.user.id,
+      owner_id: this.user.id,
       roll: result,
       type: RollType.Attribute,
     });
@@ -69,13 +70,12 @@ export class DiceRollerService {
 
   rollDamage(amount: number, type: Die, modifier: number = 0): number {
     const results = this.rollDice(amount, type);
-    this.store({
-      created: new Date(),
-      diceType: type,
-      isPrivate: false,
+    this.storeRoll({
+      created_at: new Date().toISOString(),
+      dice_type: String(type),
       modifier,
-      owner: this.user.id,
-      rolls: results,
+      owner_id: this.user.id,
+      dice_rolls: results,
       type: RollType.Damage,
     });
     return results.reduce((total, roll ) => total + roll, 0) + modifier;
@@ -90,12 +90,11 @@ export class DiceRollerService {
     }
 
     if(log) {
-      this.store({
-        created: new Date(),
-        diceType: type,
-        isPrivate: false,
-        owner: this.user.id,
-        rolls: results,
+      this.storeRoll({
+        created_at: new Date().toISOString(),
+        dice_type: String(type),
+        owner_id: this.user.id,
+        dice_rolls: results,
         type: RollType.Dice,
       });
     }
@@ -111,6 +110,7 @@ export class DiceRollerService {
     modifier: number = 0,
     name?: string,
   ): number {
+    const rollResults = this.rollDice(3, Die.D20, false) as [number, number, number];
     const roll: SkillRoll = {
       attributes: [first, second, third],
       created: new Date(),
@@ -118,11 +118,22 @@ export class DiceRollerService {
       modifier,
       name,
       owner: this.user.id,
-      rolls: this.rollDice(3, Die.D20, false) as [number, number, number],
+      rolls: rollResults,
       skillPoints: skill,
       type: this.rules.edition === 5 ? RollType.Skill5 : RollType.Skill,
     };
-    this.store(roll);
+
+    this.storeRoll({
+      attributes: [first, second, third],
+      created_at: new Date().toISOString(),
+      modifier,
+      name,
+      owner_id: this.user.id,
+      rolls: rollResults,
+      skill_points: skill,
+      type: roll.type,
+    });
+
     switch(roll.type) {
       case RollType.Skill:
         return this.validateSkillCheck(roll);
@@ -208,61 +219,35 @@ export class DiceRollerService {
   }
 
 
-  private store(roll: AttributeRoll | DamageRoll | DiceRoll | SkillRoll) {
+  private storeRoll(roll: any) {
     this.data.store(roll, DiceRollerService.collection);
   }
 
 
-  private transformRolls(data): Roll[] {
-    return data.reduce((all, entry) => {
-      const rollData = entry.payload.doc.data();
+  private static transformRolls(rows: any[]): Roll[] {
+    return rows.map(row => {
       let roll: Roll | AttributeRoll | DamageRoll | DiceRoll | SkillRoll = {
-        created: new Date(rollData.created.seconds * 1000),
-        isPrivate: rollData.isPrivate,
-        owner: rollData.owner,
-        type: rollData.type,
+        created: row.created_at ? new Date(row.created_at) : new Date(),
+        isPrivate: false,
+        owner: row.owner_id,
+        type: row.type,
       };
-      switch (rollData.type) {
+      switch (row.type) {
         case RollType.Attribute:
-          roll = {
-            ...roll,
-            attribute: rollData.attribute,
-            modifier: rollData.modifier,
-            name: rollData.name,
-            roll: rollData.roll,
-          };
+          roll = { ...roll, attribute: row.attribute, modifier: row.modifier, name: row.name, roll: row.roll };
           break;
         case RollType.Damage:
-          roll = {
-            ...roll,
-            rolls: rollData.rolls,
-            diceType: rollData.diceType,
-            modifier: rollData.modifier,
-          };
+          roll = { ...roll, rolls: row.dice_rolls, diceType: Number(row.dice_type), modifier: row.modifier };
           break;
         case RollType.Dice:
-          roll = {
-            ...roll,
-            diceType: rollData.diceType,
-            rolls: rollData.rolls,
-          };
+          roll = { ...roll, diceType: Number(row.dice_type), rolls: row.dice_rolls };
           break;
         case RollType.Skill:
         case RollType.Skill5:
-          roll = {
-            ...roll,
-            attributes: rollData.attributes,
-            modifier: rollData.modifier,
-            name: rollData.name,
-            rolls: rollData.rolls,
-            skillPoints: rollData.skillPoints,
-          };
-          break;
-        default:
+          roll = { ...roll, attributes: row.attributes, modifier: row.modifier, name: row.name, rolls: row.rolls, skillPoints: row.skill_points };
           break;
       }
-      all.push(roll);
-      return all;
-    }, []);
+      return roll;
+    });
   }
 }

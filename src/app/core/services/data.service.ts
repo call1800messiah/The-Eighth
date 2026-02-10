@@ -6,131 +6,120 @@ import { ApiService } from './api.service';
 import { Info } from '../../shared';
 import { InfoType } from '../enums/info-type.enum';
 import { AuthService } from './auth.service';
-import { AuthUser } from '../../auth/models/auth-user';
-import { UserService } from './user.service';
-import { User } from '../models/user';
+import { RealtimeService } from './supabase-realtime.service';
 
-
+/** Maps DB info_type enum values to InfoType enum. */
+const INFO_TYPE_MAP: Record<string, InfoType> = {
+  appearance: InfoType.Appearance,
+  background: InfoType.Background,
+  note: InfoType.Note,
+  character: InfoType.Character,
+  goals: InfoType.Goals,
+  reward: InfoType.Reward,
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private user: AuthUser;
-  private users: User[];
 
   constructor(
     private api: ApiService,
     private auth: AuthService,
-    private userService: UserService,
-  ) {
-    this.user = this.auth.user;
-    this.userService.getUsers().subscribe(users => {
-      this.users = users;
-    });
+    private realtime: RealtimeService,
+  ) {}
+
+
+
+  async delete(itemId: string, collection: string): Promise<boolean> {
+    const { error } = await this.api.from(collection as any)
+      .delete()
+      .eq('id', itemId);
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
   }
 
 
-
-  private static transformSnapshotChanges(changeList: any[]) {
-    return changeList.reduce((all, entry) => {
-      all.push(entry.payload.doc.data());
-      return all;
-    }, []);
-  }
-
-
-  delete(itemId: string, collection: string): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      this.api.deleteDocumentFromCollection(itemId, collection).then(() => {
-        resolve(true);
-      }).catch((error) => {
-        console.error(error);
-        resolve(false);
-      });
-    });
-  }
-
-
-  getInfos(id: string, collection: string): Observable<Map<InfoType, Info[]>> {
-    return this.api.getDataFromCollection(
-      `${collection}/${id}/info`,
-      (ref) => ref
-        .where('access', 'array-contains', this.user.id)
+  getInfos(id: string, entityType: string): Observable<Map<InfoType, Info[]>> {
+    return this.realtime.watch<any>(
+      'info_boxes',
+      query => query
+        .select('*')
+        .eq('entity_type', entityType)
+        .eq('entity_id', id),
+      `info_boxes:${entityType}:${id}`,
     ).pipe(
-      map((infos) => this.transformInfos(infos, `${collection}/${id}/info`)),
+      map(rows => this.transformInfos(rows, entityType)),
     );
   }
 
 
-  store(item: any, collection: string, id?: string): Promise<{ success: boolean; id?: string }> {
+  async store(item: any, collection: string, id?: string): Promise<{ success: boolean; id?: string }> {
     const storeItem = { ...item };
-    if (!id) {
-      // Set access for new items
-      storeItem.access = this.getInitialDocumentPermissions(item.owner);
-    } else if (storeItem.access) {
-      // Never overwrite access for existing items, this only done through access management
-      delete storeItem.access;
+
+    // Remove Firebase-specific fields that don't exist in Supabase
+    delete storeItem.access;
+    delete storeItem.collection;
+    delete storeItem.isPrivate;
+
+    // Map owner → owner_id
+    if (storeItem.owner && !storeItem.owner_id) {
+      storeItem.owner_id = storeItem.owner;
     }
-    if (storeItem.id) {
+    delete storeItem.owner;
+
+    // Set owner_id for new items
+    if (!id && !storeItem.owner_id && this.auth.user) {
+      storeItem.owner_id = this.auth.user.id;
+    }
+
+    if (id) {
+      // Update existing
       delete storeItem.id;
-    }
-    if (storeItem.collection) {
-      delete storeItem.collection;
-    }
-
-    return new Promise((resolve) => {
-      if (id) {
-        this.api.updateDocumentInCollection(id, collection, storeItem).then(() => {
-          resolve({ success: true, id });
-        }).catch((error) => {
-          console.error(error);
-          resolve({ success: false });
-        });
-      } else {
-        this.api.addDocumentToCollection(storeItem, collection).then((reference) => {
-          console.log(reference);
-          if (reference && reference.id) {
-            resolve({ success: true, id: reference.id });
-          } else {
-            resolve({ success: false });
-          }
-        }).catch((error) => {
-          console.error(error);
-          resolve({ success: false });
-        });
+      const { error } = await this.api.from(collection as any)
+        .update(storeItem)
+        .eq('id', id);
+      if (error) {
+        console.error(error);
+        return { success: false };
       }
-    });
+      return { success: true, id };
+    } else {
+      // Insert new
+      delete storeItem.id;
+      const { data, error } = await this.api.from(collection as any)
+        .insert(storeItem)
+        .select('id')
+        .single() as { data: any; error: any };
+      if (error) {
+        console.error(error);
+        return { success: false };
+      }
+      return { success: true, id: data?.id };
+    }
   }
 
 
-  private getInitialDocumentPermissions(creatorID: string): string[] {
-    return this.users.reduce((all, user) => {
-      if (user.id === creatorID || user.isGM) {
-        all.push(user.id);
-      }
-      return all;
-    }, []);
-  }
-
-
-  private transformInfos(infos: any[], collection: string): Map<InfoType, Info[]> {
-    return infos.reduce((all, entry) => {
-      const infoData = entry.payload.doc.data();
-      let typeArray = all.get(infoData.type);
+  private transformInfos(rows: any[], entityType: string): Map<InfoType, Info[]> {
+    return rows.reduce((all: Map<InfoType, Info[]>, row: any) => {
+      const infoType = INFO_TYPE_MAP[row.type] ?? InfoType.Note;
+      let typeArray = all.get(infoType);
       if (!typeArray) {
         typeArray = [];
-        all.set(infoData.type, typeArray);
+        all.set(infoType, typeArray);
       }
       typeArray.push({
-        access: infoData.access,
-        collection,
-        content: infoData.content,
-        created: infoData.created ? new Date(infoData.created.seconds * 1000) : null,
-        id: entry.payload.doc.id,
-        modified: infoData.modified ? new Date(infoData.modified.seconds * 1000) : null,
-        owner: infoData.owner,
-        type: infoData.type,
+        access: [], // RLS handles access, kept for interface compatibility
+        collection: 'info_boxes',
+        content: row.content,
+        created: row.created_at ? new Date(row.created_at) : null,
+        id: row.id,
+        modified: row.modified_at ? new Date(row.modified_at) : null,
+        owner: row.owner_id,
+        type: infoType,
       });
       return all;
     }, new Map<InfoType, Info[]>());

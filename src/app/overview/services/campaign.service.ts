@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CampaignData } from '../models/campaign-data';
-import { ApiService } from '../../core/services/api.service';
 import { DataService } from '../../core/services/data.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -16,27 +16,19 @@ export class CampaignService {
   private campaignInfo$: Observable<CampaignData | null>;
 
   constructor(
-    private api: ApiService,
     private data: DataService,
-  ) { }
-
-
-
-  private static transformCampaign(campaignData: any[]): CampaignData | null {
-    if (campaignData.length < 1) {
-      return null;
-    }
-    return {
-      id: campaignData[0].payload.doc.id,
-      ...campaignData[0].payload.doc.data(),
-    };
-  }
+    private realtime: RealtimeService,
+  ) {}
 
 
 
   getCampaignInfo(): Observable<CampaignData | null> {
     if (!this.campaignInfo$) {
-      this.campaignInfo$ = this.api.getDataFromCollection(CampaignService.collection).pipe(
+      this.campaignInfo$ = this.realtime.watch<any>(
+        'campaign',
+        undefined,
+        'campaign',
+      ).pipe(
         map(CampaignService.transformCampaign),
       );
     }
@@ -45,6 +37,36 @@ export class CampaignService {
 
 
   public store(campaign: Partial<CampaignData>, campaignId: string) {
-    return this.data.store(campaign, CampaignService.collection, campaignId);
+    const dbCampaign: any = { ...campaign };
+    if (dbCampaign.staminaReduction !== undefined) {
+      dbCampaign.stamina_reduction = dbCampaign.staminaReduction;
+      delete dbCampaign.staminaReduction;
+    }
+    if (dbCampaign.timelineId !== undefined) {
+      dbCampaign.timeline_id = dbCampaign.timelineId;
+      delete dbCampaign.timelineId;
+    }
+    return this.data.store(dbCampaign, CampaignService.collection, campaignId);
+  }
+
+
+  private static transformCampaign(rows: any[]): CampaignData | null {
+    if (rows.length < 1) {
+      return null;
+    }
+    const row = rows[0];
+    return {
+      captain: row.captain,
+      crewcount: row.crewcount,
+      date: row.date,
+      id: row.id,
+      isPrivate: false,
+      name: row.name,
+      owner: row.owner_id,
+      ship: row.ship,
+      staminaReduction: row.stamina_reduction,
+      timelineId: row.timeline_id,
+      xp: row.xp,
+    };
   }
 }

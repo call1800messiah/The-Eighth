@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import firebase from 'firebase/compat';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 import type { AuthUser } from '../../auth/models/auth-user';
 import { ApiService } from './api.service';
@@ -17,7 +17,6 @@ export class AuthService {
   redirectUrl = '/';
   user$: BehaviorSubject<AuthUser>;
   user: AuthUser;
-  private firebaseUser$: Observable<firebase.User>;
 
   constructor(
     private api: ApiService,
@@ -25,18 +24,16 @@ export class AuthService {
     private userService: UserService,
   ) {
     this.user$ = new BehaviorSubject<AuthUser>(null);
-    this.firebaseUser$ = this.api.getAuthState();
+
     combineLatest([
-      this.firebaseUser$,
-      this.userService.getUsers().pipe(
-        startWith([]),
-      )
+      this.api.getAuthState(),
+      this.userService.getUsers().pipe(startWith([])),
     ]).pipe(
-      map(AuthService.transformUser),
+      map(([supabaseUser, users]) => AuthService.transformUser(supabaseUser, users)),
     ).subscribe(user => {
       this.user = user;
       this.user$.next(this.user);
-      if (user){
+      if (user) {
         localStorage.setItem('user', JSON.stringify(user));
       } else {
         localStorage.setItem('user', null);
@@ -45,35 +42,36 @@ export class AuthService {
   }
 
 
-
-  private static transformUser([firebaseUser, users]): AuthUser | null {
-    if (!firebaseUser) {
+  private static transformUser(supabaseUser: SupabaseUser | null, users: any[]): AuthUser | null {
+    if (!supabaseUser) {
       return null;
     }
 
-    const user = users.find((u) => u.id === firebaseUser.uid);
+    const user = users.find(u => u.id === supabaseUser.id);
 
     return {
-      id: firebaseUser.uid,
-      email: firebaseUser.email,
+      id: supabaseUser.id,
+      email: supabaseUser.email,
       ...user,
     };
   }
 
 
   isLoggedIn(): Observable<boolean> {
-    return this.firebaseUser$.pipe(
-      map((user) => user !== null),
+    return this.api.getAuthState().pipe(
+      map(user => user !== null),
     );
   }
 
 
-  login(email, password): void {
-    this.api.login(email, password).then(() => {
+  login(email: string, password: string): void {
+    this.api.login(email, password).then(({ error }) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
       this.router.navigate([this.redirectUrl]);
       this.redirectUrl = '/';
-    }).catch((error) => {
-      console.error(error);
     });
   }
 

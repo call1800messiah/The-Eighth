@@ -9,7 +9,7 @@ import type { Rules } from '../../rules';
 import { ApiService } from '../../core/services/api.service';
 import { PeopleService } from '../../people/services/people.service';
 import { RulesService } from '../../rules/services/rules.service';
-import { DataService } from '../../core/services/data.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -17,133 +17,205 @@ import { DataService } from '../../core/services/data.service';
   providedIn: 'root',
 })
 export class CombatService {
-  static readonly combatCollection = 'combat/tKthlBKLy0JuVaPnXWzY/fighters';
-  private readonly combatants$: Observable<Combatant[]>;
+  static readonly collection = 'combatants';
+  static readonly combatCollection = 'combatants';
+  private combatants$: Observable<Combatant[]>;
+  private activeSessionId: string;
   private rules: Rules;
 
   constructor(
     private api: ApiService,
-    private data: DataService,
     private peopleService: PeopleService,
+    private realtime: RealtimeService,
     private rulesService: RulesService,
   ) {
-    this.combatants$ = combineLatest([
-      this.peopleService.getPeople(),
-      this.api.getDataFromCollection(CombatService.combatCollection),
-    ]).pipe(
-      map(([people, fighters]) => this.transformCombatants(people, fighters)),
-    );
     this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }
 
 
 
-  addCombatant(combatant: Person | string) {
-    let newFighter;
-    if (combatant.hasOwnProperty('id')) {
-      newFighter = { active: true, initiative: 0, person: (combatant as Person).id };
+  async addCombatant(combatant: Person | string) {
+    const sessionId = await this.getActiveSessionId();
+    if (!sessionId) return;
+
+    if (typeof combatant !== 'string' && combatant.id) {
+      const { data, error } = await this.api.from('combatants' as any)
+        .insert({
+          combat_session_id: sessionId,
+          person_id: combatant.id,
+          active: true,
+          initiative: 0,
+        })
+        .select('id')
+        .single() as { data: any; error: any };
+
+      if (!error && combatant.attributes) {
+        // Copy person attributes as combatant attributes
+        for (const attr of combatant.attributes) {
+          await this.api.from('combatant_attributes' as any).insert({
+            combatant_id: data.id,
+            type: attr.type,
+            current: attr.current,
+            max: attr.max,
+          });
+        }
+      }
     } else {
-      newFighter = {
-        active: true,
-        initiative: 0,
-        name: combatant,
-        attributes: []
-      };
-      if (this.rules?.allowedAttributes?.find((att) => att.shortCode === 'lep')) {
-        newFighter.attributes.push({ type: 'lep', current: 30, max: 30 });
+      const name = typeof combatant === 'string' ? combatant : (combatant as any).name;
+      const { data, error } = await this.api.from('combatants' as any)
+        .insert({
+          combat_session_id: sessionId,
+          name,
+          active: true,
+          initiative: 0,
+        })
+        .select('id')
+        .single() as { data: any; error: any };
+
+      if (!error && this.rules?.allowedAttributes?.find((att) => att.shortCode === 'lep')) {
+        await this.api.from('combatant_attributes' as any).insert({
+          combatant_id: data.id,
+          type: 'lep',
+          current: 30,
+          max: 30,
+        });
       }
     }
-    this.api.addDocumentToCollection(newFighter, CombatService.combatCollection).then();
   }
 
 
   getCombatants(): Observable<Combatant[]> {
+    if (!this.combatants$) {
+      this.combatants$ = combineLatest([
+        this.peopleService.getPeople(),
+        this.realtime.watch<any>(
+          'combatants',
+          query => query.select('*, combatant_attributes(*), combatant_states(*)'),
+          'combatants',
+        ),
+      ]).pipe(
+        map(([people, fighters]) => this.transformCombatants(people, fighters)),
+      );
+    }
     return this.combatants$;
   }
 
 
   getIdsOfPeopleInFight(): Observable<string[]> {
-    return this.combatants$.pipe(
+    return this.getCombatants().pipe(
       map((fighters) => this.transformPeopleFighting(fighters)),
     );
   }
 
 
-  removeCombatant(id: string) {
-    this.api.deleteDocumentFromCollection(id, CombatService.combatCollection);
+  async removeCombatant(id: string) {
+    await this.api.from('combatants' as any)
+      .delete()
+      .eq('id', id);
   }
 
 
   removeCombatantByPersonId(id: string) {
-    this.combatants$.pipe(
+    this.getCombatants().pipe(
       take(1),
       map((combatants) => {
         return combatants.find((fighter) => fighter.person && fighter.person.id === id);
       }),
     ).subscribe((fighter) => {
-      this.removeCombatant(fighter.id);
+      if (fighter) {
+        this.removeCombatant(fighter.id);
+      }
     });
   }
 
 
-  setInitiative(combatantId: string, initiative: number, active: boolean) {
-    return this.api.updateDocumentInCollection(
-      combatantId,
-      CombatService.combatCollection,
-      {
-        active,
-        initiative,
-      }
-    );
+  async setInitiative(combatantId: string, initiative: number, active: boolean) {
+    await this.api.from('combatants' as any)
+      .update({ active, initiative })
+      .eq('id', combatantId);
   }
 
 
-  setStates(combatantId: string, states: CombatState[]) {
-    return this.api.updateDocumentInCollection(
-      combatantId,
-      CombatService.combatCollection,
-      {
-        states
-      }
-    );
+  async setStates(combatantId: string, states: CombatState[]) {
+    // Delete existing states
+    await this.api.from('combatant_states' as any)
+      .delete()
+      .eq('combatant_id', combatantId);
+
+    // Insert new states
+    if (states && states.length > 0) {
+      const rows = states.map(s => ({
+        combatant_id: combatantId,
+        state: s.name,
+      }));
+      await this.api.from('combatant_states' as any).insert(rows);
+    }
   }
 
 
-  store(combatant: Combatant, combatantId: string) {
-    return this.data.store(combatant, CombatService.combatCollection, combatantId);
+  async store(combatant: Partial<Combatant>, combatantId: string) {
+    const update: any = {};
+    if (combatant.active !== undefined) update.active = combatant.active;
+    if (combatant.initiative !== undefined) update.initiative = combatant.initiative;
+    if (combatant.name !== undefined) update.name = combatant.name;
+
+    await this.api.from('combatants' as any)
+      .update(update)
+      .eq('id', combatantId);
+  }
+
+
+  private async getActiveSessionId(): Promise<string | null> {
+    if (this.activeSessionId) return this.activeSessionId;
+
+    const { data, error } = await this.api.from('combat_sessions' as any)
+      .select('id')
+      .eq('is_active', true)
+      .limit(1)
+      .single() as { data: any; error: any };
+
+    if (error || !data) {
+      // Create a new session
+      const { data: newSession, error: createError } = await this.api.from('combat_sessions' as any)
+        .insert({ name: 'Combat', is_active: true })
+        .select('id')
+        .single() as { data: any; error: any };
+      if (createError) return null;
+      this.activeSessionId = newSession.id;
+    } else {
+      this.activeSessionId = data.id;
+    }
+    return this.activeSessionId;
   }
 
 
   private transformCombatants(people: Person[], fighters: any[]): Combatant[] {
-    return fighters.reduce((all, data) => {
-      const fighterData = data.payload.doc.data();
-      const fighter = {
-        id: data.payload.doc.id,
-        active: fighterData.active,
-        attributes: from([fighterData.attributes || []]),
-        initiative: fighterData.initiative,
-        name: fighterData.name ? fighterData.name : null,
-        person: people.find((person) => person.id === fighterData.person),
-        states: fighterData.states ? fighterData.states : null,
+    return fighters.map(row => {
+      const person = row.person_id ? people.find((p) => p.id === row.person_id) : undefined;
+      const attrs = (row.combatant_attributes || []).map((a: any) => ({
+        type: a.type,
+        current: a.current,
+        max: a.max,
+      }));
+      const states = (row.combatant_states || []).map((s: any) => ({
+        name: s.state,
+        modifiers: [],
+      }));
+
+      return {
+        id: row.id,
+        active: row.active,
+        attributes: from([person?.attributes || attrs]),
+        initiative: row.initiative,
+        name: row.name || null,
+        person: person || undefined,
+        states: states.length > 0 ? states : null,
       };
-      if (fighter.person) {
-        fighter.attributes = from([fighter.person.attributes || []]);
-      }
-      all.push(fighter);
-      return all;
-    }, []).sort((a, b) => {
-      if (a.active && !b.active) {
-        return -1;
-      }
-      if (!a.active && b.active) {
-        return 1;
-      }
-      if (a.initiative > b.initiative) {
-        return -1;
-      }
-      if (a.initiative < b.initiative) {
-        return 1;
-      }
+    }).sort((a, b) => {
+      if (a.active && !b.active) return -1;
+      if (!a.active && b.active) return 1;
+      if (a.initiative > b.initiative) return -1;
+      if (a.initiative < b.initiative) return 1;
       return 0;
     });
   }

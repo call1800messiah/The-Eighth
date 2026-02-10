@@ -29,12 +29,17 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   }
 
   ngOnInit(): void {
-    this.api.getItemFromCollection(`${this.props.collection}/${this.props.documentId}`).subscribe((item: any) => {
-      this.selected = this.users.reduce((all, user) => {
-        all[user.id] = item.payload.data()?.access?.indexOf(user.id) !== -1;
-        return all;
-      }, {});
-    });
+    this.api.from('document_access' as any)
+      .select('user_id')
+      .eq('entity_type', this.props.collection)
+      .eq('entity_id', this.props.documentId)
+      .then(({ data, error }) => {
+        const accessUserIds = (data || []).map((row: any) => row.user_id);
+        this.selected = this.users.reduce((all, user) => {
+          all[user.id] = accessUserIds.includes(user.id);
+          return all;
+        }, {});
+      });
   }
 
 
@@ -44,12 +49,28 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   }
 
 
-  save() {
-    this.api.updateDocumentInCollection(this.props.documentId, this.props.collection, {
-      access: Object.entries(this.selected).filter(([, selected]) => selected).map(([id]) => id)
-    }).then(() => {
-      this.dismissPopover.emit(true);
-    });
+  async save() {
+    // Delete all existing access entries for this document
+    await this.api.from('document_access' as any)
+      .delete()
+      .eq('entity_type', this.props.collection)
+      .eq('entity_id', this.props.documentId);
+
+    // Insert new access entries
+    const selectedUserIds = Object.entries(this.selected)
+      .filter(([, selected]) => selected)
+      .map(([id]) => id);
+
+    if (selectedUserIds.length > 0) {
+      const rows = selectedUserIds.map(userId => ({
+        entity_type: this.props.collection,
+        entity_id: this.props.documentId,
+        user_id: userId,
+      }));
+      await this.api.from('document_access' as any).insert(rows);
+    }
+
+    this.dismissPopover.emit(true);
   }
 
 
