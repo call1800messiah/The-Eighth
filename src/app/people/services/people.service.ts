@@ -188,7 +188,7 @@ export class PeopleService {
           person_spells(rule_id, value),
           person_attributes(type, current, max),
           person_tags(tag),
-          person_relationships(related_person_id, relationship_type)
+          person_relationships!person_id(related_person_id, relationship_type)
         `),
         'people',
       ).pipe(

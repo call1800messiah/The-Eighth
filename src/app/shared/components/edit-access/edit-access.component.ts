@@ -5,6 +5,7 @@ import type { User } from '../../../core/models/user';
 import type { EditAccessProps } from '../../models/edit-access-props';
 import { UserService } from '../../../core/services/user.service';
 import { ApiService } from '../../../core/services/api.service';
+import { getEntityType } from '../../utils/entity-type';
 
 
 
@@ -31,12 +32,13 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   ngOnInit(): void {
     this.api.from('document_access' as any)
       .select('user_id')
-      .eq('entity_type', this.props.collection)
+      .eq('entity_type', getEntityType(this.props.collection))
       .eq('entity_id', this.props.documentId)
       .then(({ data, error }) => {
         const accessUserIds = (data || []).map((row: any) => row.user_id);
         this.selected = this.users.reduce((all, user) => {
-          all[user.id] = accessUserIds.includes(user.id);
+          // GMs always have access via RLS, not stored in document_access
+          all[user.id] = user.isGM || accessUserIds.includes(user.id);
           return all;
         }, {});
       });
@@ -53,17 +55,18 @@ export class EditAccessComponent implements OnInit, PopoverChild {
     // Delete all existing access entries for this document
     await this.api.from('document_access' as any)
       .delete()
-      .eq('entity_type', this.props.collection)
+      .eq('entity_type', getEntityType(this.props.collection))
       .eq('entity_id', this.props.documentId);
 
-    // Insert new access entries
+    // Insert new access entries (exclude GMs - they have access via RLS)
+    const gmIds = new Set(this.users.filter(u => u.isGM).map(u => u.id));
     const selectedUserIds = Object.entries(this.selected)
-      .filter(([, selected]) => selected)
+      .filter(([id, selected]) => selected && !gmIds.has(id))
       .map(([id]) => id);
 
     if (selectedUserIds.length > 0) {
       const rows = selectedUserIds.map(userId => ({
-        entity_type: this.props.collection,
+        entity_type: getEntityType(this.props.collection),
         entity_id: this.props.documentId,
         user_id: userId,
       }));
