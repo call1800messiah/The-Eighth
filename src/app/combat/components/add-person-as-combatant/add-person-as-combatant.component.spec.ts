@@ -1,21 +1,23 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { AddPersonAsCombatantComponent } from './add-person-as-combatant.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('AddPersonAsCombatantComponent', () => {
   let component: AddPersonAsCombatantComponent;
   let fixture: ComponentFixture<AddPersonAsCombatantComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AddPersonAsCombatantComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AddPersonAsCombatantComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(AddPersonAsCombatantComponent);
     component = fixture.componentInstance;
+    component.props = { people: [], selected: [] };
     fixture.detectChanges();
   });
 

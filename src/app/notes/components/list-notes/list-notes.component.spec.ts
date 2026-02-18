@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ListNotesComponent } from './list-notes.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('ListNotesComponent', () => {
   let component: ListNotesComponent;
@@ -8,9 +10,10 @@ describe('ListNotesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListNotesComponent]
-    })
-    .compileComponents();
+      declarations: [ListNotesComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ListNotesComponent);
     component = fixture.componentInstance;

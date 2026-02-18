@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PersonSelectorComponent } from './person-selector.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('PersonSelectorComponent', () => {
   let component: PersonSelectorComponent;
@@ -8,9 +10,10 @@ describe('PersonSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PersonSelectorComponent]
-    })
-    .compileComponents();
+      declarations: [PersonSelectorComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PersonSelectorComponent);
     component = fixture.componentInstance;

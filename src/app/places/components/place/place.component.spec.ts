@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PlaceComponent } from './place.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('PlaceComponent', () => {
   let component: PlaceComponent;
@@ -8,12 +10,11 @@ describe('PlaceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PlaceComponent ]
-    })
-    .compileComponents();
-  });
+      declarations: [PlaceComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(PlaceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

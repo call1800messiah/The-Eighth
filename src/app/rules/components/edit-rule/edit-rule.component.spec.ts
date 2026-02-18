@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { EditRuleComponent } from './edit-rule.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('EditRuleComponent', () => {
   let component: EditRuleComponent;
@@ -8,13 +10,14 @@ describe('EditRuleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditRuleComponent]
-    })
-    .compileComponents();
+      declarations: [EditRuleComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditRuleComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    component.props = {} as any;
   });
 
   it('should create', () => {

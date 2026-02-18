@@ -1,4 +1,26 @@
-import { of, Observable, Subject } from 'rxjs';
+import { of, Observable, Subject, BehaviorSubject, EMPTY } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { AuthService } from '../core/services/auth.service';
+import { ApiService } from '../core/services/api.service';
+import { DataService } from '../core/services/data.service';
+import { StorageService } from '../core/services/storage.service';
+import { NavigationService } from '../core/services/navigation.service';
+import { PopoverService } from '../core/services/popover.service';
+import { UserService } from '../core/services/user.service';
+import { UtilService } from '../core/services/util.service';
+import { PeopleService } from '../people/services/people.service';
+import { PlaceService } from '../places/services/place.service';
+import { QuestsService } from '../quests/services/quests.service';
+import { ProjectService } from '../projects/services/project.service';
+import { CombatService } from '../combat/services/combat.service';
+import { AchievementService } from '../achievements/services/achievement.service';
+import { InventoryService } from '../inventory/services/inventory.service';
+import { NotesService } from '../notes/services/notes.service';
+import { RulesService } from '../rules/services/rules.service';
+import { DiceRollerService } from '../dice/services/dice-roller.service';
+import { CampaignService } from '../overview/services/campaign.service';
+import { TimelineService } from '../overview/services/timeline.service';
 
 /**
  * Creates a chainable mock Supabase query builder.
@@ -224,4 +246,157 @@ export function createMockStorageService() {
     delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
     listFiles: jasmine.createSpy('listFiles').and.returnValue(Promise.resolve([])),
   };
+}
+
+
+/**
+ * Returns an array of providers for all commonly injected services.
+ * Use in component TestBed configs alongside `schemas: [NO_ERRORS_SCHEMA]`.
+ */
+export function createComponentTestProviders() {
+  return [
+    { provide: AuthService, useValue: createMockAuthService() },
+    { provide: ApiService, useValue: createMockApiService() },
+    { provide: DataService, useValue: createMockDataService() },
+    { provide: StorageService, useValue: createMockStorageService() },
+    {
+      provide: NavigationService,
+      useValue: {
+        navVisible$: new BehaviorSubject(true),
+        pageLabel$: new BehaviorSubject(''),
+        showBackButton$: new BehaviorSubject(false),
+        getNavigation: () => [],
+        navigateBack: jasmine.createSpy('navigateBack'),
+        navigateTo: jasmine.createSpy('navigateTo'),
+        setNavigationVisible: jasmine.createSpy('setNavigationVisible'),
+        setPageLabel: jasmine.createSpy('setPageLabel'),
+        toggleNavigation: jasmine.createSpy('toggleNavigation'),
+      },
+    },
+    {
+      provide: PopoverService,
+      useValue: {
+        isPopoverVisible$: new BehaviorSubject(false),
+        popoverTitle$: new BehaviorSubject(''),
+        popoverComponent$: new Subject(),
+        dismissPopover: jasmine.createSpy('dismissPopover'),
+        showPopover: jasmine.createSpy('showPopover'),
+      },
+    },
+    {
+      provide: UserService,
+      useValue: { getUsers: () => of([]) },
+    },
+    {
+      provide: UtilService,
+      useValue: {
+        orderByName: (a: any, b: any) => 0,
+        orderByCreated: (a: any, b: any) => 0,
+        slugify: (s: string) => s,
+        dataURLtoBlob: () => new Blob(),
+      },
+    },
+    {
+      provide: PeopleService,
+      useValue: {
+        getPeople: () => of([]),
+        getPersonById: () => EMPTY,
+      },
+    },
+    {
+      provide: PlaceService,
+      useValue: {
+        getPlaces: () => of([]),
+        getPlaceById: () => EMPTY,
+        getPlaceInfos: () => of(new Map()),
+      },
+    },
+    {
+      provide: QuestsService,
+      useValue: {
+        getQuests: () => of([]),
+        getQuestById: () => EMPTY,
+      },
+    },
+    {
+      provide: ProjectService,
+      useValue: { getProjects: () => of([]) },
+    },
+    {
+      provide: CombatService,
+      useValue: {
+        getCombatants: () => of([]),
+        getIdsOfPeopleInFight: () => of([]),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+        delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
+        updateCombatant: jasmine.createSpy('updateCombatant').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: AchievementService,
+      useValue: {
+        getAchievements: () => of([]),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: InventoryService,
+      useValue: {
+        getInventory: () => of([]),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: NotesService,
+      useValue: {
+        getNotes: () => of([]),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: RulesService,
+      useValue: {
+        getDynamicRules: () => of([]),
+        getRulesConfig: () => Promise.resolve({}),
+      },
+    },
+    {
+      provide: DiceRollerService,
+      useValue: {
+        getRecentRolls: () => of([]),
+        roll: jasmine.createSpy('roll'),
+      },
+    },
+    {
+      provide: CampaignService,
+      useValue: {
+        getCampaignInfo: () => of(null),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: TimelineService,
+      useValue: {
+        getEvents: () => of([]),
+        getTimeline: () => EMPTY,
+        loadMoreEvents: jasmine.createSpy('loadMoreEvents'),
+        store: jasmine.createSpy('store').and.returnValue(Promise.resolve()),
+      },
+    },
+    {
+      provide: ActivatedRoute,
+      useValue: {
+        params: of({}),
+        paramMap: of({ get: () => null }),
+        snapshot: { paramMap: { get: () => null } },
+      },
+    },
+    {
+      provide: Router,
+      useValue: {
+        navigate: jasmine.createSpy('navigate'),
+        navigateByUrl: jasmine.createSpy('navigateByUrl'),
+      },
+    },
+  ];
 }

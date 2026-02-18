@@ -1,7 +1,7 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 8 Complete, Phase 9 Ready
-**Last Updated**: 2026-02-10
+**Status**: Phase 9 Complete, Phase 10 Ready
+**Last Updated**: 2026-02-18
 
 ## Phase 1: Infrastructure Setup ✅
 
@@ -139,17 +139,17 @@
 - [x] Update `edit-access.component.ts` (document_access table instead of access[] array)
 - [x] Update `audio-player-list.component.ts` (list from Storage bucket)
 
-## Phase 9: Testing
+## Phase 9: Testing ✅
 
-- [ ] Test auth flow (login/logout)
-- [ ] Test isGM computed property
-- [ ] Test RLS policies with each role
-- [ ] Test CRUD operations for all entities
-- [ ] Test real-time subscriptions
-- [ ] Test file upload/download
-- [ ] Test audio player
-- [ ] Test hierarchical queries (places, quests)
-- [ ] Test person with all junction data
+- [x] Test auth flow (login/logout)
+- [x] Test isGM computed property
+- [ ] Test RLS policies with each role (skipped — requires integration test against live DB)
+- [x] Test CRUD operations for all entities
+- [x] Test real-time subscriptions
+- [x] Test file upload/download
+- [x] Test audio player
+- [x] Test hierarchical queries (places, quests)
+- [x] Test person with all junction data
 
 ## Phase 10: Cleanup
 
