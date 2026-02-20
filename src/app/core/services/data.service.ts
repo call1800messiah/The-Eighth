@@ -18,6 +18,23 @@ const INFO_TYPE_MAP: Record<string, InfoType> = {
   reward: InfoType.Reward,
 };
 
+/** Reverse mapping: InfoType enum → DB string. */
+const INFO_TYPE_TO_DB: Record<number, string> = {
+  [InfoType.Appearance]: 'appearance',
+  [InfoType.Background]: 'background',
+  [InfoType.Note]: 'note',
+  [InfoType.Character]: 'character',
+  [InfoType.Goals]: 'goals',
+  [InfoType.Reward]: 'reward',
+};
+
+/** Maps plural collection names to singular entity_type used in DB. */
+const COLLECTION_TO_ENTITY_TYPE: Record<string, string> = {
+  people: 'person',
+  places: 'place',
+  quests: 'quest',
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -43,7 +60,8 @@ export class DataService {
   }
 
 
-  getInfos(id: string, entityType: string): Observable<Map<InfoType, Info[]>> {
+  getInfos(id: string, collection: string): Observable<Map<InfoType, Info[]>> {
+    const entityType = COLLECTION_TO_ENTITY_TYPE[collection] || collection;
     return this.realtime.watch<any>(
       'info_boxes',
       query => query
@@ -52,7 +70,7 @@ export class DataService {
         .eq('entity_id', id),
       `info_boxes:${entityType}:${id}`,
     ).pipe(
-      map(rows => this.transformInfos(rows, entityType)),
+      map(rows => this.transformInfos(rows)),
     );
   }
 
@@ -103,7 +121,45 @@ export class DataService {
   }
 
 
-  private transformInfos(rows: any[], entityType: string): Map<InfoType, Info[]> {
+  async storeInfo(info: any, collection: string, parentId: string, infoId?: string): Promise<{ success: boolean; id?: string }> {
+    const entityType = COLLECTION_TO_ENTITY_TYPE[collection] || collection;
+    const dbType = INFO_TYPE_TO_DB[info.type] || 'note';
+
+    if (infoId) {
+      const { error } = await this.api.from('info_boxes' as any)
+        .update({ content: info.content, type: dbType, modified_at: new Date().toISOString() })
+        .eq('id', infoId);
+      if (error) {
+        console.error(error);
+        return { success: false };
+      }
+      return { success: true, id: infoId };
+    } else {
+      const { data, error } = await this.api.from('info_boxes' as any)
+        .insert({
+          content: info.content,
+          type: dbType,
+          entity_type: entityType,
+          entity_id: parentId,
+          owner_id: info.owner || this.auth.user?.id,
+        })
+        .select('id')
+        .single() as { data: any; error: any };
+      if (error) {
+        console.error(error);
+        return { success: false };
+      }
+      return { success: true, id: data?.id };
+    }
+  }
+
+
+  async deleteInfo(infoId: string): Promise<boolean> {
+    return this.delete(infoId, 'info_boxes');
+  }
+
+
+  private transformInfos(rows: any[]): Map<InfoType, Info[]> {
     return rows.reduce((all: Map<InfoType, Info[]>, row: any) => {
       const infoType = INFO_TYPE_MAP[row.type] ?? InfoType.Note;
       let typeArray = all.get(infoType);
@@ -112,7 +168,7 @@ export class DataService {
         all.set(infoType, typeArray);
       }
       typeArray.push({
-        access: [], // RLS handles access, kept for interface compatibility
+        access: [],
         collection: 'info_boxes',
         content: row.content,
         created: row.created_at ? new Date(row.created_at) : null,

@@ -42,7 +42,9 @@
       "Bash(npx ng build:*)",
       "Bash(npx ng test --no-watch --browsers=ChromeHeadless)",
       "Bash(npx ng test:*)",
-      "Bash(Select-String:*)"
+      "Bash(Select-String:*)",
+      "Bash(npx tsx:*)",
+      "Bash(psql:*)"
     ]
   }
 }

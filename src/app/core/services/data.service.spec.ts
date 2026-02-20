@@ -156,7 +156,7 @@ describe('DataService', () => {
       expect(mockRealtime.watch).toHaveBeenCalledWith(
         'info_boxes',
         jasmine.any(Function),
-        'info_boxes:people:person-1',
+        'info_boxes:person:person-1',
       );
     });
 
@@ -173,7 +173,7 @@ describe('DataService', () => {
         done();
       });
 
-      mockRealtime.emitRows('info_boxes:people:p1', [
+      mockRealtime.emitRows('info_boxes:person:p1', [
         { id: 'info-1', type: 'note', content: 'Hello', owner_id: 'u1', created_at: '2024-01-01T00:00:00Z', modified_at: null },
       ]);
     });
@@ -186,7 +186,7 @@ describe('DataService', () => {
         done();
       });
 
-      mockRealtime.emitRows('info_boxes:people:p1', [
+      mockRealtime.emitRows('info_boxes:person:p1', [
         { id: 'i1', type: 'appearance', content: 'A', owner_id: 'u1', created_at: null, modified_at: null },
         { id: 'i2', type: 'background', content: 'B', owner_id: 'u1', created_at: null, modified_at: null },
         { id: 'i3', type: 'character', content: 'C', owner_id: 'u1', created_at: null, modified_at: null },
@@ -201,7 +201,7 @@ describe('DataService', () => {
         done();
       });
 
-      mockRealtime.emitRows('info_boxes:people:p1', [
+      mockRealtime.emitRows('info_boxes:person:p1', [
         { id: 'i1', type: 'unknown_type', content: 'X', owner_id: 'u1', created_at: null, modified_at: null },
       ]);
     });
@@ -214,7 +214,7 @@ describe('DataService', () => {
         done();
       });
 
-      mockRealtime.emitRows('info_boxes:people:p1', [
+      mockRealtime.emitRows('info_boxes:person:p1', [
         { id: 'i1', type: 'note', content: 'X', owner_id: 'u1', created_at: '2024-01-01T00:00:00Z', modified_at: '2024-06-15T12:00:00Z' },
       ]);
     });

@@ -272,6 +272,7 @@ class Migration {
     for (const doc of this.rules) this.ids.register('rules', doc.id);
     for (const doc of this.campaign) this.ids.register('campaign', doc.id);
     for (const doc of this.timelines) this.ids.register('timelines', doc.id);
+    for (const doc of this.timelinesEvents) this.ids.register('historic_events', doc.id);
 
     console.log('  Data loaded and IDs pre-registered.\n');
   }
@@ -1019,7 +1020,7 @@ class Migration {
     console.log('Step 19: Migrating historic events...');
 
     const rows = this.timelinesEvents.map(doc => ({
-      id: uuid(),
+      id: this.ids.require('historic_events', doc.id),
       timeline_id: this.ids.require('timelines', doc.parentId),
       content: doc.data.content || '',
       date: doc.data.date || null,
@@ -1149,6 +1150,7 @@ class Migration {
     processEntities(this.notes, 'note', 'notes');
     processEntities(this.rolls, 'roll', 'rolls');
     processEntities(this.flows, 'flow', 'flows');
+    processEntities(this.timelinesEvents, 'historic_event', 'historic_events');
 
     const n = await batchInsert(this.supabase, 'document_access', rows);
     console.log(`  document_access: ${n}`);
