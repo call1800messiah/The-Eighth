@@ -1,6 +1,6 @@
 # Supabase Migration - TODOs
 
-**Status**: Phase 9 Complete, Phase 10 Ready
+**Status**: Bug Fixes in Progress
 **Last Updated**: 2026-02-18
 
 ## Phase 1: Infrastructure Setup ✅
@@ -159,6 +159,18 @@
 - [ ] Delete any remaining Firebase imports
 - [ ] Delete Firebase service account files
 - [ ] Update CLAUDE.md with new architecture
+
+## Bug Fixes (Pre-Phase 10)
+
+- [ ] Fix info access not being enforced: access indicator shows correctly but users without access can still see all infos — RLS policy for `info_boxes` table may be missing or misconfigured
+- [ ] Fix real-time updates not working: changes made on one client only appear on another after a full reload — Supabase realtime subscriptions not propagating updates
+- [ ] Fix `NavigatorLockAcquireTimeoutError`: console error "Acquiring an exclusive Navigator LockManager lock 'lock:sb-127-auth-token' immediately failed" — likely Supabase auth storage lock contention across tabs
+- [ ] Fix non-GMs unable to add people to combat: checkbox UI is present but clicking does nothing — RLS policy on `combatants` table likely only allows GM writes
+- [ ] Fix dynamic rules (talents, spells, etc.) missing from DB: detail fields not present — `rules` table schema is incomplete, migration needs new columns and re-run
+- [ ] Fix project access rights: projects created by non-GM users do not list the creator as having access — check `project.json` access fields for correct access model, likely RLS policy or `document_access` seeding issue
+- [ ] Fix access indicator on projects showing wrong data for non-GMs: all projects show only GM having access when viewed as a normal user — access indicator query likely filters by current user context incorrectly
+- [ ] Fix access indicator missing entirely on project "Bashuiren Rüstung" for normal users — project may have no `document_access` entries at all, or owner_id not set correctly
+- [ ] Fix recent rolls showing "1 WNaN" instead of "1 W20" / "1 W6" — dice sides value not being read correctly from DB, likely a column name mapping issue (e.g. `sides` vs `die_sides`)
 
 ## Known Issues
 
