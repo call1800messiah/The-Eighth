@@ -400,14 +400,19 @@ class Migration {
   async migrateRules(): Promise<void> {
     console.log('Step 3: Migrating rules...');
 
-    const rows = this.rules.map(doc => ({
-      id: this.ids.require('rules', doc.id),
-      category: doc.data.type,
-      name: doc.data.name,
-      description: doc.data.rules || doc.data.description || null,
-      is_static: false,
-      is_custom: true,
-    }));
+    const rows = this.rules.map(doc => {
+      const { type, name, rules: description, description: desc, id: _id, owner, access, ...metaFields } = doc.data;
+      const metadata = Object.keys(metaFields).length > 0 ? metaFields : null;
+      return {
+        id: this.ids.require('rules', doc.id),
+        category: type,
+        name,
+        description: description || desc || null,
+        is_static: false,
+        is_custom: true,
+        metadata,
+      };
+    });
 
     const n = await batchInsert(this.supabase, 'rules', rows);
     console.log(`  rules: ${n}`);
@@ -992,7 +997,7 @@ class Migration {
         if (!entityId) continue;
 
         rows.push({
-          id: uuid(),
+          id: this.ids.register('info_boxes', doc.id),
           type: INFO_TYPE_MAP[doc.data.type as number] || 'note',
           content: doc.data.content || '',
           entity_type: entityType,
@@ -1151,6 +1156,10 @@ class Migration {
     processEntities(this.rolls, 'roll', 'rolls');
     processEntities(this.flows, 'flow', 'flows');
     processEntities(this.timelinesEvents, 'historic_event', 'historic_events');
+    // Info boxes: SubcollectionDoc is structurally compatible with ExportDoc
+    processEntities(this.peopleInfo as any[], 'info_box', 'info_boxes');
+    processEntities(this.placesInfo as any[], 'info_box', 'info_boxes');
+    processEntities(this.questsInfo as any[], 'info_box', 'info_boxes');
 
     const n = await batchInsert(this.supabase, 'document_access', rows);
     console.log(`  document_access: ${n}`);

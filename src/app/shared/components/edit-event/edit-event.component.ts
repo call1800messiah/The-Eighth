@@ -53,7 +53,7 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
   delete() {
     if (this.props.event) {
-      this.dataService.delete(this.props.event.id, `timelines/${this.props.parent}/events`).then(() => {
+      this.dataService.delete(this.props.event.id, 'historic_events').then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -62,17 +62,17 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
   save() {
     let id: string;
-    const event: HistoricEvent = {...this.eventForm.value};
+    const event: any = { ...this.eventForm.value, timeline_id: this.props.parent };
     if (this.props.event) {
       id = this.props.event.id;
       event.owner = this.props.event.owner;
     } else {
-      event.created = new Date();
+      event.created_at = new Date().toISOString();
       event.owner = this.userID;
     }
-    event.modified = new Date();
+    event.modified_at = new Date().toISOString();
 
-    this.dataService.store(event, `timelines/${this.props.parent}/events`, id).then(() => {
+    this.dataService.store(event, 'historic_events', id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

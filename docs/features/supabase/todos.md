@@ -1,7 +1,7 @@
 # Supabase Migration - TODOs
 
-**Status**: Bug Fixes in Progress
-**Last Updated**: 2026-02-18
+**Status**: Bug Fixes Complete — Ready for Phase 10
+**Last Updated**: 2026-02-22
 
 ## Phase 1: Infrastructure Setup ✅
 
@@ -162,15 +162,27 @@
 
 ## Bug Fixes (Pre-Phase 10)
 
-- [ ] Fix info access not being enforced: access indicator shows correctly but users without access can still see all infos — RLS policy for `info_boxes` table may be missing or misconfigured
-- [ ] Fix real-time updates not working: changes made on one client only appear on another after a full reload — Supabase realtime subscriptions not propagating updates
-- [ ] Fix `NavigatorLockAcquireTimeoutError`: console error "Acquiring an exclusive Navigator LockManager lock 'lock:sb-127-auth-token' immediately failed" — likely Supabase auth storage lock contention across tabs
-- [ ] Fix non-GMs unable to add people to combat: checkbox UI is present but clicking does nothing — RLS policy on `combatants` table likely only allows GM writes
-- [ ] Fix dynamic rules (talents, spells, etc.) missing from DB: detail fields not present — `rules` table schema is incomplete, migration needs new columns and re-run
-- [ ] Fix project access rights: projects created by non-GM users do not list the creator as having access — check `project.json` access fields for correct access model, likely RLS policy or `document_access` seeding issue
-- [ ] Fix access indicator on projects showing wrong data for non-GMs: all projects show only GM having access when viewed as a normal user — access indicator query likely filters by current user context incorrectly
-- [ ] Fix access indicator missing entirely on project "Bashuiren Rüstung" for normal users — project may have no `document_access` entries at all, or owner_id not set correctly
-- [ ] Fix recent rolls showing "1 WNaN" instead of "1 W20" / "1 W6" — dice sides value not being read correctly from DB, likely a column name mapping issue (e.g. `sides` vs `die_sides`)
+- [x] Fix info access not being enforced — updated `004_info_box_access.sql` to remove parent entity fallback; policy now requires explicit `document_access` entry with `entity_type = 'info_box'`
+- [x] Fix real-time updates not working — created `009_realtime_publication.sql` to add all tables to `supabase_realtime` publication
+- [x] Fix `NavigatorLockAcquireTimeoutError` — added explicit `storageKey`, `detectSessionInUrl: false` to Supabase client auth config in `supabase.provider.ts`
+- [x] Fix non-GMs unable to add people to combat — created `006_combat_access.sql`: combat tables now allow writes from any authenticated user
+- [x] Fix dynamic rules missing from DB — created `007_rules_metadata.sql` (adds `metadata JSONB` column); updated `RulesService.store()` and `transformRules()` to pack/unpack type-specific fields; updated migration script
+- [x] Fix project access rights / access indicator for non-GMs — created `008_document_access_owner_policies.sql` with `is_entity_owner()` function; non-GM entity owners can now SELECT/INSERT/DELETE their own document_access entries
+- [x] Fix access indicator on projects showing wrong data for non-GMs — fixed by migration 008
+- [x] Fix access indicator missing entirely on project "Bashuriden Rüstung" — owned by GM "Messiah"; the `*ngIf` removal was wrong; reverted to show indicator only for owners/GMs; Bashuriden Rüstung is correctly hidden for non-GMs
+- [x] Fix recent rolls showing "1 WNaN" — migration stored `dice_type` as `'d6'`/`'d20'`; fixed transform to strip leading `d` before parsing, and store method to use same format
+
+## New Bug Fixes
+
+- [x] Fix info access for normal users: non-owners can't see any infos — registered info box IDs in `IdMapper` during `migrateInfoBoxes()`; added `processEntities` calls for `peopleInfo`, `placesInfo`, `questsInfo` in `migrateDocumentAccess()`; need to re-run migration
+- [x] Revert access-indicator visibility: restored `*ngIf="user.isGM || user.id === item.owner"` in `access-indicator.component.html`
+- [x] Fix access indicator not showing non-GM owners as having access: passed `ownerId` through `EditAccessProps`; pre-check owner in `EditAccessComponent.ngOnInit()`; exclude owner from `document_access` inserts in `save()`
+- [x] Fix `NavigatorLockAcquireTimeoutError` persisting: added custom `lock` function in `supabase.provider.ts` auth config that bypasses Web Locks API entirely (calls `fn()` directly)
+- [x] Fix edits not persisting: column/field mismatches across services — `people.service.ts` (`location`→`location_id`); `place.service.ts` + `edit-place` (`parentId`→`parent_id`, `deleteField()`→`null`); `quests.service.ts` + `edit-quest` (same); `notes.service.ts` (strip `type` field); `achievement.service.ts` (strip `people`, sync `achievement_people` junction table); `edit-event` (fix collection name, add `timeline_id`, rename `created`/`modified` to `created_at`/`modified_at`)
+- [x] Fix realtime updates not working for access changes: `access-indicator.component.ts` now subscribes to `RealtimeService.watch('document_access')` and re-fetches on any change
+- [x] Fix access revocation not propagating in realtime — `postgres_changes` DELETE events on `document_access` are silently dropped by Supabase Realtime's RLS evaluation (the affected user can't "see" the deleted row); replaced with dual approach: `postgres_changes` for INSERT (grants, works with RLS) + Supabase broadcast channel for revocations (not subject to RLS); `EditAccessComponent.save()` now calls `RealtimeService.broadcastAccessChange()`
+- [x] Fix access changes on timeline events not propagating in realtime — `historic_events` was missing from `ACCESS_CONTROLLED_TABLES` map in `supabase-realtime.service.ts`; added `historic_events: 'historic_event'` so `documentAccessChanges$` triggers re-fetches for timeline event watches
+- [x] Fix combat attribute changes not updating in realtime — three issues: (1) `EditAttributeComponent` was saving to `combatants` table instead of `combatant_attributes` junction table; added `CombatService.updateCombatantAttribute()` using upsert; (2) `RealtimeService.watch()` only subscribed to the primary table; added `triggerTables` parameter so related junction table changes trigger re-fetches; (3) `person_attributes` was missing from `supabase_realtime` publication — created `011_person_attributes_realtime.sql`; PeopleService now uses `triggerTables: ['person_attributes']`
 
 ## Known Issues
 

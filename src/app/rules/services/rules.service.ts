@@ -98,7 +98,16 @@ export class RulesService {
 
 
   store(rule: AddableRule, id?: string): Promise<{ success: boolean; id?: string }> {
-    return this.data.store(rule, RulesService.collection, id);
+    const { name, type, rules: description, id: _id, owner, access, collection, isPrivate, ...metaFields } = rule as any;
+    const dbRule: any = {
+      name,
+      category: type,
+      description: description || null,
+    };
+    if (Object.keys(metaFields).length > 0) {
+      dbRule.metadata = metaFields;
+    }
+    return this.data.store(dbRule, RulesService.collection, id);
   }
 
 
@@ -107,7 +116,8 @@ export class RulesService {
       id: row.id,
       name: row.name,
       type: row.category,
-      ...row,
+      rules: row.description,
+      ...(row.metadata || {}),
     })).sort(UtilService.orderByName);
   }
 }

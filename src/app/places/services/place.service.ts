@@ -81,6 +81,10 @@ export class PlaceService {
       cleanedPlace.parent_id = place.parent.id;
       delete cleanedPlace.parent;
     }
+    if ('parentId' in cleanedPlace) {
+      cleanedPlace.parent_id = cleanedPlace.parentId || null;
+      delete cleanedPlace.parentId;
+    }
     delete cleanedPlace.parts;
     delete cleanedPlace.image;
     return this.data.store(cleanedPlace, PlaceService.collection, placeId);

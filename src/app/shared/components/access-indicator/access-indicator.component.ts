@@ -10,6 +10,7 @@ import { UserService } from '../../../core/services/user.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditAccessComponent } from '../edit-access/edit-access.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { RealtimeService } from '../../../core/services/supabase-realtime.service';
 import { getEntityType } from '../../utils/entity-type';
 
 
@@ -31,6 +32,7 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
     private api: ApiService,
     private auth: AuthService,
     private popover: PopoverService,
+    private realtime: RealtimeService,
     private userService: UserService,
   ) {
     this.user = this.auth.user;
@@ -52,6 +54,13 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
         this.fetchAccessState();
       })
     );
+
+    // Re-fetch whenever document_access changes on any client
+    this.subscription.add(
+      this.realtime.watch<any>('document_access').subscribe(() => {
+        this.fetchAccessState();
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -69,6 +78,7 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
     this.popover.showPopover('Zugriff regeln', EditAccessComponent, {
       collection: this.item.collection,
       documentId: this.item.id,
+      ownerId: this.item.owner,
     });
   }
 

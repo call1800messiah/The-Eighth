@@ -7,6 +7,7 @@ import type { Person } from '../../people/models/person';
 import { UtilService } from '../../core/services/util.service';
 import { PeopleService } from '../../people/services/people.service';
 import { DataService } from '../../core/services/data.service';
+import { ApiService } from '../../core/services/api.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
@@ -19,6 +20,7 @@ export class AchievementService {
   private achievements$: Observable<Achievement[]>;
 
   constructor(
+    private api: ApiService,
     private data: DataService,
     private peopleService: PeopleService,
     private realtime: RealtimeService,
@@ -44,8 +46,23 @@ export class AchievementService {
   }
 
 
-  store(achievement: Partial<Achievement>, achievementId?: string) {
-    return this.data.store(achievement, AchievementService.collection, achievementId);
+  async store(achievement: Partial<Achievement>, achievementId?: string) {
+    const peopleIds: string[] = (achievement.people as any[] || [])
+      .map(p => typeof p === 'string' ? p : p?.id)
+      .filter(Boolean);
+    const cleaned: any = { ...achievement };
+    delete cleaned.people;
+
+    const result = await this.data.store(cleaned, AchievementService.collection, achievementId);
+
+    if (result.success && result.id) {
+      await this.api.from('achievement_people' as any).delete().eq('achievement_id', result.id);
+      if (peopleIds.length > 0) {
+        await this.api.from('achievement_people' as any)
+          .insert(peopleIds.map(personId => ({ achievement_id: result.id, person_id: personId })));
+      }
+    }
+    return result;
   }
 
 

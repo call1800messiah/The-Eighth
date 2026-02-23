@@ -5,6 +5,7 @@ import type { User } from '../../../core/models/user';
 import type { EditAccessProps } from '../../models/edit-access-props';
 import { UserService } from '../../../core/services/user.service';
 import { ApiService } from '../../../core/services/api.service';
+import { RealtimeService } from '../../../core/services/supabase-realtime.service';
 import { getEntityType } from '../../utils/entity-type';
 
 
@@ -22,6 +23,7 @@ export class EditAccessComponent implements OnInit, PopoverChild {
 
   constructor(
     private api: ApiService,
+    private realtime: RealtimeService,
     private userService: UserService,
   ) {
     this.userService.getUsers().subscribe(users => {
@@ -37,8 +39,8 @@ export class EditAccessComponent implements OnInit, PopoverChild {
       .then(({ data, error }) => {
         const accessUserIds = (data || []).map((row: any) => row.user_id);
         this.selected = this.users.reduce((all, user) => {
-          // GMs always have access via RLS, not stored in document_access
-          all[user.id] = user.isGM || accessUserIds.includes(user.id);
+          // GMs and the owner always have access via RLS, not stored in document_access
+          all[user.id] = user.isGM || user.id === this.props.ownerId || accessUserIds.includes(user.id);
           return all;
         }, {});
       });
@@ -61,7 +63,7 @@ export class EditAccessComponent implements OnInit, PopoverChild {
     // Insert new access entries (exclude GMs - they have access via RLS)
     const gmIds = new Set(this.users.filter(u => u.isGM).map(u => u.id));
     const selectedUserIds = Object.entries(this.selected)
-      .filter(([id, selected]) => selected && !gmIds.has(id))
+      .filter(([id, selected]) => selected && !gmIds.has(id) && id !== this.props.ownerId)
       .map(([id]) => id);
 
     if (selectedUserIds.length > 0) {
@@ -72,6 +74,9 @@ export class EditAccessComponent implements OnInit, PopoverChild {
       }));
       await this.api.from('document_access' as any).insert(rows);
     }
+
+    // Broadcast so other clients (including users who lost access) re-fetch
+    this.realtime.broadcastAccessChange(getEntityType(this.props.collection));
 
     this.dismissPopover.emit(true);
   }

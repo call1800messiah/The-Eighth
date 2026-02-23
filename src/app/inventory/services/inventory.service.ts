@@ -53,6 +53,6 @@ export class InventoryService {
       isPrivate: false,
       name: row.name,
       owner: row.owner_id,
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
   }
 }

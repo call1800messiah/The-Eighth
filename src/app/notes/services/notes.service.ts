@@ -43,7 +43,9 @@ export class NotesService {
 
 
   store(note: Partial<Note>, noteId?: string): Promise<{ success: boolean; id?: string }> {
-    return this.data.store(note, NotesService.collection, noteId);
+    const cleaned: any = { ...note };
+    delete cleaned.type; // InfoType.Note is a view-layer concept, not stored in the notes table
+    return this.data.store(cleaned, NotesService.collection, noteId);
   }
 
 

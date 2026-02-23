@@ -4,7 +4,7 @@ import { map, take } from 'rxjs/operators';
 
 import type { Combatant } from '../models/combatant';
 import type { Person } from '../../people';
-import type { CombatState } from '../../shared';
+import type { Attribute, CombatState } from '../../shared';
 import type { Rules } from '../../rules';
 import { ApiService } from '../../core/services/api.service';
 import { PeopleService } from '../../people/services/people.service';
@@ -92,6 +92,7 @@ export class CombatService {
           'combatants',
           query => query.select('*, combatant_attributes(*), combatant_states(*)'),
           'combatants',
+          ['combatant_attributes', 'combatant_states'],
         ),
       ]).pipe(
         map(([people, fighters]) => this.transformCombatants(people, fighters)),
@@ -150,6 +151,18 @@ export class CombatService {
       }));
       await this.api.from('combatant_states' as any).insert(rows);
     }
+  }
+
+
+  async updateCombatantAttribute(combatantId: string, attribute: Attribute): Promise<boolean> {
+    const { error } = await this.api.from('combatant_attributes' as any)
+      .upsert({
+        combatant_id: combatantId,
+        type: attribute.type,
+        current: attribute.current,
+        max: attribute.max,
+      }, { onConflict: 'combatant_id,type' });
+    return !error;
   }
 
 

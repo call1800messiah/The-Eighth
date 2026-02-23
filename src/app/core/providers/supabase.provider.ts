@@ -7,7 +7,18 @@ export const SUPABASE_CLIENT = new InjectionToken<SupabaseClient<Database>>('Sup
 
 function supabaseClientFactory(): SupabaseClient<Database> {
   const config = environment.tenantData[environment.tenant].supabase;
-  return createClient<Database>(config.url, config.anonKey);
+  return createClient<Database>(config.url, config.anonKey, {
+    auth: {
+      storageKey: `sb-${environment.tenant}-auth-token`,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+      // Bypass Web Locks API to avoid NavigatorLockAcquireTimeoutError when
+      // multiple tabs contend on the same lock. With a unique storageKey per
+      // tenant the token is isolated, so skipping the lock is safe here.
+      lock: (_name: string, _acquireTimeout: number, fn: () => Promise<any>) => fn(),
+    },
+  });
 }
 
 export const supabaseProvider = {

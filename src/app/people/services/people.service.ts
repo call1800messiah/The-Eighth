@@ -191,6 +191,7 @@ export class PeopleService {
           person_relationships!person_id(related_person_id, relationship_type)
         `),
         'people',
+        ['person_attributes'],
       ).pipe(
         withLatestFrom(this.place.getPlaces().pipe(
           map((places) => places.reduce((all, p) => {
@@ -218,7 +219,13 @@ export class PeopleService {
 
 
   store(person: Partial<Person>, personId?: string) {
-    return this.data.store(person, PeopleService.collection, personId);
+    const cleaned: any = { ...person };
+    if ('location' in cleaned) {
+      const loc = cleaned.location;
+      cleaned.location_id = loc && typeof loc === 'object' ? (loc.id || null) : (loc || null);
+      delete cleaned.location;
+    }
+    return this.data.store(cleaned, PeopleService.collection, personId);
   }
 
 

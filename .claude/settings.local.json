@@ -44,7 +44,8 @@
       "Bash(npx ng test:*)",
       "Bash(Select-String:*)",
       "Bash(npx tsx:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(ng build:*)"
     ]
   }
 }

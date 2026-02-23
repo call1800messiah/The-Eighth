@@ -83,6 +83,10 @@ export class QuestsService {
       cleanedQuest.parent_id = quest.parent.id;
       delete cleanedQuest.parent;
     }
+    if ('parentId' in cleanedQuest) {
+      cleanedQuest.parent_id = cleanedQuest.parentId || null;
+      delete cleanedQuest.parentId;
+    }
     delete cleanedQuest.subQuests;
     return this.data.store(cleanedQuest, QuestsService.collection, questId);
   }

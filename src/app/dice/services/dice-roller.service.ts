@@ -72,7 +72,7 @@ export class DiceRollerService {
     const results = this.rollDice(amount, type);
     this.storeRoll({
       created_at: new Date().toISOString(),
-      dice_type: String(type),
+      dice_type: 'd' + type,
       modifier,
       owner_id: this.user.id,
       dice_rolls: results,
@@ -92,7 +92,7 @@ export class DiceRollerService {
     if(log) {
       this.storeRoll({
         created_at: new Date().toISOString(),
-        dice_type: String(type),
+        dice_type: 'd' + type,
         owner_id: this.user.id,
         dice_rolls: results,
         type: RollType.Dice,
@@ -237,10 +237,10 @@ export class DiceRollerService {
           roll = { ...roll, attribute: row.attribute, modifier: row.modifier, name: row.name, roll: row.roll };
           break;
         case RollType.Damage:
-          roll = { ...roll, rolls: row.dice_rolls, diceType: Number(row.dice_type), modifier: row.modifier };
+          roll = { ...roll, rolls: row.dice_rolls, diceType: Number(String(row.dice_type).replace(/^d/i, '')), modifier: row.modifier };
           break;
         case RollType.Dice:
-          roll = { ...roll, diceType: Number(row.dice_type), rolls: row.dice_rolls };
+          roll = { ...roll, diceType: Number(String(row.dice_type).replace(/^d/i, '')), rolls: row.dice_rolls };
           break;
         case RollType.Skill:
         case RollType.Skill5:
