@@ -336,6 +336,15 @@ class Migration {
   async migrateUsers(): Promise<void> {
     console.log('Step 2: Migrating users...');
 
+    // Load manual credentials file if it exists (user-provided passwords)
+    const manualCredPath = path.join(process.cwd(), 'data', 'user-credentials.json');
+    let manualCreds: Map<string, string> | null = null;
+    if (fs.existsSync(manualCredPath)) {
+      const raw: Array<{ email: string; password: string }> = JSON.parse(fs.readFileSync(manualCredPath, 'utf8'));
+      manualCreds = new Map(raw.map(c => [c.email, c.password]));
+      console.log(`  Using manual credentials from data/user-credentials.json (${manualCreds.size} entries)`);
+    }
+
     // Delete any existing auth users (for idempotent re-runs)
     const { data: existingUsers } = await this.supabase.auth.admin.listUsers();
     for (const user of existingUsers?.users || []) {
@@ -347,7 +356,16 @@ class Migration {
 
     for (const doc of this.users) {
       const email = `${slugify(doc.data.name)}@${this.tenant}.local`;
-      const password = crypto.randomBytes(12).toString('base64url');
+
+      let password: string;
+      if (manualCreds?.has(email)) {
+        password = manualCreds.get(email)!;
+      } else {
+        if (manualCreds) {
+          console.warn(`  Warning: No manual credential for ${email}, using random password`);
+        }
+        password = crypto.randomBytes(12).toString('base64url');
+      }
 
       // Create Supabase Auth user
       const { data: authData, error } = await this.supabase.auth.admin.createUser({

@@ -12,7 +12,14 @@
     "migrate:export": "npx tsx scripts/firebase-export.ts",
     "migrate:transform": "npx tsx scripts/transform-and-migrate.ts",
     "migrate:storage": "npx tsx scripts/migrate-storage.ts",
-    "migrate:verify": "npx tsx scripts/validate-migration.ts"
+    "migrate:verify": "npx tsx scripts/validate-migration.ts",
+    "db:reset": "npx supabase db reset && npm run migrate:transform && npm run migrate:storage",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:save": "docker save the-eighth-app | gzip > the-eighth-app.tar.gz",
+    "deploy:package": "bash scripts/package-for-deploy.sh",
+    "deploy:run": "bash scripts/deploy.sh"
   },
   "private": true,
   "dependencies": {

@@ -45,6 +45,7 @@ testem.log
 /src/environments
 /.angular
 /.firebase
+nul
 
 # System Files
 .DS_Store
@@ -52,4 +53,5 @@ Thumbs.db
 
 .env
 firebase-service-account.json
-/data/export
+/data
+*.tar

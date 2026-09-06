@@ -153,12 +153,10 @@
 
 ## Phase 10: Cleanup
 
+- [x] Add `db:reset` npm script — runs `supabase db reset` + `migrate:transform` + `migrate:storage` to reinitialize the database from Firebase data in one command
 - [ ] Remove Firebase packages (`npm uninstall @angular/fire firebase`)
 - [ ] Remove Firebase dev packages (`npm uninstall firebase-admin firebase-tools`)
-- [ ] Delete Firebase configuration from environment files
 - [ ] Delete any remaining Firebase imports
-- [ ] Delete Firebase service account files
-- [ ] Update CLAUDE.md with new architecture
 
 ## Bug Fixes (Pre-Phase 10)
 
@@ -187,6 +185,19 @@
 ## Known Issues
 
 None currently.
+
+## Phase 11: Docker Setup ✅
+
+- [x] Create `Dockerfile` (multi-stage: node build + nginx serve)
+- [x] Create `docker/nginx.conf` (Angular static files + Supabase API proxy to Kong)
+- [x] Create `docker/kong.yml` (declarative API gateway routing)
+- [x] Create `docker/db/roles.sql` and `docker/db/jwt.sql` (DB init scripts)
+- [x] Create `docker-compose.yml` (db, kong, rest, auth, realtime, storage, meta, studio, app)
+- [x] Create `docker/.env.example` (configurable ports, JWT keys, passwords)
+- [x] Create `.dockerignore`
+- [x] Update `environment.prod.ts` — empty Supabase URL (resolved to `window.location.origin` at runtime), anon key from `NG_APP_SUPABASE_ANON_KEY` env var
+- [x] Update `supabase.provider.ts` — fallback to `window.location.origin` when URL is empty
+- [x] Add `docker:build`, `docker:up`, `docker:down`, `docker:save` npm scripts
 
 ## Ideas/Improvements
 

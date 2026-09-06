@@ -45,7 +45,9 @@
       "Bash(Select-String:*)",
       "Bash(npx tsx:*)",
       "Bash(psql:*)",
-      "Bash(ng build:*)"
+      "Bash(ng build:*)",
+      "Bash(bash -n scripts/run-migrations.sh)",
+      "Bash(bash -n docker/db/init-roles.sh)"
     ]
   }
 }

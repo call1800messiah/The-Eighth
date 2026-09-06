@@ -1,0 +1,261 @@
+# Docker Compose for TheEighth — Portainer Stack Edition
+#
+# Workflow:
+#   1. On Windows:  powershell -File scripts/package-for-deploy.ps1
+#   2. Copy the-eighth-app.tar + the-eighth-deploy-*.tar to server
+#   3. On server:   docker load -i the-eighth-app.tar
+#   4. On server:   tar xf the-eighth-deploy-*.tar
+#   5. Create Portainer stack from this file, set env vars in Portainer UI
+#   6. On server:   bash scripts/run-migrations.sh
+#
+# Required env vars (set in Portainer):
+#   POSTGRES_PASSWORD, JWT_SECRET, ANON_KEY, SERVICE_ROLE_KEY, SITE_URL,
+#   SECRET_KEY_BASE, DB_ENC_KEY
+#   (none of these have defaults - the stack refuses to start without them)
+#
+# Optional env vars:
+#   DEPLOY_ROOT (default: /opt/the-eighth), APP_PORT (80), STUDIO_PORT (3001)
+
+services:
+  # ── Database ────────────────────────────────────────────────────────────────
+  db:
+    image: supabase/postgres:15.6.1.143
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      # Fresh-volume init runs roles + jwt + 11 migrations before Postgres
+      # accepts TCP; without this grace window those early probe failures
+      # mark the container unhealthy and abort the whole stack.
+      start_period: 90s
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: /var/run/postgresql
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set - generate with openssl rand -base64 64}
+      JWT_EXP: 3600
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Ensure the `postgres` superuser exists before any 99-* script or the
+      # healthcheck references it (the image bootstraps as supabase_admin).
+      - /opt/the-eighth/docker/db/00-init-superuser.sh:/docker-entrypoint-initdb.d/00-init-superuser.sh:ro
+      # Role passwords and JWT config (run after via alphabetical ordering)
+      - /opt/the-eighth/docker/db/roles.sh:/docker-entrypoint-initdb.d/99-roles.sh:ro
+      - /opt/the-eighth/docker/db/jwt.sh:/docker-entrypoint-initdb.d/99-jwt.sh:ro
+      # Application migrations (mounted into init-scripts/ so the entrypoint processes them)
+      - /opt/the-eighth/supabase/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/init-scripts/100-001_initial_schema.sql:ro
+      - /opt/the-eighth/supabase/migrations/002_rls_policies.sql:/docker-entrypoint-initdb.d/init-scripts/100-002_rls_policies.sql:ro
+      - /opt/the-eighth/supabase/migrations/003_storage_buckets.sql:/docker-entrypoint-initdb.d/init-scripts/100-003_storage_buckets.sql:ro
+      - /opt/the-eighth/supabase/migrations/004_info_box_access.sql:/docker-entrypoint-initdb.d/init-scripts/100-004_info_box_access.sql:ro
+      - /opt/the-eighth/supabase/migrations/005_timeline_access.sql:/docker-entrypoint-initdb.d/init-scripts/100-005_timeline_access.sql:ro
+      - /opt/the-eighth/supabase/migrations/006_combat_access.sql:/docker-entrypoint-initdb.d/init-scripts/100-006_combat_access.sql:ro
+      - /opt/the-eighth/supabase/migrations/007_rules_metadata.sql:/docker-entrypoint-initdb.d/init-scripts/100-007_rules_metadata.sql:ro
+      - /opt/the-eighth/supabase/migrations/008_document_access_owner_policies.sql:/docker-entrypoint-initdb.d/init-scripts/100-008_document_access_owner_policies.sql:ro
+      - /opt/the-eighth/supabase/migrations/009_realtime_publication.sql:/docker-entrypoint-initdb.d/init-scripts/100-009_realtime_publication.sql:ro
+      - /opt/the-eighth/supabase/migrations/010_document_access_replica_identity.sql:/docker-entrypoint-initdb.d/init-scripts/100-010_document_access_replica_identity.sql:ro
+      - /opt/the-eighth/supabase/migrations/011_person_attributes_realtime.sql:/docker-entrypoint-initdb.d/init-scripts/100-011_person_attributes_realtime.sql:ro
+      - /opt/the-eighth/supabase/migrations/012_restrict_directory_to_authenticated.sql:/docker-entrypoint-initdb.d/init-scripts/100-012_restrict_directory_to_authenticated.sql:ro
+
+  # ── Role-password sync (idempotent, runs every deploy) ──────────────────────
+  # Decouples role-password setup from the one-shot initdb hook so that changing
+  # POSTGRES_PASSWORD no longer leaves the service roles stuck on the old value.
+  # Dependent services gate on this completing successfully, so a wrong password
+  # fails loudly here instead of surfacing as crash-loops / Kong DNS errors.
+  db-init:
+    image: supabase/postgres:15.6.1.143
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /opt/the-eighth/docker/db/init-roles.sh:/init/init-roles.sh:ro
+    entrypoint: ["sh", "/init/init-roles.sh"]
+
+  # ── API Gateway ─────────────────────────────────────────────────────────────
+  kong:
+    image: kong:2.8.1
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      # API keys Kong accepts (rendered into kong.yml by the entrypoint below).
+      SUPABASE_ANON_KEY: ${ANON_KEY:?ANON_KEY must be set}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY:?SERVICE_ROLE_KEY must be set}
+    volumes:
+      - /opt/the-eighth/docker/kong.yml:/home/kong/temp.yml:ro
+    # Expand SUPABASE_ANON_KEY / SUPABASE_SERVICE_KEY into the declarative
+    # config before Kong starts. The source file is mounted read-only; the
+    # rendered copy lives at ~/kong.yml inside the container.
+    entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
+
+  # ── PostgREST ───────────────────────────────────────────────────────────────
+  rest:
+    image: postgrest/postgrest:v12.2.3
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: "3600"
+
+  # ── Auth (GoTrue) ──────────────────────────────────────────────────────────
+  auth:
+    image: supabase/gotrue:v2.164.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: "9999"
+      API_EXTERNAL_URL: ${SITE_URL:-http://localhost}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost}
+      GOTRUE_URI_ALLOW_LIST: ""
+      # Accounts are provisioned by the migration script via the admin API
+      # (service_role bypasses this flag). No public self-registration.
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+
+  # ── Realtime ────────────────────────────────────────────────────────────────
+  realtime:
+    image: supabase/realtime:v2.33.58
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      PORT: "4000"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: supabase_admin
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: postgres
+      DB_AFTER_CONNECT_QUERY: "SET search_path TO _realtime"
+      DB_ENC_KEY: ${DB_ENC_KEY:?DB_ENC_KEY must be set - generate with openssl rand -hex 16}
+      API_JWT_SECRET: ${JWT_SECRET}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE must be set - generate with openssl rand -base64 48}
+      ERL_AFLAGS: -proto_dist inet_tcp
+      ENABLE_TAILSCALE: "false"
+      DNS_NODES: "''"
+      RLIMIT_NOFILE: "10000"
+
+  # ── Storage API ─────────────────────────────────────────────────────────────
+  storage:
+    image: supabase/storage-api:v1.11.13
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+      rest:
+        condition: service_started
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      FILE_SIZE_LIMIT: "52428800"
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+      IS_MULTITENANT: "false"
+    volumes:
+      - storage-data:/var/lib/storage
+
+  # ── PG Meta (required by Studio) ───────────────────────────────────────────
+  meta:
+    image: supabase/postgres-meta:v0.84.2
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      PG_META_PORT: "8080"
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: "5432"
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+  # ── Studio ──────────────────────────────────────────────────────────────────
+  studio:
+    image: supabase/studio:2026.03.23-sha-b7847b7
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      meta:
+        condition: service_started
+    ports:
+      # Studio has no authentication of its own and connects to the DB as
+      # supabase_admin. Loopback-only: reach it over an SSH tunnel, e.g.
+      #   ssh -L 3001:127.0.0.1:3001 user@server
+      - "127.0.0.1:${STUDIO_PORT:-3001}:3000"
+    environment:
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DEFAULT_ORGANIZATION_NAME: Default Organization
+      DEFAULT_PROJECT_NAME: TheEighth
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: ${SITE_URL:-http://localhost}
+      SUPABASE_ANON_KEY: ${ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+      NEXT_PUBLIC_ENABLE_LOGS: "false"
+      NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
+
+  # ── Angular App (pre-built image) ─────────────────────────────────────────
+  app:
+    image: the-eighth-app:latest
+    restart: unless-stopped
+    depends_on:
+      kong:
+        condition: service_healthy
+    ports:
+      - "8082:80"
+
+volumes:
+  db-data:
+  storage-data:

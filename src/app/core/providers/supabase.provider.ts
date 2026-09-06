@@ -7,7 +7,8 @@ export const SUPABASE_CLIENT = new InjectionToken<SupabaseClient<Database>>('Sup
 
 function supabaseClientFactory(): SupabaseClient<Database> {
   const config = environment.tenantData[environment.tenant].supabase;
-  return createClient<Database>(config.url, config.anonKey, {
+  const url = config.url || window.location.origin;
+  return createClient<Database>(url, config.anonKey, {
     auth: {
       storageKey: `sb-${environment.tenant}-auth-token`,
       autoRefreshToken: true,

@@ -1,0 +1,142 @@
+_format_version: '2.1'
+_transform: true
+
+# ============================================================================
+# Consumers - the API keys Kong will accept.
+#
+# The two placeholders below are expanded at container start by the kong
+# service entrypoint (see docker-compose.yml), which renders this file into
+# /home/kong/kong.yml before Kong reads it. Keep this file free of double
+# quotes and of any other shell metacharacters: the whole file is passed
+# through a shell expansion step.
+# ============================================================================
+consumers:
+  - username: anon
+    keyauth_credentials:
+      - key: $SUPABASE_ANON_KEY
+  - username: service_role
+    keyauth_credentials:
+      - key: $SUPABASE_SERVICE_KEY
+
+acls:
+  - consumer: anon
+    group: anon
+  - consumer: service_role
+    group: admin
+
+services:
+  # ── GoTrue open endpoints ──────────────────────────────────────────────────
+  # Reached from email links and browser redirects, which cannot carry an
+  # apikey header, so these stay unauthenticated (GoTrue validates the token
+  # in the URL itself). Longer path prefixes win over /auth/v1/ below.
+  - name: auth-v1-open
+    url: http://auth:9999/verify
+    routes:
+      - name: auth-v1-open
+        strip_path: true
+        paths:
+          - /auth/v1/verify
+    plugins:
+      - name: cors
+
+  - name: auth-v1-open-callback
+    url: http://auth:9999/callback
+    routes:
+      - name: auth-v1-open-callback
+        strip_path: true
+        paths:
+          - /auth/v1/callback
+    plugins:
+      - name: cors
+
+  - name: auth-v1-open-authorize
+    url: http://auth:9999/authorize
+    routes:
+      - name: auth-v1-open-authorize
+        strip_path: true
+        paths:
+          - /auth/v1/authorize
+    plugins:
+      - name: cors
+
+  # ── GoTrue - /auth/v1/* -> http://auth:9999/* ──────────────────────────────
+  - name: auth-v1
+    url: http://auth:9999/
+    routes:
+      - name: auth-v1-all
+        strip_path: true
+        paths:
+          - /auth/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  # ── PostgREST - /rest/v1/* -> http://rest:3000/* ───────────────────────────
+  - name: rest-v1
+    url: http://rest:3000/
+    routes:
+      - name: rest-v1-all
+        strip_path: true
+        paths:
+          - /rest/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: true
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  # ── Realtime - /realtime/v1/* -> http://realtime:4000/socket/* ─────────────
+  - name: realtime-v1
+    url: http://realtime:4000/socket/
+    routes:
+      - name: realtime-v1-all
+        strip_path: true
+        paths:
+          - /realtime/v1/
+    plugins:
+      - name: cors
+      - name: key-auth
+        config:
+          hide_credentials: false
+      - name: acl
+        config:
+          hide_groups_header: true
+          allow:
+            - admin
+            - anon
+
+  # ── Storage API - /storage/v1/* -> http://storage:5000/* ───────────────────
+  # Deliberately NOT behind key-auth, matching upstream Supabase. The storage
+  # server does its own auth: it validates the session JWT for writes and
+  # enforces the storage.objects RLS policies. Public object URLs produced by
+  # getPublicUrl() are loaded by the browser in img tags, which cannot send an
+  # apikey header - key-auth here would 401 every avatar and map image.
+  - name: storage-v1
+    url: http://storage:5000/
+    routes:
+      - name: storage-v1-all
+        strip_path: true
+        paths:
+          - /storage/v1/
+    plugins:
+      - name: cors
+
+# ── PG Meta is deliberately NOT routed through Kong ──────────────────────────
+# postgres-meta exposes POST /query, which runs arbitrary SQL as the
+# supabase_admin superuser. There is no safe way to expose it on the public
+# gateway. Studio talks to it directly over the compose network via
+# STUDIO_PG_META_URL, so no Kong route is needed.
