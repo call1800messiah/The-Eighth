@@ -12,8 +12,10 @@ COPY . .
 
 # Build args for Angular environment (@ngx-env/builder reads NG_APP_* env vars)
 ARG NG_APP_TENANT=the-eighth
+ARG NG_APP_SUPABASE_URL
 ARG NG_APP_SUPABASE_ANON_KEY
 ENV NG_APP_TENANT=$NG_APP_TENANT
+ENV NG_APP_SUPABASE_URL=$NG_APP_SUPABASE_URL
 ENV NG_APP_SUPABASE_ANON_KEY=$NG_APP_SUPABASE_ANON_KEY
 
 # Build for production
