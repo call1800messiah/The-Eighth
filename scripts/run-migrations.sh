@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run-migrations.sh — Run data migrations against a Portainer-managed stack
+# run-migrations.sh — Run migrations against a separately-run Supabase instance
 #
 # Usage (from DEPLOY_ROOT, e.g. /opt/the-eighth):
 #   bash scripts/run-migrations.sh                # data + storage + validate
 #   bash scripts/run-migrations.sh --data-only    # data migration only
 #   bash scripts/run-migrations.sh --validate     # validation only
+#   bash scripts/run-migrations.sh --schema       # apply supabase/migrations/*.sql only
 #
 # Requires:
-#   - .env file with SUPABASE_SERVICE_ROLE_KEY (or SERVICE_ROLE_KEY)
-#   - data/export/ directory with Firebase export
-#   - The Portainer stack network must be reachable
+#   - .env file with SUPABASE_URL and SERVICE_ROLE_KEY (or SUPABASE_SERVICE_ROLE_KEY)
+#   - data/export/ directory with Firebase export (for --data-only / default)
+#   - SUPABASE_DB_URL set in .env (for --schema), e.g.
+#     postgres://postgres:PASSWORD@supabase-host:5432/postgres
+#   - The host running this script must be able to reach SUPABASE_URL
+#     (and SUPABASE_DB_URL for --schema) - Supabase is not managed by this repo
 # =============================================================================
 
 set -euo pipefail
@@ -36,12 +40,14 @@ error() { echo -e "${RED}[migrate]${NC} $*" >&2; }
 # Parse arguments
 # ---------------------------------------------------------------------------
 
+RUN_SCHEMA=false
 RUN_DATA=true
 RUN_STORAGE=true
 RUN_VALIDATE=true
 
 for arg in "$@"; do
   case "$arg" in
+    --schema)       RUN_SCHEMA=true; RUN_DATA=false; RUN_STORAGE=false; RUN_VALIDATE=false ;;
     --data-only)    RUN_STORAGE=false; RUN_VALIDATE=false ;;
     --validate)     RUN_DATA=false; RUN_STORAGE=false ;;
     --no-storage)   RUN_STORAGE=false ;;
@@ -62,80 +68,57 @@ set -a
 source .env
 set +a
 
+if [ -z "${SUPABASE_URL:-}" ]; then
+  error "SUPABASE_URL must be set in .env (the external Supabase instance's API gateway URL)"
+  exit 1
+fi
+
 # Resolve the service role key (support both variable names)
 SRK="${SERVICE_ROLE_KEY:-${SUPABASE_SERVICE_ROLE_KEY:-}}"
-if [ -z "$SRK" ]; then
+if [ -z "$SRK" ] && [ "$RUN_SCHEMA" = false ]; then
   error "SERVICE_ROLE_KEY or SUPABASE_SERVICE_ROLE_KEY must be set in .env"
   exit 1
 fi
 
-# Detect the stack network name. Portainer names it <stack>_default.
-# Try to find it automatically, fall back to STACK_NETWORK env var.
-if [ -z "${STACK_NETWORK:-}" ]; then
-  STACK_NETWORK=$(docker network ls --format '{{.Name}}' | grep -E '(the-eighth|theeighth).*default' | head -1 || true)
-fi
-
-if [ -z "${STACK_NETWORK:-}" ]; then
-  error "Could not detect stack network. Set STACK_NETWORK in .env (e.g. the-eighth_default)"
-  exit 1
-fi
-
-log "Using network: ${STACK_NETWORK}"
-
-# Common docker run args
-DOCKER_RUN="docker run --rm --network ${STACK_NETWORK}"
+# Migration containers reach SUPABASE_URL (and SUPABASE_DB_URL) as a plain
+# HTTP/Postgres endpoint - host networking keeps this working whether that
+# URL points at localhost, a LAN IP, or a public domain.
+DOCKER_RUN="docker run --rm --network host"
 
 # ---------------------------------------------------------------------------
-# Preflight: sync role passwords + wait for the API to be reachable
+# Schema migrations (one-time bootstrap of a fresh Supabase instance)
 # ---------------------------------------------------------------------------
 
-# Re-apply the Supabase service-role passwords so they match POSTGRES_PASSWORD.
-# This connects via `docker exec` as the postgres superuser over the local
-# socket (peer auth), so it fixes a drifted db-data volume WITHOUT a wipe —
-# the very failure mode that surfaces as Kong "name resolution failed".
-sync_roles() {
-  if [ -z "${POSTGRES_PASSWORD:-}" ]; then
-    warn "POSTGRES_PASSWORD not set in .env — skipping role-password sync."
-    warn "(Set it to auto-heal stale-volume password mismatches.)"
-    return 0
+run_schema() {
+  if [ -z "${SUPABASE_DB_URL:-}" ]; then
+    error "SUPABASE_DB_URL must be set in .env to apply schema migrations"
+    error "e.g. postgres://postgres:PASSWORD@supabase-host:5432/postgres"
+    exit 1
   fi
 
-  local db_container
-  db_container=$(docker ps --filter "label=com.docker.compose.service=db" \
-    --format '{{.Names}}' | head -1 || true)
-  if [ -z "$db_container" ]; then
-    warn "Could not find the db container — skipping role-password sync."
-    return 0
-  fi
+  # These migrations assume a Supabase-flavored Postgres (auth/storage
+  # schemas, authenticated/anon roles, etc. already provisioned) - the
+  # target must be a real Supabase instance, not vanilla postgres.
 
-  log "Syncing role passwords in ${db_container}..."
-  docker exec -i -u postgres "$db_container" \
-    psql -v ON_ERROR_STOP=1 -U postgres -d postgres -v pw="$POSTGRES_PASSWORD" <<'SQL'
-ALTER ROLE authenticator              WITH PASSWORD :'pw';
-ALTER ROLE supabase_auth_admin        WITH PASSWORD :'pw';
-ALTER ROLE supabase_storage_admin     WITH PASSWORD :'pw';
-ALTER ROLE supabase_replication_admin WITH PASSWORD :'pw';
-ALTER ROLE supabase_admin             WITH PASSWORD :'pw';
-SQL
-  log "Role passwords synced. Restarting dependent services..."
-  for svc in rest auth realtime storage meta; do
-    local c
-    c=$(docker ps -a --filter "label=com.docker.compose.service=${svc}" \
-      --format '{{.Names}}' | head -1 || true)
-    [ -n "$c" ] && docker restart "$c" >/dev/null 2>&1 || true
+  log "Applying supabase/migrations/*.sql to ${SUPABASE_DB_URL%%@*}@..."
+  for f in "$PROJECT_DIR"/supabase/migrations/*.sql; do
+    log "  $(basename "$f")"
+    $DOCKER_RUN \
+      -v "$f":/migration.sql:ro \
+      postgres:17-alpine \
+      psql -v ON_ERROR_STOP=1 "$SUPABASE_DB_URL" -f /migration.sql
   done
+  log "Schema migrations applied."
 }
 
-# Poll the REST API through Kong until an upstream is actually reachable.
-# A 5xx (specifically Kong's 503 "name resolution failed") means rest/auth
-# aren't up yet; anything 2xx–4xx means the chain is live.
+# Poll the REST API until an upstream is actually reachable.
 wait_for_rest() {
   local timeout="${1:-150}" elapsed=0 code
-  log "Waiting for REST API via Kong (timeout: ${timeout}s)..."
+  log "Waiting for REST API at ${SUPABASE_URL} (timeout: ${timeout}s)..."
   while [ "$elapsed" -lt "$timeout" ]; do
     code=$($DOCKER_RUN curlimages/curl:latest -s -o /dev/null -w '%{http_code}' \
       -H "apikey: ${SRK}" -H "Authorization: Bearer ${SRK}" \
-      "http://kong:8000/rest/v1/" 2>/dev/null || echo "000")
+      "${SUPABASE_URL}/rest/v1/" 2>/dev/null || echo "000")
     if [ "$code" -ge 200 ] 2>/dev/null && [ "$code" -lt 500 ]; then
       log "REST API reachable (HTTP ${code})."
       return 0
@@ -143,13 +126,18 @@ wait_for_rest() {
     sleep 3
     elapsed=$((elapsed + 3))
   done
-  error "REST API not reachable through Kong within ${timeout}s (last HTTP: ${code:-none})."
-  error "Backend containers are likely crash-looping. Check: docker ps -a"
-  error "and the logs: docker logs \$(docker ps -aqf name=rest) --tail 40"
+  error "REST API not reachable at ${SUPABASE_URL} within ${timeout}s (last HTTP: ${code:-none})."
+  error "Check that the Supabase instance is running and reachable from this host."
   return 1
 }
 
-sync_roles
+if [ "$RUN_SCHEMA" = true ]; then
+  run_schema
+  echo ""
+  log "All done."
+  exit 0
+fi
+
 wait_for_rest
 
 # ---------------------------------------------------------------------------
@@ -164,7 +152,7 @@ if [ "$RUN_DATA" = true ]; then
 
   log "Running data migration..."
   $DOCKER_RUN \
-    -e SUPABASE_URL=http://kong:8000 \
+    -e SUPABASE_URL="${SUPABASE_URL}" \
     -e SUPABASE_SERVICE_ROLE_KEY="$SRK" \
     -v "$PROJECT_DIR/scripts":/app/scripts:ro \
     -v "$PROJECT_DIR/data":/app/data \
@@ -188,7 +176,7 @@ if [ "$RUN_STORAGE" = true ]; then
   else
     log "Running storage migration..."
     $DOCKER_RUN \
-      -e SUPABASE_URL=http://kong:8000 \
+      -e SUPABASE_URL="${SUPABASE_URL}" \
       -e SUPABASE_SERVICE_ROLE_KEY="$SRK" \
       -v "$PROJECT_DIR/scripts":/app/scripts:ro \
       -v "$PROJECT_DIR/data/export":/app/data/export:ro \
@@ -210,7 +198,7 @@ fi
 if [ "$RUN_VALIDATE" = true ]; then
   log "Running post-migration validation..."
   $DOCKER_RUN \
-    -e SUPABASE_URL=http://kong:8000 \
+    -e SUPABASE_URL="${SUPABASE_URL}" \
     -e SUPABASE_SERVICE_ROLE_KEY="$SRK" \
     -v "$PROJECT_DIR/scripts":/app/scripts:ro \
     -v "$PROJECT_DIR/data/export":/app/data/export:ro \

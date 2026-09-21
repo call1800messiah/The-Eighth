@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
 # =============================================================================
-# package-for-deploy.sh — Create deployment archive on dev machine
+# package-for-deploy.sh — Build app image + create deployment archive (Linux/macOS)
 #
 # Usage:
 #   bash scripts/package-for-deploy.sh
-#   npm run deploy:package
+#
+# Produces:
+#   the-eighth-app.tar               — Docker image (docker load on server)
+#   the-eighth-deploy-<timestamp>.tar — Config, migrations, scripts, data,
+#                                        AND the deploy/supabase/ stack
+#
+# NG_APP_SUPABASE_URL is deliberately never baked in: environment.prod.ts
+# falls back to window.location.origin, and the app's nginx reverse-proxies
+# Supabase calls to the Envoy gateway over the supabase Docker network
+# (see docker-compose.portainer.yml, docker/nginx.conf,
+# deploy/supabase/docker-compose.yml). Only the anon key — meant to be
+# public — is baked in, read from deploy/supabase/.env (the production
+# Supabase stack's own config), not the repo-root .env (that one is for
+# local dev, which points directly at a Supabase URL).
 # =============================================================================
 
 set -euo pipefail
@@ -12,10 +25,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -35,45 +44,83 @@ if [ ! -d "data/export" ]; then
   exit 1
 fi
 
-if [ ! -f "docker-compose.yml" ]; then
-  error "docker-compose.yml not found. Run from project root."
+if [ ! -f "Dockerfile" ]; then
+  error "Dockerfile not found. Run from project root."
+  exit 1
+fi
+
+if ! docker version >/dev/null 2>&1; then
+  error "Docker is not running."
+  exit 1
+fi
+
+if [ ! -f "deploy/supabase/.env" ]; then
+  error "deploy/supabase/.env not found."
+  error "Generate production secrets first: node scripts/generate-supabase-secrets.js"
   exit 1
 fi
 
 # ---------------------------------------------------------------------------
-# Create archive
+# Step 1: Build the Docker image
 # ---------------------------------------------------------------------------
 
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+TENANT="the-eighth"
+if [ -f ".env" ]; then
+  val=$(grep -E "^\s*NG_APP_TENANT\s*=" .env | tail -1 | cut -d= -f2- | xargs || true)
+  [ -n "$val" ] && TENANT="$val"
+fi
+
+ANON_KEY=$(grep -E "^ANON_KEY=" deploy/supabase/.env | tail -1 | cut -d= -f2-)
+if [ -z "$ANON_KEY" ]; then
+  error "ANON_KEY not set in deploy/supabase/.env"
+  exit 1
+fi
+
+log "Building Docker image (tenant: $TENANT, platform: linux/amd64)..."
+log "NG_APP_SUPABASE_URL left unset — same-origin, proxied by nginx."
+
+docker build \
+  --platform linux/amd64 \
+  -t the-eighth-app:latest \
+  --build-arg "NG_APP_TENANT=$TENANT" \
+  --build-arg "NG_APP_SUPABASE_ANON_KEY=$ANON_KEY" \
+  .
+
+# ---------------------------------------------------------------------------
+# Step 2: Save the image
+# ---------------------------------------------------------------------------
+
+IMAGE_TAR="the-eighth-app.tar"
+log "Saving image to $IMAGE_TAR..."
+docker save -o "$IMAGE_TAR" the-eighth-app:latest
+log "Image saved: $IMAGE_TAR ($(du -h "$IMAGE_TAR" | cut -f1))"
+
+# ---------------------------------------------------------------------------
+# Step 3: Create the deployment archive
+# ---------------------------------------------------------------------------
+
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 ARCHIVE="the-eighth-deploy-${TIMESTAMP}.tar"
 
-log "Creating deployment archive: ${ARCHIVE}"
+log "Creating deployment archive: $ARCHIVE"
 
-# Build the file list
 FILES=(
-  docker-compose.yml
   docker-compose.portainer.yml
-  Dockerfile
-  .dockerignore
-  docker/
-  supabase/migrations/
-  scripts/deploy.sh
+  docker
+  deploy/supabase
+  supabase/migrations
   scripts/run-migrations.sh
   scripts/transform-and-migrate.ts
   scripts/migrate-storage.ts
   scripts/validate-migration.ts
-  data/export/
-  src/assets/
+  data/export
+  src/assets
   package.json
   package-lock.json
-  angular.json
   tsconfig.json
-  tsconfig.app.json
-  src/
 )
 
-# Add optional files if they exist
-for f in .env firebase-service-account.json data/user-credentials.json; do
+for f in firebase-service-account.json data/user-credentials.json; do
   if [ -f "$f" ]; then
     FILES+=("$f")
     log "  Including optional: $f"
@@ -83,22 +130,35 @@ for f in .env firebase-service-account.json data/user-credentials.json; do
 done
 
 tar cf "$ARCHIVE" \
-  --exclude='node_modules' \
-  --exclude='.angular' \
-  --exclude='.git' \
-  --exclude='coverage' \
-  --exclude='*.tmp' \
-  --exclude='tmpclaude-*' \
-  --exclude='nul' \
+  --exclude='node_modules' --exclude='.angular' --exclude='.git' \
+  --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example' \
   "${FILES[@]}"
 
-SIZE=$(du -h "$ARCHIVE" | cut -f1)
-log "Archive created: ${ARCHIVE} (${SIZE})"
+log "Archive created: $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1))"
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
 
 echo ""
-echo "Transfer to server with:"
-echo "  scp ${ARCHIVE} user@server:/opt/the-eighth/"
+echo "============================================================================"
+log "Packaging complete!"
+echo "============================================================================"
 echo ""
-echo "If you need storage migration, also transfer:"
-echo "  scp firebase-service-account.json user@server:/opt/the-eighth/"
+echo "  Image:   $IMAGE_TAR"
+echo "  Archive: $ARCHIVE"
+echo ""
+echo "On the server (one-time, before either stack exists):"
+echo "  docker network create supabase"
+echo ""
+echo "After copying both files over (you're handling that via SSH):"
+echo "  docker load -i $IMAGE_TAR"
+echo "  tar xf $ARCHIVE"
+echo "  cd deploy/supabase && docker compose up -d   # create as its own Portainer stack"
+echo "  Create a second Portainer stack from docker-compose.portainer.yml"
+echo "  bash scripts/run-migrations.sh"
+echo ""
+warn "  Root .env on the server (used by run-migrations.sh) needs:"
+warn "    SUPABASE_URL=http://<server-LAN-IP>:8000   (same as GATEWAY_BIND_IP in deploy/supabase/.env, not the public domain)"
+warn "    SUPABASE_SERVICE_ROLE_KEY=<same value as SERVICE_ROLE_KEY in deploy/supabase/.env>"
 echo ""

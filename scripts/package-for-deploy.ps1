@@ -6,7 +6,17 @@
 #
 # Produces two files:
 #   the-eighth-app.tar              — Docker image (docker load on server)
-#   the-eighth-deploy-<timestamp>.tar — Config, migrations, scripts, data
+#   the-eighth-deploy-<timestamp>.tar — Config, migrations, scripts, data,
+#                                        AND the deploy/supabase/ stack
+#
+# NG_APP_SUPABASE_URL is deliberately never baked in: environment.prod.ts
+# falls back to window.location.origin, and the app's nginx reverse-proxies
+# Supabase calls to the Envoy gateway over the supabase Docker network
+# (see docker-compose.portainer.yml, docker/nginx.conf,
+# deploy/supabase/docker-compose.yml). Only the anon key — meant to be
+# public — is baked in, read from deploy/supabase/.env (the production
+# Supabase stack's own config), not the repo-root .env (that one is for
+# local dev, which points directly at a Supabase URL).
 # =============================================================================
 
 $ErrorActionPreference = "Stop"
@@ -35,28 +45,41 @@ try {
     exit 1
 }
 
+if (-not (Test-Path "deploy/supabase/.env")) {
+    Write-Error "deploy/supabase/.env not found. Generate production secrets first: node scripts/generate-supabase-secrets.js"
+    exit 1
+}
+
 # ---------------------------------------------------------------------------
 # Step 1: Build Docker image
 # ---------------------------------------------------------------------------
 
-# Read tenant and anon key from .env if it exists
+# Tenant comes from the repo-root .env (local dev config); the anon key
+# comes from deploy/supabase/.env (the production Supabase stack's own
+# config) — these are two different .env files for two different purposes.
 $Tenant = "the-eighth"
-$AnonKey = ""
 if (Test-Path ".env") {
     Get-Content ".env" | ForEach-Object {
         if ($_ -match "^\s*NG_APP_TENANT\s*=\s*(.+)") { $Tenant = $Matches[1].Trim() }
-        if ($_ -match "^\s*ANON_KEY\s*=\s*(.+)") { $AnonKey = $Matches[1].Trim() }
     }
 }
 
-Write-Host "[package] Building Docker image (tenant: $Tenant)..." -ForegroundColor Green
-
-$buildArgs = @("build", "-t", "the-eighth-app:latest",
-    "--build-arg", "NG_APP_TENANT=$Tenant")
-if ($AnonKey) {
-    $buildArgs += @("--build-arg", "NG_APP_SUPABASE_ANON_KEY=$AnonKey")
+$AnonKey = ""
+Get-Content "deploy/supabase/.env" | ForEach-Object {
+    if ($_ -match "^ANON_KEY=(.+)") { $AnonKey = $Matches[1].Trim() }
 }
-$buildArgs += "."
+if (-not $AnonKey) {
+    Write-Error "ANON_KEY not set in deploy/supabase/.env"
+    exit 1
+}
+
+Write-Host "[package] Building Docker image (tenant: $Tenant, platform: linux/amd64)..." -ForegroundColor Green
+Write-Host "[package] NG_APP_SUPABASE_URL left unset - same-origin, proxied by nginx." -ForegroundColor Green
+
+$buildArgs = @("build", "--platform", "linux/amd64", "-t", "the-eighth-app:latest",
+    "--build-arg", "NG_APP_TENANT=$Tenant",
+    "--build-arg", "NG_APP_SUPABASE_ANON_KEY=$AnonKey",
+    ".")
 
 & docker @buildArgs
 if ($LASTEXITCODE -ne 0) {
@@ -92,6 +115,7 @@ Write-Host "[package] Creating deployment archive: $Archive" -ForegroundColor Gr
 $Files = @(
     "docker-compose.portainer.yml"
     "docker"
+    "deploy/supabase"
     "supabase/migrations"
     "scripts/run-migrations.sh"
     "scripts/transform-and-migrate.ts"
@@ -114,7 +138,7 @@ foreach ($f in @("firebase-service-account.json", "data/user-credentials.json"))
     }
 }
 
-tar cf $Archive --exclude='node_modules' --exclude='.angular' --exclude='.git' --exclude='coverage' --exclude='*.tmp' $Files
+tar cf $Archive --exclude='node_modules' --exclude='.angular' --exclude='.git' --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example' $Files
 
 $ArchiveSize = "{0:N1} MB" -f ((Get-Item $Archive).Length / 1MB)
 Write-Host "[package] Archive created: $Archive ($ArchiveSize)" -ForegroundColor Green
@@ -131,14 +155,17 @@ Write-Host ""
 Write-Host "  Image:   $ImageTar ($ImageSize)"
 Write-Host "  Archive: $Archive ($ArchiveSize)"
 Write-Host ""
-Write-Host "Copy both files to the server:" -ForegroundColor Yellow
-Write-Host "  scp $ImageTar $Archive user@server:/opt/the-eighth/"
+Write-Host "On the server (one-time, before either stack exists):" -ForegroundColor Yellow
+Write-Host "  docker network create supabase"
 Write-Host ""
-Write-Host "On the server:" -ForegroundColor Yellow
-Write-Host "  cd /opt/the-eighth"
+Write-Host "Copy both files to the server, then:" -ForegroundColor Yellow
 Write-Host "  docker load -i $ImageTar"
 Write-Host "  tar xf $Archive"
+Write-Host "  cd deploy/supabase && docker compose up -d   # create as its own Portainer stack"
+Write-Host "  Create a second Portainer stack from docker-compose.portainer.yml"
+Write-Host "  bash scripts/run-migrations.sh"
 Write-Host ""
-Write-Host "Then create a Portainer stack from docker-compose.portainer.yml"
-Write-Host "and run:  bash scripts/run-migrations.sh"
+Write-Host "Root .env on the server (used by run-migrations.sh) needs:" -ForegroundColor Yellow
+Write-Host "  SUPABASE_URL=http://<server-LAN-IP>:8000   (same as GATEWAY_BIND_IP in deploy/supabase/.env, not the public domain)"
+Write-Host "  SUPABASE_SERVICE_ROLE_KEY=<same value as SERVICE_ROLE_KEY in deploy/supabase/.env>"
 Write-Host ""

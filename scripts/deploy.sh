@@ -2,9 +2,13 @@
 # =============================================================================
 # deploy.sh — Server-side deployment orchestrator
 #
+# Supabase is NOT bundled in this repo's docker-compose.yml - it runs as a
+# separately-managed instance that this app points at via SUPABASE_URL.
+#
 # Usage:
-#   bash scripts/deploy.sh           # Normal deploy (skip migration if DB exists)
-#   bash scripts/deploy.sh --fresh   # Wipe volumes, re-run all migrations
+#   bash scripts/deploy.sh           # Normal deploy (skip schema migration)
+#   bash scripts/deploy.sh --fresh   # Also apply supabase/migrations/*.sql
+#                                     # first (for a brand-new Supabase instance)
 # =============================================================================
 
 set -euo pipefail
@@ -26,43 +30,23 @@ log()   { echo -e "${GREEN}[deploy]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[deploy]${NC} $*"; }
 error() { echo -e "${RED}[deploy]${NC} $*" >&2; }
 
-wait_for_healthy() {
-  local service="$1"
-  local timeout="${2:-60}"
-  local elapsed=0
-
-  log "Waiting for $service to be healthy (timeout: ${timeout}s)..."
-  while [ $elapsed -lt "$timeout" ]; do
-    if docker compose ps "$service" 2>/dev/null | grep -q "healthy"; then
-      log "$service is healthy."
+# Poll the external Supabase instance's REST API until it's actually reachable.
+wait_for_rest() {
+  local timeout="${1:-60}" elapsed=0 code
+  log "Waiting for Supabase REST API at ${SUPABASE_URL} (timeout: ${timeout}s)..."
+  while [ "$elapsed" -lt "$timeout" ]; do
+    code=$(docker run --rm --network host curlimages/curl:latest -s -o /dev/null -w '%{http_code}' \
+      -H "apikey: ${ANON_KEY:-}" \
+      "${SUPABASE_URL}/rest/v1/" 2>/dev/null || echo "000")
+    if [ "$code" -ge 200 ] 2>/dev/null && [ "$code" -lt 500 ]; then
+      log "Supabase reachable (HTTP ${code})."
       return 0
     fi
     sleep 2
     elapsed=$((elapsed + 2))
   done
-
-  error "$service did not become healthy within ${timeout}s"
-  docker compose logs --tail=20 "$service"
-  return 1
-}
-
-wait_for_service() {
-  local service="$1"
-  local timeout="${2:-60}"
-  local elapsed=0
-
-  log "Waiting for $service to start (timeout: ${timeout}s)..."
-  while [ $elapsed -lt "$timeout" ]; do
-    if docker compose ps "$service" 2>/dev/null | grep -q "Up\|running"; then
-      log "$service is running."
-      return 0
-    fi
-    sleep 2
-    elapsed=$((elapsed + 2))
-  done
-
-  error "$service did not start within ${timeout}s"
-  docker compose logs --tail=20 "$service"
+  error "Supabase not reachable at ${SUPABASE_URL} within ${timeout}s (last HTTP: ${code:-none})."
+  error "Check that the Supabase instance is running and reachable from this host."
   return 1
 }
 
@@ -92,34 +76,30 @@ set -a
 source .env
 set +a
 
+if [ -z "${SUPABASE_URL:-}" ]; then
+  error "SUPABASE_URL must be set in .env (the external Supabase instance's API gateway URL)"
+  exit 1
+fi
+
 if [ ! -d "data/export" ]; then
   error "data/export/ directory not found. Export Firebase data first."
   exit 1
 fi
 
 # ---------------------------------------------------------------------------
-# Fresh deploy: wipe volumes
+# Fresh deploy: bootstrap schema on a brand-new Supabase instance
 # ---------------------------------------------------------------------------
 
 if [ "$FRESH" = true ]; then
-  warn "Fresh deploy requested — wiping all volumes..."
-  docker compose down -v
+  warn "Fresh deploy requested — applying schema migrations first..."
+  bash "$SCRIPT_DIR/run-migrations.sh" --schema
 fi
 
 # ---------------------------------------------------------------------------
-# Start infrastructure services
+# Wait for Supabase to be reachable
 # ---------------------------------------------------------------------------
 
-log "Starting infrastructure services..."
-docker compose up -d
-
-# Wait for critical services
-wait_for_healthy "db" 60
-wait_for_service "kong" 60
-wait_for_service "auth" 60
-
-# Give auth a few extra seconds to finish internal setup
-sleep 3
+wait_for_rest 60
 
 # ---------------------------------------------------------------------------
 # Run data migration
@@ -147,22 +127,25 @@ log "Running post-migration validation..."
 docker compose run --rm migrate-validate
 
 # ---------------------------------------------------------------------------
+# Build and start the app
+# ---------------------------------------------------------------------------
+
+log "Building and starting the app..."
+docker compose up -d --build app
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 
 APP_PORT="${APP_PORT:-80}"
-STUDIO_PORT="${STUDIO_PORT:-3001}"
-SITE_URL="${SITE_URL:-http://localhost}"
 
 echo ""
 echo "============================================================================"
 log "Deployment complete!"
 echo "============================================================================"
 echo ""
-echo "  App:      ${SITE_URL}:${APP_PORT}"
-echo "  Studio:   bound to 127.0.0.1:${STUDIO_PORT} on this host (no login of"
-echo "            its own). Reach it from your workstation with:"
-echo "              ssh -L ${STUDIO_PORT}:127.0.0.1:${STUDIO_PORT} \$USER@\$(hostname)"
+echo "  App:      http://localhost:${APP_PORT} (or your server's address)"
+echo "  Supabase: ${SUPABASE_URL} (managed separately from this deploy)"
 echo ""
 
 if [ -f "data/export/_user_credentials.json" ]; then
@@ -172,6 +155,6 @@ else
 fi
 
 echo ""
-echo "  To re-deploy with fresh data:  bash scripts/deploy.sh --fresh"
-echo "  To update app only:            docker compose build app && docker compose up -d app"
+echo "  To bootstrap a brand-new Supabase instance: bash scripts/deploy.sh --fresh"
+echo "  To update app only:                          docker compose up -d --build app"
 echo ""
