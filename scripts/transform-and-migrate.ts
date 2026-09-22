@@ -336,13 +336,22 @@ class Migration {
   async migrateUsers(): Promise<void> {
     console.log('Step 2: Migrating users...');
 
-    // Load manual credentials file if it exists (user-provided passwords)
+    // Load manual credentials file if it exists (user-provided emails + passwords).
+    // Keyed by name: the file carries real addresses, while the fallback email is
+    // derived from the export, so the two never match on email alone.
     const manualCredPath = path.join(process.cwd(), 'data', 'user-credentials.json');
-    let manualCreds: Map<string, string> | null = null;
+    let manualCreds: Map<string, { email: string; password: string }> | null = null;
     if (fs.existsSync(manualCredPath)) {
-      const raw: Array<{ email: string; password: string }> = JSON.parse(fs.readFileSync(manualCredPath, 'utf8'));
-      manualCreds = new Map(raw.map(c => [c.email, c.password]));
-      console.log(`  Using manual credentials from data/user-credentials.json (${manualCreds.size} entries)`);
+      const raw: Array<{ email: string; password: string; name?: string }> =
+        JSON.parse(fs.readFileSync(manualCredPath, 'utf8'));
+      manualCreds = new Map();
+      for (const c of raw) {
+        const entry = { email: c.email, password: c.password };
+        if (c.name) manualCreds.set(c.name, entry);
+        // Also key by email, so files written by an earlier run still resolve.
+        manualCreds.set(c.email, entry);
+      }
+      console.log(`  Using manual credentials from data/user-credentials.json (${raw.length} entries)`);
     }
 
     // Delete any existing auth users (for idempotent re-runs)
@@ -355,14 +364,19 @@ class Migration {
     const rolesRows: Record<string, any>[] = [];
 
     for (const doc of this.users) {
-      const email = `${slugify(doc.data.name)}@${this.tenant}.local`;
+      const derivedEmail = `${slugify(doc.data.name)}@${this.tenant}.local`;
+      const manual = manualCreds?.get(doc.data.name) ?? manualCreds?.get(derivedEmail);
+
+      // Prefer the address supplied in the credentials file; fall back to the
+      // synthetic one derived from the user's name.
+      const email = manual?.email ?? derivedEmail;
 
       let password: string;
-      if (manualCreds?.has(email)) {
-        password = manualCreds.get(email)!;
+      if (manual) {
+        password = manual.password;
       } else {
         if (manualCreds) {
-          console.warn(`  Warning: No manual credential for ${email}, using random password`);
+          console.warn(`  Warning: No manual credential for ${doc.data.name}, using random password`);
         }
         password = crypto.randomBytes(12).toString('base64url');
       }
