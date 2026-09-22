@@ -69,15 +69,19 @@ describe('RulesService', () => {
       ]);
     });
 
-    it('should preserve all original row fields via spread', (done) => {
+    it('should spread type-specific fields out of the metadata column', (done) => {
       service.getDynamicRules().subscribe(rules => {
         if (rules.length === 0) return;
         expect((rules[0] as any).attributeOne).toBe('MU');
+        expect((rules[0] as any).attributeTwo).toBe('GE');
         done();
       });
 
+      // Type-specific fields live in the `metadata` JSONB column, not as
+      // top-level columns on `rules`.
       mockRealtime.emitRows('rules', [{
-        id: 'r1', name: 'Climbing', category: 'skill', attributeOne: 'MU',
+        id: 'r1', name: 'Climbing', category: 'skill',
+        metadata: { attributeOne: 'MU', attributeTwo: 'GE' },
       }]);
     });
 
@@ -105,10 +109,34 @@ describe('RulesService', () => {
   });
 
   describe('store()', () => {
-    it('should delegate to DataService.store', async () => {
-      const rule = { name: 'New Rule' } as any;
-      await service.store(rule, 'r1');
-      expect(mockData.store).toHaveBeenCalledWith(rule, 'rules', 'r1');
+    it('should map the rule onto its columns before delegating', async () => {
+      await service.store({ name: 'New Rule', type: 'skill', rules: 'Climb things' } as any, 'r1');
+
+      // `type` becomes `category` and `rules` becomes `description`; nothing
+      // goes to metadata when there are no type-specific fields.
+      expect(mockData.store).toHaveBeenCalledWith(
+        { name: 'New Rule', category: 'skill', description: 'Climb things' },
+        'rules',
+        'r1',
+      );
+    });
+
+    it('should collect type-specific fields into metadata', async () => {
+      await service.store({
+        name: 'Fireball', type: 'spell', rules: 'Burn things',
+        attributeOne: 'KL', cost: '8 AsP',
+      } as any);
+
+      expect(mockData.store).toHaveBeenCalledWith(
+        {
+          name: 'Fireball',
+          category: 'spell',
+          description: 'Burn things',
+          metadata: { attributeOne: 'KL', cost: '8 AsP' },
+        },
+        'rules',
+        undefined,
+      );
     });
   });
 });

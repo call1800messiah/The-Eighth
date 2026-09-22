@@ -59,6 +59,9 @@ describe('CombatService', () => {
         'combatants',
         jasmine.any(Function),
         'combatants',
+        // Attributes and states are junction tables: a write to either changes
+        // no `combatants` row, so each must trigger the re-fetch itself.
+        ['combatant_attributes', 'combatant_states'],
       );
     });
 

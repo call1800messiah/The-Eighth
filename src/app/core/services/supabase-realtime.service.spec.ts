@@ -22,6 +22,15 @@ describe('RealtimeService', () => {
       from: jasmine.createSpy('from').and.returnValue(mockQueryBuilder),
       channel: jasmine.createSpy('channel').and.returnValue(mockChannel),
       removeChannel: jasmine.createSpy('removeChannel'),
+      // ensureDocumentAccessChannel() calls auth.getSession() to scope the
+      // document_access subscription to the current user. A session with a
+      // user id lets that path run; without `auth` at all, every test in this
+      // suite dies on `getSession of undefined`.
+      auth: {
+        getSession: jasmine.createSpy('getSession').and.returnValue(
+          Promise.resolve({ data: { session: { user: { id: 'user-1' } } }, error: null })
+        ),
+      },
     };
 
     TestBed.configureTestingModule({

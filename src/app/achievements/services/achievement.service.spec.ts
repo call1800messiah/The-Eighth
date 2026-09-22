@@ -2,13 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { of, BehaviorSubject } from 'rxjs';
 
 import { AchievementService } from './achievement.service';
+import { ApiService } from '../../core/services/api.service';
 import { DataService } from '../../core/services/data.service';
 import { PeopleService } from '../../people/services/people.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
-import { createMockDataService, createMockRealtimeService } from '../../testing/supabase-test-helpers';
+import {
+  createMockApiService,
+  createMockDataService,
+  createMockRealtimeService,
+} from '../../testing/supabase-test-helpers';
 
 describe('AchievementService', () => {
   let service: AchievementService;
+  let mockApi: ReturnType<typeof createMockApiService>;
   let mockData: ReturnType<typeof createMockDataService>;
   let mockRealtime: ReturnType<typeof createMockRealtimeService>;
   let mockPeople: any;
@@ -21,6 +27,7 @@ describe('AchievementService', () => {
   ];
 
   beforeEach(() => {
+    mockApi = createMockApiService();
     mockData = createMockDataService();
     mockRealtime = createMockRealtimeService();
     people$ = new BehaviorSubject(mockPeopleList);
@@ -31,6 +38,9 @@ describe('AchievementService', () => {
     TestBed.configureTestingModule({
       providers: [
         AchievementService,
+        // AchievementService injects ApiService, which injects SUPABASE_CLIENT.
+        // Without this the whole suite fails to construct.
+        { provide: ApiService, useValue: mockApi },
         { provide: DataService, useValue: mockData },
         { provide: PeopleService, useValue: mockPeople },
         { provide: RealtimeService, useValue: mockRealtime },

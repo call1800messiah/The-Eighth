@@ -4,7 +4,11 @@ import { of } from 'rxjs';
 import { EditAccessComponent } from './edit-access.component';
 import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
-import { createMockQueryBuilder } from '../../../testing/supabase-test-helpers';
+import { RealtimeService } from '../../../core/services/supabase-realtime.service';
+import {
+  createMockQueryBuilder,
+  createMockRealtimeService,
+} from '../../../testing/supabase-test-helpers';
 import type { User } from '../../../core/models/user';
 
 describe('EditAccessComponent', () => {
@@ -41,6 +45,9 @@ describe('EditAccessComponent', () => {
             getUsers: () => of(users),
           },
         },
+        // The component injects RealtimeService (for broadcastAccessChange),
+        // which injects SUPABASE_CLIENT.
+        { provide: RealtimeService, useValue: createMockRealtimeService() },
       ],
     }).compileComponents();
 

@@ -1956,10 +1956,15 @@ SELECT * FROM rules WHERE category IS NULL;
 > **This is the one genuinely open section — the remaining migration work.**
 >
 > Much of it is satisfied empirically: the app runs against the migrated data,
-> users log in, realtime works. None of it is *verified*. The automated suite
-> has 34 known failures (`AccessIndicatorComponent`, `EditAccessComponent`,
-> `RealtimeService`, `AchievementService`, `RulesService`, `CombatService`),
-> mostly mock Supabase clients with no `auth` property.
+> users log in, realtime works. None of it is *verified* — these are
+> data-migration assertions, and the unit suite does not cover them.
+>
+> The unit suite itself is green as of 2026-09-22 (328 passing). It previously
+> had 34 failures, 31 of which were suites dying in `beforeEach` on a missing
+> `SUPABASE_CLIENT` provider — so `AccessIndicatorComponent` and
+> `EditAccessComponent`, the access-control UI, had no effective coverage at
+> all. That is fixed, but it was not caught by anything; the gap below is the
+> reason.
 >
 > Note that "Junction table queries return correct data" was silently false in
 > production for months: reads worked, but *writes* went to a non-existent

@@ -29,9 +29,14 @@ ng test --include='**/path/to/file.spec.ts'
 # Headless, single run (what CI-style checks use)
 ng test --watch=false --browsers=ChromeHeadless
 
-# Lint
-ng lint
+# Type-check without emitting
+npx tsc --noEmit -p tsconfig.app.json
 ```
+
+`ng lint` does **not** work: `angular.json` still points at the
+`@angular-devkit/build-angular:tslint` builder, which no longer exists, and
+neither tslint nor eslint is installed. Migrating to `@angular-eslint` is
+outstanding; until then use `tsc --noEmit` as the static check.
 
 ### Database
 ```bash
@@ -197,7 +202,15 @@ All services use `providedIn: 'root'`.
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is not green.** As of 2026-09-22 there are 34 known failures in `AccessIndicatorComponent`, `EditAccessComponent`, `RealtimeService`, `AchievementService`, `RulesService` and `CombatService` — mostly mock Supabase clients missing an `auth` property. Compare against that baseline before assuming a change broke something.
+- **The suite is green** (328 passing as of 2026-09-22). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+
+### Writing specs against Supabase
+Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:
+
+- **`NullInjectorError: No provider for InjectionToken SupabaseClient`** — something in the dependency chain injects `ApiService` or `RealtimeService`. Provide a mock for whichever one it is; don't provide the raw client unless testing `RealtimeService` itself. A whole suite dying in `beforeEach` shows up as *every* test failing with zero passing, so check that first.
+- **Assertions on `realtime.watch` arguments** — `watch()` takes a fourth `triggerTables` argument. `toHaveBeenCalledWith` is an exact match, so a spec asserting three arguments fails the moment a service starts passing trigger tables.
+
+Fixtures must match the current schema: type-specific rule fields live in `rules.metadata`, not as top-level columns.
 
 ## Quality Standards
 

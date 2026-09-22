@@ -56,8 +56,8 @@ ng test                                              # watch mode
 ng test --watch=false --browsers=ChromeHeadless      # single run
 ```
 
-Note that the suite is not currently green — see the Testing section of
-`CLAUDE.md` for the known-failure baseline.
+The suite is green. See the Testing section of `CLAUDE.md` for the helpers to
+use when writing specs against Supabase.
 
 ## Deploy
 

@@ -171,6 +171,7 @@ export function createMockRealtimeService() {
         return watchOneSubjects[key].asObservable();
       }
     ),
+    broadcastAccessChange: jasmine.createSpy('broadcastAccessChange'),
     /** Push rows to a `watch()` subscriber by cache key or table name */
     emitRows(key: string, rows: any[]) {
       if (!watchSubjects[key]) {

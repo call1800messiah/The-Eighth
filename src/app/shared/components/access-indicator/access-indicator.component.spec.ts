@@ -7,7 +7,11 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { PopoverService } from '../../../core/services/popover.service';
-import { createMockQueryBuilder } from '../../../testing/supabase-test-helpers';
+import { RealtimeService } from '../../../core/services/supabase-realtime.service';
+import {
+  createMockQueryBuilder,
+  createMockRealtimeService,
+} from '../../../testing/supabase-test-helpers';
 import type { User } from '../../../core/models/user';
 import type { AccessControlledItem } from '../../../core/models/access-controlled-item';
 
@@ -67,6 +71,9 @@ describe('AccessIndicatorComponent', () => {
             showPopover: jasmine.createSpy('showPopover'),
           },
         },
+        // The component watches document_access via RealtimeService, which
+        // injects SUPABASE_CLIENT.
+        { provide: RealtimeService, useValue: createMockRealtimeService() },
       ],
     }).compileComponents();
 
