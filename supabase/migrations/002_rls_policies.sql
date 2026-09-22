@@ -20,15 +20,45 @@ CREATE OR REPLACE FUNCTION public.is_gm() RETURNS BOOLEAN AS $$
   );
 $$ LANGUAGE SQL STABLE SECURITY DEFINER;
 
+-- Check if the current user owns a given entity. Used by the document_access
+-- policies so non-GM owners can manage sharing for their own entities.
+CREATE OR REPLACE FUNCTION is_entity_owner(p_entity_type TEXT, p_entity_id UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_owner_id UUID;
+BEGIN
+  CASE p_entity_type
+    WHEN 'person'         THEN SELECT owner_id INTO v_owner_id FROM people WHERE id = p_entity_id;
+    WHEN 'place'          THEN SELECT owner_id INTO v_owner_id FROM places WHERE id = p_entity_id;
+    WHEN 'quest'          THEN SELECT owner_id INTO v_owner_id FROM quests WHERE id = p_entity_id;
+    WHEN 'project'        THEN SELECT owner_id INTO v_owner_id FROM projects WHERE id = p_entity_id;
+    WHEN 'achievement'    THEN SELECT owner_id INTO v_owner_id FROM achievements WHERE id = p_entity_id;
+    WHEN 'inventory'      THEN SELECT owner_id INTO v_owner_id FROM inventory WHERE id = p_entity_id;
+    WHEN 'note'           THEN SELECT owner_id INTO v_owner_id FROM notes WHERE id = p_entity_id;
+    WHEN 'flow'           THEN SELECT owner_id INTO v_owner_id FROM flows WHERE id = p_entity_id;
+    WHEN 'roll'           THEN SELECT owner_id INTO v_owner_id FROM rolls WHERE id = p_entity_id;
+    WHEN 'info_box'       THEN SELECT owner_id INTO v_owner_id FROM info_boxes WHERE id = p_entity_id;
+    ELSE RETURN FALSE;
+  END CASE;
+  RETURN v_owner_id IS NOT NULL AND v_owner_id = auth.uid();
+END;
+$$;
+
 -- ============================================================================
 -- USERS TABLE
 -- ============================================================================
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
--- Anyone can read users (for display names, etc.)
+-- The user directory is readable by any signed-in session, but NOT by `anon`:
+-- without the role qualifier this leaks every player's display name to anyone
+-- who can reach the deployment. service_role is unaffected (it has BYPASSRLS).
 CREATE POLICY users_select_policy ON users
   FOR SELECT
+  TO authenticated
   USING (true);
 
 -- Only the user can update their own profile
@@ -43,9 +73,11 @@ CREATE POLICY users_update_policy ON users
 
 ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
 
--- Anyone authenticated can read roles
+-- Authenticated only, for the same reason as users_select_policy: exposing this
+-- to `anon` reveals which accounts hold the GM role.
 CREATE POLICY user_roles_select_policy ON user_roles
   FOR SELECT
+  TO authenticated
   USING (true);
 
 -- Only GMs can manage roles
@@ -68,20 +100,32 @@ CREATE POLICY user_roles_delete_policy ON user_roles
 
 ALTER TABLE document_access ENABLE ROW LEVEL SECURITY;
 
--- Users can see their own access grants
+-- Users see their own grants; entity owners see all grants for their entities;
+-- GMs see everything. Without the owner clause, a non-GM owner cannot see or
+-- manage sharing for something they created.
 CREATE POLICY document_access_select_policy ON document_access
   FOR SELECT
-  USING (user_id = auth.uid() OR is_gm());
+  USING (
+    user_id = auth.uid() OR
+    is_gm() OR
+    is_entity_owner(entity_type, entity_id)
+  );
 
 -- Entity owners and GMs can grant access
 CREATE POLICY document_access_insert_policy ON document_access
   FOR INSERT
-  WITH CHECK (is_gm());
+  WITH CHECK (
+    is_gm() OR
+    is_entity_owner(entity_type, entity_id)
+  );
 
--- Only GMs can delete access grants
+-- Entity owners and GMs can revoke access
 CREATE POLICY document_access_delete_policy ON document_access
   FOR DELETE
-  USING (is_gm());
+  USING (
+    is_gm() OR
+    is_entity_owner(entity_type, entity_id)
+  );
 
 -- ============================================================================
 -- PEOPLE TABLE
@@ -377,18 +421,12 @@ CREATE POLICY flows_delete_policy ON flows
 
 ALTER TABLE timelines ENABLE ROW LEVEL SECURITY;
 
+-- Timelines are a campaign-wide shared resource: in the Firebase data they had
+-- no owner or access array, so every campaign member could read them. Modelling
+-- them as per-user entities blocked all non-GM access. Writes stay restricted.
 CREATE POLICY timelines_select_policy ON timelines
   FOR SELECT
-  USING (
-    owner_id = auth.uid() OR
-    is_gm() OR
-    EXISTS (
-      SELECT 1 FROM document_access
-      WHERE entity_type = 'timeline'
-      AND entity_id = timelines.id
-      AND user_id = auth.uid()
-    )
-  );
+  USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY timelines_insert_policy ON timelines
   FOR INSERT
@@ -642,8 +680,20 @@ CREATE POLICY flow_items_delete_policy ON flow_items
 -- Historic events
 ALTER TABLE historic_events ENABLE ROW LEVEL SECURITY;
 
+-- Per-event access rather than inherited from the timeline, which is readable
+-- by every authenticated user (see timelines_select_policy).
 CREATE POLICY historic_events_select_policy ON historic_events
-  FOR SELECT USING (EXISTS (SELECT 1 FROM timelines WHERE id = timeline_id AND (owner_id = auth.uid() OR is_gm() OR EXISTS (SELECT 1 FROM document_access WHERE entity_type = 'timeline' AND entity_id = timeline_id AND user_id = auth.uid()))));
+  FOR SELECT
+  USING (
+    owner_id = auth.uid() OR
+    is_gm() OR
+    EXISTS (
+      SELECT 1 FROM document_access
+      WHERE entity_type = 'historic_event'
+      AND entity_id = historic_events.id
+      AND user_id = auth.uid()
+    )
+  );
 CREATE POLICY historic_events_insert_policy ON historic_events
   FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM timelines WHERE id = timeline_id AND (owner_id = auth.uid() OR is_gm())));
 CREATE POLICY historic_events_update_policy ON historic_events
@@ -654,13 +704,20 @@ CREATE POLICY historic_events_delete_policy ON historic_events
 -- Info boxes (polymorphic access)
 ALTER TABLE info_boxes ENABLE ROW LEVEL SECURITY;
 
+-- Per-info-box access only. Each Firebase info doc carried its own access[]
+-- array, so info boxes get their own document_access entries. Falling back to
+-- the parent entity's access would expose every info of an entity to anyone who
+-- can see that entity, defeating the point of per-info-box control.
 CREATE POLICY info_boxes_select_policy ON info_boxes
   FOR SELECT USING (
     owner_id = auth.uid() OR
     is_gm() OR
-    (entity_type = 'person' AND EXISTS (SELECT 1 FROM people WHERE id = entity_id AND (owner_id = auth.uid() OR EXISTS (SELECT 1 FROM document_access WHERE entity_type = 'person' AND entity_id = info_boxes.entity_id AND user_id = auth.uid())))) OR
-    (entity_type = 'place' AND EXISTS (SELECT 1 FROM places WHERE id = entity_id AND (owner_id = auth.uid() OR EXISTS (SELECT 1 FROM document_access WHERE entity_type = 'place' AND entity_id = info_boxes.entity_id AND user_id = auth.uid())))) OR
-    (entity_type = 'quest' AND EXISTS (SELECT 1 FROM quests WHERE id = entity_id AND (owner_id = auth.uid() OR EXISTS (SELECT 1 FROM document_access WHERE entity_type = 'quest' AND entity_id = info_boxes.entity_id AND user_id = auth.uid()))))
+    EXISTS (
+      SELECT 1 FROM document_access
+      WHERE entity_type = 'info_box'
+      AND entity_id = info_boxes.id
+      AND user_id = auth.uid()
+    )
   );
 
 CREATE POLICY info_boxes_insert_policy ON info_boxes
@@ -679,15 +736,18 @@ ALTER TABLE combatants ENABLE ROW LEVEL SECURITY;
 CREATE POLICY combatants_select_policy ON combatants
   FOR SELECT USING (true);
 
+-- Combat is a shared collaborative space: every campaign member adds and
+-- removes combatants and updates their state during a session, so writes are
+-- open to any authenticated user rather than GM-only.
 CREATE POLICY combatants_insert_policy ON combatants
-  FOR INSERT WITH CHECK (is_gm());
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatants_update_policy ON combatants
-  FOR UPDATE USING (is_gm())
-  WITH CHECK (is_gm());
+  FOR UPDATE USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatants_delete_policy ON combatants
-  FOR DELETE USING (is_gm());
+  FOR DELETE USING (auth.uid() IS NOT NULL);
 
 -- Combatant attributes
 ALTER TABLE combatant_attributes ENABLE ROW LEVEL SECURITY;
@@ -696,14 +756,14 @@ CREATE POLICY combatant_attributes_select_policy ON combatant_attributes
   FOR SELECT USING (true);
 
 CREATE POLICY combatant_attributes_insert_policy ON combatant_attributes
-  FOR INSERT WITH CHECK (is_gm());
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatant_attributes_update_policy ON combatant_attributes
-  FOR UPDATE USING (is_gm())
-  WITH CHECK (is_gm());
+  FOR UPDATE USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatant_attributes_delete_policy ON combatant_attributes
-  FOR DELETE USING (is_gm());
+  FOR DELETE USING (auth.uid() IS NOT NULL);
 
 -- Combatant states
 ALTER TABLE combatant_states ENABLE ROW LEVEL SECURITY;
@@ -712,11 +772,11 @@ CREATE POLICY combatant_states_select_policy ON combatant_states
   FOR SELECT USING (true);
 
 CREATE POLICY combatant_states_insert_policy ON combatant_states
-  FOR INSERT WITH CHECK (is_gm());
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatant_states_update_policy ON combatant_states
-  FOR UPDATE USING (is_gm())
-  WITH CHECK (is_gm());
+  FOR UPDATE USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY combatant_states_delete_policy ON combatant_states
-  FOR DELETE USING (is_gm());
+  FOR DELETE USING (auth.uid() IS NOT NULL);

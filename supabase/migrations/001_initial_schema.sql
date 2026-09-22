@@ -48,6 +48,12 @@ CREATE TABLE document_access (
   UNIQUE(entity_type, entity_id, user_id)
 );
 
+-- Realtime DELETE events need the full old row, not just the primary key:
+-- RealtimeService filters on user_id and switches on entity_type, and with the
+-- default REPLICA IDENTITY neither is present in payload.old, so access
+-- revocations never reach subscribers.
+ALTER TABLE document_access REPLICA IDENTITY FULL;
+
 -- ============================================================================
 -- RULES CONFIGURATION TABLES (seeded from assets/{tenant}/rules.json)
 -- ============================================================================
@@ -97,7 +103,11 @@ CREATE TABLE rules (
   description TEXT,
   is_static BOOLEAN DEFAULT false, -- TRUE for seeded rules from JSON
   is_custom BOOLEAN DEFAULT false, -- TRUE for user-created rules
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  -- Type-specific fields (cost, castingTime, attributeOne, ...) vary per rule
+  -- category, so they live in JSONB rather than one nullable column each.
+  -- Kept last: it arrived as an ALTER TABLE ADD COLUMN, which appends.
+  metadata JSONB
 );
 
 -- ============================================================================
@@ -566,3 +576,37 @@ CREATE INDEX idx_rules_category ON rules(category);
 CREATE INDEX idx_rules_name ON rules(name);
 CREATE INDEX idx_rules_static ON rules(is_static) WHERE is_static = true;
 CREATE INDEX idx_rules_custom ON rules(is_custom) WHERE is_custom = true;
+
+-- ============================================================================
+-- REALTIME PUBLICATION
+-- ============================================================================
+
+-- Tables watched by RealtimeService. Without membership here, postgres_changes
+-- events never fire and the Angular subscriptions do nothing — changes only
+-- appear after a full page reload.
+ALTER PUBLICATION supabase_realtime ADD TABLE
+  users,
+  user_roles,
+  document_access,
+  people,
+  person_attributes,
+  places,
+  quests,
+  projects,
+  project_milestones,
+  project_requirements,
+  achievements,
+  inventory,
+  notes,
+  rolls,
+  flows,
+  flow_items,
+  rules,
+  info_boxes,
+  timelines,
+  historic_events,
+  campaign,
+  combat_sessions,
+  combatants,
+  combatant_attributes,
+  combatant_states;
