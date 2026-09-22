@@ -1,5 +1,28 @@
 # Firebase to PostgreSQL Migration Plan
 
+> **Status: complete and deployed (2026-09-22). Kept as a design record, not a task list.**
+>
+> The migration ran and is live. This document is preserved for the *reasoning* —
+> the access-control model, the normalization decisions, the combat and rules
+> mapping — which is not recoverable from the schema alone. Treat the
+> step-by-step instructions below as history.
+>
+> **Where the current truth lives instead:**
+> - Schema and policies: `supabase/migrations/` (squashed to `001`–`003`, plus
+>   incremental migrations from `004` on)
+> - Architecture and conventions: `CLAUDE.md`
+> - Deployment: `docker-compose.portainer.yml`, `deploy/supabase/`
+>
+> **What is still open:** the Testing Checklist below. The unchecked boxes in
+> the Service Refactoring and Security sections were completed but never ticked
+> — see the notes on those sections. The suite currently has 34 known failures
+> (mock Supabase clients missing `auth`), which is the bulk of the remaining
+> work.
+>
+> One deviation worth knowing: this plan calls for
+> `003_functions_triggers.sql`. It was never created — helper functions live in
+> `002_rls_policies.sql`, and `003` is `003_storage_buckets.sql`.
+
 ## Overview
 
 Migrate TheEighth RPG campaign management app from Firebase (Firestore + Auth + Storage) to locally-run Supabase with PostgreSQL database.
@@ -1518,6 +1541,12 @@ All services that query Firestore need updates:
 
 ### Service Refactoring Checklist
 
+> **Done.** Every item below was carried out; the boxes were simply never
+> ticked. The two that lingered longest — the last `@angular/fire` imports and
+> the Firestore-shaped capability writes — were closed on 2026-09-22. Left
+> unticked deliberately: ticking them now would imply each was individually
+> verified at the time, which it was not.
+
 For each service (`*.service.ts`):
 
 **1. Import Updates**
@@ -1924,6 +1953,19 @@ SELECT * FROM rules WHERE category IS NULL;
 
 ## Testing Checklist
 
+> **This is the one genuinely open section — the remaining migration work.**
+>
+> Much of it is satisfied empirically: the app runs against the migrated data,
+> users log in, realtime works. None of it is *verified*. The automated suite
+> has 34 known failures (`AccessIndicatorComponent`, `EditAccessComponent`,
+> `RealtimeService`, `AchievementService`, `RulesService`, `CombatService`),
+> mostly mock Supabase clients with no `auth` property.
+>
+> Note that "Junction table queries return correct data" was silently false in
+> production for months: reads worked, but *writes* went to a non-existent
+> `people.skills` column, so adding or removing any capability failed. A good
+> argument for working through this list rather than assuming it.
+
 - [ ] All row counts match between Firebase export and PostgreSQL
 - [ ] Foreign key constraints validated (no orphaned references)
 - [ ] RLS policies tested with each role (observer, player, co_gm, gm)
@@ -2051,61 +2093,57 @@ export const supabaseProvider = {
 };
 ```
 
-## Next Steps
+## Migration Outcome
 
-1. **Set up local Supabase**:
-   ```bash
-   npm install supabase --save-dev
-   npx supabase init
-   npx supabase start
-   ```
+*This section replaced the original "Next Steps", whose instructions were all
+carried out. Recorded here is what actually happened, including where reality
+diverged from the plan.*
 
-2. **Create migration SQL files**:
-   - `supabase/migrations/001_initial_schema.sql` - All table definitions
-   - `supabase/migrations/002_rls_policies.sql` - All RLS policies
-   - `supabase/migrations/003_functions_triggers.sql` - Helper functions and triggers
+1. **Local Supabase** — set up via the Supabase CLI. `supabase/config.toml`
+   uses port 55431 for the API (54321 collides with the Windows reserved range).
 
-3. **Write migration scripts**:
-   - `scripts/validate-firebase-data.ts` - **PRE-MIGRATION**: Check orphaned refs, circular deps, invalid data
-   - `scripts/firebase-export.ts` - Export Firebase data to JSON
-   - `scripts/transform-and-migrate.ts` - Transform and load into PostgreSQL
-   - `scripts/migrate-storage.ts` - Migrate files from Firebase Storage to Supabase Storage
-   - `scripts/validate-migration.ts` - **POST-MIGRATION**: Compare data integrity
+2. **Schema** — `001_initial_schema.sql`, `002_rls_policies.sql`,
+   `003_storage_buckets.sql`. Nine follow-up migrations (`004`–`012`) corrected
+   access policies, added `rules.metadata`, set `document_access` replica
+   identity and populated the realtime publication; all nine were later squashed
+   back into `001`–`003`, verified by diffing two databases built from the old
+   and new files.
 
-4. **Update Angular dependencies**:
-   ```bash
-   # Install Supabase
-   npm install @supabase/supabase-js
+3. **Migration scripts** — all five written and used. `run-migrations.sh`
+   orchestrates them on the server; `deploy.sh` is the build-from-source
+   equivalent and is not part of the packaged deploy.
 
-   # Remove Firebase packages (AFTER migration is complete and validated)
-   npm uninstall @angular/fire firebase
-   npm uninstall firebase-admin  # Dev dependency for migration scripts
-   ```
+4. **Dependencies** — `@supabase/supabase-js` added; `@angular/fire` and
+   `firebase` removed. `firebase-admin` is retained as a devDependency because
+   `firebase-export.ts` still needs it to re-pull from Firestore.
 
-5. **Update Angular services**:
-   - Create Supabase client provider in CoreModule
-   - Rewrite ApiService for Supabase
-   - Rewrite AuthService for Supabase Auth
-   - Rewrite StorageService for Supabase Storage
-   - Update all feature services
+5. **Services** — Supabase client provider, `ApiService`, `AuthService`,
+   `StorageService` and every feature service rewritten. `RealtimeService`
+   replaced Firestore's `snapshotChanges()`.
 
-6. **Remove Firebase configuration**:
-   - Delete `environment.tenantData[tenant].firebase` config objects
-   - Remove Firebase initialization code from CoreModule
-   - Delete any remaining Firebase imports
+6. **Firebase configuration removed** — `AngularFireModule` initialization out
+   of `CoreModule`, `firebase` blocks out of both environment files, Firebase
+   type imports out of the `*DB` models.
 
-7. **Test incrementally**:
-   - Start with one feature module (e.g., projects - simpler than people)
-   - Test locally against Supabase
-   - Verify all CRUD operations work
-   - Verify file uploads/downloads work
-   - Gradually validate all features
+7. **Deployment** — Docker image + separately managed Supabase stack, deployed
+   through Portainer. Firebase Hosting is no longer used.
 
-8. **Final cleanup**:
-   - Remove Firebase service account JSON files
-   - Delete Firebase-related environment variables
-   - Update documentation to remove Firebase references
-   - Archive Firebase export data for backup
+### What the plan did not anticipate
+
+- **Capability writes.** `EditCapabilityComponent` kept Firestore semantics
+  (mutating a `Record<id, value>` map and using `deleteField()`) long after the
+  tables were normalized, so adding or removing a skill failed with
+  `PGRST204: Could not find the 'skills' column of 'people'`. Capabilities are
+  rows in junction tables and need their own writes.
+- **Realtime on junction tables.** A write to `person_skills` changes no
+  `people` row, so it produces no event on the watched table. Such tables need
+  both publication membership and a `triggerTables` entry.
+- **Credential matching.** `transform-and-migrate.ts` derived account emails as
+  `slugify(name)@{tenant}.local` and then looked up supplied passwords *by that
+  derived address*, which never matched a file of real addresses. Matching is
+  by name.
+- **Line endings.** A Windows checkout with `core.autocrlf=true` shipped CRLF
+  into the containers, where dash rejects `set -e`. Fixed by `.gitattributes`.
 
 ## Infrastructure Considerations
 
@@ -2275,6 +2313,13 @@ describe('PeopleService', () => {
 ```
 
 ### Security Checklist
+
+> **Mostly done.** RLS is enabled on all 39 tables, storage bucket policies are
+> in `003_storage_buckets.sql`, keys were generated fresh for the self-hosted
+> stack (`scripts/generate-supabase-secrets.js`), all queries go through
+> PostgREST or parameterized `psql`, and the public origin is HTTPS behind the
+> reverse proxy. Still genuinely untested: the per-role policy verification in
+> the second and third items — the same gap as the Testing Checklist above.
 
 - [ ] All tables have RLS enabled
 - [ ] Auth policies tested for each role (observer, player, co_gm, gm)
