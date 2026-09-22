@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { deleteField } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import type { PopoverChild } from '../../../shared';
-import type { Capability, EditCapabilityProps, Liturgy, Skill, Spell } from '../../models';
+import type { EditCapabilityProps } from '../../models';
 import type { AddableRule } from '../../../rules';
 import { RulesService } from '../../../rules/services/rules.service';
 import { PeopleService } from '../../services/people.service';
@@ -71,14 +70,12 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
 
   delete() {
     const type = this.capabilityForm.get('type').value;
-    const person = {
-      [`${type}s`]: {
-        ...this.getSerializedCapabilities(),
-      },
-    };
-    (person[`${type}s`] as unknown)[this.props.capability.id] = deleteField();
 
-    this.peopleService.store(person, this.props.person.id).then(() => {
+    this.peopleService.deleteCapability(
+      this.props.person.id,
+      type,
+      this.props.capability.id,
+    ).then(() => {
       this.dismissPopover.emit(true);
     });
   }
@@ -125,14 +122,12 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
         break;
     }
 
-    const person = {
-      [`${this.selectedRule.type}s`]: {
-        ...this.getSerializedCapabilities(),
-        [this.selectedRule.id]: value,
-      }
-    };
-
-    this.peopleService.store(person, this.props.person.id).then(() => {
+    this.peopleService.storeCapability(
+      this.props.person.id,
+      this.selectedRule.type,
+      this.selectedRule.id,
+      value,
+    ).then(() => {
       this.dismissPopover.emit(true);
     });
   }
@@ -142,38 +137,6 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
     this.deleteDisabled = !this.deleteDisabled;
   }
 
-
-
-  private getSerializedCapabilities(): Record<string, Partial<Capability> | number> {
-    const type = this.capabilityForm.get('type').value;
-    if (!this.props.person[`${type}s`]) {
-      return {};
-    }
-    return this.props.person[`${type}s`].reduce((acc, capability: Capability) => {
-      const id = capability.id;
-      switch(type) {
-        case 'cantrip':
-          acc[id] = 0;
-          break;
-        case 'liturgy':
-          acc[id] = (capability as Liturgy).value;
-          break;
-        case 'spell':
-          acc[id] = (capability as Spell).value;
-          break;
-        case 'skill':
-          acc[id] = (capability as Skill).value;
-          break;
-        default:
-          const dataCopy = { ...capability };
-          delete dataCopy.name;
-          delete dataCopy.id;
-          acc[id] = dataCopy;
-          break;
-      }
-      return acc;
-    }, {} as Record<string, Partial<Capability> | number>);
-  }
 
 
   private updateFormControls(): void {

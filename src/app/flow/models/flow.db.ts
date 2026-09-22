@@ -1,8 +1,6 @@
-import type { Timestamp } from '@angular/fire/firestore';
-
 export interface FlowDB {
   access: string[];
-  date: Timestamp;
+  date: string;
   items: FlowItemDB[];
   owner: string;
   title?: string;

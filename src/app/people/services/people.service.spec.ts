@@ -101,6 +101,18 @@ describe('PeopleService', () => {
         'people',
         jasmine.any(Function),
         'people',
+        // Junction tables: a capability or attribute write changes no `people`
+        // row, so each must trigger the re-fetch itself.
+        [
+          'person_attributes',
+          'person_advantages',
+          'person_cantrips',
+          'person_disadvantages',
+          'person_feats',
+          'person_liturgies',
+          'person_skills',
+          'person_spells',
+        ],
       );
     });
 

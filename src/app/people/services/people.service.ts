@@ -27,6 +27,19 @@ export class PeopleService {
     partners: 'Partner',
     siblings: 'Geschwister',
   };
+  // Rule type -> junction table. Capabilities are rows in these tables, not
+  // columns on `people`, so they are written directly rather than through
+  // store(). Note liturgy maps to person_liturgies, while the Person field is
+  // `liturgys`.
+  private static readonly capabilityTables: Record<string, string> = {
+    advantage: 'person_advantages',
+    cantrip: 'person_cantrips',
+    disadvantage: 'person_disadvantages',
+    feat: 'person_feats',
+    liturgy: 'person_liturgies',
+    skill: 'person_skills',
+    spell: 'person_spells',
+  };
   private people$: BehaviorSubject<Person[]>;
 
   constructor(
@@ -172,6 +185,52 @@ export class PeopleService {
   }
 
 
+  /**
+   * Add or update one capability (skill, spell, advantage, ...) on a person.
+   *
+   * `value` is a number for the valued types (skill, spell, liturgy, cantrip)
+   * and a { level, details } object for the descriptive ones (advantage,
+   * disadvantage, feat).
+   */
+  async storeCapability(
+    personId: string,
+    type: string,
+    ruleId: string,
+    value: number | { details?: string; level?: string },
+  ): Promise<boolean> {
+    const table = PeopleService.capabilityTables[type];
+    if (!table) {
+      return false;
+    }
+
+    const row: Record<string, any> = { person_id: personId, rule_id: ruleId };
+    if (typeof value === 'number') {
+      row['value'] = value;
+    } else {
+      row['details'] = value?.details ?? null;
+      row['level'] = value?.level ?? null;
+    }
+
+    const { error } = await this.api.from(table as any)
+      .upsert(row, { onConflict: 'person_id,rule_id' });
+    return !error;
+  }
+
+
+  async deleteCapability(personId: string, type: string, ruleId: string): Promise<boolean> {
+    const table = PeopleService.capabilityTables[type];
+    if (!table) {
+      return false;
+    }
+
+    const { error } = await this.api.from(table as any)
+      .delete()
+      .eq('person_id', personId)
+      .eq('rule_id', ruleId);
+    return !error;
+  }
+
+
   getPeople(): Observable<Person[]> {
     if (!this.people$) {
       this.people$ = new BehaviorSubject<Person[]>([]);
@@ -191,7 +250,19 @@ export class PeopleService {
           person_relationships!person_id(related_person_id, relationship_type)
         `),
         'people',
-        ['person_attributes'],
+        // Capabilities and attributes live in junction tables, so a change to
+        // one does not touch the `people` row that is being watched. Without
+        // these, adding or removing a skill only shows up after a reload.
+        [
+          'person_attributes',
+          'person_advantages',
+          'person_cantrips',
+          'person_disadvantages',
+          'person_feats',
+          'person_liturgies',
+          'person_skills',
+          'person_spells',
+        ],
       ).pipe(
         withLatestFrom(this.place.getPlaces().pipe(
           map((places) => places.reduce((all, p) => {
