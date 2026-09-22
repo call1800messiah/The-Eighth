@@ -1,0 +1,43 @@
+# Line endings: LF everywhere, on every platform.
+#
+# `text=auto` alone is not enough. It stores LF in the index, but on Windows
+# with core.autocrlf=true (the default) it still checks out CRLF. The working
+# tree is what gets deployed - scripts/package-for-deploy.* tars it verbatim -
+# so CRLF reaches the Linux server, where /bin/sh reads the trailing carriage
+# return as part of the command and `set -e` dies with "set: Illegal option -".
+#
+# `eol=lf` pins the working tree too, so the checkout matches the index
+# regardless of the developer's core.autocrlf setting.
+
+* text=auto eol=lf
+
+# Shell scripts are called out explicitly: they are bind-mounted into Linux
+# containers and executed by dash, which is the case that breaks loudest.
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+*.dockerfile    text eol=lf
+
+# Binary files: never normalized, never diffed as text.
+*.ico           binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.webp          binary
+*.avif          binary
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.otf           binary
+*.eot           binary
+*.pdf           binary
+*.zip           binary
+*.gz            binary
+*.tgz           binary
+*.tar           binary
+*.7z            binary
+*.mp3           binary
+*.mp4           binary
+*.webm          binary
+*.wasm          binary
+*.keystore      binary
