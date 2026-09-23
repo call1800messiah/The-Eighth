@@ -146,7 +146,7 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
       return null;
     }).filter(item => item !== null);
 
-    // Add all items in a single Firebase write
+    // Add all items in a single write
     await this.flowService.addItems(this.props.flowId, itemsToAdd);
     this.dismissPopover.emit(true);
   }

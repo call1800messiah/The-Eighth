@@ -107,7 +107,7 @@ export class FlowViewComponent implements OnInit, OnDestroy {
     const items = [...(event.container.data || [])];
     moveItemInArray(items, event.previousIndex, event.currentIndex);
 
-    // Update order in Firestore
+    // Persist the new order
     this.flowService.reorderItems(this.flowId, items).then(success => {
       if (!success) {
         console.error('Failed to reorder items');
