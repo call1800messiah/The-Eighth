@@ -33,10 +33,10 @@ ng test --watch=false --browsers=ChromeHeadless
 npx tsc --noEmit -p tsconfig.app.json
 ```
 
-`ng lint` does **not** work: `angular.json` still points at the
-`@angular-devkit/build-angular:tslint` builder, which no longer exists, and
-neither tslint nor eslint is installed. Migrating to `@angular-eslint` is
-outstanding; until then use `tsc --noEmit` as the static check.
+There is no linter: the old tslint target has been removed and eslint is not
+installed. Migrating to `@angular-eslint` is outstanding; until then use
+`tsc --noEmit` as the static check. There are no e2e tests either (Protractor
+was removed).
 
 ### Database
 ```bash
