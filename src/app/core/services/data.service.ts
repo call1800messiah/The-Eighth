@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -39,12 +39,10 @@ const COLLECTION_TO_ENTITY_TYPE: Record<string, string> = {
   providedIn: 'root'
 })
 export class DataService {
+  private api = inject(ApiService);
+  private auth = inject(AuthService);
+  private realtime = inject(RealtimeService);
 
-  constructor(
-    private api: ApiService,
-    private auth: AuthService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 

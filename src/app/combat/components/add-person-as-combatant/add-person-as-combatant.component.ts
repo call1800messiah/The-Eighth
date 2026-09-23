@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { Person } from '../../../people/models/person';
@@ -14,14 +14,12 @@ import { CombatService } from '../../services/combat.service';
   standalone: false
 })
 export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
+  private combat = inject(CombatService);
+
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   people: Person[];
   selected: {[id: number]: boolean};
-
-  constructor(
-    private combat: CombatService,
-  ) { }
 
   ngOnInit(): void {
     this.people = this.props.people;

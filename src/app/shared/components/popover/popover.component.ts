@@ -1,4 +1,4 @@
-import { Component, OnInit, Type, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Type, ViewChild, ViewContainerRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
@@ -15,15 +15,15 @@ import { PopoverService } from '../../../core/services/popover.service';
   standalone: false
 })
 export class PopoverComponent implements OnInit {
+  private popover = inject(PopoverService);
+
   faArrowLeft = faArrowLeft;
   pageLabel$: Observable<string>;
   visible$: Observable<boolean>;
   @ViewChild('popoverHost', { read: ViewContainerRef }) appPopoverHost: ViewContainerRef;
   private componentRef;
 
-  constructor(
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.visible$ = this.popover.isPopoverVisible$;
     this.pageLabel$ = this.popover.popoverTitle$;
   }

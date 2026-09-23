@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer2, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import type { Bar } from '../../models';
 
@@ -12,14 +12,12 @@ import type { Bar } from '../../models';
   standalone: false
 })
 export class BarComponent implements OnInit {
+  private renderer = inject(Renderer2);
+
   @Input() bar: Bar;
   @Output() barClicked = new EventEmitter();
   @ViewChild('barElement', {static: true}) barElement: ElementRef;
   @ViewChild('extraBar', {static: true}) extraBar: ElementRef;
-
-  constructor(
-    private renderer: Renderer2,
-  ) { }
 
   ngOnInit(): void {
     this.renderer.setStyle(

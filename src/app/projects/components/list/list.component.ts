@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -19,16 +19,16 @@ import { EditProjectComponent } from '../edit-project/edit-project.component';
   standalone: false
 })
 export class ListComponent implements OnInit {
+  private projectsService = inject(ProjectService);
+  private popover = inject(PopoverService);
+
   filteredProjects$: Observable<Project[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
   showCompleted: UntypedFormControl;
 
-  constructor(
-    private projectsService: ProjectService,
-    private popover: PopoverService
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('projects-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.showCompleted = new UntypedFormControl(false);

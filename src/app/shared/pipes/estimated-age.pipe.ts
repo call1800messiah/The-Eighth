@@ -1,4 +1,4 @@
-import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
+import { OnDestroy, Pipe, PipeTransform, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CampaignService } from '../../overview/services/campaign.service';
@@ -11,12 +11,12 @@ import { CampaignService } from '../../overview/services/campaign.service';
   standalone: false
 })
 export class EstimatedAgePipe implements PipeTransform, OnDestroy {
+  private campaignService = inject(CampaignService);
+
   private subscription = new Subscription();
   private date: number;
 
-  constructor(
-    private campaignService: CampaignService
-  ) {
+  constructor() {
     this.subscription.add(
       this.campaignService.getCampaignInfo().subscribe((data) => {
         if (data?.date) {

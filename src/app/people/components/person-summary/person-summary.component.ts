@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import type { Person } from '../../models/person';
@@ -15,15 +15,15 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class PersonSummaryComponent implements OnInit {
+  private authService = inject(AuthService);
+
   @Input() person: Person;
   @Input() showAsList = false;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
   user: AuthUser;
 
-  constructor(
-    private authService: AuthService,
-  ) {
+  constructor() {
     this.user = this.authService.user;
   }
 

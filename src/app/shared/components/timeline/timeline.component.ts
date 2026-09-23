@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,14 +18,12 @@ import { HistoricEvent } from '../../../overview/models/historic-event';
   standalone: false
 })
 export class TimelineComponent implements OnInit {
+  private popover = inject(PopoverService);
+  private timelineService = inject(TimelineService);
+
   @Input() timelineId: string;
   timeline$: Observable<Timeline>;
   faPlus = faPlus;
-
-  constructor(
-    private popover: PopoverService,
-    private timelineService: TimelineService,
-  ) {}
 
   ngOnInit(): void {
     this.timeline$ = this.timelineService.getTimeline(this.timelineId);

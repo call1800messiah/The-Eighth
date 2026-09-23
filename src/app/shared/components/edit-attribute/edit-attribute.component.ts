@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { combineLatest, from, Subscription } from 'rxjs';
 
@@ -17,6 +17,10 @@ import { RulesService } from '../../../rules/services/rules.service';
   standalone: false
 })
 export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
+  private combatService = inject(CombatService);
+  private peopleService = inject(PeopleService);
+  private rulesService = inject(RulesService);
+
   @Input() props: EditAttributeProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   allowedAttributes: Record<string, string>;
@@ -27,12 +31,6 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
   });
   deleteDisabled = true;
   subscription = new Subscription();
-
-  constructor(
-    private combatService: CombatService,
-    private peopleService: PeopleService,
-    private rulesService: RulesService,
-  ) {}
 
   ngOnInit(): void {
     this.subscription.add(combineLatest([

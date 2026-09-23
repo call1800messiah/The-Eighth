@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,13 +12,11 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class CampaignService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'campaign';
   private campaignInfo$: Observable<CampaignData | null>;
-
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 

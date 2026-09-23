@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faBars, faCommentAlt, faDice, faMusic, faPerson } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
@@ -17,6 +17,9 @@ import { ConfigService } from '../../services/config.service';
   standalone: false
 })
 export class FooterComponent implements OnInit {
+  private config = inject(ConfigService);
+  private nav = inject(NavigationService);
+
   audioVisible = false;
   diceVisible = false;
   faBars = faBars;
@@ -29,10 +32,7 @@ export class FooterComponent implements OnInit {
   navigation: NavEntry[];
   navVisible$: Observable<boolean>;
 
-  constructor(
-    private config: ConfigService,
-    private nav: NavigationService,
-  ) {
+  constructor() {
     this.navVisible$ = this.nav.navVisible$;
     this.navigation = this.nav.getNavigation();
   }

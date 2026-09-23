@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -20,6 +20,12 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class FlowListComponent implements OnInit {
+  private auth = inject(AuthService);
+  private flowService = inject(FlowService);
+  private popover = inject(PopoverService);
+  private navigation = inject(NavigationService);
+  private router = inject(Router);
+
   faPlus = faPlus;
   faCalendar = faCalendar;
 
@@ -29,13 +35,7 @@ export class FlowListComponent implements OnInit {
   initialFilterText: string;
   user: AuthUser;
 
-  constructor(
-    private auth: AuthService,
-    private flowService: FlowService,
-    private popover: PopoverService,
-    private navigation: NavigationService,
-    private router: Router,
-  ) {
+  constructor() {
     // Load filter from localStorage
     this.initialFilterText = localStorage.getItem('flows-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -11,9 +11,8 @@ type TableName = keyof Database['public']['Tables'];
   providedIn: 'root'
 })
 export class ApiService {
-  constructor(
-    @Inject(SUPABASE_CLIENT) private supabase: SupabaseClient<Database>,
-  ) {}
+  private supabase = inject<SupabaseClient<Database>>(SUPABASE_CLIENT);
+
 
 
   from<T extends TableName>(table: T) {

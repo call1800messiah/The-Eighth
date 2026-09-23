@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
@@ -20,6 +20,10 @@ import { UtilService } from '../../../core/services/util.service';
   standalone: false
 })
 export class AttributesComponent implements OnInit {
+  private dice = inject(DiceRollerService);
+  private popover = inject(PopoverService);
+  private rulesService = inject(RulesService);
+
   @Input() attributeValues$: Observable<Attribute[]>;
   @Input() canEdit: boolean;
   @Input() personId: string;
@@ -27,11 +31,7 @@ export class AttributesComponent implements OnInit {
   allowedAttributes$: Observable<AllowedAttribute[]>;
   attributes$: Observable<Attribute[]>;
 
-  constructor(
-    private dice: DiceRollerService,
-    private popover: PopoverService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes),
       tap((allowedAttributes) => {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -14,15 +14,15 @@ import { UserService } from './user.service';
   providedIn: 'root'
 })
 export class AuthService {
+  private api = inject(ApiService);
+  private router = inject(Router);
+  private userService = inject(UserService);
+
   redirectUrl = '/';
   user$: BehaviorSubject<AuthUser>;
   user: AuthUser;
 
-  constructor(
-    private api: ApiService,
-    private router: Router,
-    private userService: UserService,
-  ) {
+  constructor() {
     this.user$ = new BehaviorSubject<AuthUser>(null);
 
     combineLatest([

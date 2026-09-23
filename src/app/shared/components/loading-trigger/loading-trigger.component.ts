@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 
 @Component({
   selector: 'app-loading-trigger',
@@ -8,12 +8,12 @@ import { Component, ElementRef, EventEmitter, OnDestroy, Output, ChangeDetection
   standalone: false
 })
 export class LoadingTriggerComponent implements OnDestroy {
+  private ref = inject<ElementRef<Element>>(ElementRef);
+
   @Output() onVisible = new EventEmitter<boolean>();
   private observer: IntersectionObserver;
 
-  constructor(
-    private ref: ElementRef<Element>,
-  ) {
+  constructor() {
     this.observer = new IntersectionObserver((entries, observer) => {
       if (entries[0].isIntersecting === true) {
         this.onVisible.emit(true);

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -19,6 +19,9 @@ import { UtilService } from '../../../core/services/util.service';
   standalone: false
 })
 export class BarAttributesComponent implements OnInit {
+  private popover = inject(PopoverService);
+  private rulesService = inject(RulesService);
+
   @Input() attributeValues$: Observable<Attribute[]>;
   @Input() canEdit: boolean;
   @Input() altCollection: null | string;
@@ -26,10 +29,7 @@ export class BarAttributesComponent implements OnInit {
   allowedAttributes$: Observable<AllowedAttribute[]>;
   attributes$: Observable<Attribute[]>;
 
-  constructor(
-    private popover: PopoverService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes)
     );

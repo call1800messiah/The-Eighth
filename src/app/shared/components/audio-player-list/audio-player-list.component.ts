@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { faGuitar } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,12 +14,10 @@ import { StorageService } from '../../../core/services/storage.service';
   standalone: false
 })
 export class AudioPlayerListComponent implements OnInit {
+  private storage = inject(StorageService);
+
   faGuitar = faGuitar;
   audioFiles: string[] = [];
-
-  constructor(
-    private storage: StorageService,
-  ) {}
 
   async ngOnInit(): Promise<void> {
     const files = await this.storage.listFiles('audio');

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +18,9 @@ import { EditQuestComponent } from '../edit-quest/edit-quest.component';
   standalone: false
 })
 export class QuestListComponent implements OnInit {
+  private questsService = inject(QuestsService);
+  private popover = inject(PopoverService);
+
   faPlus = faPlus;
   showCompleted: boolean;
   filteredQuests$: Observable<Quest[]>;
@@ -25,10 +28,7 @@ export class QuestListComponent implements OnInit {
   initialFilterText: string;
   quests$: Observable<Quest[]>;
 
-  constructor(
-    private questsService: QuestsService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.showCompleted = JSON.parse(localStorage.getItem('quests-showCompleted')) || false;
     this.initialFilterText = localStorage.getItem('quests-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { from, Observable, of, Subscription } from 'rxjs';
@@ -40,6 +40,14 @@ import { EditCapabilityComponent } from '../edit-capability/edit-capability.comp
   standalone: false
 })
 export class PersonComponent implements OnInit, OnDestroy {
+  private auth = inject(AuthService);
+  private data = inject(DataService);
+  private navigation = inject(NavigationService);
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+  private route = inject(ActivatedRoute);
+  private util = inject(UtilService);
+
   @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
@@ -93,15 +101,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   user: AuthUser;
   private personSub: Subscription;
 
-  constructor(
-    private auth: AuthService,
-    private data: DataService,
-    private navigation: NavigationService,
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-    private route: ActivatedRoute,
-    private util: UtilService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

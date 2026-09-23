@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faTrophy, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
@@ -19,16 +19,16 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class AchievementComponent implements OnInit, OnDestroy {
+  private auth = inject(AuthService);
+  private popover = inject(PopoverService);
+
   @Input() achievement: Achievement;
   faTrophy = faTrophy;
   faUnlock = faUnlock;
   private readonly user: AuthUser;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

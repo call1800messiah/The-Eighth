@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, withLatestFrom } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
@@ -20,6 +20,13 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class PeopleService {
+  private api = inject(ApiService);
+  private data = inject(DataService);
+  private place = inject(PlaceService);
+  private realtime = inject(RealtimeService);
+  private rules = inject(RulesService);
+  private storage = inject(StorageService);
+
   static readonly collection = 'people';
   static readonly relativeTypes = {
     children: 'Kinder',
@@ -41,15 +48,6 @@ export class PeopleService {
     spell: 'person_spells',
   };
   private people$: BehaviorSubject<Person[]>;
-
-  constructor(
-    private api: ApiService,
-    private data: DataService,
-    private place: PlaceService,
-    private realtime: RealtimeService,
-    private rules: RulesService,
-    private storage: StorageService,
-  ) {}
 
 
 

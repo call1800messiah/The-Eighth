@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import type { PopoverChild } from '../../models/popover-child';
 import type { User } from '../../../core/models/user';
@@ -18,16 +18,16 @@ import { getEntityType } from '../../utils/entity-type';
   standalone: false
 })
 export class EditAccessComponent implements OnInit, PopoverChild {
+  private api = inject(ApiService);
+  private realtime = inject(RealtimeService);
+  private userService = inject(UserService);
+
   @Input() props: EditAccessProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   selected: {[id: string]: boolean};
   users: User[];
 
-  constructor(
-    private api: ApiService,
-    private realtime: RealtimeService,
-    private userService: UserService,
-  ) {
+  constructor() {
     this.userService.getUsers().subscribe(users => {
       this.users = users;
     });

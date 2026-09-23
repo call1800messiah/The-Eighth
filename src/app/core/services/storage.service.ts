@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import type { FileUpdateRef } from '../models/file-update-ref';
@@ -9,11 +9,9 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class StorageService {
-  private bucket = environment.tenant;
+  private api = inject(ApiService);
 
-  constructor(
-    private api: ApiService,
-  ) {}
+  private bucket = environment.tenant;
 
 
 

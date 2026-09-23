@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -13,6 +13,9 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class QuestsService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'quests';
   static questTypes = {
     main: 'Hauptqueste',
@@ -21,11 +24,6 @@ export class QuestsService {
     task: 'Aufgabe',
   };
   private quests$: BehaviorSubject<Quest[]>;
-
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 

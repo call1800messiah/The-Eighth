@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -21,17 +21,17 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class ListComponent implements OnInit {
+  private achievementService = inject(AchievementService);
+  private auth = inject(AuthService);
+  private popover = inject(PopoverService);
+
   filteredAchievements$: Observable<Achievement[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
   user: AuthUser;
 
-  constructor(
-    private achievementService: AchievementService,
-    private auth: AuthService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
     this.initialFilterText = localStorage.getItem('achievements-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);

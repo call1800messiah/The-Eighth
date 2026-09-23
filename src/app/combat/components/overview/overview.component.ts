@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { faList, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -23,6 +23,11 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class OverviewComponent implements OnInit {
+  private auth = inject(AuthService);
+  private combatService = inject(CombatService);
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+
   combatants$: Observable<Combatant[]>;
   displayAsBox: boolean;
   faList = faList;
@@ -33,12 +38,7 @@ export class OverviewComponent implements OnInit {
   user: AuthUser;
   showAsList = false;
 
-  constructor(
-    private auth: AuthService,
-    private combatService: CombatService,
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.combatants$ = this.combatService.getCombatants();
     this.displayAsBox = environment.tenant === 'tde5';
     this.showAsList = localStorage.getItem('combat-show-as-list') === 'true';

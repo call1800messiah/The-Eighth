@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faMale } from '@fortawesome/free-solid-svg-icons';
 import { DiceRollerService } from '../../services/dice-roller.service';
 import { RulesService } from '../../../rules/services/rules.service';
@@ -12,15 +12,15 @@ import { Die } from '../../enums/die.enum';
   standalone: false
 })
 export class HitLocationDieComponent implements OnInit {
+  private dice = inject(DiceRollerService);
+  private rulesService = inject(RulesService);
+
   faMale = faMale;
   currentNumber: number;
   hit = '';
   locations: Record<string, string>;
 
-  constructor(
-    private dice: DiceRollerService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.rulesService.getRulesConfig().then((rules) => {
       this.locations = rules.hitLocations;
     });

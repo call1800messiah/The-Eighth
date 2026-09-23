@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -21,6 +21,10 @@ import { PeopleService } from '../../../people/services/people.service';
   standalone: false
 })
 export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild {
+  private achievementService = inject(AchievementService);
+  private auth = inject(AuthService);
+  private peopleService = inject(PeopleService);
+
   @Input() props: Achievement;
   @Output() dismissPopover = new EventEmitter<boolean>();
   achievementForm = new UntypedFormGroup({
@@ -33,11 +37,7 @@ export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild
   playerCharacter$: Observable<Person[]>;
   private subscription = new Subscription();
 
-  constructor(
-    private achievementService: AchievementService,
-    private auth: AuthService,
-    private peopleService: PeopleService,
-  ) {
+  constructor() {
     this.playerCharacter$ = this.peopleService.getPeople().pipe(
       map((people) => people.filter((person) => person.pc))
     );

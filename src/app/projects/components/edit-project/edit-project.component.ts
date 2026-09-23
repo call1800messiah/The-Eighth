@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +20,9 @@ import { ConfigService } from '../../../core/services/config.service';
   standalone: false
 })
 export class EditProjectComponent implements OnInit, OnDestroy {
+  private projectService = inject(ProjectService);
+  private auth = inject(AuthService);
+
   @Input() props: Project;
   @Output() dismissPopover = new EventEmitter<boolean>();
   faMinus = faMinus;
@@ -35,10 +38,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private projectService: ProjectService,
-    private auth: AuthService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;

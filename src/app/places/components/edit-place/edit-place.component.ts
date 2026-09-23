@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
@@ -18,6 +18,9 @@ import { PlaceService } from '../../services/place.service';
   standalone: false
 })
 export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
+  private placeService = inject(PlaceService);
+  private auth = inject(AuthService);
+
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -36,10 +39,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private placeService: PlaceService,
-    private auth: AuthService,
-  ) {
+  constructor() {
     this.places$ = this.placeService.getPlaces();
     this.subscription.add(
       this.auth.user$.subscribe((user) => {

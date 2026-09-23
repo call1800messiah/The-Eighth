@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -19,6 +19,9 @@ import { PeopleService } from '../../services/people.service';
   standalone: false
 })
 export class EditCapabilityComponent implements OnInit, PopoverChild {
+  private peopleService = inject(PeopleService);
+  private rulesService = inject(RulesService);
+
   @Input() props: EditCapabilityProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   addableRuleTypes: Record<string, Record<string, string>>;
@@ -32,10 +35,7 @@ export class EditCapabilityComponent implements OnInit, PopoverChild {
   selectedType$ = new BehaviorSubject<string>('');
   selectedRule: AddableRule;
 
-  constructor(
-    private peopleService: PeopleService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.rulesService.getRulesConfig().then((rulesConfig) => {
       this.addableRuleTypes = rulesConfig.addableRuleTypes;
     });

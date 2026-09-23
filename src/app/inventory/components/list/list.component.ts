@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -18,15 +18,15 @@ import { EditItemComponent } from '../edit-item/edit-item.component';
   standalone: false
 })
 export class ListComponent implements OnInit {
+  private inventory = inject(InventoryService);
+  private popover = inject(PopoverService);
+
   faPlus = faPlus;
   filteredItems$: Observable<InventoryItem[]>;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
 
-  constructor(
-    private inventory: InventoryService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('inventory-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredItems$ = combineLatest([

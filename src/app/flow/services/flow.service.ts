@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
@@ -23,19 +23,17 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class FlowService {
+  private api = inject(ApiService);
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+  private quests = inject(QuestsService);
+  private people = inject(PeopleService);
+  private places = inject(PlaceService);
+  private notes = inject(NotesService);
+
   static readonly collection = 'flows';
   static readonly itemsCollection = 'flow_items';
   private flows$: BehaviorSubject<Flow[]>;
-
-  constructor(
-    private api: ApiService,
-    private data: DataService,
-    private realtime: RealtimeService,
-    private quests: QuestsService,
-    private people: PeopleService,
-    private places: PlaceService,
-    private notes: NotesService
-  ) {}
 
 
   getFlows(): Observable<Flow[]> {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
@@ -17,18 +17,18 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root',
 })
 export class CombatService {
+  private api = inject(ApiService);
+  private peopleService = inject(PeopleService);
+  private realtime = inject(RealtimeService);
+  private rulesService = inject(RulesService);
+
   static readonly collection = 'combatants';
   static readonly combatCollection = 'combatants';
   private combatants$: Observable<Combatant[]>;
   private activeSessionId: string;
   private rules: Rules;
 
-  constructor(
-    private api: ApiService,
-    private peopleService: PeopleService,
-    private realtime: RealtimeService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -17,6 +17,9 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private dataService = inject(DataService);
+
   @Input() props: EditInfoProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -28,10 +31,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private dataService: DataService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;

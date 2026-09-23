@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,13 +14,11 @@ import { Person } from '../../../people/models/person';
   standalone: false
 })
 export class AvatarComponent implements OnInit {
+  private router = inject(Router);
+
   @Input() person: Person;
   @Input() priority?: boolean;
   faUser = faUser;
-
-  constructor(
-    private router: Router,
-  ) { }
 
   ngOnInit(): void {
   }

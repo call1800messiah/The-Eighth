@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 
 import type { PopoverChild } from '../../models/popover-child';
@@ -16,6 +16,9 @@ import { StorageService } from '../../../core/services/storage.service';
   standalone: false
 })
 export class EditImageComponent implements OnInit, PopoverChild {
+  private storage = inject(StorageService);
+  private util = inject(UtilService);
+
   @Input() props: EditImageProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   @ViewChild('cropper') cropper: ImageCropperComponent;
@@ -24,10 +27,7 @@ export class EditImageComponent implements OnInit, PopoverChild {
   deleteDisabled = true;
   imageName: string;
 
-  constructor(
-    private storage: StorageService,
-    private util: UtilService,
-  ) {
+  constructor() {
     this.cropperSettings = new CropperSettings();
     this.cropperSettings.dynamicSizing = true;
     this.cropperSettings.noFileInput = true;

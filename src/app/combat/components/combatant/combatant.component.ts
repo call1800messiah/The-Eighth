@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faDizzy, faUserNinja } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
@@ -21,6 +21,9 @@ import { CombatService } from '../../services/combat.service';
   standalone: false
 })
 export class CombatantComponent {
+  private auth = inject(AuthService);
+  private popover = inject(PopoverService);
+
   @Input() combatant: Combatant;
   @Input() showAsList: boolean;
   displayAsBox: boolean;
@@ -28,10 +31,7 @@ export class CombatantComponent {
   faUserNinja = faUserNinja;
   private readonly user: AuthUser;
 
-  constructor(
-    private auth: AuthService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.displayAsBox = environment.tenant === 'tde5';
     this.user = this.auth.user;
   }

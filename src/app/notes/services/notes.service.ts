@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,13 +14,11 @@ import { InfoType } from '../../core/enums/info-type.enum';
   providedIn: 'root'
 })
 export class NotesService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'notes';
   private notes$: BehaviorSubject<Note[]>;
-
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 

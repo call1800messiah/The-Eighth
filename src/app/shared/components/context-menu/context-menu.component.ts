@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import type { Menu } from '../../models/menu';
 import type { MenuAction } from '../../models/menu-action';
@@ -13,14 +13,14 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: false
 })
 export class ContextMenuComponent implements OnInit {
+  private auth = inject(AuthService);
+
   @Input() menu: Menu;
   @Input() owner: string;
   actions: MenuAction[];
   user: AuthUser;
 
-  constructor(
-    private auth: AuthService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

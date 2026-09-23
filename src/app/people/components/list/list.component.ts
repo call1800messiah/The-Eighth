@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faList, faPlus, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +18,9 @@ import { PeopleService } from '../../services/people.service';
   standalone: false
 })
 export class ListComponent implements OnInit {
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+
   faList = faList;
   faPlus = faPlus;
   faSkullCrossbones = faSkullCrossbones;
@@ -28,10 +31,7 @@ export class ListComponent implements OnInit {
   showDead = false;
   showDead$: BehaviorSubject<boolean>;
 
-  constructor(
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('people-filter') || '';
     this.showAsList = localStorage.getItem('people-show-as-list') === 'true';
     this.showDead = localStorage.getItem('people-show-dead') === 'true';

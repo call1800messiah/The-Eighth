@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import type { PopoverChild } from '../../models/popover-child';
@@ -13,16 +13,14 @@ import { DataService } from '../../../core/services/data.service';
   standalone: false
 })
 export class EditTagsComponent implements OnInit, PopoverChild {
+  private dataService = inject(DataService);
+
   @Output() dismissPopover = new EventEmitter<boolean>();
   @Input() props: EditTagsProps;
   faPlus = faPlus;
   faTrash = faTrash;
   newTag = '';
   tagsList: string[] = [];
-
-  constructor(
-    private dataService: DataService,
-  ) {}
 
   ngOnInit(): void {
     this.tagsList = [...this.props.tags];

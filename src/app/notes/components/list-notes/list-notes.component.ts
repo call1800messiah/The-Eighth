@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -18,15 +18,15 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
   standalone: false
 })
 export class ListNotesComponent {
+  private noteService = inject(NotesService);
+  private popover = inject(PopoverService);
+
   faPlus = faPlus;
   filteredNotes$: Observable<Record<string, Note[]>>;
   filterText$: BehaviorSubject<string>;
   initialFilterText: string;
 
-  constructor(
-    private noteService: NotesService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('notes-filter') || '';
     this.filterText$ = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredNotes$ = combineLatest([

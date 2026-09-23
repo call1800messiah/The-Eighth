@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, ComponentRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, ComponentRef, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faTimes, faChevronDown, faChevronRight, faGripVertical, faMeteor, faUsers, faCompass, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
 import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem, EnrichedNoteFlowItem } from '../../models';
@@ -17,6 +17,8 @@ import { AuthUser } from '../../../auth/models/auth-user';
   standalone: false
 })
 export class FlowItemComponent implements OnDestroy {
+  private auth = inject(AuthService);
+
   @Input() item: EnrichedFlowItem;
   @Input() dragEnabled: boolean = true;
   @Output() remove = new EventEmitter<string>();
@@ -35,9 +37,7 @@ export class FlowItemComponent implements OnDestroy {
   user: AuthUser;
   private componentRef: ComponentRef<any> | null = null;
 
-  constructor(
-    private auth: AuthService
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

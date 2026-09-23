@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -16,6 +16,10 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class RulesService {
+  private data = inject(DataService);
+  private http = inject(HttpClient);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'rules';
   static ruleTypes = {
     'advantage': {
@@ -54,12 +58,6 @@ export class RulesService {
   };
   private rulesConfig: Rules;
   private dynamicRules$: BehaviorSubject<AddableRule[]>;
-
-  constructor(
-    private data: DataService,
-    private http: HttpClient,
-    private realtime: RealtimeService,
-  ) {}
 
 
   getRulesConfig(): Promise<Rules> {
