@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 import type { Attribute, EditAttributeProps } from '../../models';
 import type { AllowedAttribute } from '../../../rules';
@@ -31,7 +30,7 @@ export class BarAttributesComponent implements OnInit {
     private popover: PopoverService,
     private rulesService: RulesService,
   ) {
-    this.allowedAttributes$ = fromPromise(this.rulesService.getRulesConfig()).pipe(
+    this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes)
     );
   }

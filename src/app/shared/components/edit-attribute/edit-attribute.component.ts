@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { combineLatest, from, Subscription } from 'rxjs';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 import type { Attribute, EditAttributeProps, PopoverChild } from '../../models';
 import { CombatService } from '../../../combat/services/combat.service';
@@ -37,7 +36,7 @@ export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
 
   ngOnInit(): void {
     this.subscription.add(combineLatest([
-      fromPromise(this.rulesService.getRulesConfig()),
+      from(this.rulesService.getRulesConfig()),
       this.props?.filterAttributes$ ? this.props.filterAttributes$ : from([]),
     ]).subscribe(([rules, filterAttributes]) => {
       this.allowedAttributes = rules.allowedAttributes

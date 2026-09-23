@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import type { Attribute, EditAttributeProps } from '../../../shared';
@@ -33,7 +32,7 @@ export class AttributesComponent implements OnInit {
     private popover: PopoverService,
     private rulesService: RulesService,
   ) {
-    this.allowedAttributes$ = fromPromise(this.rulesService.getRulesConfig()).pipe(
+    this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes),
       tap((allowedAttributes) => {
         this.allowedAttributes = allowedAttributes.reduce((acc, attribute) => {
