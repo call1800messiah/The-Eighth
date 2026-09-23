@@ -14,12 +14,16 @@ This guide defines UX patterns for consistent user experience across features.
 ### CSS Variables
 Use existing CSS variables for colors, spacing, animations as seen in `src/scss/tde5.scss` and `src/scss/the-eighth.scss`.
 
+* Padding/margin inside most elements: use spacing variable `--item-padding`.
+* Margins between elements: use spacing variable `--container-horizontal-padding`.
+* Use `--animation-time` for transition durations.
+
 ### Forms
 All forms should use the global CSS classes defined in src/scss/forms.scss for consistent styling.
 
 * Every form element (input, select, textarea, checkbox, radio) should be wrapped in a `.form-group` div for proper spacing and alignment.
 * Every input/select/textarea must have an associated `<label>` for accessibility. The label element always comes after the input element in the HTML structure.
-* Do not use additional styling on form elements unless absolutely necessary. Rely on the global styles.
+* DO NOT use additional styling on form elements unless absolutely necessary. Rely on the global styles.
 
 Examples:
 ```html
@@ -55,9 +59,18 @@ Examples:
 ### Filters
 Every filter should use the Top Bar Filter component defined in `src/app/shared/components/top-bar-filter/top-bar-filter.component.ts`.
 
+### Buttons
+All buttons should use the global button classes defined in `src/scss/styles.scss` for consistent styling.
+
+* DO NOT create custom button styles unless absolutely necessary. Rely on the global styles.
+* Use class `.btn` for any normal button. There is no distinction between primary/secondary buttons.
+* Use class `.btn-icon` for icon-only buttons.
+* Use class `.btn-text` for text-only buttons. These are typically used in table like lists where a 'cell' is clickable.
+
 ---
 
 ## Anti-Patterns (DON'T DO)
 
 ❌ **Inline styles** - Use SCSS files
 ❌ **Hardcoded colors** - Use CSS variables
+❌ **Fixed widths/heights** - Use relative units and flexbox/grid

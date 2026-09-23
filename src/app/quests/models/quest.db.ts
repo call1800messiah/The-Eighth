@@ -1,4 +1,3 @@
-import type { FieldValue } from '@angular/fire/firestore';
 import { QuestType } from './quest-type.enum';
 
 export interface QuestDB {
@@ -7,6 +6,6 @@ export interface QuestDB {
   description: string;
   name: string;
   owner: string;
-  parentId?: string | FieldValue;
+  parentId?: string | null;
   type: QuestType;
 }

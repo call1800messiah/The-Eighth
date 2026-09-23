@@ -1,0 +1,72 @@
+# Docker Compose for TheEighth (Angular app)
+#
+# Supabase runs as a separately-managed instance (its own docker stack) that
+# this app and any other services simply point at - it is not bundled here.
+#
+# Usage:
+#   1. cp docker/.env.example .env    (adjust values)
+#   2. docker compose up --build -d
+#   3. Open http://localhost (or APP_PORT)
+
+services:
+  # ── Angular App (nginx) ────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NG_APP_TENANT: ${NG_APP_TENANT:-the-eighth}
+        NG_APP_SUPABASE_URL: ${SUPABASE_URL:?SUPABASE_URL must be set}
+        NG_APP_SUPABASE_ANON_KEY: ${ANON_KEY:?ANON_KEY must be set}
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+
+  # ── Migration Services (on-demand via `docker compose run --rm <service>`) ──
+
+  migrate:
+    image: node:20-alpine
+    profiles: ["migration"]
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL:?SUPABASE_URL must be set}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:-}
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./data:/app/data
+      - ./src/assets:/app/src/assets:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+    working_dir: /app
+    entrypoint: ["sh", "-c", "npm ci --ignore-scripts && npx tsx scripts/transform-and-migrate.ts"]
+
+  migrate-storage:
+    image: node:20-alpine
+    profiles: ["migration"]
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL:?SUPABASE_URL must be set}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:-}
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./data/export:/app/data/export:ro
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+    working_dir: /app
+    entrypoint: ["sh", "-c", "npm ci --ignore-scripts && npx tsx scripts/migrate-storage.ts"]
+
+  migrate-validate:
+    image: node:20-alpine
+    profiles: ["migration"]
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL:?SUPABASE_URL must be set}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:-}
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./data/export:/app/data/export:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+    working_dir: /app
+    entrypoint: ["sh", "-c", "npm ci --ignore-scripts && npx tsx scripts/validate-migration.ts"]

@@ -51,7 +51,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
 
   delete() {
     if (this.props.info) {
-      this.dataService.delete(this.props.info.id, `${this.props.collection}/${this.props.parentId}/info`).then(() => {
+      this.dataService.deleteInfo(this.props.info.id).then(() => {
         this.dismissPopover.emit(true);
       });
     }
@@ -59,18 +59,12 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
-    let id: string;
-    const info: Info = {...this.infoForm.value};
-    if (this.props.info) {
-      id = this.props.info.id;
-      info.owner = this.props.info.owner;
-    } else {
-      info.created = new Date();
+    const info = { ...this.infoForm.value };
+    if (!this.props.info) {
       info.owner = this.userID;
     }
-    info.modified = new Date();
 
-    this.dataService.store(info, `${this.props.collection}/${this.props.parentId}/info`, id).then(() => {
+    this.dataService.storeInfo(info, this.props.collection, this.props.parentId, this.props.info?.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

@@ -5,6 +5,8 @@ import type { User } from '../../../core/models/user';
 import type { EditAccessProps } from '../../models/edit-access-props';
 import { UserService } from '../../../core/services/user.service';
 import { ApiService } from '../../../core/services/api.service';
+import { RealtimeService } from '../../../core/services/supabase-realtime.service';
+import { getEntityType } from '../../utils/entity-type';
 
 
 
@@ -21,6 +23,7 @@ export class EditAccessComponent implements OnInit, PopoverChild {
 
   constructor(
     private api: ApiService,
+    private realtime: RealtimeService,
     private userService: UserService,
   ) {
     this.userService.getUsers().subscribe(users => {
@@ -29,12 +32,18 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   }
 
   ngOnInit(): void {
-    this.api.getItemFromCollection(`${this.props.collection}/${this.props.documentId}`).subscribe((item: any) => {
-      this.selected = this.users.reduce((all, user) => {
-        all[user.id] = item.payload.data()?.access?.indexOf(user.id) !== -1;
-        return all;
-      }, {});
-    });
+    this.api.from('document_access' as any)
+      .select('user_id')
+      .eq('entity_type', getEntityType(this.props.collection))
+      .eq('entity_id', this.props.documentId)
+      .then(({ data, error }) => {
+        const accessUserIds = (data || []).map((row: any) => row.user_id);
+        this.selected = this.users.reduce((all, user) => {
+          // GMs and the owner always have access via RLS, not stored in document_access
+          all[user.id] = user.isGM || user.id === this.props.ownerId || accessUserIds.includes(user.id);
+          return all;
+        }, {});
+      });
   }
 
 
@@ -44,12 +53,32 @@ export class EditAccessComponent implements OnInit, PopoverChild {
   }
 
 
-  save() {
-    this.api.updateDocumentInCollection(this.props.documentId, this.props.collection, {
-      access: Object.entries(this.selected).filter(([, selected]) => selected).map(([id]) => id)
-    }).then(() => {
-      this.dismissPopover.emit(true);
-    });
+  async save() {
+    // Delete all existing access entries for this document
+    await this.api.from('document_access' as any)
+      .delete()
+      .eq('entity_type', getEntityType(this.props.collection))
+      .eq('entity_id', this.props.documentId);
+
+    // Insert new access entries (exclude GMs - they have access via RLS)
+    const gmIds = new Set(this.users.filter(u => u.isGM).map(u => u.id));
+    const selectedUserIds = Object.entries(this.selected)
+      .filter(([id, selected]) => selected && !gmIds.has(id) && id !== this.props.ownerId)
+      .map(([id]) => id);
+
+    if (selectedUserIds.length > 0) {
+      const rows = selectedUserIds.map(userId => ({
+        entity_type: getEntityType(this.props.collection),
+        entity_id: this.props.documentId,
+        user_id: userId,
+      }));
+      await this.api.from('document_access' as any).insert(rows);
+    }
+
+    // Broadcast so other clients (including users who lost access) re-fetch
+    this.realtime.broadcastAccessChange(getEntityType(this.props.collection));
+
+    this.dismissPopover.emit(true);
   }
 
 

@@ -1,50 +1,52 @@
-import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentReference, QueryFn } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import firebase from 'firebase/compat';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 
+import { SUPABASE_CLIENT } from '../providers/supabase.provider';
+import type { Database } from '../../../types/supabase';
 
+type TableName = keyof Database['public']['Tables'];
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   constructor(
-    private afs: AngularFirestore,
-    private afAuth: AngularFireAuth,
+    @Inject(SUPABASE_CLIENT) private supabase: SupabaseClient<Database>,
   ) {}
 
 
-  addDocumentToCollection(document: any, collection: string): Promise<DocumentReference> {
-    return this.afs.collection(collection).add(document);
+  from<T extends TableName>(table: T) {
+    return this.supabase.from(table);
   }
 
-  deleteDocumentFromCollection(documentId: string, collection: string): Promise<void> {
-    return this.afs.collection(collection).doc(documentId).delete();
+
+  getAuthState(): Observable<User | null> {
+    return new Observable(subscriber => {
+      this.supabase.auth.getSession().then(({ data }) => {
+        subscriber.next(data.session?.user ?? null);
+      });
+
+      const { data: { subscription } } = this.supabase.auth.onAuthStateChange((_event, session) => {
+        subscriber.next(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    });
   }
 
-  getAuthState(): Observable<firebase.User> {
-    return this.afAuth.authState;
-  }
-
-  getDataFromCollection(collection: string, queryFunction?: QueryFn<firebase.firestore.DocumentData>): Observable<any> {
-    return this.afs.collection(collection, queryFunction).snapshotChanges();
-  }
-
-  getItemFromCollection(path: string): Observable<any> {
-    return this.afs.doc(path).snapshotChanges();
-  }
 
   login(email: string, password: string) {
-    return this.afAuth.signInWithEmailAndPassword(email, password);
+    return this.supabase.auth.signInWithPassword({ email, password });
   }
+
 
   logout() {
-    return this.afAuth.signOut();
+    return this.supabase.auth.signOut();
   }
 
-  updateDocumentInCollection(documentID: string, collection: string, data: any) {
-    return this.afs.collection(collection).doc(documentID).set(data, { merge: true });
+
+  get storage() {
+    return this.supabase.storage;
   }
 }

@@ -1,0 +1,42 @@
+# Docker Compose for TheEighth — Portainer Stack Edition
+#
+# Supabase is deployed as its own Portainer stack from deploy/supabase/ - it
+# is not bundled here. This app's nginx reverse-proxies Supabase API calls
+# (/rest/v1/, /auth/v1/, /realtime/v1/, /storage/v1/) to that stack's Envoy
+# gateway over the supabase network below, so the browser only ever talks
+# to this app's own public origin (no public hostname/port needed for
+# Supabase at all - see docker/nginx.conf).
+#
+# NG_APP_SUPABASE_ANON_KEY is baked into the image at build time (see
+# scripts/package-for-deploy.*); NG_APP_SUPABASE_URL should be left UNSET so
+# environment.prod.ts falls back to window.location.origin (same-origin,
+# proxied by nginx as above). Neither is read at container runtime.
+#
+# One-time setup on the server, before either stack is created:
+#   docker network create supabase
+#
+# Workflow:
+#   1. On Windows:  powershell -File scripts/package-for-deploy.ps1
+#      On Linux:    bash scripts/package-for-deploy.sh
+#   2. Copy the-eighth-app.tar + the-eighth-deploy-*.tar to server
+#   3. On server:   docker load -i the-eighth-app.tar
+#   4. On server:   tar xf the-eighth-deploy-*.tar
+#   5. Create Portainer stack from this file
+#   6. On server:   bash scripts/run-migrations.sh
+#
+# Optional env vars:
+#   APP_PORT (default: 8082)
+
+services:
+  # ── Angular App (pre-built image) ─────────────────────────────────────────
+  app:
+    image: the-eighth-app:latest
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8082}:80"
+    networks:
+      - supabase
+
+networks:
+  supabase:
+    external: true

@@ -1,21 +1,23 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { CombatantMenuComponent } from './combatant-menu.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('CombatantMenuComponent', () => {
   let component: CombatantMenuComponent;
   let fixture: ComponentFixture<CombatantMenuComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CombatantMenuComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [CombatantMenuComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CombatantMenuComponent);
     component = fixture.componentInstance;
+    component.props = { combatantId: 'c1' } as any;
     fixture.detectChanges();
   });
 

@@ -7,7 +7,19 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "migrate:validate": "npx tsx scripts/validate-firebase-data.ts",
+    "migrate:export": "npx tsx scripts/firebase-export.ts",
+    "migrate:transform": "npx tsx scripts/transform-and-migrate.ts",
+    "migrate:storage": "npx tsx scripts/migrate-storage.ts",
+    "migrate:verify": "npx tsx scripts/validate-migration.ts",
+    "db:reset": "npx supabase db reset && npm run migrate:transform && npm run migrate:storage",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:save": "docker save the-eighth-app | gzip > the-eighth-app.tar.gz",
+    "deploy:package": "bash scripts/package-for-deploy.sh",
+    "deploy:run": "bash scripts/deploy.sh"
   },
   "private": true,
   "dependencies": {
@@ -16,7 +28,6 @@
     "@angular/common": "^18.2.10",
     "@angular/compiler": "^18.2.10",
     "@angular/core": "^18.2.10",
-    "@angular/fire": "^18.0.1",
     "@angular/forms": "^18.2.10",
     "@angular/platform-browser": "^18.2.10",
     "@angular/platform-browser-dynamic": "^18.2.10",
@@ -26,7 +37,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
-    "firebase": "^11.0.1",
+    "@supabase/supabase-js": "^2.90.1",
     "g-sheets-api": "^2.2.0",
     "luxon": "^3.5.0",
     "nanoid": "^5.0.8",
@@ -47,7 +58,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.17.4",
-    "firebase-tools": "^13.23.1",
+    "firebase-admin": "^13.6.1",
     "fuzzy": "^0.1.3",
     "inquirer": "^8.2.6",
     "inquirer-autocomplete-prompt": "^1.4.0",
@@ -59,7 +70,9 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "protractor": "^7.0.0",
+    "supabase": "^2.72.8",
     "ts-node": "~10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "~5.5.4"
   }
 }

@@ -6,9 +6,9 @@ import { faBolt, faHandSparkles, faHandsPraying, faPersonSwimming, faThumbsDown,
 
 import type { AddableRule, Rules } from '../models';
 import { environment } from '../../../environments/environment';
-import { ApiService } from '../../core/services/api.service';
 import { DataService } from '../../core/services/data.service';
 import { UtilService } from '../../core/services/util.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -56,9 +56,9 @@ export class RulesService {
   private dynamicRules$: BehaviorSubject<AddableRule[]>;
 
   constructor(
-    private api: ApiService,
     private data: DataService,
     private http: HttpClient,
+    private realtime: RealtimeService,
   ) {}
 
 
@@ -82,9 +82,13 @@ export class RulesService {
   getDynamicRules(): Observable<AddableRule[]> {
     if (!this.dynamicRules$) {
       this.dynamicRules$ = new BehaviorSubject<AddableRule[]>([]);
-      this.api.getDataFromCollection(RulesService.collection).pipe(
-        map((rules) => RulesService.transformRules(rules))
-      ).subscribe((addableRules) => {
+      this.realtime.watch<any>(
+        'rules',
+        undefined,
+        'rules',
+      ).pipe(
+        map(RulesService.transformRules),
+      ).subscribe(addableRules => {
         this.dynamicRules$.next(addableRules);
       });
     }
@@ -94,17 +98,26 @@ export class RulesService {
 
 
   store(rule: AddableRule, id?: string): Promise<{ success: boolean; id?: string }> {
-    return this.data.store(rule, RulesService.collection, id);
+    const { name, type, rules: description, id: _id, owner, access, collection, isPrivate, ...metaFields } = rule as any;
+    const dbRule: any = {
+      name,
+      category: type,
+      description: description || null,
+    };
+    if (Object.keys(metaFields).length > 0) {
+      dbRule.metadata = metaFields;
+    }
+    return this.data.store(dbRule, RulesService.collection, id);
   }
 
 
-  private static transformRules(rules: any[]): AddableRule[] {
-    return rules.reduce((all, entry) => {
-      all.push({
-        id: entry.payload.doc.id,
-        ...entry.payload.doc.data(),
-      });
-      return all;
-    }, []).sort(UtilService.orderByName);
+  private static transformRules(rows: any[]): AddableRule[] {
+    return rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      type: row.category,
+      rules: row.description,
+      ...(row.metadata || {}),
+    })).sort(UtilService.orderByName);
   }
 }

@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.angular
+coverage
+supabase/.temp
+data/
+nul
+tmpclaude-*
+*.tar.gz
+.env
+firebase-service-account.json
