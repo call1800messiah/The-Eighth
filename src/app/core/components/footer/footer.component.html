@@ -7,9 +7,11 @@
     <fa-icon [icon]="faBars" size="lg" [fixedWidth]="true"></fa-icon>
   </button>
 
-  <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()" *ngIf="hasAudio">
-    <fa-icon [icon]="faMusic" size="lg" [fixedWidth]="true"></fa-icon>
-  </button>
+  @if (hasAudio) {
+    <button id="audio-button" type="button" class="btn-icon borderless" (click)="toggleAudio()">
+      <fa-icon [icon]="faMusic" size="lg" [fixedWidth]="true"></fa-icon>
+    </button>
+  }
 
   <button id="dice-button" type="button" class="btn-icon borderless" (click)="toggleDice()">
     <fa-icon [icon]="faDice" size="lg" [fixedWidth]="true"></fa-icon>
@@ -24,22 +26,26 @@
   <app-container width="small">
     <nav>
       <ul class="unstyled-list">
-        <li *ngFor="let item of navigation">
-          <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
-            <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
-            {{item.label}}
-          </button>
-        </li>
+        @for (item of navigation; track item) {
+          <li>
+            <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
+              <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>
+              {{item.label}}
+            </button>
+          </li>
+        }
       </ul>
     </nav>
   </app-container>
 </div>
 
-<div class="overlay" [ngClass]="{'open': audioVisible }" *ngIf="hasAudio">
-  <app-container width="small">
-    <app-audio-player-list></app-audio-player-list>
-  </app-container>
-</div>
+@if (hasAudio) {
+  <div class="overlay" [ngClass]="{'open': audioVisible }">
+    <app-container width="small">
+      <app-audio-player-list></app-audio-player-list>
+    </app-container>
+  </div>
+}
 
 <div class="overlay" [ngClass]="{'open': diceVisible }">
   <app-container width="small">

@@ -1,7 +1,7 @@
 <app-top-bar-filter placeholder="z.B. Name, Interval, Talent, Meilenstein" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
   <button type="button" class="btn-icon" (click)="showAddDialog()">
     <fa-icon [icon]="faPlus" [fixedWidth]="true"
-             title="Projekt hinzufügen"></fa-icon>
+    title="Projekt hinzufügen"></fa-icon>
   </button>
 </app-top-bar-filter>
 
@@ -11,9 +11,10 @@
 </div>
 
 <app-box-grid>
-  <app-project-summary
-    *ngFor="let project of filteredProjects$ | async"
-    [project]="project"
-  >
-  </app-project-summary>
+  @for (project of filteredProjects$ | async; track project) {
+    <app-project-summary
+      [project]="project"
+      >
+    </app-project-summary>
+  }
 </app-box-grid>

@@ -7,11 +7,14 @@
     {{place.name}}
   </a>
 
-  <ul class="parts unstyled-list" *ngIf="place.parts && showParts">
-    <app-place-summary
-      *ngFor="let part of place.parts"
-      [place]="part"
-      [showParts]="showParts"
-    ></app-place-summary>
-  </ul>
+  @if (place.parts && showParts) {
+    <ul class="parts unstyled-list">
+      @for (part of place.parts; track part) {
+        <app-place-summary
+          [place]="part"
+          [showParts]="showParts"
+        ></app-place-summary>
+      }
+    </ul>
+  }
 </li>

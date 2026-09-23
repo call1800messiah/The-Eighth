@@ -8,19 +8,20 @@
             id="quest-search"
             [value]="searchText$ | async"
             (input)="onSearchChange($event.target.value)"
-          />
+            />
           <label for="quest-search">Quest suchen...</label>
         </div>
 
         <div class="entity-list">
-          <div
-            *ngFor="let quest of filteredQuests$ | async"
-            class="entity-item form-group"
-            [class.selected]="isSelected(quest.id)"
-          >
-            <input id="quest-{{quest.id}}" type="checkbox" [checked]="isSelected(quest.id)" (click)="toggleSelection(quest.id)" />
-            <label class="entity-name" for="quest-{{quest.id}}">{{ quest.name }}</label>
-          </div>
+          @for (quest of filteredQuests$ | async; track quest) {
+            <div
+              class="entity-item form-group"
+              [class.selected]="isSelected(quest.id)"
+              >
+              <input id="quest-{{quest.id}}" type="checkbox" [checked]="isSelected(quest.id)" (click)="toggleSelection(quest.id)" />
+              <label class="entity-name" for="quest-{{quest.id}}">{{ quest.name }}</label>
+            </div>
+          }
         </div>
       </div>
     </app-tab-panel>
@@ -33,20 +34,21 @@
             id="person-search"
             [value]="searchText$ | async"
             (input)="onSearchChange($event.target.value)"
-          />
+            />
           <label for="person-search">Person suchen...</label>
         </div>
 
         <div class="entity-list">
-          <div
-            *ngFor="let person of filteredPeople$ | async"
-            class="entity-item form-group"
-            [class.selected]="isSelected(person.id)"
-          >
-            <input id="person-{{person.id}}" type="checkbox" [checked]="isSelected(person.id)" (click)="toggleSelection(person.id)" />
-            <label class="entity-name" for="person-{{person.id}}">{{ person.name }}</label>
-            <app-avatar [person]="person"></app-avatar>
-          </div>
+          @for (person of filteredPeople$ | async; track person) {
+            <div
+              class="entity-item form-group"
+              [class.selected]="isSelected(person.id)"
+              >
+              <input id="person-{{person.id}}" type="checkbox" [checked]="isSelected(person.id)" (click)="toggleSelection(person.id)" />
+              <label class="entity-name" for="person-{{person.id}}">{{ person.name }}</label>
+              <app-avatar [person]="person"></app-avatar>
+            </div>
+          }
         </div>
       </div>
     </app-tab-panel>
@@ -59,19 +61,20 @@
             id="place-search"
             [value]="searchText$ | async"
             (input)="onSearchChange($event.target.value)"
-          />
+            />
           <label for="place-search">Ort suchen...</label>
         </div>
 
         <div class="entity-list">
-          <div
-            *ngFor="let place of filteredPlaces$ | async"
-            class="entity-item form-group"
-            [class.selected]="isSelected(place.id)"
-          >
-            <input id="place-{{place.id}}" type="checkbox" [checked]="isSelected(place.id)" (click)="toggleSelection(place.id)" />
-            <label class="entity-name" for="place-{{place.id}}">{{ place.name }}</label>
-          </div>
+          @for (place of filteredPlaces$ | async; track place) {
+            <div
+              class="entity-item form-group"
+              [class.selected]="isSelected(place.id)"
+              >
+              <input id="place-{{place.id}}" type="checkbox" [checked]="isSelected(place.id)" (click)="toggleSelection(place.id)" />
+              <label class="entity-name" for="place-{{place.id}}">{{ place.name }}</label>
+            </div>
+          }
         </div>
       </div>
     </app-tab-panel>
@@ -84,25 +87,32 @@
             id="note-search"
             [value]="searchText$ | async"
             (input)="onSearchChange($event.target.value)"
-          />
+            />
           <label for="note-search">Notiz suchen...</label>
         </div>
 
         <div class="entity-list">
-          <div
-            *ngFor="let note of filteredNotes$ | async"
-            class="entity-item form-group"
-            [class.selected]="isSelected(note.id)"
-          >
-            <input id="note-{{note.id}}" type="checkbox" [checked]="isSelected(note.id)" (click)="toggleSelection(note.id)" />
-            <label class="entity-name" for="note-{{note.id}}">
-              <div>
-                <span class="note-title" *ngIf="note.title">{{ note.title }}</span>
-                <span class="note-content" *ngIf="!note.title">{{ note.content.slice(0,35) }}</span>
-              </div>
-              <div class="note-category" *ngIf="note.category">[{{ note.category }}]</div>
-            </label>
-          </div>
+          @for (note of filteredNotes$ | async; track note) {
+            <div
+              class="entity-item form-group"
+              [class.selected]="isSelected(note.id)"
+              >
+              <input id="note-{{note.id}}" type="checkbox" [checked]="isSelected(note.id)" (click)="toggleSelection(note.id)" />
+              <label class="entity-name" for="note-{{note.id}}">
+                <div>
+                  @if (note.title) {
+                    <span class="note-title">{{ note.title }}</span>
+                  }
+                  @if (!note.title) {
+                    <span class="note-content">{{ note.content.slice(0,35) }}</span>
+                  }
+                </div>
+                @if (note.category) {
+                  <div class="note-category">[{{ note.category }}]</div>
+                }
+              </label>
+            </div>
+          }
         </div>
       </div>
     </app-tab-panel>
@@ -114,7 +124,7 @@
       class="btn btn-primary"
       (click)="addSelected()"
       [disabled]="selectedItems.length === 0"
-    >
+      >
       Ausgewählte hinzufügen ({{ selectedItems.length }})
     </button>
   </div>

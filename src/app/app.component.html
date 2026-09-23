@@ -2,14 +2,18 @@
   <app-header></app-header>
 
   <div class="page" [ngClass]="{'sidebar-closed': !(sidebarOpen$ | async)}">
-    <app-sidebar *ngIf="(isLoggedIn$ | async)" ></app-sidebar>
+    @if ((isLoggedIn$ | async)) {
+      <app-sidebar ></app-sidebar>
+    }
 
     <main>
       <router-outlet></router-outlet>
     </main>
   </div>
 
-  <app-footer *ngIf="isLoggedIn$ | async"></app-footer>
+  @if (isLoggedIn$ | async) {
+    <app-footer></app-footer>
+  }
 
   <app-popover></app-popover>
 </div>

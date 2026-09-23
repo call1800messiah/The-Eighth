@@ -2,24 +2,28 @@
   <app-top-bar-filter placeholder="z.B. Name" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
     <button type="button" class="btn-icon" (click)="showAddDialog()">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"
-               title="Regel hinzufügen"></fa-icon>
+      title="Regel hinzufügen"></fa-icon>
     </button>
   </app-top-bar-filter>
 
   <ul class="unstyled-list">
-    <li *ngFor="let type of filteredRules$ | async | keyvalue" class="category">
-      <fa-icon style="float: right;" [icon]="ruleTypes[type.key].icon" [fixedWidth]="true"></fa-icon>
-      {{ruleTypes[type.key].label}}
-
-      <ul class="unstyled-list rules">
-        <li class="rule" *ngFor="let rule of type.value" (click)="editRule(rule)">
-          {{rule.name}}
-
-          <div class="details" *ngIf="rule.type === 'skill' || rule.type === 'spell'">
-            {{rule.attributeOne}} | {{rule.attributeTwo}} | {{rule.attributeThree}}
-          </div>
-        </li>
-      </ul>
-    </li>
+    @for (type of filteredRules$ | async | keyvalue; track type) {
+      <li class="category">
+        <fa-icon style="float: right;" [icon]="ruleTypes[type.key].icon" [fixedWidth]="true"></fa-icon>
+        {{ruleTypes[type.key].label}}
+        <ul class="unstyled-list rules">
+          @for (rule of type.value; track rule) {
+            <li class="rule" (click)="editRule(rule)">
+              {{rule.name}}
+              @if (rule.type === 'skill' || rule.type === 'spell') {
+                <div class="details">
+                  {{rule.attributeOne}} | {{rule.attributeTwo}} | {{rule.attributeThree}}
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      </li>
+    }
   </ul>
 </app-container>

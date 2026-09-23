@@ -1,113 +1,132 @@
-<app-container width="medium" class="person" *ngIf="person">
-  <div class="image">
-    <a [href]="person.image" target="_blank" *ngIf="person.image">
-      <app-avatar [person]="person" [priority]="true"></app-avatar>
-    </a>
-    <app-avatar [person]="person" [priority]="true" *ngIf="!person.image"></app-avatar>
-
-    <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
-      <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
-      <app-context-menu *ngIf="menuOpen" [owner]="person.owner" [menu]="menu"></app-context-menu>
-    </button>
-
-    <div class="banner" *ngIf="person.banner && isOwnerOrCan('viewBanner')">
-      <img src="{{person.banner}}" alt="Banner">
-    </div>
-  </div>
-
-
-  <div class="info box">
-    <app-access-indicator *ngIf="isOwnerOrCan('')" [item]="person"></app-access-indicator>
-    <dl>
-      <ng-container>
-        <dt>Name</dt>
-        <dd>{{isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0]}}</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.title && isOwnerOrCan('viewTitle')">
-        <dt>Titel</dt>
-        <dd>{{person.title}}</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.birthyear || person.birthday">
-        <dt>Geboren</dt>
-        <dd>{{person.birthday}} {{person.birthyear}} BF</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.deathday">
-        <dt>Gestorben</dt>
-        <dd>{{person.deathday}} BF</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.race">
-        <dt>Rasse</dt>
-        <dd>{{person.race}}</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.culture">
-        <dt>Kultur</dt>
-        <dd>{{person.culture}}</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.profession">
-        <dt>Profession</dt>
-        <dd>{{person.profession}}</dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.height">
-        <dt>Größe</dt>
-        <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
-      </ng-container>
-
-      <ng-container *ngIf="isOwnerOrCan('viewLocation') && person.location as location">
-        <dt>Ort</dt>
-        <dd>
-          <a [routerLink]="['/places', location.id]" *ngIf="location.id" class="location">{{location.name}}</a>
-          <span *ngIf="!location.id">{{location.name}}</span>
-        </dd>
-      </ng-container>
-
-      <ng-container *ngIf="person.xp">
-        <dt>AP</dt>
-        <dd>{{person.xp}}</dd>
-      </ng-container>
-    </dl>
-
-    <div class="tags" *ngIf="person.tags && person.tags.length > 0">
-      <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
-    </div>
-  </div>
-
-  <app-tabs>
-    <app-tab-panel id="info" label="Informationen">
-      <div *ngIf="hasRelatives() && isOwnerOrCan('viewAncestry')" class="box relatives">
-        <div class="heading">Verwandte</div>
-        <div class="relatives-list">
-          <ul class="unstyled-list">
-            <li *ngFor="let relatives of person.relatives | keyvalue">
-              {{relativeTypes[relatives.key]}}
-              <ul>
-                <li *ngFor=" let relative of relatives.value">
-                  <a [routerLink]="['/people', relative.id]" *ngIf="relative.id" class="location">{{relative.name}}</a>
-                  <span *ngIf="!relative.id">{{relative.name}}</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
+@if (person) {
+  <app-container width="medium" class="person">
+    <div class="image">
+      @if (person.image) {
+        <a [href]="person.image" target="_blank">
+          <app-avatar [person]="person" [priority]="true"></app-avatar>
+        </a>
+      }
+      @if (!person.image) {
+        <app-avatar [person]="person" [priority]="true"></app-avatar>
+      }
+      <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+        <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+        @if (menuOpen) {
+          <app-context-menu [owner]="person.owner" [menu]="menu"></app-context-menu>
+        }
+      </button>
+      @if (person.banner && isOwnerOrCan('viewBanner')) {
+        <div class="banner">
+          <img src="{{person.banner}}" alt="Banner">
         </div>
-      </div>
-
-      <div class="detail-info" *ngIf="infos$">
-        <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
-                      [key]="infoList.key"
-                      [infos]="infoList.value"
-                      (editDetail)="editDetail($event)"
-        ></app-info-box>
-      </div>
-    </app-tab-panel>
-
-    <app-tab-panel id="stats" label="Werte" *ngIf="isOwnerOrCan('viewStats')">
-      <app-stats [person$]="person$"></app-stats>
-    </app-tab-panel>
-  </app-tabs>
-</app-container>
+      }
+    </div>
+    <div class="info box">
+      @if (isOwnerOrCan('')) {
+        <app-access-indicator [item]="person"></app-access-indicator>
+      }
+      <dl>
+        <ng-container>
+          <dt>Name</dt>
+          <dd>{{isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0]}}</dd>
+        </ng-container>
+        @if (person.title && isOwnerOrCan('viewTitle')) {
+          <dt>Titel</dt>
+          <dd>{{person.title}}</dd>
+        }
+        @if (person.birthyear || person.birthday) {
+          <dt>Geboren</dt>
+          <dd>{{person.birthday}} {{person.birthyear}} BF</dd>
+        }
+        @if (person.deathday) {
+          <dt>Gestorben</dt>
+          <dd>{{person.deathday}} BF</dd>
+        }
+        @if (person.race) {
+          <dt>Rasse</dt>
+          <dd>{{person.race}}</dd>
+        }
+        @if (person.culture) {
+          <dt>Kultur</dt>
+          <dd>{{person.culture}}</dd>
+        }
+        @if (person.profession) {
+          <dt>Profession</dt>
+          <dd>{{person.profession}}</dd>
+        }
+        @if (person.height) {
+          <dt>Größe</dt>
+          <dd>{{person.height / 100 | number: '1.2-2': 'de'}} m</dd>
+        }
+        @if (isOwnerOrCan('viewLocation') && person.location; as location) {
+          <dt>Ort</dt>
+          <dd>
+            @if (location.id) {
+              <a [routerLink]="['/places', location.id]" class="location">{{location.name}}</a>
+            }
+            @if (!location.id) {
+              <span>{{location.name}}</span>
+            }
+          </dd>
+        }
+        @if (person.xp) {
+          <dt>AP</dt>
+          <dd>{{person.xp}}</dd>
+        }
+      </dl>
+      @if (person.tags && person.tags.length > 0) {
+        <div class="tags">
+          @for (tag of person.tags; track tag) {
+            <span class="tag">{{tag}}</span>
+          }
+        </div>
+      }
+    </div>
+    <app-tabs>
+      <app-tab-panel id="info" label="Informationen">
+        @if (hasRelatives() && isOwnerOrCan('viewAncestry')) {
+          <div class="box relatives">
+            <div class="heading">Verwandte</div>
+            <div class="relatives-list">
+              <ul class="unstyled-list">
+                @for (relatives of person.relatives | keyvalue; track relatives) {
+                  <li>
+                    {{relativeTypes[relatives.key]}}
+                    <ul>
+                      @for (relative of relatives.value; track relative) {
+                        <li>
+                          @if (relative.id) {
+                            <a [routerLink]="['/people', relative.id]" class="location">{{relative.name}}</a>
+                          }
+                          @if (!relative.id) {
+                            <span>{{relative.name}}</span>
+                          }
+                        </li>
+                      }
+                    </ul>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+        @if (infos$) {
+          <div class="detail-info">
+            @for (infoList of infos$ | async | keyvalue; track infoList) {
+              <app-info-box
+                [key]="infoList.key"
+                [infos]="infoList.value"
+                (editDetail)="editDetail($event)"
+              ></app-info-box>
+            }
+          </div>
+        }
+      </app-tab-panel>
+      @if (isOwnerOrCan('viewStats')) {
+        <app-tab-panel id="stats" label="Werte">
+          <app-stats [person$]="person$"></app-stats>
+        </app-tab-panel>
+      }
+    </app-tabs>
+  </app-container>
+}
