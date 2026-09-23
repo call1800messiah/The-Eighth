@@ -60,6 +60,7 @@ describe('AchievementService', () => {
         'achievements',
         jasmine.any(Function),
         'achievements',
+        ['achievement_people'],
       );
     });
 

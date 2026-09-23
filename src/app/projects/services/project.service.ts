@@ -34,6 +34,7 @@ export class ProjectService {
         'projects',
         query => query.select('*, project_milestones(*), project_requirements(*)'),
         'projects',
+        ['project_milestones', 'project_requirements'],
       ).pipe(
         map(rows => this.transformProjects(rows))
       ).subscribe((projects: Project[]) => {

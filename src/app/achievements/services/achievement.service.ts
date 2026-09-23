@@ -35,6 +35,7 @@ export class AchievementService {
           'achievements',
           query => query.select('*, achievement_people(person_id)'),
           'achievements',
+          ['achievement_people'],
         ),
         this.peopleService.getPeople(),
       ]).pipe(
