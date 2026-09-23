@@ -13,7 +13,6 @@ import type {
 } from '../models';
 import { ApiService } from '../../core/services/api.service';
 import { DataService } from '../../core/services/data.service';
-import { ConfigService } from '../../core/services/config.service';
 import { QuestsService } from '../../quests/services/quests.service';
 import { PeopleService } from '../../people/services/people.service';
 import { PlaceService } from '../../places/services/place.service';
@@ -46,6 +45,7 @@ export class FlowService {
         'flows',
         query => query.select('*, flow_items(*)'),
         'flows',
+        ['flow_items'],
       ).pipe(
         map(rows => rows.map(row => this.transformFlow(row)).sort((a, b) => b.date.getTime() - a.date.getTime())),
       ).subscribe(flows => {
@@ -130,7 +130,8 @@ export class FlowService {
           return;
         }
 
-        let currentOrder = flow.items?.length || 0;
+        // Removing items leaves gaps, so the item count can collide with an existing sort_order
+        let currentOrder = Math.max(-1, ...(flow.items || []).map(item => item.order)) + 1;
         const newRows: any[] = [];
 
         for (const item of items) {
@@ -138,7 +139,6 @@ export class FlowService {
           if (!entityId) continue;
 
           newRows.push({
-            id: ConfigService.nanoid(),
             flow_id: flowId,
             type: item.type,
             entity_id: entityId,
@@ -167,10 +167,23 @@ export class FlowService {
 
 
   async reorderItems(flowId: string, items: EnrichedFlowItem[]): Promise<boolean> {
-    for (let i = 0; i < items.length; i++) {
+    const moved = items
+      .map((item, index) => ({ id: item.id, from: item.order, to: index }))
+      .filter(move => move.from !== move.to);
+
+    // sort_order is unique per flow, so park moved items on unused negative
+    // positions first; writing a target directly would collide with the item
+    // still holding it.
+    const lowest = Math.min(0, ...items.map(item => item.order));
+    const steps = [
+      ...moved.map((move, i) => ({ id: move.id, sortOrder: lowest - 1 - i })),
+      ...moved.map(move => ({ id: move.id, sortOrder: move.to })),
+    ];
+
+    for (const step of steps) {
       const { error } = await this.api.from('flow_items' as any)
-        .update({ sort_order: i })
-        .eq('id', items[i].id);
+        .update({ sort_order: step.sortOrder })
+        .eq('id', step.id);
       if (error) return false;
     }
     return true;

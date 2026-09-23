@@ -65,6 +65,7 @@ describe('FlowService', () => {
         'flows',
         jasmine.any(Function),
         'flows',
+        ['flow_items'],
       );
     });
 
@@ -225,6 +226,72 @@ describe('FlowService', () => {
       const storedItem = mockData.store.calls.mostRecent().args[0];
       expect(storedItem.items).toBeUndefined();
       expect(storedItem.title).toBe('New');
+    });
+  });
+
+  describe('addItems()', () => {
+    const emitFlow = (orders: number[]) => mockRealtime.emitRows('flows', [{
+      id: 'f1', title: 'S1', date: '2024-01-01', owner_id: 'u1',
+      flow_items: orders.map((order, i) => ({ id: `fi${i}`, type: 'quest', entity_id: 'quest1', sort_order: order })),
+    }]);
+
+    it('should let the database generate item ids', async () => {
+      service.getFlows().subscribe();
+      emitFlow([0]);
+
+      await service.addItems('f1', [{ type: 'person', personId: 'person1' } as any]);
+
+      const row = mockApi._queryBuilder.insert.calls.mostRecent().args[0][0];
+      expect(row.id).toBeUndefined();
+      expect(row).toEqual(jasmine.objectContaining({ flow_id: 'f1', type: 'person', entity_id: 'person1' }));
+    });
+
+    it('should append after the highest sort_order when earlier items were removed', async () => {
+      service.getFlows().subscribe();
+      emitFlow([0, 2]);
+
+      await service.addItems('f1', [
+        { type: 'person', personId: 'person1' } as any,
+        { type: 'place', placeId: 'place1' } as any,
+      ]);
+
+      const rows = mockApi._queryBuilder.insert.calls.mostRecent().args[0];
+      expect(rows.map((r: any) => r.sort_order)).toEqual([3, 4]);
+    });
+  });
+
+  describe('reorderItems()', () => {
+    /** In-memory flow_items table that enforces UNIQUE(flow_id, sort_order) like the database. */
+    function useUniqueOrderTable(orders: Record<string, number>) {
+      mockApi.from.and.callFake(() => {
+        let patch: any;
+        const builder: any = {
+          update: (p: any) => { patch = p; return builder; },
+          eq: (_col: string, id: string) => {
+            const taken = Object.entries(orders).some(([other, order]) => other !== id && order === patch.sort_order);
+            if (taken) {
+              return Promise.resolve({ data: null, error: { code: '23505' } });
+            }
+            orders[id] = patch.sort_order;
+            return Promise.resolve({ data: null, error: null });
+          },
+        };
+        return builder;
+      });
+      return orders;
+    }
+
+    it('should persist the new order without violating the unique sort_order', async () => {
+      const table = useUniqueOrderTable({ a: 0, b: 1, c: 2 });
+
+      const success = await service.reorderItems('f1', [
+        { id: 'c', order: 2 },
+        { id: 'a', order: 0 },
+        { id: 'b', order: 1 },
+      ] as any);
+
+      expect(success).toBe(true);
+      expect(table).toEqual({ c: 0, a: 1, b: 2 });
     });
   });
 });
