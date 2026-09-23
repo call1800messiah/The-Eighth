@@ -124,7 +124,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **DataService**: CRUD with owner handling; `store()` strips the Firebase-era `access`, `collection` and `isPrivate` fields, maps `owner` → `owner_id`, and defaults `owner_id` to the current user on insert
 - **RealtimeService** (`supabase-realtime.service.ts`): Wraps Supabase realtime as `watch()` / `watchOne()`, with a re-fetch-on-change model
 - **UserService**: User directory from the `users` table
-- **StorageService**: Supabase Storage upload/download against the tenant bucket
+- **StorageService**: Supabase Storage upload/download against the tenant bucket. Uploads for an entity go to `<folder>/<entity id>/<name>-<nanoid>.<ext>`: the unique name gives replacements a new URL (so realtime and the browser cache pick them up), and the storage policies (migration 006) let the entity's owner write inside its folder. Inside storage policy subqueries, write `objects.name` — `people`/`places` have their own `name` column that an unqualified `name` resolves to.
 - **ConfigService**: App config, sidebar state (localStorage), ID generation (nanoid)
 - **NavigationService**, **PopoverService**, **UtilService**: unchanged from before the migration
 

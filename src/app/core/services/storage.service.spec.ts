@@ -67,6 +67,15 @@ describe('StorageService', () => {
       expect(builder.eq).toHaveBeenCalledWith('id', 'p1');
     });
 
+    it('should upload into a folder named after the ref entity, which the storage policies authorize', async () => {
+      storedPath(null);
+      const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };
+
+      await service.uploadFile('avatar.jpg', new Blob(['test']), 'images', updateRef);
+
+      expect(uploadedPath()).toMatch(/^images\/p1\/avatar-[A-Za-z0-9_]{10}\.jpg$/);
+    });
+
     it('should remove the previous file once the ref points at the new one', async () => {
       storedPath('images/avatar-OLD0000000.jpg');
       const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };

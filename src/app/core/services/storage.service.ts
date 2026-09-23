@@ -46,9 +46,13 @@ export class StorageService {
    * Uploads under a unique name: replacing a file at the same path would keep
    * its URL, so neither the realtime watch nor the browser cache would pick up
    * the new content. The file the ref pointed at before is removed afterwards.
+   *
+   * Files for a ref go into a folder named after the entity id: the storage
+   * policies let the entity's owner write there (see migration 006).
    */
   async uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: FileUpdateRef): Promise<void> {
-    const filePath = `${bucket}/${StorageService.uniqueName(name)}`;
+    const folder = updateRef ? `${bucket}/${updateRef.id}` : bucket;
+    const filePath = `${folder}/${StorageService.uniqueName(name)}`;
     const previousPath = updateRef ? await this.getRefPath(updateRef) : null;
     const { error } = await this.api.storage.from(this.bucket).upload(filePath, file, {
       cacheControl: '259200',
