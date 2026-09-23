@@ -15,12 +15,20 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@ngx-env/builder:browser",
+          "builder": "@ngx-env/builder:application",
           "options": {
-            "outputPath": "dist/The-Eighth",
+            "outputPath": {
+              "base": "dist/The-Eighth",
+              "browser": ""
+            },
+            "ngxEnv": {
+              "define": "process.env"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -32,9 +40,7 @@
               "src/scss/the-eighth.scss"
             ],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true
@@ -52,8 +58,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -73,18 +77,18 @@
         "serve": {
           "builder": "@ngx-env/builder:dev-server",
           "options": {
-            "browserTarget": "The-Eighth:build"
+            "buildTarget": "The-Eighth:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "The-Eighth:build:production"
+              "buildTarget": "The-Eighth:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@ngx-env/builder:extract-i18n",
           "options": {
-            "browserTarget": "The-Eighth:build"
+            "buildTarget": "The-Eighth:build"
           }
         },
         "test": {

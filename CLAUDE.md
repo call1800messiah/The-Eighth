@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TheEighth is an Angular 18 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
+TheEighth is an Angular 19 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
 
 The app was migrated from Firebase/Firestore. Some Firebase-era naming survives in the code — `DataService` still takes a `collection` argument that is really a table name, and the `*DB` model interfaces still carry `access`/`owner` fields that `DataService.store()` strips before writing. Treat these as historical, not as a second backend.
 
@@ -93,6 +93,8 @@ See `docker-compose.portainer.yml` for the full server-side sequence, and `deplo
    ```
 
 3. For production, `src/environments/environment.prod.ts` has the same shape with `production: true`. Leave `supabase.url` **empty** there: the client falls back to `window.location.origin`, and the app's own nginx reverse-proxies `/rest/v1/`, `/auth/v1/`, `/realtime/v1/` and `/storage/v1/` to the Supabase gateway. That keeps the browser on a single origin with no public Supabase hostname. The anon key is baked in at build time from `deploy/supabase/.env`.
+
+`NG_APP_*` variables are inlined at build time by `@ngx-env/builder`. The build is esbuild-based, which only substitutes variables that are set, so `angular.json` sets `ngxEnv.define` to `process.env`: that replaces the whole object, and an unset variable reads as `undefined` instead of leaving a `process.env` reference that throws in the browser.
 
 ## Architecture
 
