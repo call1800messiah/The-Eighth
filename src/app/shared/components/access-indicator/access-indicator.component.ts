@@ -18,7 +18,8 @@ import { getEntityType } from '../../utils/entity-type';
 @Component({
   selector: 'app-access-indicator',
   templateUrl: './access-indicator.component.html',
-  styleUrls: ['./access-indicator.component.scss']
+  styleUrls: ['./access-indicator.component.scss'],
+  standalone: false
 })
 export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() item: AccessControlledItem;

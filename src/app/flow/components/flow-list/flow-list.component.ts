@@ -15,7 +15,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-flow-list',
   templateUrl: './flow-list.component.html',
-  styleUrl: './flow-list.component.scss'
+  styleUrl: './flow-list.component.scss',
+  standalone: false
 })
 export class FlowListComponent implements OnInit {
   faPlus = faPlus;

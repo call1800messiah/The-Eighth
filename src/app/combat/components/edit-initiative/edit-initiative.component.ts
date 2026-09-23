@@ -9,7 +9,8 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-edit-initiative',
   templateUrl: './edit-initiative.component.html',
-  styleUrls: ['./edit-initiative.component.scss']
+  styleUrls: ['./edit-initiative.component.scss'],
+  standalone: false
 })
 export class EditInitiativeComponent implements OnInit, PopoverChild {
   @Input() props: any;

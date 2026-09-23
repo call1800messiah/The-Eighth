@@ -12,7 +12,8 @@ import { Component, Input } from '@angular/core';
       padding: var(--item-padding) 0;
       height: 100%;
     }
-  `]
+  `],
+  standalone: false
 })
 export class TabPanelComponent {
   @Input() id: string;

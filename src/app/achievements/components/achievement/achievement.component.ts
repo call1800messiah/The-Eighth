@@ -14,7 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-achievement',
   templateUrl: './achievement.component.html',
-  styleUrls: ['./achievement.component.scss']
+  styleUrls: ['./achievement.component.scss'],
+  standalone: false
 })
 export class AchievementComponent implements OnInit, OnDestroy {
   @Input() achievement: Achievement;

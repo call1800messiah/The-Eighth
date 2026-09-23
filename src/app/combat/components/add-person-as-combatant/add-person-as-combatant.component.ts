@@ -9,7 +9,8 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-add-combatant',
   templateUrl: './add-person-as-combatant.component.html',
-  styleUrls: ['./add-person-as-combatant.component.scss']
+  styleUrls: ['./add-person-as-combatant.component.scss'],
+  standalone: false
 })
 export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {
   @Input() props: any;

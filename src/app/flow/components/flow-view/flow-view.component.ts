@@ -18,7 +18,8 @@ import { AuthUser } from '../../../auth/models/auth-user';
 @Component({
   selector: 'app-flow-view',
   templateUrl: './flow-view.component.html',
-  styleUrls: ['./flow-view.component.scss']
+  styleUrls: ['./flow-view.component.scss'],
+  standalone: false
 })
 export class FlowViewComponent implements OnInit, OnDestroy {
   faPlus = faPlus;

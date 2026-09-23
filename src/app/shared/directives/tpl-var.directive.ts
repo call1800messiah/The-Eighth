@@ -1,7 +1,8 @@
 import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
 @Directive({
-  selector: '[appTplVar]'
+  selector: '[appTplVar]',
+  standalone: false
 })
 export class TplVarDirective {
   @Input()

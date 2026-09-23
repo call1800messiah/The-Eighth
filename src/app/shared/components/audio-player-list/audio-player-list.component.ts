@@ -9,7 +9,8 @@ import { StorageService } from '../../../core/services/storage.service';
 @Component({
   selector: 'app-audio-player-list',
   templateUrl: './audio-player-list.component.html',
-  styleUrls: ['./audio-player-list.component.scss']
+  styleUrls: ['./audio-player-list.component.scss'],
+  standalone: false
 })
 export class AudioPlayerListComponent implements OnInit {
   faGuitar = faGuitar;

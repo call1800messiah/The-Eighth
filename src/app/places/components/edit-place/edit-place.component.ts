@@ -13,7 +13,8 @@ import { PlaceService } from '../../services/place.service';
 @Component({
   selector: 'app-edit-place',
   templateUrl: './edit-place.component.html',
-  styleUrls: ['./edit-place.component.scss']
+  styleUrls: ['./edit-place.component.scss'],
+  standalone: false
 })
 export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;

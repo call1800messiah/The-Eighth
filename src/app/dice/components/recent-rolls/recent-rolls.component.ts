@@ -14,7 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-recent-rolls',
   templateUrl: './recent-rolls.component.html',
-  styleUrls: ['./recent-rolls.component.scss']
+  styleUrls: ['./recent-rolls.component.scss'],
+  standalone: false
 })
 export class RecentRollsComponent implements OnInit {
   @Input() amount = 100;

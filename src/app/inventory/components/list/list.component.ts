@@ -13,7 +13,8 @@ import { EditItemComponent } from '../edit-item/edit-item.component';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  styleUrls: ['./list.component.scss'],
+  standalone: false
 })
 export class ListComponent implements OnInit {
   faPlus = faPlus;

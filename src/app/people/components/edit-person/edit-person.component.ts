@@ -14,7 +14,8 @@ import { PlaceService } from '../../../places/services/place.service';
 @Component({
   selector: 'app-edit-person',
   templateUrl: './edit-person.component.html',
-  styleUrls: ['./edit-person.component.scss']
+  styleUrls: ['./edit-person.component.scss'],
+  standalone: false
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: Person;

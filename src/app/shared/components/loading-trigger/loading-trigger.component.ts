@@ -3,7 +3,8 @@ import { Component, ElementRef, EventEmitter, OnDestroy, Output } from '@angular
 @Component({
   selector: 'app-loading-trigger',
   templateUrl: './loading-trigger.component.html',
-  styleUrl: './loading-trigger.component.scss'
+  styleUrl: './loading-trigger.component.scss',
+  standalone: false
 })
 export class LoadingTriggerComponent implements OnDestroy {
   @Output() onVisible = new EventEmitter<boolean>();

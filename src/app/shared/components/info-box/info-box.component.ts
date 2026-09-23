@@ -10,7 +10,8 @@ import { InfoType } from '../../../core/enums/info-type.enum';
 @Component({
   selector: 'app-info-box',
   templateUrl: './info-box.component.html',
-  styleUrls: ['./info-box.component.scss']
+  styleUrls: ['./info-box.component.scss'],
+  standalone: false
 })
 export class InfoBoxComponent implements OnInit {
   @Input() key: InfoType;

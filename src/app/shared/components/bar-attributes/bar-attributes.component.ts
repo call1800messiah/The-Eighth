@@ -15,7 +15,8 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-bar-attributes',
   templateUrl: './bar-attributes.component.html',
-  styleUrl: './bar-attributes.component.scss'
+  styleUrl: './bar-attributes.component.scss',
+  standalone: false
 })
 export class BarAttributesComponent implements OnInit {
   @Input() attributeValues$: Observable<Attribute[]>;

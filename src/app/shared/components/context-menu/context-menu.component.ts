@@ -8,7 +8,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.scss']
+  styleUrls: ['./context-menu.component.scss'],
+  standalone: false
 })
 export class ContextMenuComponent implements OnInit {
   @Input() menu: Menu;

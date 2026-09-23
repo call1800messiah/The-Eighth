@@ -16,7 +16,8 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
-  styleUrl: './attributes.component.scss'
+  styleUrl: './attributes.component.scss',
+  standalone: false
 })
 export class AttributesComponent implements OnInit {
   @Input() attributeValues$: Observable<Attribute[]>;

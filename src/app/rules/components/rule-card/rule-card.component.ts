@@ -5,7 +5,8 @@ import { RulesService } from '../../services/rules.service';
 @Component({
   selector: 'app-rule-card',
   templateUrl: './rule-card.component.html',
-  styleUrl: './rule-card.component.scss'
+  styleUrl: './rule-card.component.scss',
+  standalone: false
 })
 export class RuleCardComponent {
   @Input() rule: AddableRule;

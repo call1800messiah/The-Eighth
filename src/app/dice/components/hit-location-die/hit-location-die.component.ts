@@ -7,7 +7,8 @@ import { Die } from '../../enums/die.enum';
 @Component({
   selector: 'app-hit-location-die',
   templateUrl: './hit-location-die.component.html',
-  styleUrls: ['./hit-location-die.component.scss']
+  styleUrls: ['./hit-location-die.component.scss'],
+  standalone: false
 })
 export class HitLocationDieComponent implements OnInit {
   faMale = faMale;

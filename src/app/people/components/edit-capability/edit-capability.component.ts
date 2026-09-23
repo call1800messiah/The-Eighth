@@ -14,7 +14,8 @@ import { PeopleService } from '../../services/people.service';
 @Component({
   selector: 'app-edit-capability',
   templateUrl: './edit-capability.component.html',
-  styleUrl: './edit-capability.component.scss'
+  styleUrl: './edit-capability.component.scss',
+  standalone: false
 })
 export class EditCapabilityComponent implements OnInit, PopoverChild {
   @Input() props: EditCapabilityProps;

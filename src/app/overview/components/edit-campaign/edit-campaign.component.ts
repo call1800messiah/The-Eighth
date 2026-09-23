@@ -7,7 +7,8 @@ import { CampaignService } from '../../services/campaign.service';
 @Component({
   selector: 'app-edit-campaign',
   templateUrl: './edit-campaign.component.html',
-  styleUrl: './edit-campaign.component.scss'
+  styleUrl: './edit-campaign.component.scss',
+  standalone: false
 })
 export class EditCampaignComponent implements OnInit, PopoverChild {
   @Input() props: CampaignData;

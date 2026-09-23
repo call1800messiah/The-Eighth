@@ -8,6 +8,7 @@ import { CampaignService } from '../../overview/services/campaign.service';
 @Pipe({
   name: 'estimatedAge',
   pure: false,
+  standalone: false
 })
 export class EstimatedAgePipe implements PipeTransform, OnDestroy {
   private subscription = new Subscription();

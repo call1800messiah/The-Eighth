@@ -13,7 +13,8 @@ import { DataService } from '../../../core/services/data.service';
 @Component({
   selector: 'app-edit-item',
   templateUrl: './edit-item.component.html',
-  styleUrls: ['./edit-item.component.scss']
+  styleUrls: ['./edit-item.component.scss'],
+  standalone: false
 })
 export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;

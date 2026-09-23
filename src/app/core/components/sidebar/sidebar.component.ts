@@ -7,7 +7,8 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
+  standalone: false
 })
 export class SidebarComponent {
   selectedPerson$: BehaviorSubject<Person | null>;

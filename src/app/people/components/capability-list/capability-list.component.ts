@@ -12,7 +12,8 @@ import { RulesService } from '../../../rules/services/rules.service';
 @Component({
   selector: 'app-capability-list',
   templateUrl: './capability-list.component.html',
-  styleUrl: './capability-list.component.scss'
+  styleUrl: './capability-list.component.scss',
+  standalone: false
 })
 export class CapabilityListComponent {
   @Input() person: Person;

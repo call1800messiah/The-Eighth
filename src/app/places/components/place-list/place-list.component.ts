@@ -13,7 +13,8 @@ import { PlaceService } from '../../services/place.service';
 @Component({
   selector: 'app-place-list',
   templateUrl: './place-list.component.html',
-  styleUrls: ['./place-list.component.scss']
+  styleUrls: ['./place-list.component.scss'],
+  standalone: false
 })
 export class PlaceListComponent implements OnInit {
   filteredPlaces$: Observable<Place[]>;

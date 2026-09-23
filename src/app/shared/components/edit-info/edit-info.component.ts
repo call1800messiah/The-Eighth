@@ -12,7 +12,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-info',
   templateUrl: './edit-info.component.html',
-  styleUrls: ['./edit-info.component.scss']
+  styleUrls: ['./edit-info.component.scss'],
+  standalone: false
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: EditInfoProps;

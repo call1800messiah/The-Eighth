@@ -14,7 +14,8 @@ export interface EditFlowProps extends Partial<Flow> {
 @Component({
   selector: 'app-edit-flow',
   templateUrl: './edit-flow.component.html',
-  styleUrl: './edit-flow.component.scss'
+  styleUrl: './edit-flow.component.scss',
+  standalone: false
 })
 export class EditFlowComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: EditFlowProps;

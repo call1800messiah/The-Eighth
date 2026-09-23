@@ -11,7 +11,8 @@ import { StorageService } from '../../../core/services/storage.service';
 @Component({
   selector: 'app-edit-image',
   templateUrl: './edit-image.component.html',
-  styleUrls: ['./edit-image.component.scss']
+  styleUrls: ['./edit-image.component.scss'],
+  standalone: false
 })
 export class EditImageComponent implements OnInit, PopoverChild {
   @Input() props: EditImageProps;

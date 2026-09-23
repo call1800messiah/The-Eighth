@@ -8,7 +8,8 @@ import { Die } from '../../enums/die.enum';
 @Component({
   selector: 'app-die',
   templateUrl: './die.component.html',
-  styleUrls: ['./die.component.scss']
+  styleUrls: ['./die.component.scss'],
+  standalone: false
 })
 export class DieComponent implements OnInit {
   @Input() currentNumber: number;

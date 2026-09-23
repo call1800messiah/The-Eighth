@@ -13,7 +13,8 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
 @Component({
   selector: 'app-list-notes',
   templateUrl: './list-notes.component.html',
-  styleUrl: './list-notes.component.scss'
+  styleUrl: './list-notes.component.scss',
+  standalone: false
 })
 export class ListNotesComponent {
   faPlus = faPlus;

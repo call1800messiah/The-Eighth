@@ -13,7 +13,8 @@ import { HistoricEvent } from '../../../overview/models/historic-event';
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss']
+  styleUrls: ['./timeline.component.scss'],
+  standalone: false
 })
 export class TimelineComponent implements OnInit {
   @Input() timelineId: string;

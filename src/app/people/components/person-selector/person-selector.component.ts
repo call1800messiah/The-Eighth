@@ -13,7 +13,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-person-selector',
   templateUrl: './person-selector.component.html',
-  styleUrl: './person-selector.component.scss'
+  styleUrl: './person-selector.component.scss',
+  standalone: false
 })
 export class PersonSelectorComponent implements OnDestroy, OnInit {
   @Output() personSelected = new EventEmitter<Person>();

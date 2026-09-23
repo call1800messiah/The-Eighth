@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-box-grid',
   templateUrl: './box-grid.component.html',
-  styleUrls: ['./box-grid.component.scss']
+  styleUrls: ['./box-grid.component.scss'],
+  standalone: false
 })
 export class BoxGridComponent implements OnInit {
 

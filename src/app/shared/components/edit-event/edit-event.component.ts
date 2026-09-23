@@ -13,7 +13,8 @@ import { HistoricEvent } from '../../../overview/models/historic-event';
 @Component({
   selector: 'app-edit-event',
   templateUrl: './edit-event.component.html',
-  styleUrls: ['./edit-event.component.scss']
+  styleUrls: ['./edit-event.component.scss'],
+  standalone: false
 })
 export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;

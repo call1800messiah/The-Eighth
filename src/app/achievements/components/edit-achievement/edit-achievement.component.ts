@@ -16,7 +16,8 @@ import { PeopleService } from '../../../people/services/people.service';
 @Component({
   selector: 'app-edit-achievement',
   templateUrl: './edit-achievement.component.html',
-  styleUrls: ['./edit-achievement.component.scss']
+  styleUrls: ['./edit-achievement.component.scss'],
+  standalone: false
 })
 export class EditAchievementComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: Achievement;

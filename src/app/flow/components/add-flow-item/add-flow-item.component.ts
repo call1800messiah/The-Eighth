@@ -20,7 +20,8 @@ export interface AddFlowItemProps {
 @Component({
   selector: 'app-add-flow-item',
   templateUrl: './add-flow-item.component.html',
-  styleUrls: ['./add-flow-item.component.scss']
+  styleUrls: ['./add-flow-item.component.scss'],
+  standalone: false
 })
 export class AddFlowItemComponent implements OnInit, PopoverChild {
   @Input() props: AddFlowItemProps;

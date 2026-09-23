@@ -14,7 +14,8 @@ import { EditProjectComponent } from '../edit-project/edit-project.component';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  styleUrls: ['./list.component.scss'],
+  standalone: false
 })
 export class ListComponent implements OnInit {
   filteredProjects$: Observable<Project[]>;

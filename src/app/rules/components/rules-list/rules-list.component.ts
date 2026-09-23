@@ -12,7 +12,8 @@ import { EditRuleComponent } from '../edit-rule/edit-rule.component';
 @Component({
   selector: 'app-rules-list',
   templateUrl: './rules-list.component.html',
-  styleUrl: './rules-list.component.scss'
+  styleUrl: './rules-list.component.scss',
+  standalone: false
 })
 export class RulesListComponent {
   faPlus = faPlus;

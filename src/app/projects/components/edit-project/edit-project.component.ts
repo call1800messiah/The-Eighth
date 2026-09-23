@@ -15,7 +15,8 @@ import { ConfigService } from '../../../core/services/config.service';
 @Component({
   selector: 'app-edit-project',
   templateUrl: './edit-project.component.html',
-  styleUrls: ['./edit-project.component.scss']
+  styleUrls: ['./edit-project.component.scss'],
+  standalone: false
 })
 export class EditProjectComponent implements OnInit, OnDestroy {
   @Input() props: Project;

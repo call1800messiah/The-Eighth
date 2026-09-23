@@ -8,7 +8,8 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-edit-states',
   templateUrl: './edit-states.component.html',
-  styleUrls: ['./edit-states.component.scss']
+  styleUrls: ['./edit-states.component.scss'],
+  standalone: false
 })
 export class EditStatesComponent implements OnInit, PopoverChild {
   @Input() props: Combatant;

@@ -9,7 +9,8 @@ import { Person } from 'src/app/people/models/person';
 @Component({
   selector: 'app-avatar',
   templateUrl: './avatar.component.html',
-  styleUrls: ['./avatar.component.scss']
+  styleUrls: ['./avatar.component.scss'],
+  standalone: false
 })
 export class AvatarComponent implements OnInit {
   @Input() person: Person;

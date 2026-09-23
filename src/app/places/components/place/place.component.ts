@@ -23,7 +23,8 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 @Component({
   selector: 'app-place',
   templateUrl: './place.component.html',
-  styleUrls: ['./place.component.scss']
+  styleUrls: ['./place.component.scss'],
+  standalone: false
 })
 export class PlaceComponent implements OnInit, OnDestroy {
   @Input() entityId?: string; // Optional input for embedded usage

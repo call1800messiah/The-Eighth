@@ -21,7 +21,8 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 @Component({
   selector: 'app-quest',
   templateUrl: './quest.component.html',
-  styleUrls: ['./quest.component.scss']
+  styleUrls: ['./quest.component.scss'],
+  standalone: false
 })
 export class QuestComponent implements OnInit, OnDestroy {
   @Input() entityId?: string; // Optional input for embedded usage

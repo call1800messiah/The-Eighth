@@ -16,7 +16,8 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-combatant',
   templateUrl: './combatant.component.html',
-  styleUrls: ['./combatant.component.scss']
+  styleUrls: ['./combatant.component.scss'],
+  standalone: false
 })
 export class CombatantComponent {
   @Input() combatant: Combatant;

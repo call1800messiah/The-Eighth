@@ -8,7 +8,8 @@ import { Die } from '../../enums/die.enum';
 @Component({
   selector: 'app-quick-dice',
   templateUrl: './quick-dice.component.html',
-  styleUrls: ['./quick-dice.component.scss']
+  styleUrls: ['./quick-dice.component.scss'],
+  standalone: false
 })
 export class QuickDiceComponent implements OnInit {
   @Input() amount: number;

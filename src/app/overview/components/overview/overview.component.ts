@@ -14,7 +14,8 @@ import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component'
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+  styleUrls: ['./overview.component.scss'],
+  standalone: false
 })
 export class OverviewComponent implements OnInit {
   campaignInfo: CampaignData;

@@ -35,7 +35,8 @@ import { EditCapabilityComponent } from '../edit-capability/edit-capability.comp
 @Component({
   selector: 'app-person',
   templateUrl: './person.component.html',
-  styleUrls: ['./person.component.scss']
+  styleUrls: ['./person.component.scss'],
+  standalone: false
 })
 export class PersonComponent implements OnInit, OnDestroy {
   @Input() entityId?: string; // Optional input for embedded usage

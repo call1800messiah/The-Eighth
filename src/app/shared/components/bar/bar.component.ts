@@ -7,7 +7,8 @@ import type { Bar } from '../../models';
 @Component({
   selector: 'app-bar',
   templateUrl: './bar.component.html',
-  styleUrls: ['./bar.component.scss']
+  styleUrls: ['./bar.component.scss'],
+  standalone: false
 })
 export class BarComponent implements OnInit {
   @Input() bar: Bar;

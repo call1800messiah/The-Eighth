@@ -8,7 +8,8 @@ import { PlaceService } from '../../services/place.service';
 @Component({
   selector: 'app-place-summary',
   templateUrl: './place-summary.component.html',
-  styleUrls: ['./place-summary.component.scss']
+  styleUrls: ['./place-summary.component.scss'],
+  standalone: false
 })
 export class PlaceSummaryComponent implements OnInit {
   @Input() place: Place;

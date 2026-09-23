@@ -12,7 +12,8 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
 @Component({
   selector: 'app-note',
   templateUrl: './note.component.html',
-  styleUrls: ['./note.component.scss']
+  styleUrls: ['./note.component.scss'],
+  standalone: false
 })
 export class NoteComponent implements OnInit, OnDestroy {
   @Input() entityId?: string; // Optional input for embedded usage

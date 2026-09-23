@@ -8,7 +8,8 @@ import { DataService } from '../../../core/services/data.service';
 @Component({
   selector: 'app-edit-tags',
   templateUrl: './edit-tags.component.html',
-  styleUrls: ['./edit-tags.component.scss']
+  styleUrls: ['./edit-tags.component.scss'],
+  standalone: false
 })
 export class EditTagsComponent implements OnInit, PopoverChild {
   @Output() dismissPopover = new EventEmitter<boolean>();

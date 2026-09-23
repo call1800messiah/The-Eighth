@@ -16,7 +16,8 @@ export interface EditNoteProps extends Partial<Note> {
 @Component({
   selector: 'app-edit-note',
   templateUrl: './edit-note.component.html',
-  styleUrl: './edit-note.component.scss'
+  styleUrl: './edit-note.component.scss',
+  standalone: false
 })
 export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
   @Input() props: EditNoteProps;

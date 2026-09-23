@@ -13,7 +13,8 @@ import { RulesService } from '../../../rules/services/rules.service';
 @Component({
   selector: 'app-edit-attribute',
   templateUrl: './edit-attribute.component.html',
-  styleUrls: ['./edit-attribute.component.scss']
+  styleUrls: ['./edit-attribute.component.scss'],
+  standalone: false
 })
 export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {
   @Input() props: EditAttributeProps;

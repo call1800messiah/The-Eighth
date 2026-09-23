@@ -10,7 +10,8 @@ import { RulesService } from '../../services/rules.service';
 @Component({
   selector: 'app-edit-rule',
   templateUrl: './edit-rule.component.html',
-  styleUrl: './edit-rule.component.scss'
+  styleUrl: './edit-rule.component.scss',
+  standalone: false
 })
 export class EditRuleComponent implements OnInit, PopoverChild {
   @Input() props: AddableRule;

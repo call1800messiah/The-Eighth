@@ -4,7 +4,8 @@ import { faStop } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-audio-player',
   templateUrl: './audio-player.component.html',
-  styleUrls: ['./audio-player.component.scss']
+  styleUrls: ['./audio-player.component.scss'],
+  standalone: false
 })
 export class AudioPlayerComponent implements OnInit {
   @Input() fileUrl: string;

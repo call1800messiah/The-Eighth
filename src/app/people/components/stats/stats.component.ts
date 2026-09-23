@@ -9,7 +9,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-stats',
   templateUrl: './stats.component.html',
-  styleUrl: './stats.component.scss'
+  styleUrl: './stats.component.scss',
+  standalone: false
 })
 export class StatsComponent implements OnDestroy, OnInit {
   @Input() person$: Observable<Person>;

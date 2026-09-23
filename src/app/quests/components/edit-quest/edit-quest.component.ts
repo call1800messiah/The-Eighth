@@ -12,7 +12,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-quest',
   templateUrl: './edit-quest.component.html',
-  styleUrls: ['./edit-quest.component.scss']
+  styleUrls: ['./edit-quest.component.scss'],
+  standalone: false
 })
 export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: Quest;

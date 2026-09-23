@@ -10,7 +10,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-person-summary',
   templateUrl: './person-summary.component.html',
-  styleUrls: ['./person-summary.component.scss']
+  styleUrls: ['./person-summary.component.scss'],
+  standalone: false
 })
 export class PersonSummaryComponent implements OnInit {
   @Input() person: Person;

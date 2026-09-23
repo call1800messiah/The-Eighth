@@ -11,7 +11,8 @@ import { ProjectRequirement } from '../../models/project-requirement';
 @Component({
   selector: 'app-project-summary',
   templateUrl: './project-summary.component.html',
-  styleUrls: ['./project-summary.component.scss']
+  styleUrls: ['./project-summary.component.scss'],
+  standalone: false
 })
 export class ProjectSummaryComponent implements OnInit {
   @Input() project: Project;

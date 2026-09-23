@@ -6,7 +6,8 @@ import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-unlock-button',
   templateUrl: './unlock-button.component.html',
-  styleUrls: ['./unlock-button.component.scss']
+  styleUrls: ['./unlock-button.component.scss'],
+  standalone: false
 })
 export class UnlockButtonComponent implements OnInit {
   @Output() toggle = new EventEmitter<boolean>();

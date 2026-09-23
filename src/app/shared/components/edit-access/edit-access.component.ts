@@ -13,7 +13,8 @@ import { getEntityType } from '../../utils/entity-type';
 @Component({
   selector: 'app-edit-access',
   templateUrl: './edit-access.component.html',
-  styleUrls: ['./edit-access.component.scss']
+  styleUrls: ['./edit-access.component.scss'],
+  standalone: false
 })
 export class EditAccessComponent implements OnInit, PopoverChild {
   @Input() props: EditAccessProps;

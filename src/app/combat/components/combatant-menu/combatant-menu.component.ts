@@ -10,7 +10,8 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-combatant-menu',
   templateUrl: './combatant-menu.component.html',
-  styleUrls: ['./combatant-menu.component.scss']
+  styleUrls: ['./combatant-menu.component.scss'],
+  standalone: false
 })
 export class CombatantMenuComponent implements OnInit, PopoverChild {
   @Input() props: Combatant;

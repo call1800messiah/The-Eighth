@@ -12,7 +12,8 @@ import { AuthUser } from '../../../auth/models/auth-user';
 @Component({
   selector: 'app-flow-item',
   templateUrl: './flow-item.component.html',
-  styleUrls: ['./flow-item.component.scss']
+  styleUrls: ['./flow-item.component.scss'],
+  standalone: false
 })
 export class FlowItemComponent implements OnDestroy {
   @Input() item: EnrichedFlowItem;

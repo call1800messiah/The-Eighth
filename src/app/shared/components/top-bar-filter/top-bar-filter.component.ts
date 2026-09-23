@@ -8,7 +8,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-top-bar-filter',
   templateUrl: './top-bar-filter.component.html',
-  styleUrls: ['./top-bar-filter.component.scss']
+  styleUrls: ['./top-bar-filter.component.scss'],
+  standalone: false
 })
 export class TopBarFilterComponent implements OnInit, OnDestroy {
   @Input() text: string;

@@ -11,7 +11,8 @@ import { PopoverService } from './core/services/popover.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  standalone: false
 })
 export class AppComponent {
   isLoggedIn$: Observable<boolean>;
