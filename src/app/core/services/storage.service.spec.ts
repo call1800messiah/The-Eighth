@@ -35,32 +35,61 @@ describe('StorageService', () => {
   });
 
   describe('uploadFile()', () => {
-    it('should upload the file to the correct path', async () => {
+    const storageBucket = () => mockApi.storage.from.calls.mostRecent().returnValue;
+    const uploadedPath = () => storageBucket().upload.calls.mostRecent().args[0];
+
+    /** Makes the ref lookup return the currently stored path. */
+    function storedPath(path: string | null) {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: { image: path } }));
+    }
+
+    it('should upload under a unique name so replacements get a new URL', async () => {
       const file = new Blob(['test'], { type: 'text/plain' });
       await service.uploadFile('avatar.jpg', file, 'images');
+      const first = uploadedPath();
+      await service.uploadFile('avatar.jpg', file, 'images');
+      const second = uploadedPath();
 
-      const storageBucket = mockApi.storage.from.calls.mostRecent().returnValue;
-      expect(storageBucket.upload).toHaveBeenCalledWith(
-        'images/avatar.jpg',
-        file,
-        jasmine.objectContaining({ cacheControl: '259200', upsert: true }),
-      );
+      expect(first).toMatch(/^images\/avatar-[A-Za-z0-9_]{10}\.jpg$/);
+      expect(second).not.toBe(first);
+      expect(storageBucket().upload).toHaveBeenCalledWith(first, file, jasmine.objectContaining({ cacheControl: '259200' }));
     });
 
-    it('should update ref after upload when updateRef is provided', async () => {
-      const file = new Blob(['test']);
+    it('should point the ref at the uploaded file', async () => {
+      storedPath(null);
       const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };
 
-      await service.uploadFile('avatar.jpg', file, 'images', updateRef);
+      await service.uploadFile('avatar.jpg', new Blob(['test']), 'images', updateRef);
 
+      const builder = mockApi.from.calls.mostRecent().returnValue;
       expect(mockApi.from).toHaveBeenCalledWith('people');
-      expect(mockApi._queryBuilder.update).toHaveBeenCalledWith({ image: 'images/avatar.jpg' });
-      expect(mockApi._queryBuilder.eq).toHaveBeenCalledWith('id', 'p1');
+      expect(builder.update).toHaveBeenCalledWith({ image: uploadedPath() });
+      expect(builder.eq).toHaveBeenCalledWith('id', 'p1');
+    });
+
+    it('should remove the previous file once the ref points at the new one', async () => {
+      storedPath('images/avatar-OLD0000000.jpg');
+      const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };
+
+      await service.uploadFile('avatar.jpg', new Blob(['test']), 'images', updateRef);
+
+      const builder = mockApi.from.calls.mostRecent().returnValue;
+      expect(storageBucket().remove).toHaveBeenCalledWith(['images/avatar-OLD0000000.jpg']);
+      expect(builder.update).toHaveBeenCalledBefore(storageBucket().remove);
+    });
+
+    it('should not remove anything when there was no previous file', async () => {
+      storedPath('');
+      const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };
+
+      await service.uploadFile('avatar.jpg', new Blob(['test']), 'images', updateRef);
+
+      expect(storageBucket().remove).not.toHaveBeenCalled();
     });
 
     it('should throw on upload error', async () => {
-      const storageBucket = mockApi.storage.from('');
-      storageBucket.upload.and.returnValue(
+      const bucket = mockApi.storage.from('');
+      bucket.upload.and.returnValue(
         Promise.resolve({ data: null, error: { message: 'Upload failed' } })
       );
 
@@ -78,12 +107,16 @@ describe('StorageService', () => {
       expect(storageBucket.remove).toHaveBeenCalledWith(['images/avatar.jpg']);
     });
 
-    it('should clear updateRef attribute after delete', async () => {
+    it('should remove the file the ref points at and clear the ref', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: { image: 'images/avatar-abc1234567.jpg' } }));
       const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };
+
       await service.delete('images', 'avatar.jpg', updateRef);
 
+      const storageBucket = mockApi.storage.from.calls.mostRecent().returnValue;
+      expect(storageBucket.remove).toHaveBeenCalledWith(['images/avatar-abc1234567.jpg']);
       expect(mockApi.from).toHaveBeenCalledWith('people');
-      expect(mockApi._queryBuilder.update).toHaveBeenCalledWith({ image: '' });
+      expect(mockApi.from.calls.mostRecent().returnValue.update).toHaveBeenCalledWith({ image: '' });
     });
 
     it('should throw on storage error', async () => {
