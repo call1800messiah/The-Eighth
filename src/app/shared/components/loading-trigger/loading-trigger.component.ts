@@ -1,9 +1,10 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-loading-trigger',
   templateUrl: './loading-trigger.component.html',
   styleUrl: './loading-trigger.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class LoadingTriggerComponent implements OnDestroy {

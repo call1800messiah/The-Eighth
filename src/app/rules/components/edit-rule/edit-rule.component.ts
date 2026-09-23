@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import type { PopoverChild } from '../../../shared';
@@ -11,6 +11,7 @@ import { RulesService } from '../../services/rules.service';
   selector: 'app-edit-rule',
   templateUrl: './edit-rule.component.html',
   styleUrl: './edit-rule.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditRuleComponent implements OnInit, PopoverChild {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -17,6 +17,7 @@ export interface EditNoteProps extends Partial<Note> {
   selector: 'app-edit-note',
   templateUrl: './edit-note.component.html',
   styleUrl: './edit-note.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {

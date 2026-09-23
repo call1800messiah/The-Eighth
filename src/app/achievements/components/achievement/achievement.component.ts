@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { faTrophy, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
-import type { Achievement } from 'src/app/achievements/models/achievement';
+import type { Achievement } from '../../models/achievement';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { EditAchievementComponent } from '../edit-achievement/edit-achievement.component';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -15,6 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-achievement',
   templateUrl: './achievement.component.html',
   styleUrls: ['./achievement.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AchievementComponent implements OnInit, OnDestroy {

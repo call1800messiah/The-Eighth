@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import type { CampaignData } from '../../models/campaign-data';
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -8,6 +8,7 @@ import { CampaignService } from '../../services/campaign.service';
   selector: 'app-edit-campaign',
   templateUrl: './edit-campaign.component.html',
   styleUrl: './edit-campaign.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditCampaignComponent implements OnInit, PopoverChild {

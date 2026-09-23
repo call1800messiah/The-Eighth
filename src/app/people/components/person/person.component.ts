@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { from, Observable, of, Subscription } from 'rxjs';
@@ -36,6 +36,7 @@ import { EditCapabilityComponent } from '../edit-capability/edit-capability.comp
   selector: 'app-person',
   templateUrl: './person.component.html',
   styleUrls: ['./person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PersonComponent implements OnInit, OnDestroy {

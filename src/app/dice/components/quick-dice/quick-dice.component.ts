@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { DiceRollerService } from '../../services/dice-roller.service';
 import { Die } from '../../enums/die.enum';
@@ -9,6 +9,7 @@ import { Die } from '../../enums/die.enum';
   selector: 'app-quick-dice',
   templateUrl: './quick-dice.component.html',
   styleUrls: ['./quick-dice.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class QuickDiceComponent implements OnInit {

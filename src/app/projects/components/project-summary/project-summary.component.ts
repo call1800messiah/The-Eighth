@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { faAward, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
@@ -12,6 +12,7 @@ import { ProjectRequirement } from '../../models/project-requirement';
   selector: 'app-project-summary',
   templateUrl: './project-summary.component.html',
   styleUrls: ['./project-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ProjectSummaryComponent implements OnInit {

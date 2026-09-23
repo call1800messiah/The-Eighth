@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { faDizzy, faUserNinja } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
@@ -17,6 +17,7 @@ import { CombatService } from '../../services/combat.service';
   selector: 'app-combatant',
   templateUrl: './combatant.component.html',
   styleUrls: ['./combatant.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CombatantComponent {

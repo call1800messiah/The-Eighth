@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
 import { Person } from '../../../people/models/person';
@@ -10,6 +10,7 @@ import { CombatService } from '../../services/combat.service';
   selector: 'app-add-combatant',
   templateUrl: './add-person-as-combatant.component.html',
   styleUrls: ['./add-person-as-combatant.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddPersonAsCombatantComponent implements OnInit, PopoverChild {

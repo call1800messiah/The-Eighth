@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -24,6 +24,7 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
   selector: 'app-place',
   templateUrl: './place.component.html',
   styleUrls: ['./place.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PlaceComponent implements OnInit, OnDestroy {

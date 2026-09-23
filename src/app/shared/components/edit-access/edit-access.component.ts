@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 
 import type { PopoverChild } from '../../models/popover-child';
 import type { User } from '../../../core/models/user';
@@ -14,6 +14,7 @@ import { getEntityType } from '../../utils/entity-type';
   selector: 'app-edit-access',
   templateUrl: './edit-access.component.html',
   styleUrls: ['./edit-access.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditAccessComponent implements OnInit, PopoverChild {

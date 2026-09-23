@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CropperSettings, ImageCropperComponent } from 'ngx-img-cropper';
 
 import type { PopoverChild } from '../../models/popover-child';
@@ -12,6 +12,7 @@ import { StorageService } from '../../../core/services/storage.service';
   selector: 'app-edit-image',
   templateUrl: './edit-image.component.html',
   styleUrls: ['./edit-image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditImageComponent implements OnInit, PopoverChild {

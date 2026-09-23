@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -19,6 +19,7 @@ import { AuthUser } from '../../../auth/models/auth-user';
   selector: 'app-flow-view',
   templateUrl: './flow-view.component.html',
   styleUrls: ['./flow-view.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FlowViewComponent implements OnInit, OnDestroy {

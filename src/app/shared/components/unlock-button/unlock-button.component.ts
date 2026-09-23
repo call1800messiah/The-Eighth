@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -7,6 +7,7 @@ import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
   selector: 'app-unlock-button',
   templateUrl: './unlock-button.component.html',
   styleUrls: ['./unlock-button.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UnlockButtonComponent implements OnInit {

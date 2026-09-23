@@ -18,10 +18,10 @@
   </div>
 
   <app-bar-attributes
-    *ngIf="combatant.person?.pc || isOwnerOrCan('viewHitPoints', combatant.person?.owner)"
+    *ngIf="combatant.person?.pc || isOwnerOrCan('viewHitPoints', $safeNavigationMigration(combatant.person?.owner))"
     [attributeValues$]="combatant.attributes"
     [altCollection]="combatant.person ? null : CombatService.combatCollection"
-    [canEdit]="isOwnerOrCan('editHitPoints', combatant.person?.owner)"
+    [canEdit]="isOwnerOrCan('editHitPoints', $safeNavigationMigration(combatant.person?.owner))"
     [personId]="combatant.person ? combatant.person.id : combatant.id"
   ></app-bar-attributes>
 

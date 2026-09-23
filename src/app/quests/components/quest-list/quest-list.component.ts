@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import { EditQuestComponent } from '../edit-quest/edit-quest.component';
   selector: 'app-quest-list',
   templateUrl: './quest-list.component.html',
   styleUrls: ['./quest-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class QuestListComponent implements OnInit {

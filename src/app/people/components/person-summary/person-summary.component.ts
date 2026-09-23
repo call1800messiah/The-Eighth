@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import type { Person } from '../../models/person';
@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-person-summary',
   templateUrl: './person-summary.component.html',
   styleUrls: ['./person-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PersonSummaryComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter, pairwise } from 'rxjs/operators';
 
@@ -19,6 +19,7 @@ import { getEntityType } from '../../utils/entity-type';
   selector: 'app-access-indicator',
   templateUrl: './access-indicator.component.html',
   styleUrls: ['./access-indicator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {

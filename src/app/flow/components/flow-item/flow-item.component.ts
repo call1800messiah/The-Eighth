@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, ComponentRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ViewContainerRef, ComponentRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { faTimes, faChevronDown, faChevronRight, faGripVertical, faMeteor, faUsers, faCompass, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
 import type { EnrichedFlowItem, EnrichedQuestFlowItem, EnrichedPersonFlowItem, EnrichedPlaceFlowItem, EnrichedNoteFlowItem } from '../../models';
@@ -13,6 +13,7 @@ import { AuthUser } from '../../../auth/models/auth-user';
   selector: 'app-flow-item',
   templateUrl: './flow-item.component.html',
   styleUrls: ['./flow-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FlowItemComponent implements OnDestroy {

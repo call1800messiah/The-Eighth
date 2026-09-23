@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { faDiceD6, faDiceD20 } from '@fortawesome/free-solid-svg-icons';
 
 import { Die } from '../../enums/die.enum';
@@ -9,6 +9,7 @@ import { Die } from '../../enums/die.enum';
   selector: 'app-die',
   templateUrl: './die.component.html',
   styleUrls: ['./die.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DieComponent implements OnInit {

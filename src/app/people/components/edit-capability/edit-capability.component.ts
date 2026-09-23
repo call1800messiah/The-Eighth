@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { PeopleService } from '../../services/people.service';
   selector: 'app-edit-capability',
   templateUrl: './edit-capability.component.html',
   styleUrl: './edit-capability.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditCapabilityComponent implements OnInit, PopoverChild {

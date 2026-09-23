@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
-import { Person } from 'src/app/people/models/person';
+import { Person } from '../../../people/models/person';
 
 
 
@@ -10,6 +10,7 @@ import { Person } from 'src/app/people/models/person';
   selector: 'app-avatar',
   templateUrl: './avatar.component.html',
   styleUrls: ['./avatar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AvatarComponent implements OnInit {

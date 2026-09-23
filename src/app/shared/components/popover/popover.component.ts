@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Type, ViewChild, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
@@ -11,6 +11,7 @@ import { PopoverService } from '../../../core/services/popover.service';
   selector: 'app-popover',
   templateUrl: './popover.component.html',
   styleUrls: ['./popover.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PopoverComponent implements OnInit {
@@ -28,9 +29,9 @@ export class PopoverComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.popover.popoverComponent$.subscribe(([componentResolver, data]) => {
-      if (componentResolver) {
-        this.initializeChildComponent(componentResolver, data);
+    this.popover.popoverComponent$.subscribe(([component, data]) => {
+      if (component) {
+        this.initializeChildComponent(component, data);
       }
     });
   }
@@ -42,9 +43,9 @@ export class PopoverComponent implements OnInit {
   }
 
 
-  private initializeChildComponent(componentResolver, data) {
+  private initializeChildComponent(component: Type<unknown>, data) {
     this.appPopoverHost.clear();
-    this.componentRef = this.appPopoverHost.createComponent(componentResolver);
+    this.componentRef = this.appPopoverHost.createComponent(component);
     (this.componentRef.instance as PopoverChild).props = data;
     (this.componentRef.instance as PopoverChild).dismissPopover.subscribe(() => {
       this.dismissPopover();

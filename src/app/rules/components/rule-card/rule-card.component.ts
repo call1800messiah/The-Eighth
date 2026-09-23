@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import type { AddableRule } from '../../models';
 import { RulesService } from '../../services/rules.service';
 
@@ -6,6 +6,7 @@ import { RulesService } from '../../services/rules.service';
   selector: 'app-rule-card',
   templateUrl: './rule-card.component.html',
   styleUrl: './rule-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RuleCardComponent {

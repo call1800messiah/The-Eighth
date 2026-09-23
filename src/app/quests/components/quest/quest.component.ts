@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, of, Subscription } from 'rxjs';
@@ -22,6 +22,7 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
   selector: 'app-quest',
   templateUrl: './quest.component.html',
   styleUrls: ['./quest.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class QuestComponent implements OnInit, OnDestroy {

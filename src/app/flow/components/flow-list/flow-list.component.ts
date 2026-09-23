@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-flow-list',
   templateUrl: './flow-list.component.html',
   styleUrl: './flow-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FlowListComponent implements OnInit {

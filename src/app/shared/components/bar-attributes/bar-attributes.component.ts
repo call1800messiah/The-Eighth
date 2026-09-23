@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
@@ -16,6 +16,7 @@ import { UtilService } from '../../../core/services/util.service';
   selector: 'app-bar-attributes',
   templateUrl: './bar-attributes.component.html',
   styleUrl: './bar-attributes.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class BarAttributesComponent implements OnInit {

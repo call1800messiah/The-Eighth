@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { combineLatest, from, Subscription } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
@@ -14,6 +14,7 @@ import { RulesService } from '../../../rules/services/rules.service';
   selector: 'app-edit-attribute',
   templateUrl: './edit-attribute.component.html',
   styleUrls: ['./edit-attribute.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditAttributeComponent implements OnDestroy, OnInit, PopoverChild {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -10,6 +10,7 @@ import { CombatService } from '../../services/combat.service';
   selector: 'app-edit-initiative',
   templateUrl: './edit-initiative.component.html',
   styleUrls: ['./edit-initiative.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditInitiativeComponent implements OnInit, PopoverChild {

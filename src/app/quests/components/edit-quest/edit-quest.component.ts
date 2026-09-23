@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-edit-quest',
   templateUrl: './edit-quest.component.html',
   styleUrls: ['./edit-quest.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {

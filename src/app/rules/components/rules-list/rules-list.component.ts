@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,7 @@ import { EditRuleComponent } from '../edit-rule/edit-rule.component';
   selector: 'app-rules-list',
   templateUrl: './rules-list.component.html',
   styleUrl: './rules-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RulesListComponent {

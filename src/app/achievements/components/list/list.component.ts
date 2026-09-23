@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
-import type { Achievement } from 'src/app/achievements/models/achievement';
+import type { Achievement } from '../../models/achievement';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { AchievementService } from '../../services/achievement.service';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -17,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ListComponent implements OnInit {

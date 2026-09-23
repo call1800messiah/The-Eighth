@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { map, tap } from 'rxjs/operators';
@@ -17,6 +17,7 @@ import { UtilService } from '../../../core/services/util.service';
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
   styleUrl: './attributes.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AttributesComponent implements OnInit {

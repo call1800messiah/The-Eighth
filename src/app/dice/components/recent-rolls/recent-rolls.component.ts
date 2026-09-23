@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -15,6 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-recent-rolls',
   templateUrl: './recent-rolls.component.html',
   styleUrls: ['./recent-rolls.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RecentRollsComponent implements OnInit {

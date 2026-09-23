@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TheEighth is an Angular 21 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
+TheEighth is an Angular 22 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
 
 The app was migrated from Firebase/Firestore. Some Firebase-era naming survives in the code — `DataService` still takes a `collection` argument that is really a table name, and the `*DB` model interfaces still carry `access`/`owner` fields that `DataService.store()` strips before writing. Treat these as historical, not as a second backend.
 

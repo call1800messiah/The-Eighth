@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { faBars, faCommentAlt, faDice, faMusic, faPerson } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 
@@ -13,6 +13,7 @@ import { ConfigService } from '../../services/config.service';
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FooterComponent implements OnInit {

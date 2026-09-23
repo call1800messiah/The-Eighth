@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import type { PopoverChild } from '../../models/popover-child';
@@ -9,6 +9,7 @@ import { DataService } from '../../../core/services/data.service';
   selector: 'app-edit-tags',
   templateUrl: './edit-tags.component.html',
   styleUrls: ['./edit-tags.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditTagsComponent implements OnInit, PopoverChild {

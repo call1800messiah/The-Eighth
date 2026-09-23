@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import type { CombatState, PopoverChild } from '../../../shared';
 import type { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
@@ -9,6 +9,7 @@ import { UtilService } from '../../../core/services/util.service';
   selector: 'app-edit-states',
   templateUrl: './edit-states.component.html',
   styleUrls: ['./edit-states.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditStatesComponent implements OnInit, PopoverChild {

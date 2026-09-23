@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faList, faPlus, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons';
 
-import type { Person } from 'src/app/people/models/person';
+import type { Person } from '../../models/person';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
@@ -14,6 +14,7 @@ import { PeopleService } from '../../services/people.service';
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ListComponent implements OnInit {

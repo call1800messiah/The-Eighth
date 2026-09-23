@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import type { PopoverChild } from '../../../shared';
@@ -11,6 +11,7 @@ import { CombatService } from '../../services/combat.service';
   selector: 'app-combatant-menu',
   templateUrl: './combatant-menu.component.html',
   styleUrls: ['./combatant-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CombatantMenuComponent implements OnInit, PopoverChild {

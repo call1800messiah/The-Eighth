@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import type { Flow } from '../../models';
@@ -15,6 +15,7 @@ export interface EditFlowProps extends Partial<Flow> {
   selector: 'app-edit-flow',
   templateUrl: './edit-flow.component.html',
   styleUrl: './edit-flow.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditFlowComponent implements OnInit, OnDestroy, PopoverChild {

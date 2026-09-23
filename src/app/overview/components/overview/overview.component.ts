@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as GSheetReader from 'g-sheets-api';
 
@@ -15,6 +15,7 @@ import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component'
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class OverviewComponent implements OnInit {

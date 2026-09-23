@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -21,6 +21,7 @@ export interface AddFlowItemProps {
   selector: 'app-add-flow-item',
   templateUrl: './add-flow-item.component.html',
   styleUrls: ['./add-flow-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddFlowItemComponent implements OnInit, PopoverChild {

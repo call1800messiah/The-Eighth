@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -15,6 +15,7 @@ import { PlaceService } from '../../../places/services/place.service';
   selector: 'app-edit-person',
   templateUrl: './edit-person.component.html',
   styleUrls: ['./edit-person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
   selector: 'app-list-notes',
   templateUrl: './list-notes.component.html',
   styleUrl: './list-notes.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ListNotesComponent {
