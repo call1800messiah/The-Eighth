@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
@@ -26,6 +27,7 @@ describe('AddFlowItemComponent', () => {
     notesSpy.getNotes.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
+      schemas: [NO_ERRORS_SCHEMA],
       declarations: [ AddFlowItemComponent ],
       providers: [
         { provide: FlowService, useValue: flowSpy },

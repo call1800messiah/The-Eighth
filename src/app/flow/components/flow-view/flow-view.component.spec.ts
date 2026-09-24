@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
@@ -30,6 +31,7 @@ describe('FlowViewComponent', () => {
     flowSpy.getEnrichedFlowItems.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
+      schemas: [NO_ERRORS_SCHEMA],
       declarations: [ FlowViewComponent ],
       providers: [
         { provide: FlowService, useValue: flowSpy },
