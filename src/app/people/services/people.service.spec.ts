@@ -11,6 +11,7 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
 import {
   createMockApiService,
   createMockDataService,
+  createMockQueryBuilder,
   createMockRealtimeService,
   createMockStorageService,
 } from '../../testing/supabase-test-helpers';
@@ -112,6 +113,7 @@ describe('PeopleService', () => {
           'person_liturgies',
           'person_skills',
           'person_spells',
+          'person_tags',
         ],
       );
     });
@@ -403,6 +405,40 @@ describe('PeopleService', () => {
       expect(mockApi.from).toHaveBeenCalledWith('person_attributes');
       expect(mockApi._queryBuilder.delete).toHaveBeenCalled();
       expect(result).toBe(true);
+    });
+  });
+
+  describe('storeTags()', () => {
+    it('should insert only the added tags into person_tags', async () => {
+      const result = await service.storeTags('per1', ['elf'], ['elf', 'mage', 'noble']);
+      expect(mockApi.from).toHaveBeenCalledWith('person_tags');
+      expect(mockApi._queryBuilder.upsert).toHaveBeenCalledWith(
+        [{ person_id: 'per1', tag: 'mage' }, { person_id: 'per1', tag: 'noble' }],
+        { onConflict: 'person_id,tag', ignoreDuplicates: true },
+      );
+      expect(mockApi._queryBuilder.delete).not.toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should delete only the removed tags', async () => {
+      const result = await service.storeTags('per1', ['elf', 'mage', 'noble'], ['mage']);
+      expect(mockApi._queryBuilder.delete).toHaveBeenCalled();
+      expect(mockApi._queryBuilder.eq).toHaveBeenCalledWith('person_id', 'per1');
+      expect(mockApi._queryBuilder.in).toHaveBeenCalledWith('tag', ['elf', 'noble']);
+      expect(mockApi._queryBuilder.upsert).not.toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should not touch the database when nothing changed', async () => {
+      const result = await service.storeTags('per1', ['elf'], ['elf']);
+      expect(mockApi.from).not.toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should report a failed write', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ error: { message: 'denied' } }));
+      const result = await service.storeTags('per1', [], ['elf']);
+      expect(result).toBe(false);
     });
   });
 });

@@ -28,6 +28,7 @@ import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
+import type { EditTagsProps } from '../../../shared/models/edit-tags-props';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
 
 
@@ -223,10 +224,12 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private editTags() {
-    this.popover.showPopover('Tags editieren', EditTagsComponent, {
-      collection: PeopleService.collection,
-      id: this.person.id,
-      tags: this.person.tags,
-    });
+    const personId = this.person.id;
+    const previous = this.person.tags || [];
+    const props: EditTagsProps = {
+      tags: previous,
+      save: (tags) => this.peopleService.storeTags(personId, previous, tags),
+    };
+    this.popover.showPopover('Tags editieren', EditTagsComponent, props);
   }
 }
