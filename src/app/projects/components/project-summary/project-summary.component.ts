@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faAward, faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { Project } from '../../models/project';
@@ -11,9 +11,13 @@ import { ProjectRequirement } from '../../models/project-requirement';
 @Component({
   selector: 'app-project-summary',
   templateUrl: './project-summary.component.html',
-  styleUrls: ['./project-summary.component.scss']
+  styleUrls: ['./project-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ProjectSummaryComponent implements OnInit {
+  private popover = inject(PopoverService);
+
   @Input() project: Project;
   faAward = faAward;
   faStar = faStar;
@@ -21,10 +25,6 @@ export class ProjectSummaryComponent implements OnInit {
   currentPoints = 0;
   requiredPoints = 0;
   markers: number[] = [];
-
-  constructor(
-    private popover: PopoverService,
-  ) { }
 
   ngOnInit(): void {
     const points: { current: number, required: number } = this.project.requirements.reduce((all, requirement) => {

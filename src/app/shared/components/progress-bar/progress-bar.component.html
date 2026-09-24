@@ -1,7 +1,8 @@
 <div class="progress-bar">
   <div class="bar" [style.width]="percentage+'%'"></div>
-  <div class="marker"
-       *ngFor="let marker of markers"
-       [style.left]="marker+'%'"
-  ></div>
+  @for (marker of markers; track marker) {
+    <div class="marker"
+      [style.left]="marker+'%'"
+    ></div>
+  }
 </div>

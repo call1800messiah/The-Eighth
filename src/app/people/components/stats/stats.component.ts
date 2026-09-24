@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type { Person } from '../../models';
@@ -9,18 +9,20 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-stats',
   templateUrl: './stats.component.html',
-  styleUrl: './stats.component.scss'
+  styleUrl: './stats.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class StatsComponent implements OnDestroy, OnInit {
+  private auth = inject(AuthService);
+
   @Input() person$: Observable<Person>;
   attributes$: Observable<Attribute[]>;
   user: AuthUser;
   person: Person;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

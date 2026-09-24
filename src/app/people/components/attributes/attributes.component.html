@@ -1,28 +1,38 @@
-<ng-container *ngIf="(attributes$ | async) as attributes">
-  <div class="attributes box" *ngIf="attributes.length > 0">
-    <div class="attribute" *ngFor="let att of attributes">
-      <button type="button" class="btn-text label" (click)="editAttribute(att)" title="Attribut bearbeiten">
-        {{allowedAttributes[att.type].name}}
-      </button>
-
-      <button
-        *ngIf="allowedAttributes[att.type].rollType"
-        type="button"
-        class="btn-text value"
-        (click)="rollAttribute(att, allowedAttributes[att.type].name)"
-        title="Probe würfeln"
-      >
-        <div *ngIf="att.max !== att.current">
-          {{att.max}} |
+@if ((attributes$ | async); as attributes) {
+  @if (attributes.length > 0) {
+    <div class="attributes box">
+      @for (att of attributes; track att) {
+        <div class="attribute">
+          <button type="button" class="btn-text label" (click)="editAttribute(att)" title="Attribut bearbeiten">
+            {{allowedAttributes[att.type].name}}
+          </button>
+          @if (allowedAttributes[att.type].rollType) {
+            <button
+              type="button"
+              class="btn-text value"
+              (click)="rollAttribute(att, allowedAttributes[att.type].name)"
+              title="Probe würfeln"
+              >
+              @if (att.max !== att.current) {
+                <div>
+                  {{att.max}} |
+                </div>
+              }
+              {{att.current}}
+            </button>
+          }
+          @if (!allowedAttributes[att.type].rollType) {
+            <div class="value">
+              @if (att.max !== att.current) {
+                <div>
+                  {{att.max}} |
+                </div>
+              }
+              {{att.current}}
+            </div>
+          }
         </div>
-        {{att.current}}
-      </button>
-      <div class="value" *ngIf="!allowedAttributes[att.type].rollType">
-        <div *ngIf="att.max !== att.current">
-          {{att.max}} |
-        </div>
-        {{att.current}}
-      </div>
+      }
     </div>
-  </div>
-</ng-container>
+  }
+}

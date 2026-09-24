@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -12,19 +12,21 @@ import { EditRuleComponent } from '../edit-rule/edit-rule.component';
 @Component({
   selector: 'app-rules-list',
   templateUrl: './rules-list.component.html',
-  styleUrl: './rules-list.component.scss'
+  styleUrl: './rules-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RulesListComponent {
+  private popover = inject(PopoverService);
+  private rulesService = inject(RulesService);
+
   faPlus = faPlus;
   filteredRules$: Observable<Record<string,AddableRule[]>>;
   filterText$: BehaviorSubject<string>;
   initialFilterText: string;
   ruleTypes = RulesService.ruleTypes;
 
-  constructor(
-    private popover: PopoverService,
-    private rulesService: RulesService
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('rules-filter') || '';
     this.filterText$ = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredRules$ = combineLatest([

@@ -7,9 +7,11 @@
 
     <div class="form-group">
       <select id="type" formControlName="type" required>
-        <option [ngValue]="i" *ngFor="let type of infoTypes; let i = index">
-          {{type}}
-        </option>
+        @for (type of infoTypes; track type; let i = $index) {
+          <option [ngValue]="i">
+            {{type}}
+          </option>
+        }
       </select>
       <label for="type">Art</label>
     </div>
@@ -18,12 +20,13 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="props.info">
-      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
-        Löschen
-      </button>
-    </div>
+    @if (props.info) {
+      <div class="locked-input">
+        <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+        <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+          Löschen
+        </button>
+      </div>
+    }
   </form>
 </div>

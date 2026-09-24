@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import type { Person } from '../../../people';
 import { BehaviorSubject } from 'rxjs';
 
@@ -7,7 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SidebarComponent {
   selectedPerson$: BehaviorSubject<Person | null>;

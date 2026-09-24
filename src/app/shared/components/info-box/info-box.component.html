@@ -1,7 +1,9 @@
 <div class="info-block box">
   <div class="heading">{{infoTypes[key]}}</div>
-  <div class="detail" *ngFor="let info of infos">
-    <div class="content" (click)="detailClicked(info)">{{info.content}}</div>
-    <app-access-indicator [item]="info"></app-access-indicator>
-  </div>
+  @for (info of infos; track info) {
+    <div class="detail">
+      <div class="content" (click)="detailClicked(info)">{{info.content}}</div>
+      <app-access-indicator [item]="info"></app-access-indicator>
+    </div>
+  }
 </div>

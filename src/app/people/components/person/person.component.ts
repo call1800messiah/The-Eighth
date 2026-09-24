@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { from, Observable, of, Subscription } from 'rxjs';
@@ -28,6 +28,7 @@ import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
+import type { EditTagsProps } from '../../../shared/models/edit-tags-props';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
 
 
@@ -35,9 +36,19 @@ import { EditCapabilityComponent } from '../edit-capability/edit-capability.comp
 @Component({
   selector: 'app-person',
   templateUrl: './person.component.html',
-  styleUrls: ['./person.component.scss']
+  styleUrls: ['./person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PersonComponent implements OnInit, OnDestroy {
+  private auth = inject(AuthService);
+  private data = inject(DataService);
+  private navigation = inject(NavigationService);
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+  private route = inject(ActivatedRoute);
+  private util = inject(UtilService);
+
   @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
@@ -91,15 +102,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   user: AuthUser;
   private personSub: Subscription;
 
-  constructor(
-    private auth: AuthService,
-    private data: DataService,
-    private navigation: NavigationService,
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-    private route: ActivatedRoute,
-    private util: UtilService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 
@@ -221,10 +224,12 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private editTags() {
-    this.popover.showPopover('Tags editieren', EditTagsComponent, {
-      collection: PeopleService.collection,
-      id: this.person.id,
-      tags: this.person.tags,
-    });
+    const personId = this.person.id;
+    const previous = this.person.tags || [];
+    const props: EditTagsProps = {
+      tags: previous,
+      save: (tags) => this.peopleService.storeTags(personId, previous, tags),
+    };
+    this.popover.showPopover('Tags editieren', EditTagsComponent, props);
   }
 }

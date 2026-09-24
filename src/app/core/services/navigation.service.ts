@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import {
   faChartBar,
@@ -23,6 +23,8 @@ import { NavEntry } from '../models/nav-entry';
   providedIn: 'root'
 })
 export class NavigationService {
+  private router = inject(Router);
+
   public navVisible$: BehaviorSubject<boolean>;
   public pageLabel$: BehaviorSubject<string>;
   public showBackButton$: BehaviorSubject<boolean>;
@@ -87,9 +89,7 @@ export class NavigationService {
     },
   ];
 
-  constructor(
-    private router: Router,
-  ) {
+  constructor() {
     this.navVisible$ = new BehaviorSubject(this.showNav);
     this.activeNavigation = this.navigation[0];
     this.pageLabel$ = new BehaviorSubject(this.activeNavigation.label);

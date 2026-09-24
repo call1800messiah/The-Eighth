@@ -6,25 +6,33 @@
 
   <button type="button" class="btn-icon btn-add" (click)="addCombatant()">
     <fa-icon [icon]="faPlus" [fixedWidth]="true"
-             title="Kämpfer hinzufügen"></fa-icon>
+    title="Kämpfer hinzufügen"></fa-icon>
   </button>
 
   <button type="button" class="btn-icon btn-people" (click)="showAddPersonDialog()">
     <fa-icon [icon]="faUsers" [fixedWidth]="true"
-             title="Person als Kämpfer hinzufügen"></fa-icon>
+    title="Person als Kämpfer hinzufügen"></fa-icon>
   </button>
 
   <button type="button" class="btn-icon" [ngClass]="{'active': showAsList}" (click)="toggleDisplayStyle()">
     <fa-icon [icon]="faList" [fixedWidth]="true"
-             title="Anzeigestil wechseln"></fa-icon>
+    title="Anzeigestil wechseln"></fa-icon>
   </button>
 </div>
 
 
-<app-box-grid *ngIf="!showAsList">
-  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant"></app-combatant>
-</app-box-grid>
+@if (!showAsList) {
+  <app-box-grid>
+    @for (combatant of combatants$ | async; track combatant) {
+      <app-combatant [combatant]="combatant"></app-combatant>
+    }
+  </app-box-grid>
+}
 
-<div *ngIf="showAsList">
-  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant" [showAsList]="true"></app-combatant>
-</div>
+@if (showAsList) {
+  <div>
+    @for (combatant of combatants$ | async; track combatant) {
+      <app-combatant [combatant]="combatant" [showAsList]="true"></app-combatant>
+    }
+  </div>
+}

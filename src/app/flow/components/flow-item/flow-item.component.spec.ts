@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FlowItemComponent } from './flow-item.component';
@@ -37,6 +38,7 @@ describe('FlowItemComponent', () => {
     const authSpy = { user: { id: 'u1', name: 'Test', isGM: true } };
 
     await TestBed.configureTestingModule({
+      schemas: [NO_ERRORS_SCHEMA],
       declarations: [ FlowItemComponent ],
       providers: [
         { provide: AuthService, useValue: authSpy }

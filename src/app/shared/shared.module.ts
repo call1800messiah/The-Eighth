@@ -23,7 +23,6 @@ import { UnlockButtonComponent } from './components/unlock-button/unlock-button.
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { BoxGridComponent } from './components/box-grid/box-grid.component';
 import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filter.component';
-import { TplVarDirective } from './directives/tpl-var.directive';
 import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
@@ -60,7 +59,6 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     SelectOnFocusDirective,
     TimelineComponent,
     TopBarFilterComponent,
-    TplVarDirective,
     UnlockButtonComponent,
     ContextMenuComponent,
     EditAccessComponent,
@@ -108,7 +106,6 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     TabPanelComponent,
     TimelineComponent,
     TopBarFilterComponent,
-    TplVarDirective,
     UnlockButtonComponent,
   ],
 })

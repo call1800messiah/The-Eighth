@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -16,6 +16,10 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root',
 })
 export class PlaceService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+  private storage = inject(StorageService);
+
   static readonly collection = 'places';
   static placeTypes = {
     barony: 'Baronie',
@@ -35,12 +39,6 @@ export class PlaceService {
     town: 'Dorf',
   };
   private places$: BehaviorSubject<Place[]>;
-
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-    private storage: StorageService,
-  ) {}
 
 
   getPlaceById(placeId: string): Observable<Place> {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-top-bar-filter',
   templateUrl: './top-bar-filter.component.html',
-  styleUrls: ['./top-bar-filter.component.scss']
+  styleUrls: ['./top-bar-filter.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TopBarFilterComponent implements OnInit, OnDestroy {
   @Input() text: string;

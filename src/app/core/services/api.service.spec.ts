@@ -50,7 +50,7 @@ describe('ApiService', () => {
         Promise.resolve({ data: { session: { user: mockUser } }, error: null })
       );
 
-      const svc = new ApiService(mockSupabase as any);
+      const svc = TestBed.runInInjectionContext(() => new ApiService());
       svc.getAuthState().subscribe(user => {
         expect(user).toEqual(mockUser as any);
         done();

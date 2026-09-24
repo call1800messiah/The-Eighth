@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faList, faPlus, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons';
 
-import type { Person } from 'src/app/people/models/person';
+import type { Person } from '../../models/person';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
@@ -13,9 +13,14 @@ import { PeopleService } from '../../services/people.service';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  styleUrls: ['./list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ListComponent implements OnInit {
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+
   faList = faList;
   faPlus = faPlus;
   faSkullCrossbones = faSkullCrossbones;
@@ -26,10 +31,7 @@ export class ListComponent implements OnInit {
   showDead = false;
   showDead$: BehaviorSubject<boolean>;
 
-  constructor(
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('people-filter') || '';
     this.showAsList = localStorage.getItem('people-show-as-list') === 'true';
     this.showDead = localStorage.getItem('people-show-dead') === 'true';

@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { EstimatedAgePipe } from './estimated-age.pipe';
 import { CampaignService } from '../../overview/services/campaign.service';
@@ -6,13 +7,18 @@ describe('EstimatedAgePipe', () => {
   let pipe: EstimatedAgePipe;
   let mockCampaignService: any;
 
+  function createPipe(campaignService: Partial<CampaignService>) {
+    TestBed.configureTestingModule({ providers: [{ provide: CampaignService, useValue: campaignService }] });
+    return TestBed.runInInjectionContext(() => new EstimatedAgePipe());
+  }
+
   beforeEach(() => {
     mockCampaignService = {
       getCampaignInfo: jasmine.createSpy('getCampaignInfo').and.returnValue(
         of({ date: '1 Praios 1040' })
       ),
     };
-    pipe = new EstimatedAgePipe(mockCampaignService as CampaignService);
+    pipe = createPipe(mockCampaignService);
   });
 
   afterEach(() => {
@@ -33,7 +39,8 @@ describe('EstimatedAgePipe', () => {
     const noCampaign = {
       getCampaignInfo: jasmine.createSpy().and.returnValue(of(null)),
     };
-    const p = new EstimatedAgePipe(noCampaign as any);
+    TestBed.resetTestingModule();
+    const p = createPipe(noCampaign);
     expect(p.transform(1010)).toBe('1010 BF');
     p.ngOnDestroy();
   });

@@ -2,7 +2,7 @@
   <app-top-bar-filter placeholder="z.B. Name, Beschreibung" (filterChanged)="onFilterChanged($event)" [text]="initialFilterText">
     <button type="button" class="btn-icon" (click)="showAddDialog()">
       <fa-icon [icon]="faPlus" [fixedWidth]="true"
-               title="Queste hinzufügen"></fa-icon>
+      title="Queste hinzufügen"></fa-icon>
     </button>
   </app-top-bar-filter>
 
@@ -11,21 +11,27 @@
     <label for="showCompleted">Abgeschlossene Quests anzeigen</label>
   </div>
 
-  <ul class="quests unstyled-list" *ngIf="filterText.value === ''">
-    <app-quest-summary
-      *ngFor="let quest of quests$ | async"
-      [quest]="quest"
-      [showCompleted]="showCompleted"
-    ></app-quest-summary>
-  </ul>
+  @if (filterText.value === '') {
+    <ul class="quests unstyled-list">
+      @for (quest of quests$ | async; track quest) {
+        <app-quest-summary
+          [quest]="quest"
+          [showCompleted]="showCompleted"
+        ></app-quest-summary>
+      }
+    </ul>
+  }
 
 
-  <ul class="filtered-quests unstyled-list" *ngIf="filterText.value !== ''">
-    <app-quest-summary
-      *ngFor="let quest of filteredQuests$ | async"
-      [quest]="quest"
-      [showCompleted]="showCompleted"
-      [showSubQuests]="false"
-    ></app-quest-summary>
-  </ul>
+  @if (filterText.value !== '') {
+    <ul class="filtered-quests unstyled-list">
+      @for (quest of filteredQuests$ | async; track quest) {
+        <app-quest-summary
+          [quest]="quest"
+          [showCompleted]="showCompleted"
+          [showSubQuests]="false"
+        ></app-quest-summary>
+      }
+    </ul>
+  }
 </app-container>

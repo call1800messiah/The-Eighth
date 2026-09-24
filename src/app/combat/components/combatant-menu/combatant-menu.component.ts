@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import type { PopoverChild } from '../../../shared';
@@ -10,19 +10,19 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-combatant-menu',
   templateUrl: './combatant-menu.component.html',
-  styleUrls: ['./combatant-menu.component.scss']
+  styleUrls: ['./combatant-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CombatantMenuComponent implements OnInit, PopoverChild {
+  private combatService = inject(CombatService);
+
   @Input() props: Combatant;
   @Output() dismissPopover = new EventEmitter<boolean>();
   combatantForm = new UntypedFormGroup({
     name: new UntypedFormControl(''),
   });
   deleteDisabled = true;
-
-  constructor(
-    private combatService: CombatService,
-  ) {}
 
   ngOnInit(): void {
     this.combatantForm.patchValue(this.props);

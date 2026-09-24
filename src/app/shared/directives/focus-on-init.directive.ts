@@ -1,13 +1,12 @@
-import { Directive, ElementRef, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnInit, inject } from '@angular/core';
 
 @Directive({
-  selector: '[appFocusOnInit]'
+  selector: '[appFocusOnInit]',
+  standalone: false
 })
 export class FocusOnInitDirective implements OnInit {
+  private elementRef = inject(ElementRef);
 
-  constructor(
-    private elementRef: ElementRef
-  ) {}
 
   ngOnInit() {
     const elem = this.elementRef.nativeElement;

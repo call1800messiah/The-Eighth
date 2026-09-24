@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TheEighth is an Angular 18 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
+TheEighth is an Angular 22 application for managing tabletop RPG campaigns. It uses **Supabase** (PostgreSQL + Auth + Storage + Realtime) as the backend and supports multi-tenant deployments for different game systems (e.g. The Dark Eye 5th edition, custom systems).
 
 The app was migrated from Firebase/Firestore. Some Firebase-era naming survives in the code — `DataService` still takes a `collection` argument that is really a table name, and the `*DB` model interfaces still carry `access`/`owner` fields that `DataService.store()` strips before writing. Treat these as historical, not as a second backend.
 
@@ -33,10 +33,10 @@ ng test --watch=false --browsers=ChromeHeadless
 npx tsc --noEmit -p tsconfig.app.json
 ```
 
-`ng lint` does **not** work: `angular.json` still points at the
-`@angular-devkit/build-angular:tslint` builder, which no longer exists, and
-neither tslint nor eslint is installed. Migrating to `@angular-eslint` is
-outstanding; until then use `tsc --noEmit` as the static check.
+There is no linter: the old tslint target has been removed and eslint is not
+installed. Migrating to `@angular-eslint` is outstanding; until then use
+`tsc --noEmit` as the static check. There are no e2e tests either (Protractor
+was removed).
 
 ### Database
 ```bash
@@ -67,6 +67,10 @@ tar xf the-eighth-deploy-*.tar
 
 See `docker-compose.portainer.yml` for the full server-side sequence, and `deploy/supabase/` for the Supabase stack itself.
 
+The archive leaves out the Firebase service account key and the user password files (`data/user-credentials.json`, `data/export/_user_credentials.json`). Only a first-time Firestore migration needs them: pass `-IncludeMigrationSecrets` / `--include-migration-secrets` for that, and delete them from the server afterwards.
+
+The site is public, behind Nginx Proxy Manager on the same Docker host, which terminates TLS. The app's nginx (`docker/nginx.conf`) takes the client IP from `X-Forwarded-For` only for Docker-range sources, rate-limits the GoTrue password and mail endpoints, and sets the security headers from `docker/security-headers.conf`. Any `location` that calls `add_header` must `include` that file again, because nginx drops inherited headers in that case.
+
 ## Setup Requirements
 
 ### Environment Configuration
@@ -93,6 +97,8 @@ See `docker-compose.portainer.yml` for the full server-side sequence, and `deplo
    ```
 
 3. For production, `src/environments/environment.prod.ts` has the same shape with `production: true`. Leave `supabase.url` **empty** there: the client falls back to `window.location.origin`, and the app's own nginx reverse-proxies `/rest/v1/`, `/auth/v1/`, `/realtime/v1/` and `/storage/v1/` to the Supabase gateway. That keeps the browser on a single origin with no public Supabase hostname. The anon key is baked in at build time from `deploy/supabase/.env`.
+
+`NG_APP_*` variables are inlined at build time by `@ngx-env/builder`. The build is esbuild-based, which only substitutes variables that are set, so `angular.json` sets `ngxEnv.define` to `process.env`: that replaces the whole object, and an unset variable reads as `undefined` instead of leaving a `process.env` reference that throws in the browser.
 
 ## Architecture
 
@@ -122,7 +128,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **DataService**: CRUD with owner handling; `store()` strips the Firebase-era `access`, `collection` and `isPrivate` fields, maps `owner` → `owner_id`, and defaults `owner_id` to the current user on insert
 - **RealtimeService** (`supabase-realtime.service.ts`): Wraps Supabase realtime as `watch()` / `watchOne()`, with a re-fetch-on-change model
 - **UserService**: User directory from the `users` table
-- **StorageService**: Supabase Storage upload/download against the tenant bucket
+- **StorageService**: Supabase Storage upload/download against the tenant bucket. Uploads for an entity go to `<folder>/<entity id>/<name>-<nanoid>.<ext>`: the unique name gives replacements a new URL (so realtime and the browser cache pick them up), and the storage policies (migration 006) let the entity's owner write inside its folder. Inside storage policy subqueries, write `objects.name` — `people`/`places` have their own `name` column that an unqualified `name` resolves to.
 - **ConfigService**: App config, sidebar state (localStorage), ID generation (nanoid)
 - **NavigationService**, **PopoverService**, **UtilService**: unchanged from before the migration
 
@@ -202,7 +208,7 @@ All services use `providedIn: 'root'`.
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is green** (328 passing as of 2026-09-22). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+- **The suite is green** (332 passing as of 2026-09-24). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
 
 ### Writing specs against Supabase
 Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:

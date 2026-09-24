@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -13,9 +13,14 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-person-selector',
   templateUrl: './person-selector.component.html',
-  styleUrl: './person-selector.component.scss'
+  styleUrl: './person-selector.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PersonSelectorComponent implements OnDestroy, OnInit {
+  private auth = inject(AuthService);
+  private peopleService = inject(PeopleService);
+
   @Output() personSelected = new EventEmitter<Person>();
   people$: Observable<Person[]>;
   user: AuthUser;
@@ -24,10 +29,7 @@ export class PersonSelectorComponent implements OnDestroy, OnInit {
   });
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private peopleService: PeopleService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
     this.people$ = this.peopleService.getPeople().pipe(
       map(people => people.filter(person => person.owner === this.user.id)),

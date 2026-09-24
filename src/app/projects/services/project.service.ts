@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -16,14 +16,12 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class ProjectService {
+  private api = inject(ApiService);
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'projects';
   private projects$: BehaviorSubject<Project[]>;
-
-  constructor(
-    private api: ApiService,
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 
@@ -34,6 +32,7 @@ export class ProjectService {
         'projects',
         query => query.select('*, project_milestones(*), project_requirements(*)'),
         'projects',
+        ['project_milestones', 'project_requirements'],
       ).pipe(
         map(rows => this.transformProjects(rows))
       ).subscribe((projects: Project[]) => {

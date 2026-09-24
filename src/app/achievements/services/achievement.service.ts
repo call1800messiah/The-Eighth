@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -16,15 +16,13 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class AchievementService {
+  private api = inject(ApiService);
+  private data = inject(DataService);
+  private peopleService = inject(PeopleService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'achievements';
   private achievements$: Observable<Achievement[]>;
-
-  constructor(
-    private api: ApiService,
-    private data: DataService,
-    private peopleService: PeopleService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 
@@ -35,6 +33,7 @@ export class AchievementService {
           'achievements',
           query => query.select('*, achievement_people(person_id)'),
           'achievements',
+          ['achievement_people'],
         ),
         this.peopleService.getPeople(),
       ]).pipe(

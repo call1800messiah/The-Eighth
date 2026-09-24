@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,13 +12,11 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class InventoryService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   public static readonly collection = 'inventory';
   private inventory$: BehaviorSubject<InventoryItem[]>;
-
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {}
 
 
 

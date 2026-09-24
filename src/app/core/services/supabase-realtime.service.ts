@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { Observable, shareReplay, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
@@ -32,6 +32,8 @@ const ACCESS_CONTROLLED_TABLES: Partial<Record<TableName, string>> = {
   providedIn: 'root'
 })
 export class RealtimeService implements OnDestroy {
+  private supabase = inject<SupabaseClient<Database>>(SUPABASE_CLIENT);
+
   private channels: RealtimeChannel[] = [];
   private cache = new Map<string, Observable<any>>();
 
@@ -41,10 +43,6 @@ export class RealtimeService implements OnDestroy {
    */
   private documentAccessChanges$ = new Subject<string>();
   private documentAccessChannelReady = false;
-
-  constructor(
-    @Inject(SUPABASE_CLIENT) private supabase: SupabaseClient<Database>,
-  ) {}
 
 
   /**

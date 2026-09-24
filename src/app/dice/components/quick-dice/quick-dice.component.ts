@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 
 import { DiceRollerService } from '../../services/dice-roller.service';
 import { Die } from '../../enums/die.enum';
@@ -8,17 +8,17 @@ import { Die } from '../../enums/die.enum';
 @Component({
   selector: 'app-quick-dice',
   templateUrl: './quick-dice.component.html',
-  styleUrls: ['./quick-dice.component.scss']
+  styleUrls: ['./quick-dice.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class QuickDiceComponent implements OnInit {
+  private diceRoller = inject(DiceRollerService);
+
   @Input() amount: number;
   @Input() type: Die;
   rolls = [];
   total = 0;
-
-  constructor(
-    private diceRoller: DiceRollerService,
-  ) { }
 
   ngOnInit(): void {
     for (let i = 0; i < this.amount; i++) {

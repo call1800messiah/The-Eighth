@@ -1,9 +1,11 @@
 <div>
   <form [formGroup]="itemForm" (ngSubmit)="save()">
-    <div class="form-group" *ngIf="!props.id || props.owner === userID">
-      <input type="checkbox" id="isPrivate" formControlName="isPrivate">
-      <label for="isPrivate">Verborgen</label>
-    </div>
+    @if (!props.id || props.owner === userID) {
+      <div class="form-group">
+        <input type="checkbox" id="isPrivate" formControlName="isPrivate">
+        <label for="isPrivate">Verborgen</label>
+      </div>
+    }
     <div class="form-group">
       <input type="text" id="name" formControlName="name" required>
       <label for="name">Name *</label>
@@ -20,12 +22,13 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="props.id">
-      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
-        Löschen
-      </button>
-    </div>
+    @if (props.id) {
+      <div class="locked-input">
+        <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+        <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+          Löschen
+        </button>
+      </div>
+    }
   </form>
 </div>

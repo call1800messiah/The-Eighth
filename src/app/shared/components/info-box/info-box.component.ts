@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { faMask } from '@fortawesome/free-solid-svg-icons';
 
 import { Info } from '../../models/info';
@@ -10,7 +10,9 @@ import { InfoType } from '../../../core/enums/info-type.enum';
 @Component({
   selector: 'app-info-box',
   templateUrl: './info-box.component.html',
-  styleUrls: ['./info-box.component.scss']
+  styleUrls: ['./info-box.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class InfoBoxComponent implements OnInit {
   @Input() key: InfoType;

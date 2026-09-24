@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -9,19 +9,19 @@ import { CombatService } from '../../services/combat.service';
 @Component({
   selector: 'app-edit-initiative',
   templateUrl: './edit-initiative.component.html',
-  styleUrls: ['./edit-initiative.component.scss']
+  styleUrls: ['./edit-initiative.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditInitiativeComponent implements OnInit, PopoverChild {
+  private combat = inject(CombatService);
+
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   initiativeForm = new UntypedFormGroup({
     active: new UntypedFormControl(false),
     initiative: new UntypedFormControl(0),
   });
-
-  constructor(
-    private combat: CombatService,
-  ) { }
 
   ngOnInit(): void {
     if (this.props.initiative !== undefined && this.props.active !== undefined) {

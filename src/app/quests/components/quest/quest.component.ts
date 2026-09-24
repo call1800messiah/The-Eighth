@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Observable, of, Subscription } from 'rxjs';
@@ -21,9 +21,17 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 @Component({
   selector: 'app-quest',
   templateUrl: './quest.component.html',
-  styleUrls: ['./quest.component.scss']
+  styleUrls: ['./quest.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class QuestComponent implements OnInit, OnDestroy {
+  private data = inject(DataService);
+  private navigation = inject(NavigationService);
+  private popover = inject(PopoverService);
+  private questService = inject(QuestsService);
+  private route = inject(ActivatedRoute);
+
   @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
@@ -49,15 +57,6 @@ export class QuestComponent implements OnInit, OnDestroy {
   quest: Quest;
   questSub: Subscription;
   questTypes = QuestsService.questTypes;
-
-  constructor(
-    private data: DataService,
-    private navigation: NavigationService,
-    private popover: PopoverService,
-    private questService: QuestsService,
-    private route: ActivatedRoute,
-  ) {
-  }
 
   ngOnInit(): void {
     // Support both routed and embedded usage

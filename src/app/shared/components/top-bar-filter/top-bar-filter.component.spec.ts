@@ -1,3 +1,4 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TopBarFilterComponent } from './top-bar-filter.component';
@@ -8,7 +9,8 @@ describe('TopBarFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TopBarFilterComponent ]
+      declarations: [ TopBarFilterComponent ],
+      imports: [ReactiveFormsModule],
     })
     .compileComponents();
   });

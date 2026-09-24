@@ -1,22 +1,23 @@
-<li class="quest"
+@if (showCompleted || !quest.completed) {
+  <li class="quest"
     [ngClass]="quest.type.concat(quest.completed ? ' completed' : '')"
-    *ngIf="showCompleted || !quest.completed"
->
-  <app-access-indicator [item]="quest"></app-access-indicator>
-
-  <div class="type">{{questTypes[quest.type]}}</div>
-
-  <a class="details" [routerLink]="[quest.id]">
-    <div class="name">{{quest.name}}</div>
-    <div class="description">{{quest.description}}</div>
-  </a>
-
-  <ul class="subquests unstyled-list" *ngIf="quest.subQuests && showSubQuests">
-    <app-quest-summary
-      *ngFor="let subQuest of quest.subQuests"
-      [quest]="subQuest"
-      [showCompleted]="showCompleted"
-      [showSubQuests]="showSubQuests"
-    ></app-quest-summary>
-  </ul>
-</li>
+    >
+    <app-access-indicator [item]="quest"></app-access-indicator>
+    <div class="type">{{questTypes[quest.type]}}</div>
+    <a class="details" [routerLink]="[quest.id]">
+      <div class="name">{{quest.name}}</div>
+      <div class="description">{{quest.description}}</div>
+    </a>
+    @if (quest.subQuests && showSubQuests) {
+      <ul class="subquests unstyled-list">
+        @for (subQuest of quest.subQuests; track subQuest) {
+          <app-quest-summary
+            [quest]="subQuest"
+            [showCompleted]="showCompleted"
+            [showSubQuests]="showSubQuests"
+          ></app-quest-summary>
+        }
+      </ul>
+    }
+  </li>
+}

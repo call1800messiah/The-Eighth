@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -13,19 +13,21 @@ import { PlaceService } from '../../services/place.service';
 @Component({
   selector: 'app-place-list',
   templateUrl: './place-list.component.html',
-  styleUrls: ['./place-list.component.scss']
+  styleUrls: ['./place-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PlaceListComponent implements OnInit {
+  private placeService = inject(PlaceService);
+  private popover = inject(PopoverService);
+
   filteredPlaces$: Observable<Place[]>;
   faPlus = faPlus;
   filterText: BehaviorSubject<string>;
   initialFilterText: string;
   places$: Observable<Place[]>;
 
-  constructor(
-    private placeService: PlaceService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.initialFilterText = localStorage.getItem('places-filter') || '';
     this.filterText = new BehaviorSubject<string>(this.initialFilterText);
     this.filteredPlaces$ = combineLatest([

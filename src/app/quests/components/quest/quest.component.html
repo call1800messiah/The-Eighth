@@ -1,45 +1,56 @@
-<app-container width="medium" class="quest" *ngIf="quest">
-  <div class="info box">
-    <app-access-indicator [item]="quest"></app-access-indicator>
-
-    <div class="type">
-      {{questTypes[quest.type]}}
+@if (quest) {
+  <app-container width="medium" class="quest">
+    <div class="info box">
+      <app-access-indicator [item]="quest"></app-access-indicator>
+      <div class="type">
+        {{questTypes[quest.type]}}
+      </div>
+      @if (quest.parent && quest.parent.name) {
+        <div class="parent">
+          Teil von: <a [routerLink]="['/quests/', quest.parent.id]">{{quest.parent.name}}</a>
+        </div>
+      }
+      @if (quest.description) {
+        <div class="description">
+          {{quest.description}}
+        </div>
+      }
     </div>
-    <div class="parent" *ngIf="quest.parent && quest.parent.name">
-      Teil von: <a [routerLink]="['/quests/', quest.parent.id]">{{quest.parent.name}}</a>
+    @if (quest.subQuests) {
+      @if (quest.subQuests.length > 0) {
+        <div class="subquests box">
+          <div class="heading">Subquests</div>
+          <ul class="unstyled-list">
+            @for (subQuest of quest.subQuests; track subQuest) {
+              <li class="subquest">
+                <a [routerLink]="['/quests/', subQuest.id]">{{subQuest.name}}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+    <div class="details">
+      <div class="header">
+        <h2>Details</h2>
+        <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+          <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+          @if (menuOpen) {
+            <app-context-menu [owner]="quest.owner" [menu]="menu"></app-context-menu>
+          }
+        </button>
+      </div>
     </div>
-    <div class="description" *ngIf="quest.description">
-      {{quest.description}}
-    </div>
-  </div>
-
-  <ng-container *ngIf="quest.subQuests">
-    <div class="subquests box" *ngIf="quest.subQuests.length > 0">
-      <div class="heading">Subquests</div>
-      <ul class="unstyled-list">
-        <li class="subquest" *ngFor="let subQuest of quest.subQuests">
-          <a [routerLink]="['/quests/', subQuest.id]">{{subQuest.name}}</a>
-        </li>
-      </ul>
-    </div>
-  </ng-container>
-
-  <div class="details">
-    <div class="header">
-      <h2>Details</h2>
-
-      <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
-        <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
-        <app-context-menu *ngIf="menuOpen" [owner]="quest.owner" [menu]="menu"></app-context-menu>
-      </button>
-    </div>
-  </div>
-
-  <div class="detail-info" *ngIf="infos$">
-    <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
-                  [key]="infoList.key"
-                  [infos]="infoList.value"
-                  (editDetail)="editDetail($event)"
-    ></app-info-box>
-  </div>
-</app-container>
+    @if (infos$) {
+      <div class="detail-info">
+        @for (infoList of infos$ | async | keyvalue; track infoList) {
+          <app-info-box
+            [key]="infoList.key"
+            [infos]="infoList.value"
+            (editDetail)="editDetail($event)"
+          ></app-info-box>
+        }
+      </div>
+    }
+  </app-container>
+}

@@ -3,7 +3,9 @@
     @if(!props.attribute) {
       <div class="form-group">
         <select formControlName="type" id="type">
-          <option *ngFor="let att of allowedAttributes | keyvalue" [value]="att.key">{{ att.value }}</option>
+          @for (att of allowedAttributes | keyvalue; track att) {
+            <option [value]="att.key">{{ att.value }}</option>
+          }
         </select>
         <label for="type">Typ</label>
       </div>
@@ -12,7 +14,9 @@
     }
 
     <div [ngClass]="{'locked-input': props.attribute}">
-      <app-unlock-button (toggle)="toggleMax()" *ngIf="props.attribute"></app-unlock-button>
+      @if (props.attribute) {
+        <app-unlock-button (toggle)="toggleMax()"></app-unlock-button>
+      }
 
       <div class="form-group">
         <input
@@ -22,7 +26,7 @@
           step="1"
           required
           appSelectOnFocus
-        >
+          >
         <label for="max">Maximum</label>
       </div>
     </div>
@@ -36,7 +40,7 @@
         required
         appSelectOnFocus
         appFocusOnInit
-      >
+        >
       <label for="current">Aktuell</label>
     </div>
 
@@ -44,12 +48,13 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="props.attribute && !props.altCollection">
-      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
-        Löschen
-      </button>
-    </div>
+    @if (props.attribute && !props.altCollection) {
+      <div class="locked-input">
+        <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+        <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+          Löschen
+        </button>
+      </div>
+    }
   </form>
 </div>

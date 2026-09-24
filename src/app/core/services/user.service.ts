@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -18,11 +18,9 @@ interface UserRow {
   providedIn: 'root'
 })
 export class UserService {
-  private users$: Observable<User[]>;
+  private realtime = inject(RealtimeService);
 
-  constructor(
-    private realtime: RealtimeService,
-  ) {}
+  private users$: Observable<User[]>;
 
 
   private static transformUsers(rows: UserRow[]): User[] {

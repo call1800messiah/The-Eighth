@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import type { Flow } from '../../models';
@@ -14,9 +14,14 @@ export interface EditFlowProps extends Partial<Flow> {
 @Component({
   selector: 'app-edit-flow',
   templateUrl: './edit-flow.component.html',
-  styleUrl: './edit-flow.component.scss'
+  styleUrl: './edit-flow.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditFlowComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private flowService = inject(FlowService);
+
   @Input() props: EditFlowProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
 
@@ -27,10 +32,7 @@ export class EditFlowComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private flowService: FlowService
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;

@@ -1,49 +1,55 @@
-<div class="place" *ngIf="place">
-  <app-container width="medium">
-    <a class="image" *ngIf="place.image" [href]="place.image" target="_blank">
-      <img src="{{place.image}}" alt="{{place.name}}" />
-    </a>
-
-    <div class="action-buttons">
-      <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
-        <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
-        <app-context-menu *ngIf="menuOpen" [owner]="place.owner" [menu]="menu"></app-context-menu>
-      </button>
-    </div>
-
-    <div class="info box">
-      <app-access-indicator [item]="place"></app-access-indicator>
-
-      <dl>
-        <ng-container>
-          <dt>Art</dt>
-          <dd>{{placeTypes[place.type]}}</dd>
-        </ng-container>
-        <ng-container>
-          <dt>Name</dt>
-          <dd>{{place.name}}</dd>
-        </ng-container>
-        <ng-container *ngIf="place.parent && place.parent.name">
-          <dt>Teil von</dt>
-          <dd>
-            <a [routerLink]="['/places/', place.parent.id]">
-              {{place.parent.name}}
-            </a>
-          </dd>
-        </ng-container>
-        <ng-container *ngIf="place.inhabitants">
-          <dt>Einwohner</dt>
-          <dd>{{place.inhabitants}}</dd>
-        </ng-container>
-      </dl>
-    </div>
-
-    <div class="detail-info" *ngIf="infos$">
-      <app-info-box *ngFor="let infoList of infos$ | async | keyvalue"
-                    [key]="infoList.key"
-                    [infos]="infoList.value"
-                    (editDetail)="editDetail($event)"
-      ></app-info-box>
-    </div>
-  </app-container>
-</div>
+@if (place) {
+  <div class="place">
+    <app-container width="medium">
+      @if (place.image) {
+        <a class="image" [href]="place.image" target="_blank">
+          <img src="{{place.image}}" alt="{{place.name}}" />
+        </a>
+      }
+      <div class="action-buttons">
+        <button type="button" id="btn-menu" class="btn-icon" (click)="toggleMenu($event)">
+          <fa-icon [fixedWidth]="true" [icon]="faBars"></fa-icon>
+          @if (menuOpen) {
+            <app-context-menu [owner]="place.owner" [menu]="menu"></app-context-menu>
+          }
+        </button>
+      </div>
+      <div class="info box">
+        <app-access-indicator [item]="place"></app-access-indicator>
+        <dl>
+          <ng-container>
+            <dt>Art</dt>
+            <dd>{{placeTypes[place.type]}}</dd>
+          </ng-container>
+          <ng-container>
+            <dt>Name</dt>
+            <dd>{{place.name}}</dd>
+          </ng-container>
+          @if (place.parent && place.parent.name) {
+            <dt>Teil von</dt>
+            <dd>
+              <a [routerLink]="['/places/', place.parent.id]">
+                {{place.parent.name}}
+              </a>
+            </dd>
+          }
+          @if (place.inhabitants) {
+            <dt>Einwohner</dt>
+            <dd>{{place.inhabitants}}</dd>
+          }
+        </dl>
+      </div>
+      @if (infos$) {
+        <div class="detail-info">
+          @for (infoList of infos$ | async | keyvalue; track infoList) {
+            <app-info-box
+              [key]="infoList.key"
+              [infos]="infoList.value"
+              (editDetail)="editDetail($event)"
+            ></app-info-box>
+          }
+        </div>
+      }
+    </app-container>
+  </div>
+}

@@ -2,8 +2,12 @@
   <app-access-indicator [item]="achievement"></app-access-indicator>
 
   <div class="image">
-    <img *ngIf="achievement.icon" src="{{achievement.icon}}" alt="{{achievement.name}}" />
-    <fa-icon *ngIf="!achievement.icon" [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>
+    @if (achievement.icon) {
+      <img src="{{achievement.icon}}" alt="{{achievement.name}}" />
+    }
+    @if (!achievement.icon) {
+      <fa-icon [icon]="faTrophy" size="lg" [fixedWidth]="true"></fa-icon>
+    }
   </div>
   <div class="text">
     <div class="title" (click)="showEditDialog()">{{achievement.name}}</div>
@@ -15,7 +19,9 @@
       {{achievement.unlocked | date: 'dd.MM.yy'}}
     </div>
     <div class="people">
-      <app-avatar *ngFor="let person of achievement.people" [person]="person"></app-avatar>
+      @for (person of achievement.people; track person) {
+        <app-avatar [person]="person"></app-avatar>
+      }
     </div>
   </div>
 </div>

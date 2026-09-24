@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import type { CampaignData } from '../../models/campaign-data';
 import { PopoverChild } from '../../../shared/models/popover-child';
@@ -7,9 +7,13 @@ import { CampaignService } from '../../services/campaign.service';
 @Component({
   selector: 'app-edit-campaign',
   templateUrl: './edit-campaign.component.html',
-  styleUrl: './edit-campaign.component.scss'
+  styleUrl: './edit-campaign.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCampaignComponent implements OnInit, PopoverChild {
+  private campaignService = inject(CampaignService);
+
   @Input() props: CampaignData;
   @Output() dismissPopover = new EventEmitter<boolean>();
   campaignForm = new UntypedFormGroup({
@@ -21,8 +25,6 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
     staminaReduction: new UntypedFormControl(0),
     xp: new UntypedFormControl(0),
   });
-
-  constructor(private campaignService: CampaignService) {}
 
   ngOnInit(): void {
     this.campaignForm.patchValue(this.props);

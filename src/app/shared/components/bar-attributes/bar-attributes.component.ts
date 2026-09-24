@@ -1,7 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 import type { Attribute, EditAttributeProps } from '../../models';
 import type { AllowedAttribute } from '../../../rules';
@@ -15,9 +14,14 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-bar-attributes',
   templateUrl: './bar-attributes.component.html',
-  styleUrl: './bar-attributes.component.scss'
+  styleUrl: './bar-attributes.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class BarAttributesComponent implements OnInit {
+  private popover = inject(PopoverService);
+  private rulesService = inject(RulesService);
+
   @Input() attributeValues$: Observable<Attribute[]>;
   @Input() canEdit: boolean;
   @Input() altCollection: null | string;
@@ -25,11 +29,8 @@ export class BarAttributesComponent implements OnInit {
   allowedAttributes$: Observable<AllowedAttribute[]>;
   attributes$: Observable<Attribute[]>;
 
-  constructor(
-    private popover: PopoverService,
-    private rulesService: RulesService,
-  ) {
-    this.allowedAttributes$ = fromPromise(this.rulesService.getRulesConfig()).pipe(
+  constructor() {
+    this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes)
     );
   }

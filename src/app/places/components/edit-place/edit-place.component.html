@@ -2,9 +2,11 @@
   <form [formGroup]="placeForm" (ngSubmit)="save()">
     <div class="form-group">
       <select id="type" formControlName="type" required>
-        <option [ngValue]="type.key" *ngFor="let type of placeTypes; let i = index">
-          {{type.value}}
-        </option>
+        @for (type of placeTypes; track type; let i = $index) {
+          <option [ngValue]="type.key">
+            {{type.value}}
+          </option>
+        }
       </select>
       <label for="type">Art *</label>
     </div>
@@ -15,9 +17,11 @@
     <div class="form-group">
       <select id="parentId" formControlName="parentId">
         <option [value]="null">Nichts</option>
-        <option [ngValue]="place.id" *ngFor="let place of places$ | async" [disabled]="place.id === props.id">
-          {{place.name}} ({{placeTypeMap[place.type]}})
-        </option>
+        @for (place of places$ | async; track place) {
+          <option [ngValue]="place.id" [disabled]="place.id === props.id">
+            {{place.name}} ({{placeTypeMap[place.type]}})
+          </option>
+        }
       </select>
       <label for="parentId">Teil von</label>
     </div>

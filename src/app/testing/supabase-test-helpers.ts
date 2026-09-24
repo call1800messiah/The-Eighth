@@ -18,6 +18,7 @@ import { AchievementService } from '../achievements/services/achievement.service
 import { InventoryService } from '../inventory/services/inventory.service';
 import { NotesService } from '../notes/services/notes.service';
 import { RulesService } from '../rules/services/rules.service';
+import type { Rules } from '../rules/models/rules';
 import { DiceRollerService } from '../dice/services/dice-roller.service';
 import { CampaignService } from '../overview/services/campaign.service';
 import { TimelineService } from '../overview/services/timeline.service';
@@ -358,7 +359,13 @@ export function createComponentTestProviders() {
       provide: RulesService,
       useValue: {
         getDynamicRules: () => of([]),
-        getRulesConfig: () => Promise.resolve({}),
+        getRulesConfig: () => Promise.resolve<Rules>({
+          addableRuleTypes: {},
+          allowedAttributes: [],
+          edition: 5,
+          hitLocations: {},
+          states: [],
+        }),
       },
     },
     {

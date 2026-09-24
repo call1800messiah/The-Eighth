@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, mergeMap, Observable } from 'rxjs';
 import { debounceTime, map, tap } from 'rxjs/operators';
 
@@ -14,6 +14,9 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class TimelineService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'timelines';
   static readonly eventsCollection = 'historic_events';
   private pageSize = 10;
@@ -21,10 +24,7 @@ export class TimelineService {
   private readonly timelineLimit: Record<string, BehaviorSubject<number>>;
   private readonly timelineTotal: Record<string, number>;
 
-  constructor(
-    private data: DataService,
-    private realtime: RealtimeService,
-  ) {
+  constructor() {
     this.timelineEvents = {};
     this.timelineLimit = {};
     this.timelineTotal = {};

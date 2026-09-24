@@ -1,5 +1,5 @@
 # Stage 1: Build Angular app
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -25,6 +25,7 @@ RUN npx ng build --configuration=production
 FROM nginx:alpine
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/security-headers.conf /etc/nginx/security-headers.conf
 COPY --from=build /app/dist/The-Eighth /usr/share/nginx/html
 
 EXPOSE 80

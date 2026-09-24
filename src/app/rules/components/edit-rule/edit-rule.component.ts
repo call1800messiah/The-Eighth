@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import type { PopoverChild } from '../../../shared';
@@ -10,9 +10,13 @@ import { RulesService } from '../../services/rules.service';
 @Component({
   selector: 'app-edit-rule',
   templateUrl: './edit-rule.component.html',
-  styleUrl: './edit-rule.component.scss'
+  styleUrl: './edit-rule.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditRuleComponent implements OnInit, PopoverChild {
+  private rulesService = inject(RulesService);
+
   @Input() props: AddableRule;
   @Output() dismissPopover = new EventEmitter<boolean>;
   addableRuleTypes: Record<string, Record<string, string>>;
@@ -29,9 +33,7 @@ export class EditRuleComponent implements OnInit, PopoverChild {
   ruleTypes = RulesService.ruleTypes;
 
 
-  constructor(
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.rulesService.getRulesConfig().then((rulesConfig) => {
       this.addableRuleTypes = rulesConfig.addableRuleTypes;
     });

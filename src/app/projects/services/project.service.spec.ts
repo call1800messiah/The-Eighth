@@ -43,6 +43,7 @@ describe('ProjectService', () => {
         'projects',
         jasmine.any(Function),
         'projects',
+        ['project_milestones', 'project_requirements'],
       );
     });
 

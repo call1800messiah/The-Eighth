@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -20,9 +20,17 @@ export interface AddFlowItemProps {
 @Component({
   selector: 'app-add-flow-item',
   templateUrl: './add-flow-item.component.html',
-  styleUrls: ['./add-flow-item.component.scss']
+  styleUrls: ['./add-flow-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AddFlowItemComponent implements OnInit, PopoverChild {
+  private flowService = inject(FlowService);
+  private questsService = inject(QuestsService);
+  private peopleService = inject(PeopleService);
+  private placesService = inject(PlaceService);
+  private notesService = inject(NotesService);
+
   @Input() props: AddFlowItemProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
 
@@ -39,14 +47,6 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
   filteredNotes$: Observable<Note[]>;
 
   selectedItems: string[] = [];
-
-  constructor(
-    private flowService: FlowService,
-    private questsService: QuestsService,
-    private peopleService: PeopleService,
-    private placesService: PlaceService,
-    private notesService: NotesService,
-  ) {}
 
   ngOnInit(): void {
     this.quests$ = this.questsService.getQuests();

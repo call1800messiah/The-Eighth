@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -13,9 +13,15 @@ import { DataService } from '../../../core/services/data.service';
 @Component({
   selector: 'app-edit-item',
   templateUrl: './edit-item.component.html',
-  styleUrls: ['./edit-item.component.scss']
+  styleUrls: ['./edit-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private dataService = inject(DataService);
+  private inventory = inject(InventoryService);
+
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -28,11 +34,7 @@ export class EditItemComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private dataService: DataService,
-    private inventory: InventoryService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;

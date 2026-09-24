@@ -44,9 +44,11 @@
       <input type="text" id="location" list="places" formControlName="location">
       <label for="location">Ort</label>
       <datalist id="places">
-        <option *ngFor="let place of places" [value]="place.id">
-          {{place.name}} ({{placeTypes[place.type]}})
-        </option>
+        @for (place of places; track place) {
+          <option [value]="place.id">
+            {{place.name}} ({{placeTypes[place.type]}})
+          </option>
+        }
       </datalist>
     </div>
     <div class="form-group">

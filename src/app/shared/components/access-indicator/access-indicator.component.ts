@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter, pairwise } from 'rxjs/operators';
 
@@ -18,9 +18,17 @@ import { getEntityType } from '../../utils/entity-type';
 @Component({
   selector: 'app-access-indicator',
   templateUrl: './access-indicator.component.html',
-  styleUrls: ['./access-indicator.component.scss']
+  styleUrls: ['./access-indicator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
+  private api = inject(ApiService);
+  private auth = inject(AuthService);
+  private popover = inject(PopoverService);
+  private realtime = inject(RealtimeService);
+  private userService = inject(UserService);
+
   @Input() item: AccessControlledItem;
   accessState = 'none';
   user: AuthUser;
@@ -28,13 +36,7 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
   private subscription = new Subscription();
   private users: User[] = [];
 
-  constructor(
-    private api: ApiService,
-    private auth: AuthService,
-    private popover: PopoverService,
-    private realtime: RealtimeService,
-    private userService: UserService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 

@@ -19,12 +19,13 @@
       Speichern
     </button>
 
-    <div class="locked-input" *ngIf="props.id">
-      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
-        Löschen
-      </button>
-    </div>
+    @if (props.id) {
+      <div class="locked-input">
+        <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+        <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+          Löschen
+        </button>
+      </div>
+    }
   </form>
 </div>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -17,18 +17,18 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
   providedIn: 'root'
 })
 export class DiceRollerService {
+  private auth = inject(AuthService);
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+  private rulesService = inject(RulesService);
+
   static collection = 'rolls';
   private rolls$: Observable<Roll[]>;
   private stats: Record<number, Record<number, number>> = {};
   private user: AuthUser;
   private rules: Rules;
 
-  constructor(
-    private auth: AuthService,
-    private data: DataService,
-    private realtime: RealtimeService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
     this.rulesService.getRulesConfig().then((rules) => this.rules = rules);
   }

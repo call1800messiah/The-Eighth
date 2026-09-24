@@ -5,28 +5,40 @@
     </div>
 
     <div class="text">
-      <div class="title" *ngIf="person.title && isOwnerOrCan('viewTitle')">
-        {{person.title}}
-      </div>
+      @if (person.title && isOwnerOrCan('viewTitle')) {
+        <div class="title">
+          {{person.title}}
+        </div>
+      }
       <div class="name">
         {{isOwnerOrCan('viewName')  ? person.name : person.name.split(' ')[0]}}
       </div>
-      <div class="location" *ngIf="person.location && isOwnerOrCan('viewLocation')">{{person.location.name}}</div>
-      <div class="race" *ngIf="person.race && !showAsList">{{person.race}}</div>
+      @if (person.location && isOwnerOrCan('viewLocation')) {
+        <div class="location">{{person.location.name}}</div>
+      }
+      @if (person.race && !showAsList) {
+        <div class="race">{{person.race}}</div>
+      }
       <div class="birthday">{{person.birthyear | estimatedAge}}</div>
     </div>
 
     <div class="status">
-      <fa-icon *ngIf="person.deathday" [icon]="faSkullCrossbones" [fixedWidth]="true"
-               title="Gestorben am {{person.deathday}} BF"></fa-icon>
-      <fa-icon *ngIf="person.pc" [icon]="faUser" [fixedWidth]="true"
-               title="Spielercharakter"></fa-icon>
+      @if (person.deathday) {
+        <fa-icon [icon]="faSkullCrossbones" [fixedWidth]="true"
+        title="Gestorben am {{person.deathday}} BF"></fa-icon>
+      }
+      @if (person.pc) {
+        <fa-icon [icon]="faUser" [fixedWidth]="true"
+        title="Spielercharakter"></fa-icon>
+      }
     </div>
 
     <div class="tags">
-      <ng-container *ngIf="person.tags && person.tags.length > 0">
-        <span class="tag" *ngFor="let tag of person.tags">{{tag}}</span>
-      </ng-container>
+      @if (person.tags && person.tags.length > 0) {
+        @for (tag of person.tags; track tag) {
+          <span class="tag">{{tag}}</span>
+        }
+      }
     </div>
   </a>
 
