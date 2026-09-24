@@ -3,6 +3,11 @@
 #
 # Usage:
 #   powershell -File scripts/package-for-deploy.ps1
+#   powershell -File scripts/package-for-deploy.ps1 -IncludeMigrationSecrets
+#
+# The Firebase service account key and the user password files are left out
+# unless -IncludeMigrationSecrets is given. Only a first-time Firestore
+# migration needs them; any other deploy would just leave them on the server.
 #
 # Produces two files:
 #   the-eighth-app.tar              — Docker image (docker load on server)
@@ -18,6 +23,10 @@
 # Supabase stack's own config), not the repo-root .env (that one is for
 # local dev, which points directly at a Supabase URL).
 # =============================================================================
+
+param(
+    [switch]$IncludeMigrationSecrets
+)
 
 $ErrorActionPreference = "Stop"
 $ProjectDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -128,17 +137,31 @@ $Files = @(
     "tsconfig.json"
 )
 
-# Add optional files if they exist
-foreach ($f in @("firebase-service-account.json", "data/user-credentials.json")) {
-    if (Test-Path $f) {
-        $Files += $f
-        Write-Host "  Including optional: $f" -ForegroundColor Green
-    } else {
-        Write-Host "  Skipping optional (not found): $f" -ForegroundColor Yellow
+$Excludes = @(
+    "--exclude=node_modules"
+    "--exclude=.angular"
+    "--exclude=.git"
+    "--exclude=coverage"
+    "--exclude=*.tmp"
+    "--exclude=deploy/supabase/.env.example"
+)
+
+if ($IncludeMigrationSecrets) {
+    foreach ($f in @("firebase-service-account.json", "data/user-credentials.json")) {
+        if (Test-Path $f) {
+            $Files += $f
+            Write-Host "  Including migration secret: $f" -ForegroundColor Yellow
+        } else {
+            Write-Host "  Skipping migration secret (not found): $f" -ForegroundColor Yellow
+        }
     }
+} else {
+    # Written by transform-and-migrate.ts; holds every user's password.
+    $Excludes += "--exclude=data/export/_user_credentials.json"
+    Write-Host "  Leaving out migration secrets (pass -IncludeMigrationSecrets for a first-time migration)" -ForegroundColor Green
 }
 
-tar cf $Archive --exclude='node_modules' --exclude='.angular' --exclude='.git' --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example' $Files
+tar cf $Archive @Excludes $Files
 
 $ArchiveSize = "{0:N1} MB" -f ((Get-Item $Archive).Length / 1MB)
 Write-Host "[package] Archive created: $Archive ($ArchiveSize)" -ForegroundColor Green

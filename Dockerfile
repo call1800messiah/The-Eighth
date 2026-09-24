@@ -25,6 +25,7 @@ RUN npx ng build --configuration=production
 FROM nginx:alpine
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/security-headers.conf /etc/nginx/security-headers.conf
 COPY --from=build /app/dist/The-Eighth /usr/share/nginx/html
 
 EXPOSE 80

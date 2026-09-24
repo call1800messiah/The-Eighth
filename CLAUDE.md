@@ -67,6 +67,10 @@ tar xf the-eighth-deploy-*.tar
 
 See `docker-compose.portainer.yml` for the full server-side sequence, and `deploy/supabase/` for the Supabase stack itself.
 
+The archive leaves out the Firebase service account key and the user password files (`data/user-credentials.json`, `data/export/_user_credentials.json`). Only a first-time Firestore migration needs them: pass `-IncludeMigrationSecrets` / `--include-migration-secrets` for that, and delete them from the server afterwards.
+
+The site is public, behind Nginx Proxy Manager on the same Docker host, which terminates TLS. The app's nginx (`docker/nginx.conf`) takes the client IP from `X-Forwarded-For` only for Docker-range sources, rate-limits the GoTrue password and mail endpoints, and sets the security headers from `docker/security-headers.conf`. Any `location` that calls `add_header` must `include` that file again, because nginx drops inherited headers in that case.
+
 ## Setup Requirements
 
 ### Environment Configuration

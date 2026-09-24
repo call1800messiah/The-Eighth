@@ -4,6 +4,11 @@
 #
 # Usage:
 #   bash scripts/package-for-deploy.sh
+#   bash scripts/package-for-deploy.sh --include-migration-secrets
+#
+# The Firebase service account key and the user password files are left out
+# unless --include-migration-secrets is given. Only a first-time Firestore
+# migration needs them; any other deploy would just leave them on the server.
 #
 # Produces:
 #   the-eighth-app.tar               — Docker image (docker load on server)
@@ -21,6 +26,14 @@
 # =============================================================================
 
 set -euo pipefail
+
+INCLUDE_SECRETS=false
+for arg in "$@"; do
+  case "$arg" in
+    --include-migration-secrets) INCLUDE_SECRETS=true ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -120,19 +133,27 @@ FILES=(
   tsconfig.json
 )
 
-for f in firebase-service-account.json data/user-credentials.json; do
-  if [ -f "$f" ]; then
-    FILES+=("$f")
-    log "  Including optional: $f"
-  else
-    warn "  Skipping optional (not found): $f"
-  fi
-done
+EXCLUDES=(
+  --exclude='node_modules' --exclude='.angular' --exclude='.git'
+  --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example'
+)
 
-tar cf "$ARCHIVE" \
-  --exclude='node_modules' --exclude='.angular' --exclude='.git' \
-  --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example' \
-  "${FILES[@]}"
+if [ "$INCLUDE_SECRETS" = true ]; then
+  for f in firebase-service-account.json data/user-credentials.json; do
+    if [ -f "$f" ]; then
+      FILES+=("$f")
+      warn "  Including migration secret: $f"
+    else
+      warn "  Skipping migration secret (not found): $f"
+    fi
+  done
+else
+  # Written by transform-and-migrate.ts; holds every user's password.
+  EXCLUDES+=(--exclude='data/export/_user_credentials.json')
+  log "  Leaving out migration secrets (pass --include-migration-secrets for a first-time migration)"
+fi
+
+tar cf "$ARCHIVE" "${EXCLUDES[@]}" "${FILES[@]}"
 
 log "Archive created: $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1))"
 
