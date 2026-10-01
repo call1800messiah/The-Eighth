@@ -38,6 +38,7 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     race: new UntypedFormControl(''),
     title: new UntypedFormControl(''),
     xp: new UntypedFormControl(0),
+    xpSpent: new UntypedFormControl(null),
   });
   userID: string;
   places: Place[] = [];

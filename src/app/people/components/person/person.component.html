@@ -73,6 +73,10 @@
           <dt>AP</dt>
           <dd>{{person.xp}}</dd>
         }
+        @if (person.xpSpent != null) {
+          <dt>AP Übrig</dt>
+          <dd>{{(person.xp || 0) - person.xpSpent}}</dd>
+        }
       </dl>
       @if (person.tags && person.tags.length > 0) {
         <div class="tags">

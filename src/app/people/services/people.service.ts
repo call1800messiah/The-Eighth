@@ -295,6 +295,10 @@ export class PeopleService {
       cleaned.location_id = loc && typeof loc === 'object' ? (loc.id || null) : (loc || null);
       delete cleaned.location;
     }
+    if ('xpSpent' in cleaned) {
+      cleaned.xp_spent = Number.isInteger(cleaned.xpSpent) ? cleaned.xpSpent : null;
+      delete cleaned.xpSpent;
+    }
     return this.data.store(cleaned, PeopleService.collection, personId);
   }
 
@@ -369,7 +373,8 @@ export class PeopleService {
         states: [],
         tags: (row.person_tags || []).map((pt: any) => pt.tag),
         title: row.title || null,
-        xp: row.xp || 0
+        xp: row.xp || 0,
+        xpSpent: row.xp_spent ?? null,
       };
 
       person = PeopleService.resolveRules(person, row, rules);
