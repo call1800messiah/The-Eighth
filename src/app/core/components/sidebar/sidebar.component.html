@@ -1,6 +1,21 @@
 <aside>
   <app-person-selector (personSelected)="onSelectionChange($event)"></app-person-selector>
 
+  @if (selectedPerson$ | async; as person) {
+    @if (person.xp > 0 || person.xpSpent != null) {
+      <dl class="xp box">
+        @if (person.xp > 0) {
+          <dt>AP</dt>
+          <dd>{{person.xp}}</dd>
+        }
+        @if (person.xpSpent != null) {
+          <dt>AP Benutzt</dt>
+          <dd>{{person.xpSpent}}</dd>
+        }
+      </dl>
+    }
+  }
+
   @if (selectedPerson$) {
     <app-stats [person$]="selectedPerson$"></app-stats>
   }

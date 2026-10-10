@@ -40,4 +40,5 @@ export interface PersonDB {
   tags?: string[];
   title: string;
   xp?: number;
+  xpSpent?: number | null;
 }

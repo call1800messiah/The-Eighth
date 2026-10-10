@@ -41,4 +41,5 @@ export interface Person extends AccessControlledItem {
   tags?: string[];
   title: string;
   xp?: number;
+  xpSpent?: number | null;
 }

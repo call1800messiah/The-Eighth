@@ -629,6 +629,7 @@ export type Database = {
           race: string | null
           title: string | null
           xp: number | null
+          xp_spent: number | null
         }
         Insert: {
           banner?: string | null
@@ -648,6 +649,7 @@ export type Database = {
           race?: string | null
           title?: string | null
           xp?: number | null
+          xp_spent?: number | null
         }
         Update: {
           banner?: string | null
@@ -667,6 +669,7 @@ export type Database = {
           race?: string | null
           title?: string | null
           xp?: number | null
+          xp_spent?: number | null
         }
         Relationships: [
           {

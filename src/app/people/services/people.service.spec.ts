@@ -85,7 +85,7 @@ describe('PeopleService', () => {
     return {
       id: 'per1', name: 'Alice', owner_id: 'u1', pc: true,
       birthday: null, birthyear: null, culture: null, deathday: null,
-      height: null, profession: null, race: null, title: null, xp: 0,
+      height: null, profession: null, race: null, title: null, xp: 0, xp_spent: null,
       image: '', banner: '', location_id: null,
       person_advantages: [], person_cantrips: [], person_disadvantages: [],
       person_feats: [], person_liturgies: [], person_skills: [],
@@ -134,6 +134,20 @@ describe('PeopleService', () => {
       });
 
       emitPeople([basePerson({ xp: 100 })]);
+    });
+
+    it('should map xp_spent to xpSpent, keeping null when untracked', (done) => {
+      service.getPeople().subscribe(people => {
+        if (people.length === 0) return;
+        expect(people.find(p => p.id === 'per1').xpSpent).toBe(40);
+        expect(people.find(p => p.id === 'per2').xpSpent).toBeNull();
+        done();
+      });
+
+      emitPeople([
+        basePerson({ xp: 100, xp_spent: 40 }),
+        basePerson({ id: 'per2', name: 'Bob' }),
+      ]);
     });
 
     it('should resolve advantages from junction table', (done) => {
@@ -372,6 +386,16 @@ describe('PeopleService', () => {
     it('should delegate to DataService.store', async () => {
       await service.store({ name: 'Updated' }, 'per1');
       expect(mockData.store).toHaveBeenCalledWith({ name: 'Updated' }, 'people', 'per1');
+    });
+
+    it('should map xpSpent to xp_spent', async () => {
+      await service.store({ xpSpent: 40 }, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith({ xp_spent: 40 }, 'people', 'per1');
+    });
+
+    it('should store a cleared xpSpent as null', async () => {
+      await service.store({ xpSpent: null }, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith({ xp_spent: null }, 'people', 'per1');
     });
   });
 
