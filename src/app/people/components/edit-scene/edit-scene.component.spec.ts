@@ -74,6 +74,20 @@ describe('EditSceneComponent', () => {
       expect(component.canSave).toBeFalse();
     });
 
+    it('rejects SVG, which can carry script', () => {
+      component.fileChanged(fileEvent(new File(['<svg/>'], 'bild.svg', { type: 'image/svg+xml' })));
+
+      expect(component.file).toBeNull();
+      expect(component.fileInvalid).toBeTrue();
+    });
+
+    it('accepts webp', () => {
+      const webp = new File(['x'], 'bild.webp', { type: 'image/webp' });
+      component.fileChanged(fileEvent(webp));
+
+      expect(component.file).toBe(webp);
+    });
+
     it('cannot save without any tagged person', () => {
       component.fileChanged(fileEvent(image));
       component.toggle('p1', false);

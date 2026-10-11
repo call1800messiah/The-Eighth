@@ -21,7 +21,15 @@ export class EditSceneComponent implements OnInit, PopoverChild {
   private peopleService = inject(PeopleService);
   private sceneService = inject(SceneService);
 
+  /**
+   * Raster formats only: unlike the cropper, scenes store the uploaded bytes
+   * as they are, and an SVG opened from storage would run its scripts on the
+   * app's own origin.
+   */
+  static readonly imageTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
   @Input() props: EditSceneProps;
+  accept = EditSceneComponent.imageTypes.join(',');
   @Output() dismissPopover = new EventEmitter<boolean>();
   caption = '';
   file: File | null = null;
@@ -55,7 +63,7 @@ export class EditSceneComponent implements OnInit, PopoverChild {
 
   fileChanged(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
-    this.fileInvalid = !!file && !file.type.startsWith('image/');
+    this.fileInvalid = !!file && !EditSceneComponent.imageTypes.includes(file.type);
     this.file = file && !this.fileInvalid ? file : null;
   }
 

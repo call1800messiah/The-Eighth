@@ -2,10 +2,10 @@
   @if (!props.scene) {
     <div class="form-group">
       <label for="sceneImage">Bild</label>
-      <input type="file" id="sceneImage" accept="image/*" (change)="fileChanged($event)">
+      <input type="file" id="sceneImage" [accept]="accept" (change)="fileChanged($event)">
     </div>
     @if (fileInvalid) {
-      <p class="hint">Bitte eine Bilddatei auswählen.</p>
+      <p class="hint">Bitte ein PNG-, JPEG-, GIF- oder WebP-Bild auswählen.</p>
     }
   }
 
