@@ -49,8 +49,10 @@ export class StorageService {
    *
    * Files for a ref go into a folder named after the entity id: the storage
    * policies let the entity's owner write there (see migration 006).
+   *
+   * Resolves with the stored path. A failed ref update is only logged.
    */
-  async uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: FileUpdateRef): Promise<void> {
+  async uploadFile(name: string, file: File | Blob, bucket: string, updateRef?: FileUpdateRef): Promise<string> {
     const folder = updateRef ? `${bucket}/${updateRef.id}` : bucket;
     const filePath = `${folder}/${StorageService.uniqueName(name)}`;
     const previousPath = updateRef ? await this.getRefPath(updateRef) : null;
@@ -71,7 +73,7 @@ export class StorageService {
         .eq('id', updateRef.id);
       if (updateError) {
         console.error('Update ref error:', updateError);
-        return;
+        return filePath;
       }
 
       if (previousPath && previousPath !== filePath) {
@@ -81,6 +83,8 @@ export class StorageService {
         }
       }
     }
+
+    return filePath;
   }
 
 

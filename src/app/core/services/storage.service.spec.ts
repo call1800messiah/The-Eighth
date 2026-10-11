@@ -55,6 +55,13 @@ describe('StorageService', () => {
       expect(storageBucket().upload).toHaveBeenCalledWith(first, file, jasmine.objectContaining({ cacheControl: '259200' }));
     });
 
+    it('should return the stored path', async () => {
+      const path = await service.uploadFile('scene.png', new Blob(['x']), 'scenes/s1');
+
+      expect(path).toBe(uploadedPath());
+      expect(path).toMatch(/^scenes\/s1\/scene-[A-Za-z0-9_]{10}\.png$/);
+    });
+
     it('should point the ref at the uploaded file', async () => {
       storedPath(null);
       const updateRef = { collection: 'people', attribute: 'image', id: 'p1' };

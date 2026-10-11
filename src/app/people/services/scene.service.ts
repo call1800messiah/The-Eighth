@@ -54,14 +54,28 @@ export class SceneService {
       throw error;
     }
 
+    // The storage policy only lets the owner write into scenes/<id>/, so the
+    // row has to exist before the upload. The path is stored here rather than
+    // through an updateRef, whose failure uploadFile would only log.
+    const folder = `${SceneService.bucket}/${data.id}`;
+    let storedPath: string | null = null;
     try {
       await this.insertPeople(data.id, personIds);
-      // The storage policy only lets the owner write into scenes/<id>/, so the
-      // row has to exist before the upload
-      await this.storage.uploadFile(SceneService.fileName(file), file, SceneService.bucket, this.imageRef(data.id));
-    } catch (uploadError) {
+      storedPath = await this.storage.uploadFile(SceneService.fileName(file), file, folder);
+      const { error: imageError } = await this.api.from('scenes' as any)
+        .update({ image: storedPath })
+        .eq('id', data.id);
+      if (imageError) {
+        throw imageError;
+      }
+    } catch (createError) {
+      // The file goes before the row: the storage delete policy needs the row
+      if (storedPath) {
+        await this.storage.delete(folder, storedPath.slice(folder.length + 1))
+          .catch(removeError => console.error('Removing scene file failed', removeError));
+      }
       await this.api.from('scenes' as any).delete().eq('id', data.id);
-      throw uploadError;
+      throw createError;
     }
   }
 

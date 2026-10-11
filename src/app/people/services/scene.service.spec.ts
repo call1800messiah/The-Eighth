@@ -88,11 +88,18 @@ describe('SceneService', () => {
   });
 
   describe('create', () => {
-    it('inserts the row, tags the people, then uploads into the scene folder', async () => {
+    const storedPath = 'scenes/new-scene/scene-abc.png';
+    const file = new File(['x'], 'Mein Bild.PNG', { type: 'image/png' });
+
+    beforeEach(() => {
+      mockStorage.uploadFile.and.returnValue(Promise.resolve(storedPath) as any);
+    });
+
+    it('inserts the row, tags the people, uploads into the scene folder and stores the path', async () => {
       const sceneInsert = createMockQueryBuilder({ data: { id: 'new-scene' } });
       const peopleInsert = createMockQueryBuilder();
-      mockApi.from.and.returnValues(sceneInsert, peopleInsert);
-      const file = new File(['x'], 'Mein Bild.JPG', { type: 'image/jpeg' });
+      const imageUpdate = createMockQueryBuilder();
+      mockApi.from.and.returnValues(sceneInsert, peopleInsert, imageUpdate);
 
       await service.create(file, ' Am Fluss ', ['p1', 'p2']);
 
@@ -103,9 +110,10 @@ describe('SceneService', () => {
         { scene_id: 'new-scene', person_id: 'p1' },
         { scene_id: 'new-scene', person_id: 'p2' },
       ]);
-      expect(mockStorage.uploadFile).toHaveBeenCalledWith(
-        'scene.jpg', file, 'scenes', { collection: 'scenes', attribute: 'image', id: 'new-scene' },
-      );
+      expect(mockStorage.uploadFile).toHaveBeenCalledWith('scene.png', file, 'scenes/new-scene');
+      expect(mockApi.from.calls.argsFor(2)).toEqual(['scenes']);
+      expect(imageUpdate.update).toHaveBeenCalledWith({ image: storedPath });
+      expect(imageUpdate.eq).toHaveBeenCalledWith('id', 'new-scene');
     });
 
     it('deletes the row again when the upload fails', async () => {
@@ -114,18 +122,36 @@ describe('SceneService', () => {
       const rollback = createMockQueryBuilder();
       mockApi.from.and.returnValues(sceneInsert, peopleInsert, rollback);
       mockStorage.uploadFile.and.returnValue(Promise.reject(new Error('upload failed')));
-      const file = new File(['x'], 'bild.png', { type: 'image/png' });
 
       await expectAsync(service.create(file, '', ['p1'])).toBeRejectedWithError('upload failed');
 
+      expect(mockStorage.delete).not.toHaveBeenCalled();
       expect(mockApi.from.calls.argsFor(2)).toEqual(['scenes']);
+      expect(rollback.delete).toHaveBeenCalled();
+      expect(rollback.eq).toHaveBeenCalledWith('id', 'new-scene');
+    });
+
+    it('removes the file and the row when storing the path fails', async () => {
+      const sceneInsert = createMockQueryBuilder({ data: { id: 'new-scene' } });
+      const peopleInsert = createMockQueryBuilder();
+      const imageUpdate = createMockQueryBuilder({ error: { message: 'JWT expired' } });
+      const rollback = createMockQueryBuilder();
+      mockApi.from.and.returnValues(sceneInsert, peopleInsert, imageUpdate, rollback);
+      // The storage delete policy needs the row, so the file has to go first
+      mockStorage.delete.and.callFake(() => {
+        expect(rollback.delete).not.toHaveBeenCalled();
+        return Promise.resolve();
+      });
+
+      await expectAsync(service.create(file, '', ['p1'])).toBeRejected();
+
+      expect(mockStorage.delete).toHaveBeenCalledWith('scenes/new-scene', 'scene-abc.png');
       expect(rollback.delete).toHaveBeenCalled();
       expect(rollback.eq).toHaveBeenCalledWith('id', 'new-scene');
     });
 
     it('throws without uploading when the row insert fails', async () => {
       mockApi.from.and.returnValue(createMockQueryBuilder({ error: { message: 'denied' } }));
-      const file = new File(['x'], 'bild.png', { type: 'image/png' });
 
       await expectAsync(service.create(file, '', ['p1'])).toBeRejected();
 
