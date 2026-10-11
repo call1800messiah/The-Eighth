@@ -1,0 +1,25 @@
+<div class="scenes">
+  @for (scene of scenes; track scene.id) {
+    <figure class="scene">
+      <a [href]="scene.image" target="_blank" rel="noopener">
+        <img [src]="scene.image" [alt]="scene.caption || 'Szene'" loading="lazy">
+      </a>
+      @if (scene.caption) {
+        <figcaption>{{scene.caption}}</figcaption>
+      }
+      @if (canManage(scene)) {
+        <div class="actions">
+          <button type="button" class="btn-icon" title="Bearbeiten" (click)="edit(scene)">
+            <fa-icon [icon]="faPen" [fixedWidth]="true"></fa-icon>
+          </button>
+          <button type="button" class="btn-icon" title="Zugriff regeln" (click)="editAccess(scene)">
+            <fa-icon [icon]="faUserLock" [fixedWidth]="true"></fa-icon>
+          </button>
+          <button type="button" class="btn-icon" title="Löschen" (click)="remove(scene)">
+            <fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon>
+          </button>
+        </div>
+      }
+    </figure>
+  }
+</div>

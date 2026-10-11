@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ListComponent } from './components/list/list.component';
 import { PeopleRoutingModule } from './people-routing.module';
 import { PersonSummaryComponent } from './components/person-summary/person-summary.component';
+import { ScenesComponent } from './components/scenes/scenes.component';
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 import { PersonComponent } from './components/person/person.component';
@@ -28,6 +29,7 @@ import { RulesModule } from '../rules/rules.module';
     PersonComponent,
     PersonSelectorComponent,
     PersonSummaryComponent,
+    ScenesComponent,
     StatsComponent,
   ],
   imports: [
