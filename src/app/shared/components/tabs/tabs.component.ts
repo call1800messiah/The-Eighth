@@ -1,4 +1,5 @@
-import { AfterContentInit, Component, ContentChildren, EventEmitter, Input, Output, QueryList, ChangeDetectionStrategy } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, ContentChildren, DestroyRef, EventEmitter, Input, Output, QueryList, ChangeDetectionStrategy, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TabPanelComponent } from './tab-panel.component';
 
 @Component({
@@ -9,6 +10,9 @@ import { TabPanelComponent } from './tab-panel.component';
   standalone: false
 })
 export class TabsComponent implements AfterContentInit {
+  private changeDetector = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
+
   @ContentChildren(TabPanelComponent) tabPanels: QueryList<TabPanelComponent>;
 
   @Input() defaultTab?: string;
@@ -17,13 +21,21 @@ export class TabsComponent implements AfterContentInit {
   activeTabId: string;
 
   ngAfterContentInit(): void {
-    if (this.tabPanels.length > 0) {
-      const defaultPanel = this.defaultTab
-        ? this.tabPanels.find(p => p.id === this.defaultTab)
-        : null;
-      this.activeTabId = defaultPanel?.id || this.tabPanels.first.id;
-      this.updatePanelVisibility();
-    }
+    this.activateDefaultTab();
+
+    // Panels behind @if come and go (e.g. Szenen once the last scene is gone).
+    // The query updates while the parent view is checked, so the switch is
+    // deferred to avoid ExpressionChangedAfterItHasBeenChecked.
+    this.tabPanels.changes.pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => {
+      if (!this.tabPanels.some(panel => panel.id === this.activeTabId)) {
+        Promise.resolve().then(() => {
+          this.activateDefaultTab();
+          this.changeDetector.markForCheck();
+        });
+      }
+    });
   }
 
   selectTab(tabId: string): void {
@@ -31,6 +43,16 @@ export class TabsComponent implements AfterContentInit {
       this.activeTabId = tabId;
       this.updatePanelVisibility();
       this.tabChange.emit(tabId);
+    }
+  }
+
+  private activateDefaultTab(): void {
+    if (this.tabPanels.length > 0) {
+      const defaultPanel = this.defaultTab
+        ? this.tabPanels.find(p => p.id === this.defaultTab)
+        : null;
+      this.activeTabId = defaultPanel?.id || this.tabPanels.first.id;
+      this.updatePanelVisibility();
     }
   }
 
