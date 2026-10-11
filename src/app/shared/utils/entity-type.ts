@@ -11,6 +11,7 @@ const ENTITY_TYPE_MAP: Record<string, string> = {
   timelines: 'timeline',
   historic_events: 'historic_event',
   info_boxes: 'info_box',
+  scenes: 'scene',
 };
 
 export function getEntityType(collection: string): string {

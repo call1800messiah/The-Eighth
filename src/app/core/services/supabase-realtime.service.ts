@@ -26,6 +26,7 @@ const ACCESS_CONTROLLED_TABLES: Partial<Record<TableName, string>> = {
   flows:           'flow',
   historic_events: 'historic_event',
   info_boxes:      'info_box',
+  scenes:          'scene',
 };
 
 @Injectable({
