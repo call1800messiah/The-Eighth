@@ -150,7 +150,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **`document_access` table** for explicit per-document sharing (not owners, not GMs)
 - **Owners** (`owner_id`) and **GMs** (`is_gm()`, via `user_roles`) are handled inside the policies
 - **Do not** add access filters in queries — RLS already scopes results. A query that returns too much is a policy bug, not a client bug.
-- All 39 tables have RLS enabled; policies live in `supabase/migrations/002_rls_policies.sql`
+- All 41 tables have RLS enabled; policies live in `supabase/migrations/002_rls_policies.sql` and later migrations (`010_scenes.sql` for scenes)
 
 ### Database Schema
 `supabase/migrations/` holds the schema, applied in filename order by `scripts/run-migrations.sh --schema`. There is no migration-tracking table on the production path — the files are a build script, so they are applied once to a fresh database.
