@@ -5,7 +5,7 @@ import { from, Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { Person } from '../../models';
+import type { EditSceneProps, Person, Scene } from '../../models';
 import type {
   EditAccessProps,
   EditAttributeProps,
@@ -30,6 +30,8 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
 import type { EditTagsProps } from '../../../shared/models/edit-tags-props';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
+import { SceneService } from '../../services/scene.service';
+import { EditSceneComponent } from '../edit-scene/edit-scene.component';
 
 
 
@@ -47,6 +49,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   private peopleService = inject(PeopleService);
   private popover = inject(PopoverService);
   private route = inject(ActivatedRoute);
+  private sceneService = inject(SceneService);
   private util = inject(UtilService);
 
   @Input() entityId?: string; // Optional input for embedded usage
@@ -90,6 +93,10 @@ export class PersonComponent implements OnInit, OnDestroy {
         restricted: true,
       },
       {
+        label: 'Szene hinzufügen',
+        action: this.addScene.bind(this),
+      },
+      {
         label: 'Neue Info',
         action: this.addDetail.bind(this)
       }
@@ -99,6 +106,7 @@ export class PersonComponent implements OnInit, OnDestroy {
   person: Person;
   person$: Observable<Person>;
   relativeTypes = PeopleService.relativeTypes;
+  scenes$: Observable<Scene[]>;
   user: AuthUser;
   private personSub: Subscription;
 
@@ -124,6 +132,7 @@ export class PersonComponent implements OnInit, OnDestroy {
           this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         }
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
+        this.scenes$ = this.sceneService.getScenesForPerson(this.person.id);
       }
     });
   }
@@ -176,6 +185,13 @@ export class PersonComponent implements OnInit, OnDestroy {
     this.popover.showPopover<EditInfoProps>('Neue Info', EditInfoComponent, {
       collection: PeopleService.collection,
       parentId: this.person.id
+    });
+  }
+
+
+  private addScene() {
+    this.popover.showPopover<EditSceneProps>('Szene hinzufügen', EditSceneComponent, {
+      personId: this.person.id,
     });
   }
 

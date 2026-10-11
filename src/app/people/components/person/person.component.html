@@ -131,6 +131,13 @@
           <app-stats [person$]="person$"></app-stats>
         </app-tab-panel>
       }
+      @if (scenes$ | async; as scenes) {
+        @if (scenes.length > 0) {
+          <app-tab-panel id="scenes" label="Szenen">
+            <app-scenes [scenes]="scenes"></app-scenes>
+          </app-tab-panel>
+        }
+      }
     </app-tabs>
   </app-container>
 }
