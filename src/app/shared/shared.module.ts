@@ -37,6 +37,7 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { MarkdownComponent } from './components/markdown/markdown.component';
 import { BacklinksComponent } from './components/backlinks/backlinks.component';
+import { DraftBannerComponent } from './components/draft-banner/draft-banner.component';
 
 
 
@@ -51,6 +52,7 @@ import { BacklinksComponent } from './components/backlinks/backlinks.component';
     BoxGridComponent,
     ContainerComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAttributeComponent,
     EditEventComponent,
     EditImageComponent,
@@ -95,6 +97,7 @@ import { BacklinksComponent } from './components/backlinks/backlinks.component';
     ContainerComponent,
     ContextMenuComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAccessComponent,
     EditAttributeComponent,
     EditImageComponent,

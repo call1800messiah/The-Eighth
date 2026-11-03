@@ -1,5 +1,6 @@
 @if (person) {
   <app-container width="medium" class="person">
+    <app-draft-banner entityType="person" [entity]="person"></app-draft-banner>
     <div class="image">
       @if (person.image) {
         <a [href]="person.image" target="_blank">

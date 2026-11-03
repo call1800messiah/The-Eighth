@@ -11,7 +11,7 @@
 # migration needs them; any other deploy would just leave them on the server.
 #
 # Produces:
-#   the-eighth-app.tar               — Docker image (docker load on server)
+#   the-eighth-app.tar               — Docker images: app + MCP server (docker load on server)
 #   the-eighth-deploy-<timestamp>.tar — Config, migrations, scripts, data,
 #                                        AND the deploy/supabase/ stack
 #
@@ -99,13 +99,17 @@ docker build \
   --build-arg "NG_APP_SUPABASE_ANON_KEY=$ANON_KEY" \
   .
 
+log "Building MCP server image..."
+docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
+
 # ---------------------------------------------------------------------------
 # Step 2: Save the image
 # ---------------------------------------------------------------------------
 
 IMAGE_TAR="the-eighth-app.tar"
 log "Saving image to $IMAGE_TAR..."
-docker save -o "$IMAGE_TAR" the-eighth-app:latest
+# Both images in one archive: `docker load` restores both.
+docker save -o "$IMAGE_TAR" the-eighth-app:latest the-eighth-mcp:latest
 log "Image saved: $IMAGE_TAR ($(du -h "$IMAGE_TAR" | cut -f1))"
 
 # ---------------------------------------------------------------------------
@@ -123,6 +127,7 @@ FILES=(
   deploy/supabase
   supabase/migrations
   scripts/run-migrations.sh
+  scripts/create-mcp-user.sh
   scripts/transform-and-migrate.ts
   scripts/migrate-storage.ts
   scripts/validate-migration.ts

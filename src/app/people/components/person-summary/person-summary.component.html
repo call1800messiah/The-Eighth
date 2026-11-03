@@ -12,6 +12,9 @@
       }
       <div class="name">
         {{isOwnerOrCan('viewName')  ? person.name : person.name.split(' ')[0]}}
+        @if (person.status === 'draft') {
+          <span class="draft-tag">Entwurf</span>
+        }
       </div>
       @if (person.location && isOwnerOrCan('viewLocation')) {
         <div class="location">{{person.location.name}}</div>

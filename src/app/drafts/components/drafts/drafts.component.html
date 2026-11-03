@@ -1,0 +1,70 @@
+<app-container width="medium">
+  @if (user$ | async; as user) {
+    @if (!user.isGM) {
+      <p class="box">Diese Seite ist nur für die Spielleitung.</p>
+    } @else {
+      <section class="box">
+        <h2>Entwürfe von Claude</h2>
+        @if (drafts$ | async; as drafts) {
+          @if (drafts.length === 0) {
+            <p class="empty">Keine offenen Entwürfe.</p>
+          }
+          <ul class="unstyled-list items">
+            @for (draft of drafts; track draft.type + draft.id) {
+              <li class="item">
+                <div class="what">
+                  <a [routerLink]="draft.route.path" [queryParams]="draft.route.queryParams">{{ draft.name }}</a>
+                  <span class="meta">{{ typeLabels[draft.type] }} · {{ draft.createdAt | date: 'dd.MM.yy HH:mm' }}</span>
+                </div>
+                <div class="actions">
+                  <button type="button" class="btn" [disabled]="busy === draft.id" (click)="publish(draft)">Freigeben</button>
+                  <button type="button" class="btn" [disabled]="busy === draft.id" (click)="discard(draft)">Verwerfen</button>
+                </div>
+              </li>
+            }
+          </ul>
+          <p class="hint">Freigegebene Entwürfe gehören dir und sind danach wie alles andere sichtbar und teilbar. Prüfe vorher die Seite des Entwurfs.</p>
+        }
+      </section>
+
+      <section class="box">
+        <h2>Verbindungen</h2>
+        @if (connections$ | async; as connections) {
+          @if (connections.length === 0) {
+            <p class="empty">Noch keine Verbindung.</p>
+          }
+          <ul class="unstyled-list items">
+            @for (connection of connections; track connection.id) {
+              <li class="item" [class.revoked]="connection.revokedAt">
+                <div class="what">
+                  <span>{{ connection.clientName }}</span>
+                  <span class="meta">
+                    erlaubt {{ connection.createdAt | date: 'dd.MM.yy' }}@if (connection.approvedBy) { von {{ connection.approvedBy }}}
+                    · @if (connection.revokedAt) {
+                      getrennt {{ connection.revokedAt | date: 'dd.MM.yy' }}
+                    } @else if (connection.lastUsedAt) {
+                      zuletzt {{ connection.lastUsedAt | date: 'dd.MM.yy HH:mm' }}
+                    } @else {
+                      noch nicht benutzt
+                    }
+                  </span>
+                </div>
+                @if (!connection.revokedAt) {
+                  <div class="actions">
+                    <button type="button" class="btn" [disabled]="busy === connection.id" (click)="revoke(connection)">Trennen</button>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+        <p class="hint">
+          Claude verbinden: in claude.ai unter Einstellungen → Connectors einen eigenen Connector mit der Adresse
+          <code>{{ endpoint }}</code> anlegen (in Claude Code: <code>claude mcp add --transport http the-eighth {{ endpoint }}</code>).
+          Beim Verbinden meldest du dich mit deinem Spielleitungs-Konto an. Claude handelt danach als eigener Benutzer
+          und kann nur Entwürfe anlegen, die du hier freigibst.
+        </p>
+      </section>
+    }
+  }
+</app-container>

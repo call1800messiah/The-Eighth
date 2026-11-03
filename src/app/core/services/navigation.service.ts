@@ -5,6 +5,7 @@ import {
   faCompass,
   faDharmachakra,
   faFistRaised,
+  faRobot,
   faMeteor,
   faNoteSticky,
   faScaleBalanced,
@@ -86,6 +87,12 @@ export class NavigationService {
       label: 'Regeln',
       icon: faScaleBalanced,
       link: '/rules'
+    },
+    {
+      icon: faRobot,
+      label: 'Claude',
+      link: '/drafts',
+      gmOnly: true,
     },
   ];
 

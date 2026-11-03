@@ -626,6 +626,39 @@ export type Database = {
           },
         ]
       }
+      mcp_grants: {
+        Row: {
+          approved_by: string
+          client_id: string
+          client_name: string | null
+          created_at: string
+          id: string
+          last_used_at: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          approved_by: string
+          client_id: string
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_grants_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mentions: {
         Row: {
           created_at: string | null
@@ -714,6 +747,7 @@ export type Database = {
           title: string | null
           xp: number | null
           xp_spent: number | null
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           banner?: string | null
@@ -734,6 +768,7 @@ export type Database = {
           title?: string | null
           xp?: number | null
           xp_spent?: number | null
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           banner?: string | null
@@ -754,6 +789,7 @@ export type Database = {
           title?: string | null
           xp?: number | null
           xp_spent?: number | null
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1137,6 +1173,7 @@ export type Database = {
           owner_id: string | null
           parent_id: string | null
           type: string
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           created_at?: string | null
@@ -1147,6 +1184,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           created_at?: string | null
@@ -1157,6 +1195,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type?: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1290,6 +1329,7 @@ export type Database = {
           owner_id: string | null
           parent_id: string | null
           type: string
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           completed?: boolean | null
@@ -1300,6 +1340,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           completed?: boolean | null
@@ -1310,6 +1351,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type?: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1660,6 +1702,15 @@ export type Database = {
         Args: { p_refs: Json }
         Returns: { entity_id: string; entity_type: string }[]
       }
+      discard_draft: {
+        Args: { p_entity_id: string; p_entity_type: string }
+        Returns: undefined
+      }
+      is_assistant: { Args: never; Returns: boolean }
+      publish_draft: {
+        Args: { p_entity_id: string; p_entity_type: string }
+        Returns: undefined
+      }
       is_entity_owner: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: boolean
@@ -1667,6 +1718,7 @@ export type Database = {
       is_gm: { Args: never; Returns: boolean }
     }
     Enums: {
+      entity_status: "draft" | "published"
       flow_item_type: "person" | "place" | "quest" | "note"
       info_type:
         | "appearance"
@@ -1684,7 +1736,7 @@ export type Database = {
         | "spell"
         | "cantrip"
         | "liturgy"
-      user_role: "observer" | "player" | "co_gm" | "gm"
+      user_role: "observer" | "player" | "co_gm" | "gm" | "assistant"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1815,6 +1867,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      entity_status: ["draft", "published"],
       flow_item_type: ["person", "place", "quest", "note"],
       info_type: [
         "appearance",
@@ -1834,7 +1887,7 @@ export const Constants = {
         "cantrip",
         "liturgy",
       ],
-      user_role: ["observer", "player", "co_gm", "gm"],
+      user_role: ["observer", "player", "co_gm", "gm", "assistant"],
     },
   },
 } as const

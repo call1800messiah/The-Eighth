@@ -1,5 +1,6 @@
 @if (quest) {
   <app-container width="medium" class="quest">
+    <app-draft-banner entityType="quest" [entity]="quest"></app-draft-banner>
     <div class="info box">
       <app-access-indicator [item]="quest"></app-access-indicator>
       <div class="type">

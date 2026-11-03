@@ -11,6 +11,8 @@ import type { Spell } from './spell';
 import type { Liturgy } from './liturgy';
 
 export interface Person extends AccessControlledItem {
+  /** 'draft' until a GM publishes what Claude created (migration 013). */
+  status?: 'draft' | 'published';
   id: string;
   advantages?: Advantage[];
   attributes?: Attribute[];

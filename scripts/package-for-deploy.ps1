@@ -96,6 +96,13 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
+Write-Host "[package] Building MCP server image..." -ForegroundColor Green
+docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Docker build of the MCP server failed."
+    exit 1
+}
+
 # ---------------------------------------------------------------------------
 # Step 2: Save Docker image to .tar
 # ---------------------------------------------------------------------------
@@ -103,7 +110,8 @@ if ($LASTEXITCODE -ne 0) {
 $ImageTar = "the-eighth-app.tar"
 
 Write-Host "[package] Saving image to $ImageTar..." -ForegroundColor Green
-docker save -o $ImageTar the-eighth-app:latest
+# Both images in one archive: `docker load` restores both.
+docker save -o $ImageTar the-eighth-app:latest the-eighth-mcp:latest
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Docker save failed."
     exit 1
@@ -127,6 +135,7 @@ $Files = @(
     "deploy/supabase"
     "supabase/migrations"
     "scripts/run-migrations.sh"
+    "scripts/create-mcp-user.sh"
     "scripts/transform-and-migrate.ts"
     "scripts/migrate-storage.ts"
     "scripts/validate-migration.ts"
