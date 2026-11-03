@@ -1,0 +1,59 @@
+@if (view$ | async; as view) {
+  <div class="story-beats" [class.stopped]="!view.running">
+    @if (view.session) {
+      <div class="chips">
+        @for (chip of view.chips; track chip.tracker.person.id) {
+          <button
+            type="button"
+            class="chip"
+            [class.overdue]="chip.overdue && view.running"
+            [disabled]="!view.running"
+            [style.--beat-color]="chip.color"
+            [style.--beat-fill]="chip.fill + '%'"
+            [title]="chip.title"
+            [attr.aria-label]="'Beat für ' + chip.tracker.person.name"
+            (click)="promptBeat(chip)"
+          >
+            @if (chip.tracker.person.image) {
+              <img class="portrait" [src]="chip.tracker.person.image" alt="" />
+            } @else {
+              <span class="portrait initial">{{ chip.tracker.person.name.substring(0, 1) }}</span>
+            }
+            <span class="name">{{ firstName(chip.tracker.person.name) }}</span>
+            <span class="track" aria-hidden="true"><span class="fill"></span></span>
+          </button>
+        }
+      </div>
+
+      @if (pendingBeat) {
+        <!-- Modal: the beat is only logged by choosing a kind here. -->
+        <dialog
+          #tagPrompt
+          class="tag-prompt"
+          [attr.aria-label]="'Beat für ' + pendingBeat.personName"
+          (cancel)="$event.preventDefault()"
+          (close)="cancelBeat()"
+        >
+          @for (k of kinds; track k.kind) {
+            <button type="button" class="btn" [disabled]="saving" (click)="confirmBeat(k.kind)">{{ k.label }}</button>
+          }
+          <button type="button" class="btn borderless" [disabled]="saving" (click)="cancelBeat()">Abbrechen</button>
+        </dialog>
+      }
+    }
+
+    <div class="controls">
+      @if (view.session) {
+        <span class="clock" title="Gespielte Zeit">{{ view.sessionTime }}</span>
+      }
+      <button type="button" class="btn-icon" [title]="view.running ? 'Session stoppen' : 'Session starten'" (click)="toggleRunning(view)">
+        <fa-icon [icon]="view.running ? faStop : faPlay" [fixedWidth]="true"></fa-icon>
+      </button>
+      @if (view.session) {
+        <button type="button" class="btn-icon" title="Einstellungen" (click)="openSettings()">
+          <fa-icon [icon]="faCog" [fixedWidth]="true"></fa-icon>
+        </button>
+      }
+    </div>
+  </div>
+}

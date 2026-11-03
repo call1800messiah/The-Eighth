@@ -1,27 +1,32 @@
 <app-container width="medium">
-  <app-top-bar-filter
-    [text]="initialFilterText"
-    placeholder="Flow durchsuchen..."
-    (filterChanged)="onFilterChanged($event)"
-    >
-    @if (user.isGM) {
-      <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen">
-        <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
-      </button>
-    }
+  <div class="flow-head">
+    <!-- GM-only spotlight tracker; renders nothing for players -->
+    <app-story-beat-bar [flowId]="flowId"></app-story-beat-bar>
 
-    @if (user.isGM) {
-      <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen">
-        <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
-      </button>
-    }
+    <app-top-bar-filter
+      [text]="initialFilterText"
+      placeholder="Flow durchsuchen..."
+      (filterChanged)="onFilterChanged($event)"
+      >
+      @if (user.isGM) {
+        <button type="button" class="btn-icon" (click)="showAddItemModal()" title="Element hinzufügen">
+          <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
+        </button>
+      }
 
-    @if (user.isGM) {
-      <button type="button" class="btn-icon" (click)="showEditFlowModal()" title="Session bearbeiten">
-        <fa-icon [icon]="faEdit" [fixedWidth]="true"></fa-icon>
-      </button>
-    }
-  </app-top-bar-filter>
+      @if (user.isGM) {
+        <button type="button" class="btn-icon" (click)="showAddNoteModal()" title="Notiz hinzufügen">
+          <fa-icon [icon]="faStickyNote" [fixedWidth]="true"></fa-icon>
+        </button>
+      }
+
+      @if (user.isGM) {
+        <button type="button" class="btn-icon" (click)="showEditFlowModal()" title="Session bearbeiten">
+          <fa-icon [icon]="faEdit" [fixedWidth]="true"></fa-icon>
+        </button>
+      }
+    </app-top-bar-filter>
+  </div>
 
   <!-- Loading State -->
   @if (loading) {
