@@ -1,0 +1,199 @@
+// Floating overlay: sits over the page content instead of taking layout space,
+// so no page changes height when a session starts or ends.
+:host {
+  position: fixed;
+  right: 12px;
+  top: calc(var(--header-height) + 6px);
+  z-index: 96; // above header (90), below footer (100) and popovers
+}
+
+.story-beats {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: calc(100vw - 24px);
+}
+
+.bar {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.85);
+  border: var(--border-line-width) solid var(--color-primary);
+  display: flex;
+  gap: 8px;
+  padding: 4px 6px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  align-items: center;
+  appearance: none;
+  background-color: var(--color-dark);
+  border: 2px solid var(--beat-color);
+  color: var(--color-bright);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--base-body-font-family);
+  font-size: var(--detail-text-font-size);
+  gap: 6px;
+  height: 36px;
+  overflow: hidden;
+  padding: 0 8px 0 4px;
+  position: relative;
+  transition: border-color var(--animation-time);
+
+  // The fill grows with idle time, so the GM sees who is drifting before the
+  // interval runs out, not only when it does.
+  .fill {
+    background-color: var(--beat-color);
+    bottom: 0;
+    height: 3px;
+    left: 0;
+    position: absolute;
+    transition: width var(--animation-time), background-color var(--animation-time);
+    width: var(--beat-fill);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: rgba(var(--color-primary-rgb), 0.15);
+    outline: none;
+  }
+
+  &.overdue {
+    animation: beat-overdue 1.2s ease-in-out infinite;
+  }
+}
+
+.hotkey {
+  color: var(--color-gray);
+  font-size: 1.1rem;
+  min-width: 1ch;
+}
+
+.portrait {
+  border-radius: 50%;
+  height: 24px;
+  object-fit: cover;
+  width: 24px;
+
+  &.initial {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    line-height: 24px;
+    text-align: center;
+  }
+}
+
+.name {
+  white-space: nowrap;
+}
+
+.controls {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+}
+
+.clock {
+  color: var(--color-gray);
+  font-size: var(--detail-text-font-size);
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+}
+
+.panel {
+  background-color: rgba(0, 0, 0, 0.92);
+  border: var(--border-line-width) solid var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--detail-text-font-size);
+    gap: 4px;
+  }
+
+  input[type="number"] {
+    width: 8em;
+  }
+}
+
+.tag-prompt {
+  align-items: center;
+  flex-direction: row;
+
+  .label {
+    font-size: var(--detail-text-font-size);
+    white-space: nowrap;
+  }
+
+  .kinds {
+    display: flex;
+    gap: 4px;
+
+    .btn {
+      font-size: 1.2rem;
+      height: 28px;
+      line-height: 26px;
+      padding: 0 8px;
+      width: auto;
+    }
+  }
+}
+
+.settings {
+  min-width: 220px;
+
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  legend {
+    font-size: var(--detail-text-font-size);
+    margin-bottom: 4px;
+  }
+
+  label.presence {
+    align-items: center;
+    flex-direction: row;
+  }
+}
+
+.start .actions {
+  display: flex;
+  gap: 6px;
+}
+
+.paused .chip {
+  opacity: 0.5;
+}
+
+.collapsed .chip {
+  gap: 4px;
+  padding-right: 4px;
+}
+
+@keyframes beat-overdue {
+  0%, 100% { box-shadow: 0 0 0 0 var(--beat-color); }
+  50%      { box-shadow: 0 0 10px 3px var(--beat-color); background-color: rgba(221, 0, 0, 0.35); }
+}
+
+// No blinking for people who asked their OS for less motion; the red border
+// and full bar still mark the chip as overdue.
+@media (prefers-reduced-motion: reduce) {
+  .chip.overdue {
+    animation: none;
+    background-color: rgba(221, 0, 0, 0.35);
+  }
+}

@@ -135,6 +135,50 @@ export type Database = {
         }
         Relationships: []
       }
+      beat_sessions: {
+        Row: {
+          created_at: string | null
+          ended_at: string | null
+          id: string
+          interval_minutes: number
+          muted_person_ids: string[]
+          owner_id: string | null
+          paused_at: string | null
+          paused_seconds: number
+          started_at: string
+        }
+        Insert: {
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          interval_minutes?: number
+          muted_person_ids?: string[]
+          owner_id?: string | null
+          paused_at?: string | null
+          paused_seconds?: number
+          started_at?: string
+        }
+        Update: {
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          interval_minutes?: number
+          muted_person_ids?: string[]
+          owner_id?: string | null
+          paused_at?: string | null
+          paused_seconds?: number
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beat_sessions_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign: {
         Row: {
           captain: string | null
@@ -1419,6 +1463,48 @@ export type Database = {
           },
         ]
       }
+      story_beats: {
+        Row: {
+          active_seconds: number
+          created_at: string | null
+          id: string
+          kind: string | null
+          person_id: string
+          session_id: string
+        }
+        Insert: {
+          active_seconds: number
+          created_at?: string | null
+          id?: string
+          kind?: string | null
+          person_id: string
+          session_id: string
+        }
+        Update: {
+          active_seconds?: number
+          created_at?: string | null
+          id?: string
+          kind?: string | null
+          person_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_beats_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_beats_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "beat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timelines: {
         Row: {
           created_at: string | null
@@ -1516,6 +1602,17 @@ export type Database = {
     }
     Functions: {
       current_user_id: { Args: never; Returns: string }
+      end_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      log_story_beat: {
+        Args: { p_kind?: string; p_person_id: string; p_session_id: string }
+        Returns: Database["public"]["Tables"]["story_beats"]["Row"]
+      }
+      pause_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      resume_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      start_beat_session: {
+        Args: { p_interval_minutes?: number }
+        Returns: Database["public"]["Tables"]["beat_sessions"]["Row"]
+      }
       is_entity_owner: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: boolean

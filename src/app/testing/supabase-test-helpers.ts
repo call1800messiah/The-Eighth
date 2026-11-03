@@ -117,6 +117,9 @@ export function createMockApiService() {
 
   return {
     from: jasmine.createSpy('from').and.returnValue(queryBuilder),
+    rpc: jasmine.createSpy('rpc').and.returnValue(
+      Promise.resolve({ data: null, error: null })
+    ),
     getAuthState: jasmine.createSpy('getAuthState').and.returnValue(of(null)),
     login: jasmine.createSpy('login').and.returnValue(
       Promise.resolve({ data: {}, error: null })
