@@ -1,0 +1,15 @@
+@if (backlinks$ | async; as backlinks) {
+  @if (backlinks.length) {
+    <div class="backlinks">
+      <div class="heading">Erwähnt in</div>
+      <ul>
+        @for (backlink of backlinks; track backlink.sourceType + backlink.sourceId) {
+          <li>
+            <a [routerLink]="backlink.route.path" [queryParams]="backlink.route.queryParams">{{ backlink.label }}</a>
+            <span class="kind">{{ backlink.kind }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+}

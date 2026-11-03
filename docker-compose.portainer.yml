@@ -26,6 +26,13 @@
 #
 # Optional env vars:
 #   APP_PORT (default: 8082)
+#
+# MCP server (lets Claude create draft people, places and quests; mcp/README.md).
+# It runs without these, answering 503 until they are set:
+#   MCP_PUBLIC_URL         the app's public origin, e.g. https://campaign.example.com
+#   SUPABASE_ANON_KEY      same as ANON_KEY in deploy/supabase/.env
+#   MCP_SUPABASE_EMAIL     the dedicated Claude user (scripts/create-mcp-user.sh)
+#   MCP_SUPABASE_PASSWORD
 
 services:
   # ── Angular App (pre-built image) ─────────────────────────────────────────
@@ -36,6 +43,24 @@ services:
       - "${APP_PORT:-8082}:80"
     networks:
       - supabase
+
+  # ── MCP server (pre-built image) ──────────────────────────────────────────
+  # Not published on a port: the app's nginx proxies /mcp and the OAuth
+  # discovery documents to it over the supabase network.
+  mcp:
+    image: the-eighth-mcp:latest
+    restart: unless-stopped
+    environment:
+      MCP_PUBLIC_URL: ${MCP_PUBLIC_URL:-https://localhost}
+      SUPABASE_URL: http://envoy:8000
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      MCP_SUPABASE_EMAIL: ${MCP_SUPABASE_EMAIL:-}
+      MCP_SUPABASE_PASSWORD: ${MCP_SUPABASE_PASSWORD:-}
+    networks:
+      supabase:
+        # A name no other stack on the shared network will use.
+        aliases:
+          - the-eighth-mcp
 
 networks:
   supabase:

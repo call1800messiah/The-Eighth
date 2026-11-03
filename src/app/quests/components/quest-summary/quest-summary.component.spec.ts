@@ -3,6 +3,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { QuestSummaryComponent } from './quest-summary.component';
 import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
+import { PlainTextPipe } from '../../../shared/pipes/plain-text.pipe';
 
 describe('QuestSummaryComponent', () => {
   let component: QuestSummaryComponent;
@@ -10,7 +11,7 @@ describe('QuestSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [QuestSummaryComponent],
+      declarations: [QuestSummaryComponent, PlainTextPipe],
       providers: createComponentTestProviders(),
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

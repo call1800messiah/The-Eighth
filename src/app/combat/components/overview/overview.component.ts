@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { faList, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faList, faMap, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
 import type { Person } from '../../../people/models/person';
@@ -31,17 +31,20 @@ export class OverviewComponent implements OnInit {
   combatants$: Observable<Combatant[]>;
   displayAsBox: boolean;
   faList = faList;
+  faMap = faMap;
   faPlus = faPlus;
   faUsers = faUsers;
   newCombatant = '';
   people: Person[];
   user: AuthUser;
   showAsList = false;
+  showMap = false;
 
   constructor() {
     this.combatants$ = this.combatService.getCombatants();
     this.displayAsBox = environment.tenant === 'tde5';
     this.showAsList = localStorage.getItem('combat-show-as-list') === 'true';
+    this.showMap = localStorage.getItem('combat-show-map') === 'true';
     this.user = this.auth.user;
   }
 
@@ -80,5 +83,17 @@ export class OverviewComponent implements OnInit {
   toggleDisplayStyle() {
     this.showAsList = !this.showAsList;
     localStorage.setItem('combat-show-as-list', this.showAsList.toString());
+    this.setShowMap(false);
+  }
+
+
+  toggleMap() {
+    this.setShowMap(!this.showMap);
+  }
+
+
+  private setShowMap(show: boolean) {
+    this.showMap = show;
+    localStorage.setItem('combat-show-map', show.toString());
   }
 }

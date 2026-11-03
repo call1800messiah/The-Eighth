@@ -1,7 +1,7 @@
 <div>
   <form [formGroup]="infoForm" (ngSubmit)="save()">
     <div class="form-group">
-      <textarea id="content" formControlName="content" required></textarea>
+      <app-rich-text-editor inputId="content" formControlName="content" required></app-rich-text-editor>
       <label for="content">Inhalt</label>
     </div>
 

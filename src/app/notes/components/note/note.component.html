@@ -1,8 +1,7 @@
 @if (note) {
   <div class="note-detail">
-    <div class="note-content">
-      {{ note.content }}
-    </div>
+    <app-markdown class="note-content" [text]="note.content"></app-markdown>
+    <app-backlinks entityType="note" [entityId]="note.id"></app-backlinks>
     <div class="note-actions">
       <button type="button" class="btn" (click)="editNote()">
         Bearbeiten

@@ -2,7 +2,7 @@
   <div class="heading">{{infoTypes[key]}}</div>
   @for (info of infos; track info) {
     <div class="detail">
-      <div class="content" (click)="detailClicked(info)">{{info.content}}</div>
+      <app-markdown class="content" (click)="detailClicked(info)" [text]="info.content"></app-markdown>
       <app-access-indicator [item]="info"></app-access-indicator>
     </div>
   }

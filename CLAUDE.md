@@ -48,7 +48,12 @@ bash scripts/run-migrations.sh
 
 # Local: reset and reseed
 npm run db:reset
+
+# RLS / trigger tests on a throwaway local Postgres (no Docker, no Supabase)
+bash supabase/tests/run.sh
 ```
+
+`supabase/tests/run.sh` applies `shim.sql` (just enough Supabase: API roles, `auth.uid()`, a storage stub), every migration with plain `psql -f`, and `fixtures.sql` (a GM, two players, the Claude user), then each `*.test.sql` in a rolled-back transaction. Use the `test.login()`, `test.eq()`, `test.denied()` and `test.affected()` helpers. Policy changes get a test here.
 
 ### Deployment
 The app is deployed as a Docker image alongside a separately-managed Supabase stack — **not** to Firebase Hosting.
@@ -66,6 +71,8 @@ tar xf the-eighth-deploy-*.tar
 ```
 
 See `docker-compose.portainer.yml` for the full server-side sequence, and `deploy/supabase/` for the Supabase stack itself.
+
+`the-eighth-app.tar` holds both images, the app and the MCP server (`mcp/`). The MCP server needs a one-time `bash scripts/create-mcp-user.sh <email>` and four stack variables (see `mcp/README.md`); until then it answers 503 and the app is unaffected.
 
 The archive leaves out the Firebase service account key and the user password files (`data/user-credentials.json`, `data/export/_user_credentials.json`). Only a first-time Firestore migration needs them: pass `-IncludeMigrationSecrets` / `--include-migration-secrets` for that, and delete them from the server afterwards.
 
@@ -113,9 +120,9 @@ The site is public, behind Nginx Proxy Manager on the same Docker host, which te
 - **Known tenants**: `tde5` (The Dark Eye 5e), `the-eighth` (custom system)
 
 ### Module Organization
-- **CoreModule**: Singleton services (Api, Auth, Data, Config, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
+- **CoreModule**: Singleton services (Api, Auth, Data, Config, Mention, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
 - **SharedModule**: Reusable components, directives, pipes
-- **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat, dice, flow, inventory, notes, overview, people, places, projects, quests, rules)
+- **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat (incl. the battle map), dice, drafts, flow, inventory, notes, overview, people, places, projects, quests, rules)
 - **StoryBeatsModule**: not routed; FlowModule imports it for the `StoryBeatBarComponent` on the flow view. GM-only spotlight tracker (see below)
 
 ### Supabase Client
@@ -131,6 +138,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **UserService**: User directory from the `users` table
 - **StorageService**: Supabase Storage upload/download against the tenant bucket. Uploads for an entity go to `<folder>/<entity id>/<name>-<nanoid>.<ext>`: the unique name gives replacements a new URL (so realtime and the browser cache pick them up), and the storage policies (migration 006) let the entity's owner write inside its folder. Inside storage policy subqueries, write `objects.name` — `people`/`places` have their own `name` column that an unqualified `name` resolves to.
 - **ConfigService**: App config, sidebar state (localStorage), ID generation (nanoid)
+- **MentionService**: What the rich-text editor can mention (id + name of people, places, quests and notes, fetched lean and RLS-scoped), how each mention should look to the viewer (`resolve()`), and backlinks (`getBacklinks()`). See *Rich Text* below
 - **NavigationService**, **PopoverService**, **UtilService**: unchanged from before the migration
 
 #### Feature Services
@@ -143,6 +151,32 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **No NgRx/Akita**: RxJS BehaviorSubjects in services
 - **Data flow**: RealtimeService → Feature Services (deserialize/transform/combine) → BehaviorSubjects → Components
 - **Reactive composition**: `combineLatest` / `withLatestFrom`
+
+### Rich Text
+Every long text field is **Markdown** in its existing `TEXT` column; there is no separate rich-text format. Texts written before the editor are plain text, which reads as Markdown.
+
+- **Editing**: `<app-rich-text-editor formControlName="…" inputId="…">` (Tiptap) replaces every textarea. It is a `ControlValueAccessor` whose value is Markdown, and it only emits once the user edits, so opening a form never rewrites an old text. Tiptap is loaded on demand from `shared/markdown/editor.ts`, keeping ProseMirror out of the initial bundle; specs `await component.ready`.
+- **Displaying**: `<app-markdown [text]="…">` renders through `shared/markdown/markdown-renderer.ts` (marked + DOMPurify). Raw HTML in a text is shown as text, remote images are not loaded. Where a link can't go (inside an `<a>`, one-line previews), use the `plainText` pipe / `markdownToPlainText()`.
+- **Line breaks**: both sides use `breaks: true`, and the editor writes a hard break as a bare `\n`, so existing plain text round-trips byte for byte.
+- **Mentions**: `[Label](mention:<person|place|quest|note>/<uuid>)`, typed with `@` in the editor. The label is the name when written; the renderer shows the current name as a link if the viewer can see the target, the stored label as plain text if not, and the label struck through if the target was deleted (`mention_targets_exist()` tells hidden from deleted). Notes have no page, so their links go to `/notes?note=<id>`, which highlights the note.
+- **Backlinks**: the `mentions` table (migration 012) is rebuilt by triggers on every write of a text column, whoever writes it (app, MCP server, SQL). Clients cannot write it. A mention row is visible to whoever can see its source row. Adding a new text column means adding it to the `rebuild_mentions` trigger of its table (dotted paths reach into JSONB, e.g. `metadata.variants`). `<app-backlinks>` lists them on person, place, quest and note views.
+
+### Combat Map
+The combat view has a third mode (map icon): `CombatMapComponent` draws the running session's map with Konva (only in the lazy combat chunk). Data lives in `combat_maps` (one per combat session: image, size, grid) and `combat_tokens` (one per placed combatant), migration 014.
+
+- Everyone signed in sees it live and pans/zooms their own view; **only GMs write** (RLS): upload or remove the image (`maps/<map id>/…`, raster only), set up the grid, move tokens.
+- Coordinates are map pixels (the image's own, or a blank 1600×1000 area). Geometry (snap, staging row, fit, zoom) is pure code in `combat/map/geometry.ts`.
+- Combatants without a `combat_tokens` row stand in a staging row along the top, computed the same way on every device; dragging one stores it.
+- Players see the whole image: no fog of war, so no maps with spoilers. Also out of scope for now: line of sight, measuring, players moving tokens.
+- Konva runs outside Angular's zone; set state that the template shows inside `zone.run()` or follow it with `markForCheck()`.
+
+### Claude (MCP server)
+`mcp/` is a separate Node service (own `package.json`, image `the-eighth-mcp`, same Portainer stack) that lets Claude read the campaign and create **drafts** of people, places and quests. See `mcp/README.md`.
+
+- It acts as one dedicated Supabase user with the `assistant` role (migration 013), never as a person. RLS lets that role read what a GM reads and write only its own drafts (`status = 'draft'`) plus their info boxes and family links; every other table refuses its writes through RESTRICTIVE policies. **A table added later gets no assistant policies**, so the assistant can neither read nor write it until a migration says so.
+- Drafts are hidden from everyone but GMs and the assistant. GMs review them at `/drafts` (DraftsModule, `DraftsService`) or through `<app-draft-banner>` on the entity page; `publish_draft()` / `discard_draft()` do the work. Lists mark drafts with `.draft-tag`.
+- OAuth 2.1 for claude.ai/Claude Code, with a GM login as the approval step (`approve_mcp_grant()` runs under the GM's session). Connections (`mcp_grants`) are listed and revoked on `/drafts`.
+- The app's nginx proxies `/mcp`, `/mcp/…` and `/.well-known/oauth-*` to it. Keep those paths free in the Angular router.
 
 ### Realtime
 `RealtimeService.watch(table, queryFn, cacheKey, triggerTables)` re-runs the query when the watched table changes. **`triggerTables` matters for junction tables**: a write to `person_skills` changes no `people` row, so without listing it there the UI only updates after a reload. A table must also be a member of the `supabase_realtime` publication for any event to fire — see `supabase/migrations/004_person_capability_realtime.sql`.
@@ -160,7 +194,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - `001_initial_schema.sql` — enums, tables, indexes, replica identity, realtime publication
 - `002_rls_policies.sql` — helper functions (`is_gm()`, `is_entity_owner()`) and every policy
 - `003_storage_buckets.sql` — bucket and storage.objects policies
-- `004_…` onward — incremental changes
+- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map)
 
 Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `project_milestones`, …). Query them with PostgREST embedding: `query.select('*, person_skills(rule_id, value)')`.
 
@@ -172,7 +206,7 @@ Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `
 ### Component Patterns
 - **Dashboard Pattern**: most features use the shared `DashboardComponent` as a layout wrapper
 - **Popover-based editing**: edit forms loaded dynamically via PopoverService with props passed via resolver
-- **Shared Components** (`src/app/shared/components/`): EditImage, EditInfo, EditAttribute, EditAccess, EditTags, Avatar, Bar, InfoBox, Timeline, ProgressBar, Popover, ContextMenu, TopBarFilter, Container
+- **Shared Components** (`src/app/shared/components/`): EditImage, EditInfo, EditAttribute, EditAccess, EditTags, Avatar, Bar, InfoBox, Timeline, ProgressBar, Popover, ContextMenu, TopBarFilter, Container, RichTextEditor, Markdown, Backlinks
 
 ### Dependency Injection
 All services use `providedIn: 'root'`.
@@ -188,6 +222,8 @@ All services use `providedIn: 'root'`.
 ### When Adding Tables or Policies
 - Add a new numbered migration; never edit an applied one
 - Enable RLS on every new table — an un-policied table is invisible to clients, and a table with RLS off is readable by everyone
+- Decide what the `assistant` role (Claude) may do with it; by default it can do nothing (see *Claude (MCP server)*)
+- Add a test under `supabase/tests/` and run `bash supabase/tests/run.sh`
 - If the app should react to changes, add the table to the `supabase_realtime` publication *and* to the relevant `triggerTables`
 
 ### When Working with Supabase
@@ -207,10 +243,12 @@ All services use `providedIn: 'root'`.
 - Tenant body class scopes CSS: `.{tenant} .your-selector`
 
 ## Testing
+- MCP server: `cd mcp && npm test` (OAuth flow), `bash mcp/test/integration.sh` (tools against Postgres + PostgREST)
+- Database: `bash supabase/tests/run.sh`
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is green** (332 passing as of 2026-09-24). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+- **The suite is green** (537 passing as of 2026-11-03). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
 
 ### Writing specs against Supabase
 Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:

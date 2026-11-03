@@ -15,6 +15,7 @@ import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
+import { PlainTextPipe } from './pipes/plain-text.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
 import { TimelineComponent } from './components/timeline/timeline.component';
@@ -33,6 +34,10 @@ import { LoadingTriggerComponent } from './components/loading-trigger/loading-tr
 import { BarAttributesComponent } from './components/bar-attributes/bar-attributes.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TabPanelComponent } from './components/tabs/tab-panel.component';
+import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
+import { MarkdownComponent } from './components/markdown/markdown.component';
+import { BacklinksComponent } from './components/backlinks/backlinks.component';
+import { DraftBannerComponent } from './components/draft-banner/draft-banner.component';
 
 
 
@@ -41,11 +46,13 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     AudioPlayerComponent,
     AudioPlayerListComponent,
     AvatarComponent,
+    BacklinksComponent,
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
     ContainerComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAttributeComponent,
     EditEventComponent,
     EditImageComponent,
@@ -54,8 +61,11 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     FocusOnInitDirective,
     InfoBoxComponent,
     LoadingTriggerComponent,
+    MarkdownComponent,
+    PlainTextPipe,
     PopoverComponent,
     ProgressBarComponent,
+    RichTextEditorComponent,
     SelectOnFocusDirective,
     TimelineComponent,
     TopBarFilterComponent,
@@ -80,12 +90,14 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     AccessIndicatorComponent,
     AudioPlayerListComponent,
     AvatarComponent,
+    BacklinksComponent,
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
     ContainerComponent,
     ContextMenuComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAccessComponent,
     EditAttributeComponent,
     EditImageComponent,
@@ -97,10 +109,13 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     FormsModule,
     InfoBoxComponent,
     LoadingTriggerComponent,
+    MarkdownComponent,
     NgOptimizedImage,
+    PlainTextPipe,
     PopoverComponent,
     ProgressBarComponent,
     ReactiveFormsModule,
+    RichTextEditorComponent,
     SelectOnFocusDirective,
     TabsComponent,
     TabPanelComponent,

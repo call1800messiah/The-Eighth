@@ -37,6 +37,7 @@ export class QuestsService {
         id: row.id,
         name: row.name || '',
         owner: row.owner_id,
+        status: row.status ?? 'published',
         type: row.type || null
       };
       if (row.parent_id) {

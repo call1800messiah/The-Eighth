@@ -104,7 +104,7 @@
                     <span class="note-title">{{ note.title }}</span>
                   }
                   @if (!note.title) {
-                    <span class="note-content">{{ note.content.slice(0,35) }}</span>
+                    <span class="note-content">{{ preview(note.content) }}</span>
                   }
                 </div>
                 @if (note.category) {

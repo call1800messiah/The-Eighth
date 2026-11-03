@@ -10,3 +10,4 @@ tmpclaude-*
 *.tar.gz
 .env
 firebase-service-account.json
+mcp

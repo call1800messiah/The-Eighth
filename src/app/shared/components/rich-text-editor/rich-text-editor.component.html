@@ -1,0 +1,44 @@
+<div class="toolbar" role="toolbar" aria-label="Formatierung">
+  <button type="button" class="tool" title="Fett (Strg+B)" [class.active]="isActive('bold')" (mousedown)="run($event, 'bold')">
+    <fa-icon [icon]="icons.bold" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Kursiv (Strg+I)" [class.active]="isActive('italic')" (mousedown)="run($event, 'italic')">
+    <fa-icon [icon]="icons.italic" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Durchgestrichen" [class.active]="isActive('strike')" (mousedown)="run($event, 'strike')">
+    <fa-icon [icon]="icons.strike" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Überschrift" [class.active]="isActive('heading')" (mousedown)="run($event, 'heading')">
+    <fa-icon [icon]="icons.heading" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Liste" [class.active]="isActive('bulletList')" (mousedown)="run($event, 'bulletList')">
+    <fa-icon [icon]="icons.listUl" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Nummerierte Liste" [class.active]="isActive('orderedList')" (mousedown)="run($event, 'orderedList')">
+    <fa-icon [icon]="icons.listOl" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Zitat" [class.active]="isActive('blockquote')" (mousedown)="run($event, 'blockquote')">
+    <fa-icon [icon]="icons.quote" [fixedWidth]="true"></fa-icon>
+  </button>
+  <button type="button" class="tool" title="Erwähnen (@)" (mousedown)="run($event, 'mention')">
+    <fa-icon [icon]="icons.at" [fixedWidth]="true"></fa-icon>
+  </button>
+</div>
+
+<div #content class="content"></div>
+
+@if (suggestion && suggestion.items.length) {
+  <ul class="mention-picker" role="listbox" [style.left.px]="suggestion.left" [style.top.px]="suggestion.top">
+    @for (item of suggestion.items; track item.entityType + item.entityId; let i = $index) {
+      <li
+        role="option"
+        [class.selected]="i === suggestion.selected"
+        [attr.aria-selected]="i === suggestion.selected"
+        (mousedown)="pick($event, item)"
+        >
+        <span class="name">{{ item.name }}</span>
+        <span class="type">{{ typeLabels[item.entityType] }}</span>
+      </li>
+    }
+  </ul>
+}

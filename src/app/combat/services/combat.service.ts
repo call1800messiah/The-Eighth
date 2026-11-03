@@ -178,6 +178,15 @@ export class CombatService {
   }
 
 
+  /**
+   * The running combat session, created if there is none. Creating one needs
+   * a GM (combat_sessions_insert_policy); for anyone else this is null then.
+   */
+  ensureActiveSession(): Promise<string | null> {
+    return this.getActiveSessionId();
+  }
+
+
   private async getActiveSessionId(): Promise<string | null> {
     if (this.activeSessionId) return this.activeSessionId;
 

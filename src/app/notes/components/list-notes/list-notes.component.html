@@ -11,12 +11,12 @@
       <div class="category">{{group.key}}</div>
       <div>
         @for (note of group.value; track note) {
-          <div class="note box" (click)="editNote(note)">
+          <div class="note box" [class.highlighted]="note.id === highlightedNoteId" [attr.data-note-id]="note.id" (click)="editNote(note)">
             <app-access-indicator [item]="note"></app-access-indicator>
             @if (note.title) {
               <div class="title">{{note.title}}</div>
             }
-            <div class="content">{{note.content}}</div>
+            <app-markdown class="content" [text]="note.content"></app-markdown>
           </div>
         }
       </div>

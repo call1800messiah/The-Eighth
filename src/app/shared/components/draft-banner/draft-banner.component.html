@@ -1,0 +1,13 @@
+@if (entity?.status === 'draft') {
+  <div class="draft-banner" role="status">
+    <div class="text">
+      <strong>Entwurf von Claude.</strong>
+      Nur die Spielleitung sieht ihn, bis er freigegeben ist.
+      <a routerLink="/drafts">Alle Entwürfe</a>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" [disabled]="busy" (click)="publish()">Freigeben</button>
+      <button type="button" class="btn" [disabled]="busy" (click)="discard()">Verwerfen</button>
+    </div>
+  </div>
+}
