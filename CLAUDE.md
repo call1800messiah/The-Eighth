@@ -113,7 +113,7 @@ The site is public, behind Nginx Proxy Manager on the same Docker host, which te
 - **Known tenants**: `tde5` (The Dark Eye 5e), `the-eighth` (custom system)
 
 ### Module Organization
-- **CoreModule**: Singleton services (Api, Auth, Data, Config, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
+- **CoreModule**: Singleton services (Api, Auth, Data, Config, Mention, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
 - **SharedModule**: Reusable components, directives, pipes
 - **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat, dice, flow, inventory, notes, overview, people, places, projects, quests, rules)
 - **StoryBeatsModule**: not routed; FlowModule imports it for the `StoryBeatBarComponent` on the flow view. GM-only spotlight tracker (see below)
@@ -131,6 +131,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **UserService**: User directory from the `users` table
 - **StorageService**: Supabase Storage upload/download against the tenant bucket. Uploads for an entity go to `<folder>/<entity id>/<name>-<nanoid>.<ext>`: the unique name gives replacements a new URL (so realtime and the browser cache pick them up), and the storage policies (migration 006) let the entity's owner write inside its folder. Inside storage policy subqueries, write `objects.name` — `people`/`places` have their own `name` column that an unqualified `name` resolves to.
 - **ConfigService**: App config, sidebar state (localStorage), ID generation (nanoid)
+- **MentionService**: What the rich-text editor can mention (id + name of people, places, quests and notes, fetched lean and RLS-scoped), how each mention should look to the viewer (`resolve()`), and backlinks (`getBacklinks()`). See *Rich Text* below
 - **NavigationService**, **PopoverService**, **UtilService**: unchanged from before the migration
 
 #### Feature Services
@@ -143,6 +144,15 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **No NgRx/Akita**: RxJS BehaviorSubjects in services
 - **Data flow**: RealtimeService → Feature Services (deserialize/transform/combine) → BehaviorSubjects → Components
 - **Reactive composition**: `combineLatest` / `withLatestFrom`
+
+### Rich Text
+Every long text field is **Markdown** in its existing `TEXT` column; there is no separate rich-text format. Texts written before the editor are plain text, which reads as Markdown.
+
+- **Editing**: `<app-rich-text-editor formControlName="…" inputId="…">` (Tiptap) replaces every textarea. It is a `ControlValueAccessor` whose value is Markdown, and it only emits once the user edits, so opening a form never rewrites an old text. Tiptap is loaded on demand from `shared/markdown/editor.ts`, keeping ProseMirror out of the initial bundle; specs `await component.ready`.
+- **Displaying**: `<app-markdown [text]="…">` renders through `shared/markdown/markdown-renderer.ts` (marked + DOMPurify). Raw HTML in a text is shown as text, remote images are not loaded. Where a link can't go (inside an `<a>`, one-line previews), use the `plainText` pipe / `markdownToPlainText()`.
+- **Line breaks**: both sides use `breaks: true`, and the editor writes a hard break as a bare `\n`, so existing plain text round-trips byte for byte.
+- **Mentions**: `[Label](mention:<person|place|quest|note>/<uuid>)`, typed with `@` in the editor. The label is the name when written; the renderer shows the current name as a link if the viewer can see the target, the stored label as plain text if not, and the label struck through if the target was deleted (`mention_targets_exist()` tells hidden from deleted). Notes have no page, so their links go to `/notes?note=<id>`, which highlights the note.
+- **Backlinks**: the `mentions` table (migration 012) is rebuilt by triggers on every write of a text column, whoever writes it (app, MCP server, SQL). Clients cannot write it. A mention row is visible to whoever can see its source row. Adding a new text column means adding it to the `rebuild_mentions` trigger of its table (dotted paths reach into JSONB, e.g. `metadata.variants`). `<app-backlinks>` lists them on person, place, quest and note views.
 
 ### Realtime
 `RealtimeService.watch(table, queryFn, cacheKey, triggerTables)` re-runs the query when the watched table changes. **`triggerTables` matters for junction tables**: a write to `person_skills` changes no `people` row, so without listing it there the UI only updates after a reload. A table must also be a member of the `supabase_realtime` publication for any event to fire — see `supabase/migrations/004_person_capability_realtime.sql`.
@@ -172,7 +182,7 @@ Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `
 ### Component Patterns
 - **Dashboard Pattern**: most features use the shared `DashboardComponent` as a layout wrapper
 - **Popover-based editing**: edit forms loaded dynamically via PopoverService with props passed via resolver
-- **Shared Components** (`src/app/shared/components/`): EditImage, EditInfo, EditAttribute, EditAccess, EditTags, Avatar, Bar, InfoBox, Timeline, ProgressBar, Popover, ContextMenu, TopBarFilter, Container
+- **Shared Components** (`src/app/shared/components/`): EditImage, EditInfo, EditAttribute, EditAccess, EditTags, Avatar, Bar, InfoBox, Timeline, ProgressBar, Popover, ContextMenu, TopBarFilter, Container, RichTextEditor, Markdown, Backlinks
 
 ### Dependency Injection
 All services use `providedIn: 'root'`.
@@ -210,7 +220,7 @@ All services use `providedIn: 'root'`.
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is green** (332 passing as of 2026-09-24). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+- **The suite is green** (491 passing as of 2026-11-03). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
 
 ### Writing specs against Supabase
 Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:

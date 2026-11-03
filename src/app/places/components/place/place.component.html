@@ -38,6 +38,7 @@
             <dd>{{place.inhabitants}}</dd>
           }
         </dl>
+        <app-backlinks entityType="place" [entityId]="place.id"></app-backlinks>
       </div>
       @if (infos$) {
         <div class="detail-info">

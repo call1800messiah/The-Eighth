@@ -6,7 +6,7 @@
     <div class="type">{{questTypes[quest.type]}}</div>
     <a class="details" [routerLink]="[quest.id]">
       <div class="name">{{quest.name}}</div>
-      <div class="description">{{quest.description}}</div>
+      <div class="description">{{quest.description | plainText}}</div>
     </a>
     @if (quest.subQuests && showSubQuests) {
       <ul class="subquests unstyled-list">

@@ -21,7 +21,7 @@
     </div>
 
     <div class="form-group">
-      <textarea type="text" id="rules" formControlName="rules"></textarea>
+      <app-rich-text-editor inputId="rules" formControlName="rules"></app-rich-text-editor>
       <label for="rules">Regeln</label>
     </div>
 
@@ -81,7 +81,7 @@
     }
     @if (hasField('description')) {
       <div class="form-group">
-        <textarea id="description" formControlName="description"></textarea>
+        <app-rich-text-editor inputId="description" formControlName="description"></app-rich-text-editor>
         <label for="description">Beschreibung</label>
       </div>
     }
@@ -159,14 +159,14 @@
     }
     @if (hasField('reversalis')) {
       <div class="form-group">
-        <textarea type="text" id="reversalis" formControlName="reversalis"></textarea>
-        <label for="range">Reversalis</label>
+        <app-rich-text-editor inputId="reversalis" formControlName="reversalis"></app-rich-text-editor>
+        <label for="reversalis">Reversalis</label>
       </div>
     }
     @if (hasField('variants')) {
       <div class="form-group">
-        <textarea type="text" id="variants" formControlName="variants"></textarea>
-        <label for="target">Varianten/Zauberereweiterungen</label>
+        <app-rich-text-editor inputId="variants" formControlName="variants"></app-rich-text-editor>
+        <label for="variants">Varianten/Zauberereweiterungen</label>
       </div>
     }
     @if (hasField('usage')) {

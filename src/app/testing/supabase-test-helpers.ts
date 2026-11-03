@@ -1,5 +1,5 @@
 import { of, Observable, Subject, BehaviorSubject, EMPTY } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 
 import { AuthService } from '../core/services/auth.service';
 import { ApiService } from '../core/services/api.service';
@@ -400,6 +400,7 @@ export function createComponentTestProviders() {
       useValue: {
         params: of({}),
         paramMap: of({ get: () => null }),
+        queryParamMap: of(convertToParamMap({})),
         snapshot: { paramMap: { get: () => null } },
       },
     },

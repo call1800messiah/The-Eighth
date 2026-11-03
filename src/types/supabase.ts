@@ -626,6 +626,36 @@ export type Database = {
           },
         ]
       }
+      mentions: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          field: string
+          id: string
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          field: string
+          id?: string
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          field?: string
+          id?: string
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           category: string | null
@@ -1622,6 +1652,14 @@ export type Database = {
       }
       stop_beat_session: { Args: { p_session_id: string }; Returns: undefined }
       stop_idle_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      mention_source_visible: {
+        Args: { p_source_id: string; p_source_type: string }
+        Returns: boolean
+      }
+      mention_targets_exist: {
+        Args: { p_refs: Json }
+        Returns: { entity_id: string; entity_type: string }[]
+      }
       is_entity_owner: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: boolean

@@ -99,7 +99,9 @@ export class NavigationService {
         if (!this.currentBackLink) {
           this.showBackButton$.next(false);
         }
-        const active = this.navigation.find((page) => page.link === event.url);
+        // Ignore the query: mention links open `/notes?note=<id>`.
+        const path = event.urlAfterRedirects.split(/[?#]/)[0];
+        const active = this.navigation.find((page) => page.link === path);
         if (active) {
           this.activeNavigation = active;
           this.pageLabel$.next(this.activeNavigation.label);
