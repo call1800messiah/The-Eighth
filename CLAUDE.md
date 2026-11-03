@@ -122,7 +122,7 @@ The site is public, behind Nginx Proxy Manager on the same Docker host, which te
 ### Module Organization
 - **CoreModule**: Singleton services (Api, Auth, Data, Config, Mention, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
 - **SharedModule**: Reusable components, directives, pipes
-- **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat, dice, drafts, flow, inventory, notes, overview, people, places, projects, quests, rules)
+- **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat (incl. the battle map), dice, drafts, flow, inventory, notes, overview, people, places, projects, quests, rules)
 - **StoryBeatsModule**: not routed; FlowModule imports it for the `StoryBeatBarComponent` on the flow view. GM-only spotlight tracker (see below)
 
 ### Supabase Client
@@ -161,6 +161,15 @@ Every long text field is **Markdown** in its existing `TEXT` column; there is no
 - **Mentions**: `[Label](mention:<person|place|quest|note>/<uuid>)`, typed with `@` in the editor. The label is the name when written; the renderer shows the current name as a link if the viewer can see the target, the stored label as plain text if not, and the label struck through if the target was deleted (`mention_targets_exist()` tells hidden from deleted). Notes have no page, so their links go to `/notes?note=<id>`, which highlights the note.
 - **Backlinks**: the `mentions` table (migration 012) is rebuilt by triggers on every write of a text column, whoever writes it (app, MCP server, SQL). Clients cannot write it. A mention row is visible to whoever can see its source row. Adding a new text column means adding it to the `rebuild_mentions` trigger of its table (dotted paths reach into JSONB, e.g. `metadata.variants`). `<app-backlinks>` lists them on person, place, quest and note views.
 
+### Combat Map
+The combat view has a third mode (map icon): `CombatMapComponent` draws the running session's map with Konva (only in the lazy combat chunk). Data lives in `combat_maps` (one per combat session: image, size, grid) and `combat_tokens` (one per placed combatant), migration 014.
+
+- Everyone signed in sees it live and pans/zooms their own view; **only GMs write** (RLS): upload or remove the image (`maps/<map id>/…`, raster only), set up the grid, move tokens.
+- Coordinates are map pixels (the image's own, or a blank 1600×1000 area). Geometry (snap, staging row, fit, zoom) is pure code in `combat/map/geometry.ts`.
+- Combatants without a `combat_tokens` row stand in a staging row along the top, computed the same way on every device; dragging one stores it.
+- Players see the whole image: no fog of war, so no maps with spoilers. Also out of scope for now: line of sight, measuring, players moving tokens.
+- Konva runs outside Angular's zone; set state that the template shows inside `zone.run()` or follow it with `markForCheck()`.
+
 ### Claude (MCP server)
 `mcp/` is a separate Node service (own `package.json`, image `the-eighth-mcp`, same Portainer stack) that lets Claude read the campaign and create **drafts** of people, places and quests. See `mcp/README.md`.
 
@@ -185,7 +194,7 @@ Every long text field is **Markdown** in its existing `TEXT` column; there is no
 - `001_initial_schema.sql` — enums, tables, indexes, replica identity, realtime publication
 - `002_rls_policies.sql` — helper functions (`is_gm()`, `is_entity_owner()`) and every policy
 - `003_storage_buckets.sql` — bucket and storage.objects policies
-- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state)
+- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map)
 
 Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `project_milestones`, …). Query them with PostgREST embedding: `query.select('*, person_skills(rule_id, value)')`.
 
@@ -239,7 +248,7 @@ All services use `providedIn: 'root'`.
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is green** (506 passing as of 2026-11-03). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+- **The suite is green** (537 passing as of 2026-11-03). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
 
 ### Writing specs against Supabase
 Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:

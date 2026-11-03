@@ -246,6 +246,53 @@ export type Database = {
           },
         ]
       }
+      combat_maps: {
+        Row: {
+          combat_session_id: string
+          grid_enabled: boolean
+          grid_offset_x: number
+          grid_offset_y: number
+          grid_size: number
+          id: string
+          image: string | null
+          image_height: number | null
+          image_width: number | null
+          updated_at: string
+        }
+        Insert: {
+          combat_session_id: string
+          grid_enabled?: boolean
+          grid_offset_x?: number
+          grid_offset_y?: number
+          grid_size?: number
+          id?: string
+          image?: string | null
+          image_height?: number | null
+          image_width?: number | null
+          updated_at?: string
+        }
+        Update: {
+          combat_session_id?: string
+          grid_enabled?: boolean
+          grid_offset_x?: number
+          grid_offset_y?: number
+          grid_size?: number
+          id?: string
+          image?: string | null
+          image_height?: number | null
+          image_width?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_maps_combat_session_id_fkey"
+            columns: ["combat_session_id"]
+            isOneToOne: true
+            referencedRelation: "combat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combat_sessions: {
         Row: {
           created_at: string | null
@@ -284,6 +331,35 @@ export type Database = {
           tenant?: string
         }
         Relationships: []
+      }
+      combat_tokens: {
+        Row: {
+          combatant_id: string
+          updated_at: string
+          x: number
+          y: number
+        }
+        Insert: {
+          combatant_id: string
+          updated_at?: string
+          x: number
+          y: number
+        }
+        Update: {
+          combatant_id?: string
+          updated_at?: string
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_tokens_combatant_id_fkey"
+            columns: ["combatant_id"]
+            isOneToOne: true
+            referencedRelation: "combatants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       combatant_attributes: {
         Row: {

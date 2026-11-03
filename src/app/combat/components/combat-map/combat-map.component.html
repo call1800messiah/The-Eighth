@@ -1,0 +1,61 @@
+<div class="map-toolbar">
+  <div class="group">
+    <button type="button" class="btn-icon" title="Verkleinern" (click)="zoom(1 / 1.25)">
+      <fa-icon [icon]="icons.zoomOut" [fixedWidth]="true"></fa-icon>
+    </button>
+    <button type="button" class="btn-icon" title="Vergrößern" (click)="zoom(1.25)">
+      <fa-icon [icon]="icons.zoomIn" [fixedWidth]="true"></fa-icon>
+    </button>
+    <button type="button" class="btn-icon" title="Ganze Karte zeigen" (click)="fit()">
+      <fa-icon [icon]="icons.fit" [fixedWidth]="true"></fa-icon>
+    </button>
+  </div>
+
+  @if (isGM) {
+    <div class="group">
+      <label class="btn upload" [class.disabled]="busy">
+        {{ map?.imageUrl ? 'Karte ersetzen' : 'Karte hochladen' }}
+        <input type="file" [accept]="acceptedTypes" [disabled]="busy" (change)="upload($event)">
+      </label>
+      @if (map?.imageUrl) {
+        <button type="button" class="btn" [disabled]="busy" (click)="removeImage()">Bild entfernen</button>
+      }
+    </div>
+
+    <div class="group grid-settings">
+      <div class="form-group check">
+        <input type="checkbox" id="map-grid" [checked]="gridDraft.enabled" (change)="editGrid({ enabled: $any($event.target).checked })">
+        <label for="map-grid">Raster</label>
+      </div>
+      <div class="form-group">
+        <input type="number" id="map-grid-size" [min]="gridLimits.min" [max]="gridLimits.max" step="1"
+          [value]="gridDraft.size" (input)="editGrid({ size: $any($event.target).valueAsNumber })">
+        <label for="map-grid-size">Feld (px)</label>
+      </div>
+      <div class="form-group">
+        <input type="number" id="map-grid-x" step="1" [value]="gridDraft.offsetX"
+          (input)="editGrid({ offsetX: $any($event.target).valueAsNumber })">
+        <label for="map-grid-x">Versatz X</label>
+      </div>
+      <div class="form-group">
+        <input type="number" id="map-grid-y" step="1" [value]="gridDraft.offsetY"
+          (input)="editGrid({ offsetY: $any($event.target).valueAsNumber })">
+        <label for="map-grid-y">Versatz Y</label>
+      </div>
+    </div>
+  }
+</div>
+
+@if (message) {
+  <p class="message" role="alert">{{ message }}</p>
+}
+
+<div #stageHost class="stage-host" [class.gm]="isGM"></div>
+
+<p class="hint">
+  @if (isGM) {
+    Figuren ziehen, um sie zu bewegen. Alle sehen die ganze Karte, auch was darauf versteckt ist.
+  } @else {
+    Ziehen und Mausrad oder zwei Finger, um die Ansicht zu verschieben und zu zoomen.
+  }
+</p>

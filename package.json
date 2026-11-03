@@ -43,6 +43,7 @@
     "@tiptap/suggestion": "^3.32.2",
     "dompurify": "^3.4.17",
     "g-sheets-api": "^2.2.0",
+    "konva": "^10.9.1",
     "luxon": "^3.7.2",
     "marked": "^17.0.6",
     "nanoid": "^5.1.16",
