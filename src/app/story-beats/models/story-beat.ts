@@ -1,13 +1,16 @@
 import type { Person } from '../../people';
 
 /** Values allowed by the `story_beats.kind` check constraint (migration 011). */
-export type BeatKind = 'combat' | 'social' | 'discovery' | 'lore';
+export type BeatKind = 'combat' | 'discovery' | 'general' | 'lore' | 'skill' | 'social';
 
+/** In alphabetical order of the labels, which is how the buttons are shown. */
 export const BEAT_KINDS: { kind: BeatKind; label: string }[] = [
-  { kind: 'combat', label: 'Kampf' },
-  { kind: 'social', label: 'Sozial' },
+  { kind: 'general', label: 'Allgemein' },
   { kind: 'discovery', label: 'Entdeckung' },
+  { kind: 'skill', label: 'Fähigkeit' },
+  { kind: 'combat', label: 'Kampf' },
   { kind: 'lore', label: 'Lore' },
+  { kind: 'social', label: 'Sozial' },
 ];
 
 
@@ -15,11 +18,10 @@ export interface BeatSession {
   id: string;
   intervalMinutes: number;
   startedAt: Date;
-  /** Set while the session is paused. */
+  /** Set while the session is stopped. */
   pausedAt: Date | null;
-  /** Total length of completed pauses. */
+  /** Total length of completed stops. */
   pausedSeconds: number;
-  endedAt: Date | null;
   mutedPersonIds: string[];
   beats: StoryBeat[];
 }
@@ -35,7 +37,7 @@ export interface StoryBeat {
 }
 
 
-/** One PC as the overlay shows it. Idle time is computed per tick from these. */
+/** One PC as the bar shows it. Idle time is computed per tick from these. */
 export interface BeatTracker {
   person: Person;
   /** Session clock reading of the latest beat; 0 (session start) if none yet. */

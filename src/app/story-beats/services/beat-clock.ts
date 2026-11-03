@@ -11,11 +11,10 @@ import type { BeatSession } from '../models';
 
 /** Seconds of unpaused session time at `nowMs`. */
 export function sessionActiveSeconds(session: BeatSession, nowMs: number): number {
-  const end = session.endedAt ? Math.min(nowMs, session.endedAt.getTime()) : nowMs;
   const runningPause = session.pausedAt
-    ? Math.max(0, end - session.pausedAt.getTime()) / 1000
+    ? Math.max(0, nowMs - session.pausedAt.getTime()) / 1000
     : 0;
-  const elapsed = (end - session.startedAt.getTime()) / 1000;
+  const elapsed = (nowMs - session.startedAt.getTime()) / 1000;
   return Math.max(0, Math.floor(elapsed - session.pausedSeconds - runningPause));
 }
 
@@ -28,7 +27,7 @@ export function idleSeconds(session: BeatSession, lastBeatActiveSeconds: number,
 
 /**
  * How far into the interval a PC is: 0 right after a beat, 1 at the interval,
- * above 1 when overdue. Drives the fill and colour of the overlay chip.
+ * above 1 when overdue. Drives the fill and colour of the chip in the bar.
  */
 export function idleRatio(idle: number, intervalMinutes: number): number {
   const interval = Math.max(1, intervalMinutes) * 60;

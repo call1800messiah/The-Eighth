@@ -116,7 +116,7 @@ The site is public, behind Nginx Proxy Manager on the same Docker host, which te
 - **CoreModule**: Singleton services (Api, Auth, Data, Config, Navigation, Popover, Realtime, Storage, User, Util), the Supabase client provider, app-wide layout (Header, Footer, Sidebar)
 - **SharedModule**: Reusable components, directives, pipes
 - **Feature Modules**: Lazy-loaded via routing (achievements, auth, combat, dice, flow, inventory, notes, overview, people, places, projects, quests, rules)
-- **StoryBeatsModule**: not routed; AppModule imports it eagerly because its `StoryBeatBarComponent` floats over every page. GM-only spotlight tracker (see below)
+- **StoryBeatsModule**: not routed; FlowModule imports it for the `StoryBeatBarComponent` on the flow view. GM-only spotlight tracker (see below)
 
 ### Supabase Client
 Created once in `src/app/core/providers/supabase.provider.ts` and injected via the `SUPABASE_CLIENT` token. Typed with `Database` from `src/types/supabase.ts` (generated from the schema). The auth `storageKey` is per-tenant, and the Web Locks API is deliberately bypassed to avoid `NavigatorLockAcquireTimeoutError` across tabs.
@@ -137,7 +137,7 @@ Created once in `src/app/core/providers/supabase.provider.ts` and injected via t
 - **PeopleService**: Deserializes people + places + rules, resolves relationships and rule references, and writes capabilities to their junction tables
 - **RulesService**: Static rules from `assets/{tenant}/rules.json` + dynamic rules from the `rules` table
 - **CombatService**, **CampaignService**, **TimelineService**, **FlowService**: per-feature CRUD
-- **StoryBeatService**: GM-only spotlight tracker. Sessions and beats live in `beat_sessions` / `story_beats` (migration 011). Anything that needs a timestamp goes through the database functions (`start_beat_session`, `pause_…`, `resume_…`, `end_…`, `log_story_beat`) via `ApiService.rpc()`, so the session clock runs on database time; `beat-clock.ts` only extrapolates between ticks. Idle time is measured on that clock, which stops while the session is paused
+- **StoryBeatService**: GM-only spotlight tracker. Sessions and beats live in `beat_sessions` / `story_beats` (migration 011). A flow has one session, created the first time it is started and then either running or stopped (`paused_at` set); there is no end state. Anything that needs a timestamp goes through the database functions (`start_beat_session`, `stop_beat_session`, `stop_idle_beat_session`, `log_story_beat`) via `ApiService.rpc()`, so the session clock runs on database time; `beat-clock.ts` only extrapolates between ticks. Idle time is measured on that clock, which stops while the session is stopped. The open tracker has the database check once a minute for a session with no start or beat in four hours, which it stops as of when the four hours were up
 
 ### State Management Pattern
 - **No NgRx/Akita**: RxJS BehaviorSubjects in services

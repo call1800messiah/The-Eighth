@@ -42,6 +42,7 @@ export function createMockQueryBuilder(overrides?: {
     eq: jasmine.createSpy('eq').and.callFake(() => builder),
     neq: jasmine.createSpy('neq').and.callFake(() => builder),
     in: jasmine.createSpy('in').and.callFake(() => builder),
+    is: jasmine.createSpy('is').and.callFake(() => builder),
     order: jasmine.createSpy('order').and.callFake(() => builder),
     limit: jasmine.createSpy('limit').and.callFake(() => builder),
     single: jasmine.createSpy('single').and.callFake(() => builder),

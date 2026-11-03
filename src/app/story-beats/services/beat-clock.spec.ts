@@ -12,7 +12,6 @@ describe('beat-clock', () => {
       startedAt: new Date(start),
       pausedAt: null,
       pausedSeconds: 0,
-      endedAt: null,
       mutedPersonIds: [],
       beats: [],
       ...overrides,
@@ -34,10 +33,6 @@ describe('beat-clock', () => {
       expect(sessionActiveSeconds(s, start + 30 * min)).toBe(420);
     });
 
-    it('stops at the end of the session', () => {
-      const s = session({ endedAt: new Date(start + 20 * min) });
-      expect(sessionActiveSeconds(s, start + 90 * min)).toBe(1200);
-    });
 
     it('never goes negative when the browser clock is behind', () => {
       expect(sessionActiveSeconds(session(), start - 5000)).toBe(0);

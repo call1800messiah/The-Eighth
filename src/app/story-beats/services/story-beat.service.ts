@@ -10,22 +10,26 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 export interface StoryBeatState {
+  /** Null until the session is first started on the flow. */
   session: BeatSession | null;
-  /** Every living PC, in hotkey order. The settings panel lists these. */
+  /** Every living PC, in name order. The settings popover lists these. */
   pcs: Person[];
-  /** The PCs being tracked this session (present, not muted), in hotkey order. */
+  /** The PCs being tracked this session (present, not muted), in name order. */
   trackers: BeatTracker[];
 }
 
 
 /**
  * GM-only spotlight tracker. Both tables are GM-only under RLS, so for anyone
- * else the watch simply returns no rows; the overlay additionally only
+ * else the watch simply returns no rows; the bar additionally only
  * subscribes for GMs.
  *
  * Writes that need a timestamp go through the database functions from
  * migration 011, so the session clock always runs on the database's time.
  */
+const STORAGE_INTERVAL = 'storyBeats.lastInterval';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,16 +38,18 @@ export class StoryBeatService {
   private peopleService = inject(PeopleService);
   private realtime = inject(RealtimeService);
 
-  private state$: Observable<StoryBeatState>;
+  private states = new Map<string, Observable<StoryBeatState>>();
 
 
-  getState(): Observable<StoryBeatState> {
-    if (!this.state$) {
+  /** The session of a flow, if it has one yet, with its trackers. Shared per flow. */
+  getState(flowId: string): Observable<StoryBeatState> {
+    let state$ = this.states.get(flowId);
+    if (!state$) {
       const session$ = this.realtime.watch<any>(
         'beat_sessions',
-        query => query.select('*, story_beats(*)').is('ended_at', null),
-        'beat_sessions_open',
-        // Logging a beat writes story_beats only; without this the overlay
+        query => query.select('*, story_beats(*)').eq('flow_id', flowId),
+        `beat_sessions_flow_${flowId}`,
+        // Logging a beat writes story_beats only; without this the bar
         // would not notice beats logged from another tab.
         ['story_beats'],
       ).pipe(
@@ -54,50 +60,47 @@ export class StoryBeatService {
         }),
       );
 
-      this.state$ = combineLatest([
+      state$ = combineLatest([
         session$,
         this.peopleService.getPeople(),
       ]).pipe(
         map(([session, people]) => StoryBeatService.buildState(session, people)),
         shareReplay({ bufferSize: 1, refCount: true }),
       );
+      this.states.set(flowId, state$);
     }
-    return this.state$;
+    return state$;
   }
 
 
-  async startSession(intervalMinutes: number): Promise<boolean> {
+  /** Creates the flow's session, using the last interval set, or starts it again. */
+  async startSession(flowId: string): Promise<boolean> {
     const { error } = await this.api.rpc('start_beat_session', {
-      p_interval_minutes: Math.round(intervalMinutes),
+      p_flow_id: flowId,
+      p_interval_minutes: StoryBeatService.lastInterval(),
     });
     return StoryBeatService.ok(error);
   }
 
 
-  async pauseSession(sessionId: string): Promise<boolean> {
-    const { error } = await this.api.rpc('pause_beat_session', { p_session_id: sessionId });
+  async stopSession(sessionId: string): Promise<boolean> {
+    const { error } = await this.api.rpc('stop_beat_session', { p_session_id: sessionId });
     return StoryBeatService.ok(error);
   }
 
 
-  async resumeSession(sessionId: string): Promise<boolean> {
-    const { error } = await this.api.rpc('resume_beat_session', { p_session_id: sessionId });
+  /** The database decides, so this is a no-op until the session has been idle long enough. */
+  async stopIfIdle(sessionId: string): Promise<boolean> {
+    const { error } = await this.api.rpc('stop_idle_beat_session', { p_session_id: sessionId });
     return StoryBeatService.ok(error);
   }
 
 
-  async endSession(sessionId: string): Promise<boolean> {
-    const { error } = await this.api.rpc('end_beat_session', { p_session_id: sessionId });
-    return StoryBeatService.ok(error);
-  }
-
-
-  /** Logs a beat and returns its id (for tagging or undo), or null on failure. */
-  async logBeat(sessionId: string, personId: string, kind?: BeatKind): Promise<string | null> {
+  /** Logs a beat and returns its id, or null on failure. */
+  async logBeat(sessionId: string, personId: string, kind: BeatKind): Promise<string | null> {
     const { data, error } = await this.api.rpc('log_story_beat', {
       p_session_id: sessionId,
       p_person_id: personId,
-      // Omitted when undefined, so the column falls back to NULL.
       p_kind: kind,
     });
     if (!StoryBeatService.ok(error)) {
@@ -107,23 +110,8 @@ export class StoryBeatService {
   }
 
 
-  async tagBeat(beatId: string, kind: BeatKind | null): Promise<boolean> {
-    const { error } = await this.api.from('story_beats')
-      .update({ kind })
-      .eq('id', beatId);
-    return StoryBeatService.ok(error);
-  }
-
-
-  async undoBeat(beatId: string): Promise<boolean> {
-    const { error } = await this.api.from('story_beats')
-      .delete()
-      .eq('id', beatId);
-    return StoryBeatService.ok(error);
-  }
-
-
   async setIntervalMinutes(sessionId: string, intervalMinutes: number): Promise<boolean> {
+    StoryBeatService.rememberInterval(intervalMinutes);
     const { error } = await this.api.from('beat_sessions')
       .update({ interval_minutes: Math.round(intervalMinutes) })
       .eq('id', sessionId);
@@ -183,7 +171,6 @@ export class StoryBeatService {
       startedAt: new Date(row.started_at),
       pausedAt: row.paused_at ? new Date(row.paused_at) : null,
       pausedSeconds: row.paused_seconds ?? 0,
-      endedAt: row.ended_at ? new Date(row.ended_at) : null,
       mutedPersonIds: row.muted_person_ids ?? [],
       beats: (row.story_beats ?? []).map((beat: any): StoryBeat => ({
         id: beat.id,
@@ -193,6 +180,25 @@ export class StoryBeatService {
         createdAt: new Date(beat.created_at),
       })),
     };
+  }
+
+
+  // Storage can be unavailable (private windows, blocked site data).
+  private static lastInterval(): number {
+    try {
+      return Math.round(Number(localStorage.getItem(STORAGE_INTERVAL))) || 60;
+    } catch {
+      return 60;
+    }
+  }
+
+
+  private static rememberInterval(minutes: number): void {
+    try {
+      localStorage.setItem(STORAGE_INTERVAL, String(minutes));
+    } catch {
+      // Remembering the setting is a convenience only.
+    }
   }
 
 

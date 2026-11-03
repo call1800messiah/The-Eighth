@@ -1,29 +1,19 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, inject } from '@angular/core';
-import { combineLatest, Observable, of, timer } from 'rxjs';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
+import { combineLatest, Observable, of, ReplaySubject, timer } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
-import {
-  faChevronDown,
-  faChevronUp,
-  faCog,
-  faPause,
-  faPlay,
-  faStop,
-  faStopwatch,
-  faUndo,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPlay, faStop } from '@fortawesome/free-solid-svg-icons';
 
 import type { BeatKind, BeatSession, BeatTracker } from '../../models';
-import type { Person } from '../../../people';
 import { BEAT_KINDS } from '../../models';
 import { AuthService } from '../../../core/services/auth.service';
+import { PopoverService } from '../../../core/services/popover.service';
 import { StoryBeatService, StoryBeatState } from '../../services/story-beat.service';
 import { formatIdle, idleRatio, idleSeconds, sessionActiveSeconds } from '../../services/beat-clock';
+import { StoryBeatSettingsComponent } from '../story-beat-settings/story-beat-settings.component';
 
 
 export interface BeatChip {
   tracker: BeatTracker;
-  /** 1-based number key that logs a beat for this PC; null past 9. */
-  hotkey: number | null;
   idle: number;
   ratio: number;
   /** Fill width in percent, capped at 100. */
@@ -36,27 +26,25 @@ export interface BeatChip {
 
 
 export interface BeatBarView {
+  /** Null until the session is first started on this flow. */
   session: BeatSession | null;
-  paused: boolean;
-  pcs: Person[];
+  running: boolean;
   chips: BeatChip[];
   sessionTime: string;
 }
 
 
-interface LastLogged {
-  beatId: string;
+/** The PC a beat is being logged for, while the GM picks its kind. */
+interface PendingBeat {
+  personId: string;
   personName: string;
-  kind: BeatKind | null;
 }
 
 
 /** How often idle times are recomputed. The fade needs nothing finer. */
 const TICK_MS = 5000;
-/** How long the tag/undo prompt stays up after logging a beat. */
-const TAG_PROMPT_MS = 8000;
-const STORAGE_COLLAPSED = 'storyBeats.collapsed';
-const STORAGE_INTERVAL = 'storyBeats.lastInterval';
+/** How often to have the database stop this session if it has been forgotten. */
+const IDLE_CHECK_MS = 60_000;
 
 
 @Component({
@@ -66,64 +54,76 @@ const STORAGE_INTERVAL = 'storyBeats.lastInterval';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class StoryBeatBarComponent implements OnDestroy {
+export class StoryBeatBarComponent {
   private auth = inject(AuthService);
   private beats = inject(StoryBeatService);
+  private popover = inject(PopoverService);
 
   readonly kinds = BEAT_KINDS;
-  readonly faChevronDown = faChevronDown;
-  readonly faChevronUp = faChevronUp;
   readonly faCog = faCog;
-  readonly faPause = faPause;
   readonly faPlay = faPlay;
   readonly faStop = faStop;
-  readonly faStopwatch = faStopwatch;
-  readonly faUndo = faUndo;
 
   view$: Observable<BeatBarView | null>;
-  collapsed = StoryBeatBarComponent.readStorage(STORAGE_COLLAPSED) === 'true';
-  showStart = false;
-  showSettings = false;
-  intervalInput = Number(StoryBeatBarComponent.readStorage(STORAGE_INTERVAL)) || 60;
-  lastLogged: LastLogged | null = null;
+  pendingBeat: PendingBeat | null = null;
+  saving = false;
 
   private view: BeatBarView | null = null;
-  private tagPromptTimeout: ReturnType<typeof setTimeout> | null = null;
+  private currentFlowId: string;
+  private lastIdleCheckMs = 0;
+  private flowId$ = new ReplaySubject<string>(1);
+
+
+  @Input({ required: true })
+  set flowId(flowId: string) {
+    this.currentFlowId = flowId;
+    this.pendingBeat = null;
+    this.lastIdleCheckMs = 0;
+    this.flowId$.next(flowId);
+  }
+
+
+  /** The dialog only exists while a beat is pending; opening it makes the page behind inert. */
+  @ViewChild('tagPrompt')
+  set tagPrompt(dialog: ElementRef<HTMLDialogElement> | undefined) {
+    if (dialog && !dialog.nativeElement.open) {
+      dialog.nativeElement.showModal();
+    }
+  }
 
 
   constructor() {
     // Players never subscribe: the tables are GM-only anyway, and this keeps
     // their clients from opening realtime channels for nothing.
-    this.view$ = this.auth.user$.pipe(
+    const isGM$ = this.auth.user$.pipe(
       map(user => !!user?.isGM),
       distinctUntilChanged(),
-      switchMap(isGM => isGM
-        ? combineLatest([this.beats.getState(), timer(0, TICK_MS)]).pipe(
+    );
+    this.view$ = combineLatest([isGM$, this.flowId$.pipe(distinctUntilChanged())]).pipe(
+      switchMap(([isGM, flowId]) => isGM
+        ? combineLatest([this.beats.getState(flowId), timer(0, TICK_MS)]).pipe(
             map(([state]) => StoryBeatBarComponent.buildView(state, Date.now())),
           )
         : of(null)),
-      tap(view => this.view = view),
+      tap(view => {
+        this.view = view;
+        this.stopIfIdle(view);
+      }),
     );
   }
 
 
-  ngOnDestroy(): void {
-    this.clearTagPrompt();
-  }
-
-
   static buildView(state: StoryBeatState, nowMs: number): BeatBarView {
-    const { session, pcs, trackers } = state;
+    const { session, trackers } = state;
     if (!session) {
-      return { session: null, paused: false, pcs, chips: [], sessionTime: '' };
+      return { session: null, running: false, chips: [], sessionTime: '' };
     }
 
-    const chips = trackers.map((tracker, index): BeatChip => {
+    const chips = trackers.map((tracker): BeatChip => {
       const idle = idleSeconds(session, tracker.lastBeatActiveSeconds, nowMs);
       const ratio = idleRatio(idle, session.intervalMinutes);
       return {
         tracker,
-        hotkey: index < 9 ? index + 1 : null,
         idle,
         ratio,
         fill: Math.round(Math.min(1, ratio) * 100),
@@ -135,8 +135,7 @@ export class StoryBeatBarComponent implements OnDestroy {
 
     return {
       session,
-      paused: !!session.pausedAt,
-      pcs,
+      running: !session.pausedAt,
       chips,
       sessionTime: formatIdle(sessionActiveSeconds(session, nowMs)),
     };
@@ -159,118 +158,48 @@ export class StoryBeatBarComponent implements OnDestroy {
   }
 
 
-  @HostListener('document:keydown', ['$event'])
-  onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      this.showSettings = false;
-      this.showStart = false;
-      this.clearTagPrompt();
-      return;
-    }
-
-    const session = this.view?.session;
-    if (!session || event.altKey || event.ctrlKey || event.metaKey || StoryBeatBarComponent.isTyping(event)) {
-      return;
-    }
-
-    const digit = Number(event.key);
-    if (Number.isInteger(digit) && digit >= 1 && digit <= 9) {
-      const chip = this.view.chips.find(c => c.hotkey === digit);
-      if (chip) {
-        event.preventDefault();
-        this.logBeat(chip);
-      }
-    }
-  }
-
-
-  async logBeat(chip: BeatChip): Promise<void> {
-    const session = this.view?.session;
-    if (!session) {
-      return;
-    }
-    const beatId = await this.beats.logBeat(session.id, chip.tracker.person.id);
-    if (!beatId) {
-      return;
-    }
-
-    this.clearTagPrompt();
-    this.lastLogged = {
-      beatId,
-      personName: StoryBeatBarComponent.firstName(chip.tracker.person.name),
-      kind: null,
+  promptBeat(chip: BeatChip): void {
+    this.pendingBeat = {
+      personId: chip.tracker.person.id,
+      personName: chip.tracker.person.name,
     };
-    this.tagPromptTimeout = setTimeout(() => this.clearTagPrompt(), TAG_PROMPT_MS);
   }
 
 
-  async tagLastBeat(kind: BeatKind): Promise<void> {
-    if (!this.lastLogged) {
+  /** Logging happens here, not on the chip click: only this resets the PC's timer. */
+  async confirmBeat(kind: BeatKind): Promise<void> {
+    const session = this.view?.session;
+    if (!session || !this.pendingBeat || this.saving) {
       return;
     }
-    const nextKind = this.lastLogged.kind === kind ? null : kind;
-    if (await this.beats.tagBeat(this.lastLogged.beatId, nextKind)) {
-      this.clearTagPrompt();
+
+    this.saving = true;
+    const beatId = await this.beats.logBeat(session.id, this.pendingBeat.personId, kind);
+    this.saving = false;
+
+    // On failure the prompt stays up so the GM can retry.
+    if (beatId) {
+      this.pendingBeat = null;
     }
   }
 
 
-  async undoLastBeat(): Promise<void> {
-    if (this.lastLogged && await this.beats.undoBeat(this.lastLogged.beatId)) {
-      this.clearTagPrompt();
-    }
+  cancelBeat(): void {
+    this.pendingBeat = null;
   }
 
 
-  async startSession(): Promise<void> {
-    const minutes = StoryBeatBarComponent.clampInterval(this.intervalInput);
-    StoryBeatBarComponent.writeStorage(STORAGE_INTERVAL, String(minutes));
-    if (await this.beats.startSession(minutes)) {
-      this.showStart = false;
-    }
-  }
-
-
-  togglePause(session: BeatSession): void {
-    if (session.pausedAt) {
-      this.beats.resumeSession(session.id);
+  toggleRunning(view: BeatBarView): void {
+    if (view.running) {
+      this.beats.stopSession(view.session.id);
     } else {
-      this.beats.pauseSession(session.id);
+      this.beats.startSession(this.currentFlowId);
     }
   }
 
 
-  async endSession(session: BeatSession): Promise<void> {
-    if (!confirm('Storybeat-Session beenden?')) {
-      return;
-    }
-    if (await this.beats.endSession(session.id)) {
-      this.showSettings = false;
-      this.clearTagPrompt();
-    }
-  }
-
-
-  setInterval(session: BeatSession, value: number): void {
-    const minutes = StoryBeatBarComponent.clampInterval(value);
-    StoryBeatBarComponent.writeStorage(STORAGE_INTERVAL, String(minutes));
-    this.beats.setIntervalMinutes(session.id, minutes);
-  }
-
-
-  toggleMuted(session: BeatSession, person: Person): void {
-    this.beats.setMuted(session, person.id, !session.mutedPersonIds.includes(person.id));
-  }
-
-
-  toggleCollapsed(): void {
-    this.collapsed = !this.collapsed;
-    StoryBeatBarComponent.writeStorage(STORAGE_COLLAPSED, String(this.collapsed));
-  }
-
-
-  isMuted(session: BeatSession, person: Person): boolean {
-    return session.mutedPersonIds.includes(person.id);
+  openSettings(): void {
+    this.popover.showPopover('Storybeats', StoryBeatSettingsComponent, { flowId: this.currentFlowId });
   }
 
 
@@ -279,52 +208,16 @@ export class StoryBeatBarComponent implements OnDestroy {
   }
 
 
-  private clearTagPrompt(): void {
-    if (this.tagPromptTimeout) {
-      clearTimeout(this.tagPromptTimeout);
-      this.tagPromptTimeout = null;
-    }
-    this.lastLogged = null;
-  }
-
-
-  /** Matches the database's CHECK on interval_minutes. */
-  static clampInterval(value: number): number {
-    const minutes = Math.round(Number(value) || 60);
-    return Math.min(480, Math.max(5, minutes));
-  }
-
-
   static firstName(name: string): string {
     return (name ?? '').split(' ')[0];
   }
 
 
-  private static isTyping(event: KeyboardEvent): boolean {
-    const target = event.target as HTMLElement | null;
-    if (!target) {
-      return false;
-    }
-    const tag = target.tagName;
-    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
-  }
-
-
-  // Storage can be unavailable (private windows, blocked site data).
-  private static readStorage(key: string): string | null {
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      return null;
-    }
-  }
-
-
-  private static writeStorage(key: string, value: string): void {
-    try {
-      localStorage.setItem(key, value);
-    } catch {
-      // Remembering the setting is a convenience only.
+  private stopIfIdle(view: BeatBarView | null): void {
+    const now = Date.now();
+    if (view?.running && now - this.lastIdleCheckMs >= IDLE_CHECK_MS) {
+      this.lastIdleCheckMs = now;
+      this.beats.stopIfIdle(view.session.id);
     }
   }
 }

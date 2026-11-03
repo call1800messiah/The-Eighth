@@ -9,7 +9,6 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { OverviewModule } from './overview/overview.module';
 import { SharedModule } from './shared/shared.module';
-import { StoryBeatsModule } from './story-beats/story-beats.module';
 
 
 // Locales
@@ -27,7 +26,6 @@ registerLocaleData(localeDE, 'de');
     OverviewModule,
     FontAwesomeModule,
     SharedModule,
-    StoryBeatsModule,
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de' },

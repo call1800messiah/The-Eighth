@@ -138,9 +138,10 @@ export type Database = {
       beat_sessions: {
         Row: {
           created_at: string | null
-          ended_at: string | null
+          flow_id: string
           id: string
           interval_minutes: number
+          last_activity_at: string
           muted_person_ids: string[]
           owner_id: string | null
           paused_at: string | null
@@ -149,9 +150,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          ended_at?: string | null
+          flow_id: string
           id?: string
           interval_minutes?: number
+          last_activity_at?: string
           muted_person_ids?: string[]
           owner_id?: string | null
           paused_at?: string | null
@@ -160,9 +162,10 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          ended_at?: string | null
+          flow_id?: string
           id?: string
           interval_minutes?: number
+          last_activity_at?: string
           muted_person_ids?: string[]
           owner_id?: string | null
           paused_at?: string | null
@@ -170,6 +173,13 @@ export type Database = {
           started_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "beat_sessions_flow_id_fkey"
+            columns: ["flow_id"]
+            isOneToOne: false
+            referencedRelation: "flows"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "beat_sessions_owner_id_fkey"
             columns: ["owner_id"]
@@ -1602,17 +1612,16 @@ export type Database = {
     }
     Functions: {
       current_user_id: { Args: never; Returns: string }
-      end_beat_session: { Args: { p_session_id: string }; Returns: undefined }
       log_story_beat: {
         Args: { p_kind?: string; p_person_id: string; p_session_id: string }
         Returns: Database["public"]["Tables"]["story_beats"]["Row"]
       }
-      pause_beat_session: { Args: { p_session_id: string }; Returns: undefined }
-      resume_beat_session: { Args: { p_session_id: string }; Returns: undefined }
       start_beat_session: {
-        Args: { p_interval_minutes?: number }
+        Args: { p_flow_id: string; p_interval_minutes?: number }
         Returns: Database["public"]["Tables"]["beat_sessions"]["Row"]
       }
+      stop_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      stop_idle_beat_session: { Args: { p_session_id: string }; Returns: undefined }
       is_entity_owner: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: boolean
