@@ -1,6 +1,6 @@
 <div class="info-block box">
   <div class="heading">{{infoTypes[key]}}</div>
-  @for (info of infos; track info) {
+  @for (info of infos; track info.id) {
     <div class="detail">
       <!-- The handler sits on a wrapper: app-markdown stops link clicks from
            propagating, which only keeps them from reaching parent elements. -->

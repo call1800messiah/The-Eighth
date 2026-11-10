@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faMask } from '@fortawesome/free-solid-svg-icons';
 
 import { Info } from '../../models/info';
@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class InfoBoxComponent implements OnInit {
+export class InfoBoxComponent implements OnChanges {
   private auth = inject(AuthService);
 
   @Input() key: InfoType;
@@ -26,8 +26,10 @@ export class InfoBoxComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-    this.infos.sort((a, b) => {
+  // On every change, not just the first: the box stays in place (tracked by
+  // its type) when a reload hands it a new, unsorted list.
+  ngOnChanges(): void {
+    this.infos?.sort((a, b) => {
       if (a.created > b.created) {
         return 1;
       }

@@ -66,6 +66,34 @@ describe('InfoBoxComponent', () => {
       expect(emitted).toEqual([]);
     });
 
+    it('keeps the rendered infos when they are reloaded', () => {
+      const load = () => fixture.componentRef.setInput('infos', [
+        { ...info('a'), id: 'i1' },
+        { ...info('b'), id: 'i2' },
+      ]);
+      load();
+      fixture.detectChanges();
+      const first = Array.from(fixture.nativeElement.querySelectorAll('.detail'));
+      load();
+      fixture.detectChanges();
+      const second = Array.from(fixture.nativeElement.querySelectorAll('.detail'));
+
+      expect(second.length).toBe(2);
+      expect(second.every((element, i) => element === first[i])).withContext('same DOM nodes').toBeTrue();
+    });
+
+    it('sorts reloaded infos by creation date', () => {
+      fixture.componentRef.setInput('infos', [
+        { ...info('a'), id: 'new', content: 'Neu', created: new Date('2026-02-01') },
+        { ...info('a'), id: 'old', content: 'Alt', created: new Date('2026-01-01') },
+      ]);
+      fixture.detectChanges();
+
+      const texts = Array.from(fixture.nativeElement.querySelectorAll('.detail app-markdown'))
+        .map((el: HTMLElement) => el.textContent.trim());
+      expect(texts).toEqual(['Alt', 'Neu']);
+    });
+
     describe('clicking inside the text', () => {
       const ID = '11111111-1111-4111-8111-111111111111';
       // A click on a link would navigate the test page; cancel its default

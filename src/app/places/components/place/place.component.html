@@ -43,7 +43,7 @@
       </div>
       @if (infos$) {
         <div class="detail-info">
-          @for (infoList of infos$ | async | keyvalue; track infoList) {
+          @for (infoList of infos$ | async | keyvalue; track infoList.key) {
             <app-info-box
               [key]="infoList.key"
               [infos]="infoList.value"
