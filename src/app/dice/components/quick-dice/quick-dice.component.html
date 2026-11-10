@@ -1,5 +1,5 @@
 <div class="dice d{{type}}">
-  @for (die of rolls; track die; let i = $index) {
+  @for (die of rolls; track $index; let i = $index) {
     <app-die
       [type]="type"
       [currentNumber]="die"

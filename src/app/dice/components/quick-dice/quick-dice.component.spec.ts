@@ -25,4 +25,16 @@ describe('QuickDiceComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('renders one die per slot when several show the same number', () => {
+    const warn = spyOn(console, 'warn');
+    const several = TestBed.createComponent(QuickDiceComponent);
+    several.componentInstance.amount = 3;
+    several.componentInstance.type = 20;
+    several.detectChanges();
+
+    expect(several.nativeElement.querySelectorAll('app-die').length).toBe(3);
+    const duplicateKeys = warn.calls.allArgs().filter(args => String(args[0]).includes('NG0955'));
+    expect(duplicateKeys).toEqual([]);
+  });
 });
