@@ -43,7 +43,8 @@ export class AccessIndicatorComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.subscription.add(
       this.userService.getUsers().subscribe((users) => {
-        this.users = users;
+        // Agents are never shared with: an item shared with every player counts as shared with all.
+        this.users = users.filter(u => !u.isAssistant);
         this.fetchAccessState();
       })
     );

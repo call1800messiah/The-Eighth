@@ -21,6 +21,7 @@ describe('EditAccessComponent', () => {
     { id: 'user-1', name: 'Alice', isGM: false, viewBanner: true, viewName: true, viewTitle: true },
     { id: 'user-2', name: 'Bob', isGM: false, viewBanner: true, viewName: true, viewTitle: true },
     { id: 'user-3', name: 'GM', isGM: true, viewBanner: true, viewName: true, viewTitle: true },
+    { id: 'claude', name: 'Claude', isGM: false, isAssistant: true, viewBanner: true, viewName: true, viewTitle: true },
   ];
 
   function setupQueryBuilder(data: any[], error: any = null) {
@@ -88,6 +89,16 @@ describe('EditAccessComponent', () => {
     expect(component.selected['user-2']).toBe(false);
     // GM is always checked (implicit access via RLS)
     expect(component.selected['user-3']).toBe(true);
+  }));
+
+  it('does not offer agents for sharing', fakeAsync(() => {
+    setupQueryBuilder([]);
+    fixture.detectChanges();
+    tick();
+
+    // The template lists exactly `users`.
+    expect(component.users.map(u => u.name)).toEqual(['Alice', 'Bob', 'GM']);
+    expect(component.selected['claude']).toBeUndefined();
   }));
 
   it('should delete with mapped entity_type on save', fakeAsync(() => {

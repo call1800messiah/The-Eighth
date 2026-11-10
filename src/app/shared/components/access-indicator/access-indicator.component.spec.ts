@@ -26,7 +26,9 @@ describe('AccessIndicatorComponent', () => {
   const ownerUser: User = { id: 'owner-1', name: 'Owner', isGM: false, viewBanner: true, viewName: true, viewTitle: true };
   const playerA: User = { id: 'player-a', name: 'Alice', isGM: false, viewBanner: true, viewName: true, viewTitle: true };
   const playerB: User = { id: 'player-b', name: 'Bob', isGM: false, viewBanner: true, viewName: true, viewTitle: true };
-  const allUsers = [gmUser, ownerUser, playerA, playerB];
+  // An agent: never shared with, so it must not keep an info from counting as shared with everyone.
+  const claude: User = { id: 'claude', name: 'Claude', isGM: false, isAssistant: true, viewBanner: true, viewName: true, viewTitle: true };
+  const allUsers = [gmUser, ownerUser, playerA, playerB, claude];
 
   const item: AccessControlledItem = {
     id: 'doc-1',

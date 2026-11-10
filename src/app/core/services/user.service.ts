@@ -28,6 +28,7 @@ export class UserService {
       id: row.id,
       name: row.name,
       isGM: row.user_roles?.some(r => r.role === 'gm') ?? false,
+      isAssistant: row.user_roles?.some(r => r.role === 'assistant') ?? false,
       viewBanner: row.view_banner,
       viewName: row.view_name,
       viewTitle: row.view_title,
