@@ -2,7 +2,11 @@
   <div class="heading">{{infoTypes[key]}}</div>
   @for (info of infos; track info) {
     <div class="detail">
-      <app-markdown class="content" (click)="detailClicked(info)" [text]="info.content"></app-markdown>
+      <!-- The handler sits on a wrapper: app-markdown stops link clicks from
+           propagating, which only keeps them from reaching parent elements. -->
+      <div class="content" (click)="detailClicked(info)">
+        <app-markdown [text]="info.content"></app-markdown>
+      </div>
       <app-access-indicator [item]="info"></app-access-indicator>
     </div>
   }
