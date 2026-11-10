@@ -126,7 +126,7 @@ The site is public, behind Nginx Proxy Manager on the same Docker host, which te
 - **StoryBeatsModule**: not routed; FlowModule imports it for the `StoryBeatBarComponent` on the flow view. GM-only spotlight tracker (see below)
 
 ### Supabase Client
-Created once in `src/app/core/providers/supabase.provider.ts` and injected via the `SUPABASE_CLIENT` token. Typed with `Database` from `src/types/supabase.ts` (generated from the schema). The auth `storageKey` is per-tenant, and the Web Locks API is deliberately bypassed to avoid `NavigatorLockAcquireTimeoutError` across tabs.
+Created once in `src/app/core/providers/supabase.provider.ts` and injected via the `SUPABASE_CLIENT` token. Typed with `Database` from `src/types/supabase.ts` (generated from the schema). The auth `storageKey` is per-tenant. Don't pass a `lock` option: auth-js coordinates refreshes without the Web Locks API since 2.107 (the old cause of `NavigatorLockAcquireTimeoutError` across tabs), and the option is deprecated.
 
 ### Key Services
 

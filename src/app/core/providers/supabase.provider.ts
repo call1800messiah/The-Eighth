@@ -14,10 +14,9 @@ function supabaseClientFactory(): SupabaseClient<Database> {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
-      // Bypass Web Locks API to avoid NavigatorLockAcquireTimeoutError when
-      // multiple tabs contend on the same lock. With a unique storageKey per
-      // tenant the token is isolated, so skipping the lock is safe here.
-      lock: (_name: string, _acquireTimeout: number, fn: () => Promise<any>) => fn(),
+      // No `lock` option: since auth-js 2.107 refreshes are coordinated
+      // without the Web Locks API (no more NavigatorLockAcquireTimeoutError
+      // across tabs), and passing one is deprecated.
     },
   });
 }
