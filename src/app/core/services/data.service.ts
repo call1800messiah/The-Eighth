@@ -124,11 +124,17 @@ export class DataService {
     const dbType = INFO_TYPE_TO_DB[info.type] || 'note';
 
     if (infoId) {
-      const { error } = await this.api.from('info_boxes' as any)
+      // RLS turns a forbidden update into one that changes no row, without an
+      // error; asking for the row back is the only way to tell.
+      const { data, error } = await this.api.from('info_boxes' as any)
         .update({ content: info.content, type: dbType, modified_at: new Date().toISOString() })
-        .eq('id', infoId);
+        .eq('id', infoId)
+        .select('id');
       if (error) {
         console.error(error);
+        return { success: false };
+      }
+      if (!data?.length) {
         return { success: false };
       }
       return { success: true, id: infoId };
@@ -152,8 +158,17 @@ export class DataService {
   }
 
 
+  /** False also when RLS let the delete remove no row (see storeInfo). */
   async deleteInfo(infoId: string): Promise<boolean> {
-    return this.delete(infoId, 'info_boxes');
+    const { data, error } = await this.api.from('info_boxes' as any)
+      .delete()
+      .eq('id', infoId)
+      .select('id');
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return !!data?.length;
   }
 
 

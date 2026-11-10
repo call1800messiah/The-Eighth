@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faMask } from '@fortawesome/free-solid-svg-icons';
 
 import { Info } from '../../models/info';
 import { ConfigService } from '../../../core/services/config.service';
 import { InfoType } from '../../../core/enums/info-type.enum';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 
@@ -15,6 +16,8 @@ import { InfoType } from '../../../core/enums/info-type.enum';
   standalone: false
 })
 export class InfoBoxComponent implements OnInit {
+  private auth = inject(AuthService);
+
   @Input() key: InfoType;
   @Input() infos: Info[];
   @Output() editDetail = new EventEmitter<Info>();
@@ -37,7 +40,16 @@ export class InfoBoxComponent implements OnInit {
 
 
 
+  /** Mirrors info_boxes_update_policy: only the info's owner or a GM may change it. */
+  canEdit(info: Info): boolean {
+    const user = this.auth.user;
+    return !!user && (user.isGM || user.id === info.owner);
+  }
+
+
   detailClicked(info: Info) {
-    this.editDetail.emit(info);
+    if (this.canEdit(info)) {
+      this.editDetail.emit(info);
+    }
   }
 }

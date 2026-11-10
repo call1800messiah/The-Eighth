@@ -16,6 +16,10 @@
       <label for="type">Art</label>
     </div>
 
+    @if (error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
+
     <button type="submit" class="btn" [disabled]="!infoForm.valid">
       Speichern
     </button>
