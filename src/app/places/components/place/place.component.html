@@ -1,6 +1,7 @@
 @if (place) {
   <div class="place">
     <app-container width="medium">
+      <app-draft-banner entityType="place" [entity]="place"></app-draft-banner>
       @if (place.image) {
         <a class="image" [href]="place.image" target="_blank">
           <img src="{{place.image}}" alt="{{place.name}}" />
@@ -38,10 +39,11 @@
             <dd>{{place.inhabitants}}</dd>
           }
         </dl>
+        <app-backlinks entityType="place" [entityId]="place.id"></app-backlinks>
       </div>
       @if (infos$) {
         <div class="detail-info">
-          @for (infoList of infos$ | async | keyvalue; track infoList) {
+          @for (infoList of infos$ | async | keyvalue; track infoList.key) {
             <app-info-box
               [key]="infoList.key"
               [infos]="infoList.value"

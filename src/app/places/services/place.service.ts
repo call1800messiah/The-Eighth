@@ -100,6 +100,7 @@ export class PlaceService {
         inhabitants: row.inhabitants,
         name: row.name,
         owner: row.owner_id,
+        status: row.status ?? 'published',
         type: row.type,
       };
       if (row.parent_id) {

@@ -29,7 +29,8 @@ export class EditAccessComponent implements OnInit, PopoverChild {
 
   constructor() {
     this.userService.getUsers().subscribe(users => {
-      this.users = users;
+      // Agents (Claude) get what their role allows, never access through sharing.
+      this.users = users.filter(u => !u.isAssistant);
     });
   }
 

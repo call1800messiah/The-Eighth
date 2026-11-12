@@ -77,7 +77,8 @@
         "serve": {
           "builder": "@ngx-env/builder:dev-server",
           "options": {
-            "buildTarget": "The-Eighth:build"
+            "buildTarget": "The-Eighth:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

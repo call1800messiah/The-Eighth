@@ -1,6 +1,6 @@
 <div class="progress-bar">
   <div class="bar" [style.width]="percentage+'%'"></div>
-  @for (marker of markers; track marker) {
+  @for (marker of markers; track $index) {
     <div class="marker"
       [style.left]="marker+'%'"
     ></div>

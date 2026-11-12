@@ -4,4 +4,6 @@ export interface NavEntry {
   icon: IconDefinition;
   label: string;
   link: string;
+  /** Shown to GMs only. */
+  gmOnly?: boolean;
 }

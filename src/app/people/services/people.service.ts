@@ -366,6 +366,7 @@ export class PeopleService {
         id: row.id,
         name: row.name || '',
         owner: row.owner_id,
+        status: row.status ?? 'published',
         pc: row.pc || false,
         profession: row.profession || null,
         race: row.race || null,

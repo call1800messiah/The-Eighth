@@ -1,5 +1,6 @@
 @if (person) {
   <app-container width="medium" class="person">
+    <app-draft-banner entityType="person" [entity]="person"></app-draft-banner>
     <div class="image">
       @if (person.image) {
         <a [href]="person.image" target="_blank">
@@ -85,6 +86,7 @@
           }
         </div>
       }
+      <app-backlinks entityType="person" [entityId]="person.id"></app-backlinks>
     </div>
     <app-tabs>
       <app-tab-panel id="info" label="Informationen">
@@ -116,7 +118,7 @@
         }
         @if (infos$) {
           <div class="detail-info">
-            @for (infoList of infos$ | async | keyvalue; track infoList) {
+            @for (infoList of infos$ | async | keyvalue; track infoList.key) {
               <app-info-box
                 [key]="infoList.key"
                 [infos]="infoList.value"

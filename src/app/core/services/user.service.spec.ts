@@ -25,6 +25,18 @@ describe('UserService', () => {
   });
 
   describe('getUsers()', () => {
+    it('marks agents (the assistant role) as such', (done) => {
+      service.getUsers().subscribe(users => {
+        expect(users.map(u => [u.name, u.isAssistant])).toEqual([['Alice', false], ['Claude', true]]);
+        done();
+      });
+
+      mockRealtime.emitRows('users', [
+        { id: 'u1', name: 'Alice', view_banner: true, view_name: true, view_title: true, user_roles: [] },
+        { id: 'u2', name: 'Claude', view_banner: true, view_name: true, view_title: true, user_roles: [{ role: 'assistant' }] },
+      ]);
+    });
+
     it('should call realtime.watch with users table and role join', () => {
       service.getUsers().subscribe();
       expect(mockRealtime.watch).toHaveBeenCalledWith(
@@ -41,6 +53,7 @@ describe('UserService', () => {
           id: 'u1',
           name: 'Alice',
           isGM: true,
+          isAssistant: false,
           viewBanner: true,
           viewName: false,
           viewTitle: true,

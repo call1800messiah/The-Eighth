@@ -10,7 +10,7 @@
         <li class="event" (click)="editEvent(event, timeline.id)">
           <dl>
             <dt>{{event.date}} BF</dt>
-            <dd>{{event.content}}</dd>
+            <dd><app-markdown [text]="event.content"></app-markdown></dd>
           </dl>
           <app-access-indicator [item]="event"></app-access-indicator>
         </li>

@@ -9,6 +9,7 @@ import { EditInitiativeComponent } from './components/edit-initiative/edit-initi
 import { CombatantMenuComponent } from './components/combatant-menu/combatant-menu.component';
 import { CombatantComponent } from './components/combatant/combatant.component';
 import { EditStatesComponent } from './components/edit-states/edit-states.component';
+import { CombatMapComponent } from './components/combat-map/combat-map.component';
 
 
 
@@ -19,7 +20,8 @@ import { EditStatesComponent } from './components/edit-states/edit-states.compon
     EditInitiativeComponent,
     CombatantMenuComponent,
     CombatantComponent,
-    EditStatesComponent
+    EditStatesComponent,
+    CombatMapComponent,
   ],
   imports: [
     CommonModule,

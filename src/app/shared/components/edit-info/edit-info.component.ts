@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -18,11 +18,13 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
   private dataService = inject(DataService);
 
   @Input() props: EditInfoProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
+  error: string | null = null;
   infoForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
     type: new UntypedFormControl(0),
@@ -51,24 +53,33 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
 
-  delete() {
+  async delete() {
     if (this.props.info) {
-      this.dataService.deleteInfo(this.props.info.id).then(() => {
+      this.error = null;
+      if (await this.dataService.deleteInfo(this.props.info.id)) {
         this.dismissPopover.emit(true);
-      });
+      } else {
+        this.error = 'Die Info wurde nicht gelöscht. Du darfst sie vermutlich nicht bearbeiten.';
+        this.cdr.markForCheck();
+      }
     }
   }
 
 
-  save() {
+  async save() {
     const info = { ...this.infoForm.value };
     if (!this.props.info) {
       info.owner = this.userID;
     }
 
-    this.dataService.storeInfo(info, this.props.collection, this.props.parentId, this.props.info?.id).then(() => {
+    this.error = null;
+    const result = await this.dataService.storeInfo(info, this.props.collection, this.props.parentId, this.props.info?.id);
+    if (result.success) {
       this.dismissPopover.emit(true);
-    });
+    } else {
+      this.error = 'Die Info wurde nicht gespeichert. Du darfst sie vermutlich nicht bearbeiten.';
+      this.cdr.markForCheck();
+    }
   }
 
 

@@ -246,6 +246,53 @@ export type Database = {
           },
         ]
       }
+      combat_maps: {
+        Row: {
+          combat_session_id: string
+          grid_enabled: boolean
+          grid_offset_x: number
+          grid_offset_y: number
+          grid_size: number
+          id: string
+          image: string | null
+          image_height: number | null
+          image_width: number | null
+          updated_at: string
+        }
+        Insert: {
+          combat_session_id: string
+          grid_enabled?: boolean
+          grid_offset_x?: number
+          grid_offset_y?: number
+          grid_size?: number
+          id?: string
+          image?: string | null
+          image_height?: number | null
+          image_width?: number | null
+          updated_at?: string
+        }
+        Update: {
+          combat_session_id?: string
+          grid_enabled?: boolean
+          grid_offset_x?: number
+          grid_offset_y?: number
+          grid_size?: number
+          id?: string
+          image?: string | null
+          image_height?: number | null
+          image_width?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_maps_combat_session_id_fkey"
+            columns: ["combat_session_id"]
+            isOneToOne: true
+            referencedRelation: "combat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combat_sessions: {
         Row: {
           created_at: string | null
@@ -284,6 +331,35 @@ export type Database = {
           tenant?: string
         }
         Relationships: []
+      }
+      combat_tokens: {
+        Row: {
+          combatant_id: string
+          updated_at: string
+          x: number
+          y: number
+        }
+        Insert: {
+          combatant_id: string
+          updated_at?: string
+          x: number
+          y: number
+        }
+        Update: {
+          combatant_id?: string
+          updated_at?: string
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_tokens_combatant_id_fkey"
+            columns: ["combatant_id"]
+            isOneToOne: true
+            referencedRelation: "combatants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       combatant_attributes: {
         Row: {
@@ -626,6 +702,69 @@ export type Database = {
           },
         ]
       }
+      mcp_grants: {
+        Row: {
+          approved_by: string
+          client_id: string
+          client_name: string | null
+          created_at: string
+          id: string
+          last_used_at: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          approved_by: string
+          client_id: string
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_grants_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mentions: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          field: string
+          id: string
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          field: string
+          id?: string
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          field?: string
+          id?: string
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           category: string | null
@@ -684,6 +823,7 @@ export type Database = {
           title: string | null
           xp: number | null
           xp_spent: number | null
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           banner?: string | null
@@ -704,6 +844,7 @@ export type Database = {
           title?: string | null
           xp?: number | null
           xp_spent?: number | null
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           banner?: string | null
@@ -724,6 +865,7 @@ export type Database = {
           title?: string | null
           xp?: number | null
           xp_spent?: number | null
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1107,6 +1249,7 @@ export type Database = {
           owner_id: string | null
           parent_id: string | null
           type: string
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           created_at?: string | null
@@ -1117,6 +1260,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           created_at?: string | null
@@ -1127,6 +1271,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type?: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1260,6 +1405,7 @@ export type Database = {
           owner_id: string | null
           parent_id: string | null
           type: string
+          status: Database["public"]["Enums"]["entity_status"]
         }
         Insert: {
           completed?: boolean | null
@@ -1270,6 +1416,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Update: {
           completed?: boolean | null
@@ -1280,6 +1427,7 @@ export type Database = {
           owner_id?: string | null
           parent_id?: string | null
           type?: string
+          status?: Database["public"]["Enums"]["entity_status"]
         }
         Relationships: [
           {
@@ -1622,6 +1770,23 @@ export type Database = {
       }
       stop_beat_session: { Args: { p_session_id: string }; Returns: undefined }
       stop_idle_beat_session: { Args: { p_session_id: string }; Returns: undefined }
+      mention_source_visible: {
+        Args: { p_source_id: string; p_source_type: string }
+        Returns: boolean
+      }
+      mention_targets_exist: {
+        Args: { p_refs: Json }
+        Returns: { entity_id: string; entity_type: string }[]
+      }
+      discard_draft: {
+        Args: { p_entity_id: string; p_entity_type: string }
+        Returns: undefined
+      }
+      is_assistant: { Args: never; Returns: boolean }
+      publish_draft: {
+        Args: { p_entity_id: string; p_entity_type: string }
+        Returns: undefined
+      }
       is_entity_owner: {
         Args: { p_entity_id: string; p_entity_type: string }
         Returns: boolean
@@ -1629,6 +1794,7 @@ export type Database = {
       is_gm: { Args: never; Returns: boolean }
     }
     Enums: {
+      entity_status: "draft" | "published"
       flow_item_type: "person" | "place" | "quest" | "note"
       info_type:
         | "appearance"
@@ -1646,7 +1812,7 @@ export type Database = {
         | "spell"
         | "cantrip"
         | "liturgy"
-      user_role: "observer" | "player" | "co_gm" | "gm"
+      user_role: "observer" | "player" | "co_gm" | "gm" | "assistant"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1777,6 +1943,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      entity_status: ["draft", "published"],
       flow_item_type: ["person", "place", "quest", "note"],
       info_type: [
         "appearance",
@@ -1796,7 +1963,7 @@ export const Constants = {
         "cantrip",
         "liturgy",
       ],
-      user_role: ["observer", "player", "co_gm", "gm"],
+      user_role: ["observer", "player", "co_gm", "gm", "assistant"],
     },
   },
 } as const

@@ -1,11 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faBars, faCommentAlt, faDice, faMusic, faPerson } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import type { NavEntry } from '../../models/nav-entry';
 import { NavigationService } from '../../services/navigation.service';
 import { environment } from '../../../../environments/environment';
 import { ConfigService } from '../../services/config.service';
+import { AuthService } from '../../services/auth.service';
 
 
 
@@ -17,6 +19,7 @@ import { ConfigService } from '../../services/config.service';
   standalone: false
 })
 export class FooterComponent implements OnInit {
+  private auth = inject(AuthService);
   private config = inject(ConfigService);
   private nav = inject(NavigationService);
 
@@ -29,12 +32,15 @@ export class FooterComponent implements OnInit {
   faPerson = faPerson;
   hasAudio = environment.tenantData[environment.tenant].audioFiles?.length > 0 ;
   messagesVisible = false;
-  navigation: NavEntry[];
+  navigation$: Observable<NavEntry[]>;
   navVisible$: Observable<boolean>;
 
   constructor() {
     this.navVisible$ = this.nav.navVisible$;
-    this.navigation = this.nav.getNavigation();
+    const navigation = this.nav.getNavigation();
+    this.navigation$ = this.auth.user$.pipe(
+      map(user => navigation.filter(entry => !entry.gmOnly || user?.isGM)),
+    );
   }
 
   ngOnInit(): void {

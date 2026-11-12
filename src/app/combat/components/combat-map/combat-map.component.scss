@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.map-toolbar {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--item-padding) calc(var(--item-padding) * 2);
+  margin-bottom: var(--item-padding);
+}
+
+.group {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--item-padding);
+
+  .btn,
+  .form-group {
+    margin: 0;
+    width: auto;
+  }
+}
+
+.upload {
+  cursor: pointer;
+  display: inline-block;
+  line-height: calc(var(--mobile-interactive-height) - 2px);
+  padding: 0 var(--item-padding);
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  input {
+    display: none;
+  }
+}
+
+.grid-settings .form-group input[type="number"] {
+  width: 90px;
+}
+
+.grid-settings .check {
+  min-width: 120px;
+}
+
+.stage-host {
+  background: var(--color-dark);
+  border: var(--border-line-width) solid var(--color-primary);
+  height: calc(100vh - 260px);
+  min-height: 320px;
+  overflow: hidden;
+  // The canvas handles touch itself: pan and pinch must not scroll the page.
+  touch-action: none;
+  width: 100%;
+}
+
+.message {
+  color: var(--color-high);
+  margin: 0 0 var(--item-padding);
+}
+
+.hint {
+  font-size: var(--detail-text-font-size);
+  line-height: var(--detail-text-line-height);
+  margin: 5px 0 0;
+  opacity: 0.8;
+}

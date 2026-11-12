@@ -150,6 +150,36 @@ describe('DataService', () => {
     });
   });
 
+  describe('storeInfo()', () => {
+    it('reports success when the update changed the info', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [{ id: 'i1' }] }));
+
+      const result = await service.storeInfo({ content: 'X', type: 0 }, 'people', 'p1', 'i1');
+      expect(result).toEqual({ success: true, id: 'i1' });
+    });
+
+    it('reports failure when RLS let the update change no row', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [] }));
+
+      const result = await service.storeInfo({ content: 'X', type: 0 }, 'people', 'p1', 'i1');
+      expect(result).toEqual({ success: false });
+    });
+  });
+
+  describe('deleteInfo()', () => {
+    it('reports success when the info was deleted', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [{ id: 'i1' }] }));
+
+      expect(await service.deleteInfo('i1')).toBe(true);
+    });
+
+    it('reports failure when RLS let the delete remove no row', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [] }));
+
+      expect(await service.deleteInfo('i1')).toBe(false);
+    });
+  });
+
   describe('getInfos()', () => {
     it('should call realtime.watch with correct filters', () => {
       service.getInfos('person-1', 'people');

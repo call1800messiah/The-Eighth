@@ -1,0 +1,30 @@
+.draft-banner {
+  align-items: center;
+  border: var(--border-line-width) dashed var(--color-primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--item-padding);
+  justify-content: space-between;
+  margin-bottom: var(--item-padding);
+  padding: var(--item-padding);
+}
+
+.text {
+  font-size: var(--detail-text-font-size);
+  line-height: var(--detail-text-line-height);
+
+  a {
+    color: inherit;
+    margin-left: 0.5em;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: var(--item-padding);
+
+  .btn {
+    margin: 0;
+    width: auto;
+  }
+}

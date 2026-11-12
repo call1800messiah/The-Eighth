@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, ElementRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { delay, filter, map, take } from 'rxjs/operators';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import type { Note } from '../../models/note';
@@ -18,10 +20,15 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
   standalone: false
 })
 export class ListNotesComponent {
+  private destroyRef = inject(DestroyRef);
+  private element = inject<ElementRef<HTMLElement>>(ElementRef);
   private noteService = inject(NotesService);
   private popover = inject(PopoverService);
+  private route = inject(ActivatedRoute);
 
   faPlus = faPlus;
+  /** Note a mention link pointed at (`/notes?note=<id>`). */
+  highlightedNoteId: string | null = null;
   filteredNotes$: Observable<Record<string, Note[]>>;
   filterText$: BehaviorSubject<string>;
   initialFilterText: string;
@@ -36,11 +43,39 @@ export class ListNotesComponent {
       map(this.filterNotesByText),
       map(this.groupByCategory)
     );
+
+    this.route.queryParamMap.pipe(
+      map(params => params.get('note')),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(noteId => this.highlightNote(noteId));
   }
 
 
   editNote(note: Note) {
     this.popover.showPopover('Notiz bearbeiten', EditNoteComponent, note);
+  }
+
+
+  /**
+   * Notes have no page of their own, so a mention of one lands here. The
+   * stored filter could hide it, so it is cleared for this visit.
+   */
+  private highlightNote(noteId: string | null) {
+    this.highlightedNoteId = noteId;
+    if (!noteId) {
+      return;
+    }
+    this.initialFilterText = '';
+    this.filterText$.next('');
+    this.filteredNotes$.pipe(
+      filter(groups => Object.values(groups).some(notes => notes.some(note => note.id === noteId))),
+      take(1),
+      delay(0),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => {
+      this.element.nativeElement.querySelector(`[data-note-id="${CSS.escape(noteId)}"]`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   }
 
 

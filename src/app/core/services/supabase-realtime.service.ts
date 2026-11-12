@@ -150,8 +150,10 @@ export class RealtimeService implements OnDestroy {
   ): Observable<T | null> {
     return new Observable<T | null>(subscriber => {
       const fetch = async () => {
+        // Not every table has an `id` column (combat_tokens is keyed by
+        // combatant), so the union of all tables cannot be filtered on it.
         const { data, error } = await this.supabase
-          .from(table)
+          .from(table as 'people')
           .select(selectQuery ?? '*')
           .eq('id', id)
           .single();

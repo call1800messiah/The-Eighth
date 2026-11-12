@@ -1,5 +1,6 @@
 @if (quest) {
   <app-container width="medium" class="quest">
+    <app-draft-banner entityType="quest" [entity]="quest"></app-draft-banner>
     <div class="info box">
       <app-access-indicator [item]="quest"></app-access-indicator>
       <div class="type">
@@ -11,10 +12,9 @@
         </div>
       }
       @if (quest.description) {
-        <div class="description">
-          {{quest.description}}
-        </div>
+        <app-markdown class="description" [text]="quest.description"></app-markdown>
       }
+      <app-backlinks entityType="quest" [entityId]="quest.id"></app-backlinks>
     </div>
     @if (quest.subQuests) {
       @if (quest.subQuests.length > 0) {
@@ -43,7 +43,7 @@
     </div>
     @if (infos$) {
       <div class="detail-info">
-        @for (infoList of infos$ | async | keyvalue; track infoList) {
+        @for (infoList of infos$ | async | keyvalue; track infoList.key) {
           <app-info-box
             [key]="infoList.key"
             [infos]="infoList.value"

@@ -14,14 +14,23 @@
     title="Person als Kämpfer hinzufügen"></fa-icon>
   </button>
 
-  <button type="button" class="btn-icon" [ngClass]="{'active': showAsList}" (click)="toggleDisplayStyle()">
+  <button type="button" class="btn-icon" [ngClass]="{'active': showAsList && !showMap}" (click)="toggleDisplayStyle()">
     <fa-icon [icon]="faList" [fixedWidth]="true"
     title="Anzeigestil wechseln"></fa-icon>
   </button>
+
+  <button type="button" class="btn-icon btn-map" [ngClass]="{'active': showMap}" (click)="toggleMap()">
+    <fa-icon [icon]="faMap" [fixedWidth]="true"
+    title="Kampfkarte"></fa-icon>
+  </button>
 </div>
 
+@if (showMap) {
+  <app-combat-map [combatants]="combatants$ | async"></app-combat-map>
+}
 
-@if (!showAsList) {
+
+@if (!showMap && !showAsList) {
   <app-box-grid>
     @for (combatant of combatants$ | async; track combatant) {
       <app-combatant [combatant]="combatant"></app-combatant>
@@ -29,7 +38,7 @@
   </app-box-grid>
 }
 
-@if (showAsList) {
+@if (!showMap && showAsList) {
   <div>
     @for (combatant of combatants$ | async; track combatant) {
       <app-combatant [combatant]="combatant" [showAsList]="true"></app-combatant>

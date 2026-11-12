@@ -1,0 +1,35 @@
+app-markdown {
+  display: block;
+  // Hosts used `white-space: pre-line` for plain text; the HTML carries its
+  // own line breaks now.
+  white-space: normal;
+
+  .markdown {
+    > :first-child { margin-top: 0; }
+    > :last-child { margin-bottom: 0; }
+  }
+
+  p { margin: 0 0 0.5em; }
+  h1, h2, h3, h4, h5, h6 { margin: 0.5em 0; }
+  h1 { font-size: var(--headline-large); }
+  h2 { font-size: var(--item-title-font-size); }
+  h3, h4, h5, h6 { font-size: var(--base-body-font-size); }
+  ul, ol { margin: 0 0 0.5em; padding-left: 2em; }
+  blockquote {
+    border-left: 3px solid currentColor;
+    margin: 0 0 0.5em;
+    padding-left: 1em;
+  }
+  pre { white-space: pre-wrap; }
+  a { color: inherit; text-decoration: underline; }
+
+  a.mention {
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+  }
+
+  .mention-deleted {
+    opacity: 0.7;
+  }
+}
