@@ -194,7 +194,7 @@ The combat view has a third mode (map icon): `CombatMapComponent` draws the runn
 - `001_initial_schema.sql` — enums, tables, indexes, replica identity, realtime publication
 - `002_rls_policies.sql` — helper functions (`is_gm()`, `is_entity_owner()`) and every policy
 - `003_storage_buckets.sql` — bucket and storage.objects policies
-- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map)
+- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map, `015` `assistant_schema()` and table comments for Claude's `describe`)
 
 Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `project_milestones`, …). Query them with PostgREST embedding: `query.select('*, person_skills(rule_id, value)')`.
 
@@ -222,7 +222,7 @@ All services use `providedIn: 'root'`.
 ### When Adding Tables or Policies
 - Add a new numbered migration; never edit an applied one
 - Enable RLS on every new table — an un-policied table is invisible to clients, and a table with RLS off is readable by everyone
-- Decide what the `assistant` role (Claude) may do with it; by default it can do nothing (see *Claude (MCP server)*)
+- Decide what the `assistant` role (Claude) may do with it; by default it can do nothing (see *Claude (MCP server)*). If Claude may read it, add a `COMMENT ON TABLE` (and on non-obvious columns): `assistant_schema()` hands those to Claude as the table's meaning
 - Add a test under `supabase/tests/` and run `bash supabase/tests/run.sh`
 - If the app should react to changes, add the table to the `supabase_realtime` publication *and* to the relevant `triggerTables`
 
