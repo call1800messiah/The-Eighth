@@ -196,6 +196,7 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
   const claude = as(CLAUDE);
   const repo = new EntityRepository(async () => claude, APP);
   const reader = new QueryReader(async () => claude, new SchemaCatalog(async () => claude));
+  let zaubrina: string;
 
   before(async () => {
     const insert = async (table: string, row: object) => {
@@ -203,7 +204,7 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
       assert.equal(error, null, error?.message);
       return (data as { id: string }).id;
     };
-    const zaubrina = await insert('people', { name: 'Zaubrina', owner_id: GM });
+    zaubrina = await insert('people', { name: 'Zaubrina', owner_id: GM });
     const magnus = await insert('people', { name: 'Magnus, der Adlige', owner_id: GM });
     await insert('people', { name: 'Bauer Tobi', owner_id: GM });
     await insert('person_tags', { person_id: zaubrina, tag: 'magiebegabt' });
@@ -212,6 +213,20 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
     const zauberer = await insert('rules', { category: 'advantage', name: 'Zauberer', is_custom: true });
     await insert('person_advantages', { person_id: zaubrina, rule_id: zauberer, level: 'I' });
     await repo.createDraft('person', { name: 'Entwurf Hexe' });
+    await insert('person_tags', { person_id: zaubrina, tag: 'händlerin' });
+    await insert('person_attributes', { person_id: zaubrina, type: 'lep', current: 30, max: 32 });
+    const handel = await insert('rules', { category: 'skill', name: 'Handel', is_custom: true });
+    await insert('person_skills', { person_id: zaubrina, rule_id: handel, value: 12 });
+  });
+
+  it('get_entity returns the full person sheet', async () => {
+    const person = await repo.get('person', zaubrina);
+    assert.deepEqual(person['tags'], ['händlerin', 'magiebegabt']);
+    assert.deepEqual(person['attributes'], { lep: { current: 30, max: 32 } });
+    assert.deepEqual(person['advantages'], [{ name: 'Zauberer', level: 'I' }]);
+    assert.deepEqual(person['skills'], [{ name: 'Handel', value: 12 }]);
+    assert.deepEqual(person['spells'], []);
+    assert.deepEqual(person['disadvantages'], []);
   });
 
   it('counts people by tag', async () => {

@@ -264,6 +264,7 @@ export class EntityRepository {
         .select('relationship_type, related:people!person_relationships_related_person_id_fkey(id, name)')
         .eq('person_id', id);
       result['relationships'] = (relationships ?? []).map((rel: any) => ({ type: rel.relationship_type, ...rel.related }));
+      Object.assign(result, await this.sheet(id));
     }
     if (type === 'place') {
       result['partOf'] = await nameOf('places', row.parent_id);
@@ -280,6 +281,38 @@ export class EntityRepository {
       result['subquests'] = subquests ?? [];
     }
     return result;
+  }
+
+  /** Tags, attributes and every capability of a person, with rule names, in one request. */
+  private async sheet(id: string): Promise<Record<string, unknown>> {
+    const leveled = ['advantages', 'disadvantages', 'feats'] as const;
+    const valued = ['skills', 'spells', 'cantrips', 'liturgies'] as const;
+    const select = [
+      'person_tags(tag)',
+      'person_attributes(type, current, max)',
+      ...leveled.map(kind => `person_${kind}(level, details, rules(name))`),
+      ...valued.map(kind => `person_${kind}(value, rules(name))`),
+    ].join(', ');
+    const { data, error } = await (await this.db()).from('people').select(select).eq('id', id).maybeSingle();
+    if (error) failure(error, 'Reading the person sheet');
+    const row = (data ?? {}) as Record<string, any[]>;
+
+    const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'de');
+    const sheet: Record<string, unknown> = {
+      tags: (row['person_tags'] ?? []).map(t => t.tag).sort((a: string, b: string) => a.localeCompare(b, 'de')),
+      attributes: Object.fromEntries((row['person_attributes'] ?? []).map(a => [a.type, { current: a.current, max: a.max }])),
+    };
+    for (const kind of leveled) {
+      sheet[kind] = (row[`person_${kind}`] ?? []).map(entry => ({
+        name: entry.rules?.name ?? null,
+        ...(entry.level != null ? { level: entry.level } : {}),
+        ...(entry.details != null ? { details: entry.details } : {}),
+      })).sort(byName);
+    }
+    for (const kind of valued) {
+      sheet[kind] = (row[`person_${kind}`] ?? []).map(entry => ({ name: entry.rules?.name ?? null, value: entry.value })).sort(byName);
+    }
+    return sheet;
   }
 
   private async infos(type: DraftType, id: string): Promise<Record<string, string>> {
