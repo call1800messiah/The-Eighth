@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "MCP server: lets Claude create draft people, places and quests in TheEighth",
+  "description": "MCP server: lets Claude read TheEighth and create draft people, places and quests",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",

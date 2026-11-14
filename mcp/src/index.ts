@@ -3,6 +3,8 @@ import { AssistantSession, SupabaseGmApprover } from './supabase.js';
 import { SupabaseOAuthStore } from './oauth/store.js';
 import { TheEighthOAuthProvider } from './oauth/provider.js';
 import { EntityRepository } from './tools/entities.js';
+import { QueryReader } from './tools/query.js';
+import { SchemaCatalog } from './tools/schema.js';
 import { createApp } from './app.js';
 
 const config = loadConfig();
@@ -22,7 +24,8 @@ const provider = new TheEighthOAuthProvider(
   new URL('/mcp', config.publicUrl),
 );
 const repo = new EntityRepository(() => session.ready(), config.publicUrl);
-const app = createApp({ publicUrl: config.publicUrl, provider, repo, ready: () => session.ready() });
+const reader = new QueryReader(() => session.ready(), new SchemaCatalog(() => session.ready()));
+const app = createApp({ publicUrl: config.publicUrl, provider, repo, reader, ready: () => session.ready() });
 
 const cleanup = setInterval(() => {
   provider.cleanup().catch(error => console.error('cleanup failed', error));

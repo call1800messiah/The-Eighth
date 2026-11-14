@@ -9,6 +9,7 @@ import { MemoryOAuthStore } from '../src/oauth/store.js';
 import { TheEighthOAuthProvider, isAllowedRedirectUri } from '../src/oauth/provider.js';
 import type { GmApprover } from '../src/supabase.js';
 import type { EntityRepository } from '../src/tools/entities.js';
+import type { QueryReader } from '../src/tools/query.js';
 
 const CALLBACK = 'https://claude.ai/api/mcp/auth_callback';
 const PUBLIC = new URL('https://campaign.example.com');
@@ -53,7 +54,7 @@ describe('OAuth flow', () => {
   before(async () => {
     store = new MemoryOAuthStore();
     const provider = new TheEighthOAuthProvider(store, approver, new URL('/mcp', PUBLIC));
-    const app = createApp({ publicUrl: PUBLIC, provider, repo, rateLimits: false });
+    const app = createApp({ publicUrl: PUBLIC, provider, repo, reader: {} as QueryReader, rateLimits: false });
     server = app.listen(0);
     await new Promise(resolve => server.once('listening', resolve));
     base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
@@ -205,7 +206,7 @@ describe('OAuth flow', () => {
     const list = await mcp(tokens.access_token, { jsonrpc: '2.0', id: 1, method: 'tools/list' });
     assert.equal(list.status, 200);
     const names = ((await list.json()) as any).result.tools.map((tool: any) => tool.name).sort();
-    assert.deepEqual(names, ['create_person', 'create_place', 'create_quest', 'get_entity', 'link_entities', 'search_entities', 'update_draft']);
+    assert.deepEqual(names, ['create_person', 'create_place', 'create_quest', 'describe', 'get_entity', 'link_entities', 'query', 'search_entities', 'update_draft']);
 
     const call = await mcp(tokens.access_token, {
       jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'search_entities', arguments: { query: 'Alr' } },
@@ -265,7 +266,7 @@ describe('before the assistant user is set up', () => {
     const store = new MemoryOAuthStore();
     const provider = new TheEighthOAuthProvider(store, { approve: async () => ({ ok: false, reason: 'error' }) }, new URL('/mcp', PUBLIC));
     const app = createApp({
-      publicUrl: PUBLIC, provider, repo: {} as EntityRepository, rateLimits: false,
+      publicUrl: PUBLIC, provider, repo: {} as EntityRepository, reader: {} as QueryReader, rateLimits: false,
       ready: () => Promise.reject(new Error('The MCP user does not have the assistant role')),
     });
     const server = app.listen(0);

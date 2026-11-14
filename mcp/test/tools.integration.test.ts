@@ -69,7 +69,7 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     mainQuest = await insert('quests', { name: 'Der Schatz im Silbersee', type: 'main', owner_id: GM });
     await insert('notes', { title: 'Geheimplot', content: 'Alrik ist eigentlich ein Spion.', owner_id: GM });
 
-    const server = createMcpServer(repo);
+    const server = createMcpServer(repo, new QueryReader(async () => claude, new SchemaCatalog(async () => claude)));
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
     mcp = new Client({ name: 'test', version: '1' });
     await Promise.all([server.connect(serverSide), mcp.connect(clientSide)]);
@@ -270,5 +270,26 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
     const [tags] = await reader.describe('person_tags');
     assert.equal(tags!.columns.find(c => c.name === 'person_id')?.references, 'people.id');
     await assert.rejects(reader.describe('dragons'), ToolError);
+  });
+
+  it('offers query and describe as MCP tools', async () => {
+    const server = createMcpServer(repo, reader);
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '1' });
+    await Promise.all([server.connect(serverSide), client.connect(clientSide)]);
+
+    const names = (await client.listTools()).tools.map(tool => tool.name);
+    assert.ok(names.includes('query') && names.includes('describe'));
+
+    const found = await client.callTool({ name: 'query', arguments: {
+      table: 'people', select: 'name', filters: [{ column: 'name', op: 'eq', value: 'Zaubrina' }], count: true,
+    } });
+    assert.deepEqual(parse(found), { count: 1, rows: [{ name: 'Zaubrina' }] });
+
+    const refused = await client.callTool({ name: 'query', arguments: { table: 'mcp_tokens' } });
+    assert.equal(refused.isError, true);
+
+    const described = parse(await client.callTool({ name: 'describe', arguments: { table: 'person_tags' } }));
+    assert.equal(described[0].name, 'person_tags');
   });
 });

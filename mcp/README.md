@@ -1,13 +1,15 @@
 # TheEighth MCP server
 
-Lets Claude (claude.ai or Claude Code) look up the campaign's people, places, quests and notes during a planning chat, and add new people, places and quests as **drafts** for a GM to approve.
+Lets Claude (claude.ai or Claude Code) read everything in the campaign during a planning chat, and add new people, places and quests as **drafts** for a GM to approve.
 
 ## What Claude can do
 
 | Tool | |
 |---|---|
 | `search_entities` | Find people, places, quests and notes by name (notes also by content). Returns mention links. |
-| `get_entity` | Everything about one entity: fields, text sections, related entities. |
+| `get_entity` | Everything about one entity: fields, text sections, related entities; for a person also tags, attributes and every advantage, feat, skill, spell, … with its rule name. |
+| `describe` | The tables Claude can read, with columns, foreign keys, enum values and what they mean (`assistant_schema()`, migration 015, from the tables' `COMMENT`s). |
+| `query` | Read any of those tables: PostgREST select with embedding, filters, order, paging, counts. At most 500 rows / ~100 KB per call. |
 | `create_person`, `create_place`, `create_quest` | Create a draft. Refuses a name that already exists unless `allow_duplicate` is set. |
 | `link_entities` | Location of a person, parent place/quest, family. The first entity must be Claude's own draft. |
 | `update_draft` | Change fields and text sections of Claude's own drafts. |
@@ -16,7 +18,7 @@ Text is Markdown with the editor's mention links (`[Alrik](mention:person/<uuid>
 
 ## How it is kept in check
 
-Claude acts as one dedicated Supabase user with the `assistant` role (migration `013_claude_drafts.sql`). The database enforces the limits, so they hold however a request reaches it:
+Claude acts as one dedicated Supabase user with the `assistant` role (migration `013_claude_drafts.sql`). The database enforces the limits, so they hold however a request reaches it. One exception: the server's own OAuth tables (`mcp_*`) are readable by that user because the OAuth server needs them, so `query` and `describe` refuse any request that names one, embedded or not.
 
 - **Reads** like a GM: everything, including other drafts.
 - **Writes** only people, places and quests with `status = 'draft'` that it owns, plus info boxes and family links of those drafts. Every other table refuses its inserts, updates and deletes, including `document_access`, `user_roles` and storage.
