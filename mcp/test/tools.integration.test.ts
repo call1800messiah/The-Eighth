@@ -13,6 +13,8 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 
 import { EntityRepository, ToolError } from '../src/tools/entities.js';
 import { createMcpServer } from '../src/tools/register.js';
+import { QueryReader } from '../src/tools/query.js';
+import { SchemaCatalog } from '../src/tools/schema.js';
 
 const URL_ = process.env['TEST_POSTGREST_URL'];
 const SECRET = process.env['TEST_JWT_SECRET'];
@@ -186,5 +188,87 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     assert.deepEqual(data, [{ relationship_type: 'siblings' }], 'reverse family link added');
 
     await assert.rejects(repo.updateDraft('person', draft, { title: 'x' }), /published/);
+  });
+});
+
+describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not set (run test/integration.sh)' }, () => {
+  const gm = () => as(GM);
+  const claude = as(CLAUDE);
+  const repo = new EntityRepository(async () => claude, APP);
+  const reader = new QueryReader(async () => claude, new SchemaCatalog(async () => claude));
+
+  before(async () => {
+    const insert = async (table: string, row: object) => {
+      const { data, error } = await gm().from(table).insert(row).select('id').single();
+      assert.equal(error, null, error?.message);
+      return (data as { id: string }).id;
+    };
+    const zaubrina = await insert('people', { name: 'Zaubrina', owner_id: GM });
+    const magnus = await insert('people', { name: 'Magnus, der Adlige', owner_id: GM });
+    await insert('people', { name: 'Bauer Tobi', owner_id: GM });
+    await insert('person_tags', { person_id: zaubrina, tag: 'magiebegabt' });
+    await insert('person_tags', { person_id: magnus, tag: 'magiebegabt' });
+    await insert('person_tags', { person_id: magnus, tag: 'adlig' });
+    const zauberer = await insert('rules', { category: 'advantage', name: 'Zauberer', is_custom: true });
+    await insert('person_advantages', { person_id: zaubrina, rule_id: zauberer, level: 'I' });
+    await repo.createDraft('person', { name: 'Entwurf Hexe' });
+  });
+
+  it('counts people by tag', async () => {
+    const result = await reader.query({
+      table: 'people', select: 'id, person_tags!inner(tag)',
+      filters: [{ column: 'person_tags.tag', op: 'eq', value: 'magiebegabt' }],
+      count: true, limit: 0,
+    });
+    assert.equal(result.count, 2);
+    assert.deepEqual(result.rows, []);
+  });
+
+  it('embeds rule names', async () => {
+    const result = await reader.query({ table: 'person_advantages', select: 'level, people(name), rules(name)' });
+    assert.deepEqual(result.rows, [{ level: 'I', people: { name: 'Zaubrina' }, rules: { name: 'Zauberer' } }]);
+  });
+
+  it('filters with in, also on values with commas', async () => {
+    const result = await reader.query({
+      table: 'people', select: 'name',
+      filters: [{ column: 'name', op: 'in', value: ['Zaubrina', 'Magnus, der Adlige'] }],
+      order: [{ column: 'name' }],
+    });
+    assert.deepEqual(result.rows, [{ name: 'Magnus, der Adlige' }, { name: 'Zaubrina' }]);
+  });
+
+  it('sees drafts', async () => {
+    const result = await reader.query({ table: 'people', select: 'name', filters: [{ column: 'status', op: 'eq', value: 'draft' }] });
+    assert.ok((result.rows as { name: string }[]).some(row => row.name === 'Entwurf Hexe'));
+  });
+
+  it('pages with limit and offset', async () => {
+    const first = await reader.query({ table: 'people', select: 'name', order: [{ column: 'name' }], limit: 1, count: true });
+    const second = await reader.query({ table: 'people', select: 'name', order: [{ column: 'name' }], limit: 1, offset: 1 });
+    assert.equal(first.rows.length, 1);
+    assert.ok((first.count ?? 0) >= 4);
+    assert.notDeepEqual(first.rows, second.rows);
+  });
+
+  it('reports an unknown column as a tool error', async () => {
+    await assert.rejects(reader.query({ table: 'people', select: 'nope' }), (e: unknown) => e instanceof ToolError && /nope/.test(e.message));
+  });
+
+  it('points to describe for an unknown table', async () => {
+    await assert.rejects(reader.query({ table: 'dragons' }), (e: unknown) => e instanceof ToolError && /describe/.test(e.message));
+  });
+
+  it('rejects is with anything but null, true or false', async () => {
+    await assert.rejects(reader.query({ table: 'people', filters: [{ column: 'title', op: 'is', value: 'x' }] }), ToolError);
+  });
+
+  it('describes the readable tables', async () => {
+    const tables = await reader.describe();
+    assert.ok(tables.find(t => t.name === 'people')?.note);
+    assert.ok(!tables.some(t => t.name.startsWith('mcp_')));
+    const [tags] = await reader.describe('person_tags');
+    assert.equal(tags!.columns.find(c => c.name === 'person_id')?.references, 'people.id');
+    await assert.rejects(reader.describe('dragons'), ToolError);
   });
 });
