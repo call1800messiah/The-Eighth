@@ -13,6 +13,11 @@
 -- not show up as readable. The MCP server's own OAuth tables (mcp_*) are
 -- never listed. The comments below are what `describe` shows as meanings;
 -- a new table should get one too.
+--
+-- One transaction: applied by hand on production, it either goes in whole or
+-- not at all, so a failure can simply be fixed and the file run again.
+
+BEGIN;
 
 CREATE FUNCTION public.assistant_schema() RETURNS JSONB
 LANGUAGE sql STABLE SECURITY INVOKER
@@ -134,3 +139,5 @@ COMMENT ON TABLE combatant_states IS 'States a combatant is in.';
 COMMENT ON COLUMN combatant_states.state IS 'The state''s name, as in combat_states.name (the app calls it name).';
 COMMENT ON TABLE combat_maps IS 'Battle map of a fight: image, size and grid.';
 COMMENT ON TABLE combat_tokens IS 'Where a combatant stands on the battle map, in map pixels.';
+
+COMMIT;

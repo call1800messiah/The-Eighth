@@ -30,11 +30,16 @@ export interface TableInfo {
  * The MCP server's own OAuth tables. The assistant user has to read them for
  * the OAuth server to work, so the database cannot keep Claude out; the tools
  * refuse any request that names one, embedded or not.
+ *
+ * postgrest-js strips whitespace from a select string before sending it, so
+ * "m cp_grants" would reach PostgREST as "mcp_grants": test what is sent, not
+ * what was typed. Quoted identifiers (which could hide the name behind
+ * escapes) are refused separately by the query tool.
  */
 const HIDDEN = /(?<![A-Za-z0-9_])mcp_/i;
 
 export function isHiddenIdentifier(text: string): boolean {
-  return HIDDEN.test(text);
+  return HIDDEN.test(text.replace(/\s+/g, ''));
 }
 
 export class SchemaCatalog {

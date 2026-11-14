@@ -47,9 +47,27 @@ describe('QueryReader refusals', () => {
     { table: 'users', select: 'g:mcp_grants(*)' },
     { table: 'people', filters: [{ column: 'mcp_grants.id', op: 'eq' as const, value: 'x' }] },
     { table: 'people', order: [{ column: 'mcp_clients.name' }] },
+    { table: 'users', select: 'id, m cp_grants(*)' },
+    { table: 'users', select: 'users(mcp\t_grants(*))' },
+    { table: 'people', filters: [{ column: 'm cp_grants.id', op: 'eq' as const, value: 'x' }] },
   ]) {
     it(`refuses ${JSON.stringify(input)} before calling the database`, async () => {
       await assert.rejects(reader.query(input), (e: unknown) => e instanceof ToolError && /connection tables/.test(e.message));
+    });
+  }
+});
+
+describe('QueryReader quoted identifiers', () => {
+  const untouchable = async (): Promise<SupabaseClient> => { throw new Error('database was called'); };
+  const reader = new QueryReader(untouchable, new SchemaCatalog(untouchable));
+
+  for (const input of [
+    { table: 'users', select: 'id, "m\\cp_grants"(*)' },
+    { table: 'people', select: '"name"' },
+    { table: 'people', order: [{ column: '"name"' }] },
+  ]) {
+    it(`refuses ${JSON.stringify(input)} before calling the database`, async () => {
+      await assert.rejects(reader.query(input), (e: unknown) => e instanceof ToolError && /quote|backslash/i.test(e.message));
     });
   }
 });

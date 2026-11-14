@@ -68,6 +68,11 @@ function text(value: unknown): CallToolResult {
   return { content: [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) }] };
 }
 
+/** Compact JSON: query results are measured that way against MAX_RESULT_BYTES. */
+function compact(value: unknown): CallToolResult {
+  return { content: [{ type: 'text', text: JSON.stringify(value) }] };
+}
+
 function error(message: string): CallToolResult {
   return { content: [{ type: 'text', text: message }], isError: true };
 }
@@ -145,13 +150,13 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
 
   server.registerTool('describe', {
     title: 'Describe the campaign database',
-    description: 'Lists the tables you can read with query: what each one holds, its columns (type, nullable, foreign key target, enum values) and notes. ' +
-      'Give a table name for just that table.',
+    description: 'Lists the tables you can read with query: what each one holds and its column names. ' +
+      'Give a table name to see the columns of that table in detail (type, nullable, foreign key target, enum values, notes).',
     inputSchema: {
       table: z.string().min(1).max(100).optional(),
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
-  }, ({ table }) => run(async () => text(await reader.describe(table))));
+  }, ({ table }) => run(async () => compact(await reader.describe(table))));
 
   server.registerTool('query', {
     title: 'Query the campaign database',
@@ -178,7 +183,7 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
       count: z.boolean().optional().describe('Also return the total number of matching rows.'),
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
-  }, input => run(async () => text(await reader.query(input))));
+  }, input => run(async () => compact(await reader.query(input))));
 
   server.registerTool('create_person', {
     title: 'Create a person (draft)',

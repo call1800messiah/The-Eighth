@@ -31,6 +31,8 @@ describe('isHiddenIdentifier', () => {
     assert.equal(isHiddenIdentifier('mcp_tokens'), true);
     assert.equal(isHiddenIdentifier('g:mcp_grants(*)'), true);
     assert.equal(isHiddenIdentifier('users(MCP_grants(*))'), true);
+    assert.equal(isHiddenIdentifier('users(m cp_grants(*))'), true);
+    assert.equal(isHiddenIdentifier('mcp\n_tokens'), true);
   });
 
   it('leaves other names alone', () => {

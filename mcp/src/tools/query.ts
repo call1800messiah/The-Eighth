@@ -29,6 +29,13 @@ export interface QueryResult {
   truncated?: string;
 }
 
+/** describe without a table: enough to pick tables, without every column's details. */
+export interface TableSummary {
+  name: string;
+  note: string | null;
+  columns: string[];
+}
+
 export const DEFAULT_LIMIT = 50;
 export const MAX_LIMIT = 500;
 export const MAX_RESULT_BYTES = 100_000;
@@ -60,6 +67,9 @@ export function fitRows(rows: unknown[], maxBytes: number): { rows: unknown[]; t
   };
 }
 
+/** Unknown column, unparseable select, relationship not found or ambiguous. */
+const SCHEMA_ERRORS = new Set(['42703', 'PGRST100', 'PGRST200', 'PGRST201']);
+
 function filterValue(op: FilterOp, value: FilterValue, column: string): string {
   if (op === 'in') {
     if (!Array.isArray(value)) throw new ToolError(`Filter on ${column}: "in" needs a list of values.`);
@@ -82,8 +92,10 @@ export class QueryReader {
     private maxBytes = MAX_RESULT_BYTES,
   ) {}
 
-  async describe(table?: string): Promise<TableInfo[]> {
-    if (table === undefined) return this.catalog.tables();
+  async describe(table?: string): Promise<TableSummary[] | TableInfo[]> {
+    if (table === undefined) {
+      return (await this.catalog.tables()).map(({ name, note, columns }) => ({ name, note, columns: columns.map(c => c.name) }));
+    }
     const found = await this.catalog.table(table);
     if (!found) throw new ToolError(`Unknown table "${table}". Call describe without a table to list them.`);
     return [found];
@@ -96,6 +108,9 @@ export class QueryReader {
     if (named.some(isHiddenIdentifier)) {
       throw new ToolError("Not readable: the MCP server's own connection tables (mcp_*).");
     }
+    if (named.some(name => /["\\]/.test(name))) {
+      throw new ToolError('Write table and column names without quotes or backslashes.');
+    }
     if (!(await this.catalog.table(input.table))) {
       throw new ToolError(`Unknown table "${input.table}". Call describe to list the tables you can read.`);
     }
@@ -105,22 +120,24 @@ export class QueryReader {
     const select = input.select?.trim() || '*';
     const countOnly = limit === 0;
 
+    // Count-only is a GET with limit 0, not a HEAD request: a HEAD error
+    // response has no body, so Claude would get no message to fix it by.
     const table = (await this.db()).from(input.table);
-    let request: any = countOnly
-      ? table.select(select, { count: 'exact', head: true })
-      : table.select(select, input.count ? { count: 'exact' } : undefined);
+    let request: any = table.select(select, input.count || countOnly ? { count: 'exact' } : undefined);
     for (const { column, op, value } of filters) {
       request = request.filter(column, op, filterValue(op, value, column));
     }
     for (const { column, ascending } of order) {
       request = request.order(column, { ascending: ascending ?? true });
     }
-    if (!countOnly) request = request.range(offset, offset + limit - 1);
+    request = countOnly ? request.limit(0) : request.range(offset, offset + limit - 1);
 
     const { data, error, count } = await request;
     if (error) {
-      const message = error.message || `The query failed (${error.code ?? 'no details'}).`;
-      throw new ToolError(error.hint ? `${message} — ${error.hint}` : message);
+      let message = error.message || `The query failed (${error.code ?? 'no details'}).`;
+      if (error.hint) message += ` — ${error.hint}`;
+      if (SCHEMA_ERRORS.has(error.code)) message += ` Call describe with table "${input.table}" to see its columns and foreign keys.`;
+      throw new ToolError(message);
     }
 
     const result: QueryResult = { rows: [] };

@@ -267,7 +267,13 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
   });
 
   it('reports an unknown column as a tool error', async () => {
-    await assert.rejects(reader.query({ table: 'people', select: 'nope' }), (e: unknown) => e instanceof ToolError && /nope/.test(e.message));
+    await assert.rejects(reader.query({ table: 'people', select: 'nope' }),
+      (e: unknown) => e instanceof ToolError && /nope/.test(e.message) && /describe/.test(e.message));
+  });
+
+  it('reports an unknown column in a count-only query too', async () => {
+    await assert.rejects(reader.query({ table: 'people', select: 'nope', count: true, limit: 0 }),
+      (e: unknown) => e instanceof ToolError && /nope/.test(e.message) && /describe/.test(e.message));
   });
 
   it('points to describe for an unknown table', async () => {
@@ -280,7 +286,9 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
 
   it('describes the readable tables', async () => {
     const tables = await reader.describe();
-    assert.ok(tables.find(t => t.name === 'people')?.note);
+    const people = tables.find(t => t.name === 'people')!;
+    assert.ok(people.note);
+    assert.ok(people.columns.includes('name' as never), 'the overview lists column names only');
     assert.ok(!tables.some(t => t.name.startsWith('mcp_')));
     const [tags] = await reader.describe('person_tags');
     assert.equal(tags!.columns.find(c => c.name === 'person_id')?.references, 'people.id');
@@ -300,6 +308,7 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
       table: 'people', select: 'name', filters: [{ column: 'name', op: 'eq', value: 'Zaubrina' }], count: true,
     } });
     assert.deepEqual(parse(found), { count: 1, rows: [{ name: 'Zaubrina' }] });
+    assert.equal((found.content as any)[0].text, JSON.stringify(parse(found)), 'compact, as measured by the size cap');
 
     const refused = await client.callTool({ name: 'query', arguments: { table: 'mcp_tokens' } });
     assert.equal(refused.isError, true);
