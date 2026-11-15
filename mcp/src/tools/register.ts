@@ -22,7 +22,7 @@ export const INSTRUCTIONS = `This server is a tabletop RPG campaign ("TheEighth"
 
 Reading:
 - To look up one person, place, quest or note, use search_entities and get_entity. They also give you mention links.
-- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. For "how many", ask query for count: true and limit: 0 rather than fetching every row. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
+- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. Describing a table also tells you which tags, note categories, races, cultures and professions are in use, so you can filter on the exact spelling. For "how many", ask query for count: true and limit: 0 rather than fetching every row. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
 
 Writing:
 - Always call search_entities before creating anything, and reuse what exists instead of creating a duplicate. Mention existing entities in your text with the mention link from the search result.
@@ -151,7 +151,8 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
   server.registerTool('describe', {
     title: 'Describe the campaign database',
     description: 'Lists the tables you can read with query: what each one holds and its column names. ' +
-      'Give a table name to see the columns of that table in detail (type, nullable, foreign key target, enum values, notes).',
+      'Give a table name to see the columns of that table in detail (type, nullable, foreign key target, enum values, notes), ' +
+      'and for free-text columns such as person_tags.tag or notes.category the values in use with their counts.',
     inputSchema: {
       table: z.string().min(1).max(100).optional(),
     },

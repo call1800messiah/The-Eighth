@@ -10,6 +10,15 @@ CREATE TABLE t_unread (id INT);
 ALTER TABLE t_unread ENABLE ROW LEVEL SECURITY;
 GRANT SELECT ON t_unread TO authenticated;
 
+INSERT INTO people (id, name) VALUES
+  ('00000000-0000-4000-8000-0000000015a1', 'Zaubrina'),
+  ('00000000-0000-4000-8000-0000000015a2', 'Magnus');
+INSERT INTO person_tags (person_id, tag) VALUES
+  ('00000000-0000-4000-8000-0000000015a1', 'magiebegabt'),
+  ('00000000-0000-4000-8000-0000000015a2', 'magiebegabt'),
+  ('00000000-0000-4000-8000-0000000015a2', 'adlig');
+INSERT INTO notes (title, category) VALUES ('Gerücht', 'Gerüchte');
+
 SELECT test.login(:claude);
 CREATE TEMP TABLE schema_tables AS
   SELECT t->>'name' AS name, t->>'note' AS note, t->'columns' AS columns
@@ -24,6 +33,18 @@ SELECT test.eq((SELECT c->'values' ? 'advantage' FROM schema_tables, jsonb_array
                 WHERE name = 'rules' AND c->>'name' = 'category'), true, 'enum columns list their values');
 SELECT test.eq((SELECT c->>'note' IS NOT NULL FROM schema_tables, jsonb_array_elements(columns) AS c
                 WHERE name = 'rules' AND c->>'name' = 'metadata'), true, 'columns carry their comments');
+SELECT test.eq((SELECT c->'occurring' FROM schema_tables, jsonb_array_elements(columns) AS c
+                WHERE name = 'person_tags' AND c->>'name' = 'tag'),
+               '[{"value": "magiebegabt", "count": 2}, {"value": "adlig", "count": 1}]'::JSONB,
+               'free-text columns list the values that occur, most frequent first');
+SELECT test.eq((SELECT c->'occurring' @> '[{"value": "Gerüchte", "count": 1}]' FROM schema_tables, jsonb_array_elements(columns) AS c
+                WHERE name = 'notes' AND c->>'name' = 'category'), true, 'note categories are listed');
+SELECT test.eq((SELECT c->'occurring' FROM schema_tables, jsonb_array_elements(columns) AS c
+                WHERE name = 'people' AND c->>'name' = 'name'), 'null'::JSONB, 'other columns list no values');
+SELECT test.eq((SELECT c->>'note' LIKE '%ship%' FROM schema_tables, jsonb_array_elements(columns) AS c
+                WHERE name = 'places' AND c->>'name' = 'type'), true, 'fixed value sets are in the column notes');
+SELECT test.eq((SELECT c->>'note' IS NOT NULL FROM schema_tables, jsonb_array_elements(columns) AS c
+                WHERE name = 'combatant_attributes' AND c->>'name' = 'type'), true, 'combat columns carry notes');
 SELECT test.eq((SELECT count(*) FROM schema_tables WHERE name = 'combat_maps'), 1::BIGINT, 'tables with their own assistant policy are listed');
 SELECT test.eq((SELECT count(*) FROM schema_tables WHERE note IS NULL), 0::BIGINT, 'every listed table has a note');
 SELECT test.eq((SELECT count(*) FROM schema_tables WHERE name LIKE 'mcp\_%'), 0::BIGINT, 'connection tables are left out');

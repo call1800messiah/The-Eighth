@@ -292,6 +292,9 @@ describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTG
     assert.ok(!tables.some(t => t.name.startsWith('mcp_')));
     const [tags] = await reader.describe('person_tags');
     assert.equal(tags!.columns.find(c => c.name === 'person_id')?.references, 'people.id');
+    const occurring = tags!.columns.find(c => c.name === 'tag')?.occurring;
+    assert.deepEqual(occurring?.find(o => o.value === 'magiebegabt'), { value: 'magiebegabt', count: 2 },
+      'the tags in use come with their counts');
     await assert.rejects(reader.describe('dragons'), ToolError);
   });
 

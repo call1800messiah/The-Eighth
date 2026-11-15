@@ -17,6 +17,8 @@ export interface ColumnInfo {
   references: string | null;
   /** Labels of an enum column. */
   values: string[] | null;
+  /** Values in use, most frequent first, for a few free-text columns (tags, note categories, ...). */
+  occurring: { value: string; count: number }[] | null;
   note: string | null;
 }
 
