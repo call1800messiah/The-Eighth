@@ -5,8 +5,10 @@ import { ToolError } from './entities.js';
 /**
  * What Claude can read, from assistant_schema() (migration 015): the tables
  * the assistant has a read policy on, their columns, and the comments that
- * explain them. Fetched once per process; the schema only changes with a
- * deploy, which restarts the server anyway.
+ * explain them. query() checks tables against a cached copy; describe()
+ * reloads it, because `occurring` (the tags, categories, ... in use) changes
+ * with every edit, and query() reloads it once before refusing a table it
+ * does not know, in case a migration added one since the last load.
  */
 
 export interface ColumnInfo {
@@ -55,6 +57,12 @@ export class SchemaCatalog {
       throw error;
     });
     return this.cached;
+  }
+
+  /** Reload, so the next tables() sees current values and new tables. */
+  refresh(): Promise<TableInfo[]> {
+    this.cached = null;
+    return this.tables();
   }
 
   async table(name: string): Promise<TableInfo | undefined> {

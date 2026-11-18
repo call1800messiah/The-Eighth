@@ -127,6 +127,12 @@ function snippet(text: string | null | undefined, length = 120): string | undefi
   return plain.length > length ? `${plain.slice(0, length - 1)}…` : plain;
 }
 
+/** German order; a null name (a rule hidden by RLS or gone) sorts last instead of throwing. */
+export function compareNames(a: string | null, b: string | null): number {
+  if (a === null || b === null) return a === b ? 0 : a === null ? 1 : -1;
+  return a.localeCompare(b, 'de');
+}
+
 function failure(error: { code?: string; message: string }, action: string): never {
   if (error.code === '42501') {
     throw new ToolError(`${action}: not allowed. Claude can only create drafts and change its own drafts that a GM has not published yet.`);
@@ -297,7 +303,7 @@ export class EntityRepository {
     if (error) failure(error, 'Reading the person sheet');
     const row = (data ?? {}) as Record<string, any[]>;
 
-    const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name, 'de');
+    const byName = (a: { name: string | null }, b: { name: string | null }) => compareNames(a.name, b.name);
     const sheet: Record<string, unknown> = {
       tags: (row['person_tags'] ?? []).map(t => t.tag).sort((a: string, b: string) => a.localeCompare(b, 'de')),
       attributes: Object.fromEntries((row['person_attributes'] ?? []).map(a => [a.type, { current: a.current, max: a.max }])),

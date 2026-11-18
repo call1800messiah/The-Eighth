@@ -48,7 +48,7 @@ export function inList(values: (string | number)[]): string {
 }
 
 /** The longest prefix of rows whose JSON stays within maxBytes. */
-export function fitRows(rows: unknown[], maxBytes: number): { rows: unknown[]; truncated?: string } {
+export function fitRows(rows: unknown[], maxBytes: number, offset = 0): { rows: unknown[]; truncated?: string } {
   let size = 2; // []
   let fitting = 0;
   for (const row of rows) {
@@ -63,7 +63,7 @@ export function fitRows(rows: unknown[], maxBytes: number): { rows: unknown[]; t
     rows: kept,
     truncated: fitting === 0
       ? `Even one of the ${rows.length} rows is larger than ${maxBytes} bytes. Select fewer columns (leave out long texts).`
-      : `Only ${fitting} of the ${rows.length} rows fit in ${maxBytes} bytes. Select fewer columns, or page with offset: ${fitting}.`,
+      : `Only ${fitting} of the ${rows.length} rows fit in ${maxBytes} bytes. Select fewer columns, or page with offset: ${offset + fitting}.`,
   };
 }
 
@@ -82,7 +82,21 @@ function filterValue(op: FilterOp, value: FilterValue, column: string): string {
     }
     return String(value);
   }
+  if (value === null) throw new ToolError(`Filter on ${column}: to match null, use op "is" with value null.`);
   return String(value);
+}
+
+/**
+ * A unique tie-breaker so that pages over offset neither repeat nor skip
+ * rows: Postgres has no row order without ORDER BY. Every readable table has
+ * an id primary key except combat_tokens, whose key is combatant_id.
+ */
+function tieBreaker(table: TableInfo): string[] {
+  const names = table.columns.map(c => c.name);
+  for (const key of ['id', 'combatant_id']) {
+    if (names.includes(key)) return [key];
+  }
+  return table.columns.filter(c => !/json/.test(c.type)).map(c => c.name);
 }
 
 export class QueryReader {
@@ -94,9 +108,9 @@ export class QueryReader {
 
   async describe(table?: string): Promise<TableSummary[] | TableInfo[]> {
     if (table === undefined) {
-      return (await this.catalog.tables()).map(({ name, note, columns }) => ({ name, note, columns: columns.map(c => c.name) }));
+      return (await this.catalog.refresh()).map(({ name, note, columns }) => ({ name, note, columns: columns.map(c => c.name) }));
     }
-    const found = await this.catalog.table(table);
+    const found = (await this.catalog.refresh()).find(t => t.name === table);
     if (!found) throw new ToolError(`Unknown table "${table}". Call describe without a table to list them.`);
     return [found];
   }
@@ -111,7 +125,9 @@ export class QueryReader {
     if (named.some(name => /["\\]/.test(name))) {
       throw new ToolError('Write table and column names without quotes or backslashes.');
     }
-    if (!(await this.catalog.table(input.table))) {
+    const info = (await this.catalog.table(input.table))
+      ?? (await this.catalog.refresh()).find(t => t.name === input.table);
+    if (!info) {
       throw new ToolError(`Unknown table "${input.table}". Call describe to list the tables you can read.`);
     }
 
@@ -130,6 +146,11 @@ export class QueryReader {
     for (const { column, ascending } of order) {
       request = request.order(column, { ascending: ascending ?? true });
     }
+    if (!countOnly) {
+      for (const column of tieBreaker(info)) {
+        if (!order.some(o => o.column === column)) request = request.order(column, { ascending: true });
+      }
+    }
     request = countOnly ? request.limit(0) : request.range(offset, offset + limit - 1);
 
     const { data, error, count } = await request;
@@ -143,7 +164,7 @@ export class QueryReader {
     const result: QueryResult = { rows: [] };
     if (input.count || countOnly) result.count = count ?? 0;
     if (!countOnly) {
-      const fitted = fitRows((data ?? []) as unknown[], this.maxBytes);
+      const fitted = fitRows((data ?? []) as unknown[], this.maxBytes, offset);
       result.rows = fitted.rows;
       if (fitted.truncated) result.truncated = fitted.truncated;
     }
