@@ -251,9 +251,10 @@ export class EntityRepository {
     if (!row) throw new ToolError(`No ${type} with id ${id}.`);
 
     const result: Record<string, unknown> = { type, ...pick(row, FIELDS[type]), url: this.url(type, id) };
+    // Everything below needs only the row, so it runs side by side.
+    const infos = type !== 'note' ? this.infos(type, id) : undefined;
     if (type !== 'note') {
       result['mention'] = mentionLink(type, id, row.name);
-      result['infos'] = await this.infos(type, id);
     } else {
       result['mention'] = mentionLink(type, id, row.title || snippet(row.content, 40) || 'Notiz');
     }
@@ -265,25 +266,39 @@ export class EntityRepository {
     };
 
     if (type === 'person') {
-      result['location'] = await nameOf('places', row.location_id);
-      const { data: relationships } = await db.from('person_relationships')
-        .select('relationship_type, related:people!person_relationships_related_person_id_fkey(id, name)')
-        .eq('person_id', id);
+      const [infoBoxes, location, { data: relationships }, sheet] = await Promise.all([
+        infos,
+        nameOf('places', row.location_id),
+        db.from('person_relationships')
+          .select('relationship_type, related:people!person_relationships_related_person_id_fkey(id, name)')
+          .eq('person_id', id),
+        this.sheet(id),
+      ]);
+      result['infos'] = infoBoxes;
+      result['location'] = location;
       result['relationships'] = (relationships ?? []).map((rel: any) => ({ type: rel.relationship_type, ...rel.related }));
-      Object.assign(result, await this.sheet(id));
+      Object.assign(result, sheet);
     }
     if (type === 'place') {
-      result['partOf'] = await nameOf('places', row.parent_id);
-      const [{ data: children }, { data: residents }] = await Promise.all([
+      const [infoBoxes, partOf, { data: children }, { data: residents }] = await Promise.all([
+        infos,
+        nameOf('places', row.parent_id),
         db.from('places').select('id, name').eq('parent_id', id).order('name'),
         db.from('people').select('id, name').eq('location_id', id).order('name'),
       ]);
+      result['infos'] = infoBoxes;
+      result['partOf'] = partOf;
       result['contains'] = children ?? [];
       result['people'] = residents ?? [];
     }
     if (type === 'quest') {
-      result['partOf'] = await nameOf('quests', row.parent_id);
-      const { data: subquests } = await db.from('quests').select('id, name, completed').eq('parent_id', id).order('name');
+      const [infoBoxes, partOf, { data: subquests }] = await Promise.all([
+        infos,
+        nameOf('quests', row.parent_id),
+        db.from('quests').select('id, name, completed').eq('parent_id', id).order('name'),
+      ]);
+      result['infos'] = infoBoxes;
+      result['partOf'] = partOf;
       result['subquests'] = subquests ?? [];
     }
     return result;

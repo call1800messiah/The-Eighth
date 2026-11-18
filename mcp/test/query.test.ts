@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { ToolError } from '../src/tools/entities.js';
-import { QueryReader, fitRows, inList } from '../src/tools/query.js';
+import { MAX_RESULT_BYTES, QueryReader, fitRows, inList } from '../src/tools/query.js';
 import { SchemaCatalog } from '../src/tools/schema.js';
 
 describe('inList', () => {
@@ -83,17 +83,23 @@ describe('fitRows offset', () => {
 const col = (name: string, type = 'text') =>
   ({ name, type, nullable: true, references: null, values: null, occurring: null, note: null });
 
-/** A client whose PostgREST builder records every call; rpc answers with the given schemas in turn. */
-function recordingClient(schemas: unknown[][]) {
+/**
+ * A client whose PostgREST builder records every call. assistant_schema answers
+ * with the given schemas in turn, assistant_column_values with the given values.
+ */
+function recordingClient(schemas: unknown[][], values: Record<string, unknown>[] = [{}]) {
   const calls: unknown[][] = [];
   let rpcs = 0;
+  let valueCalls = 0;
   const builder: any = {};
   for (const method of ['select', 'filter', 'order', 'range', 'limit']) {
     builder[method] = (...args: unknown[]) => { calls.push([method, ...args]); return builder; };
   }
   builder.then = (resolve: (value: unknown) => void) => resolve({ data: [], error: null, count: 0 });
   const client = {
-    rpc: async () => ({ data: schemas[Math.min(rpcs++, schemas.length - 1)], error: null }),
+    rpc: async (fn: string) => fn === 'assistant_column_values'
+      ? { data: values[Math.min(valueCalls++, values.length - 1)], error: null }
+      : { data: schemas[Math.min(rpcs++, schemas.length - 1)], error: null },
     from: (table: string) => { calls.push(['from', table]); return builder; },
   } as unknown as SupabaseClient;
   return { calls, rpcCount: () => rpcs, db: async () => client };
@@ -157,12 +163,54 @@ describe('QueryReader schema freshness', () => {
     assert.equal(rpcCount(), 3);
   });
 
-  it('describe reads current values every time', async () => {
-    const tagged = (n: number) => [{ ...PEOPLE, columns: [...PEOPLE.columns, { ...col('race'), occurring: [{ value: 'Elf', count: n }] }] }];
-    const { db } = recordingClient([tagged(1), tagged(2)]);
+  it('describe reads current values every time, the schema once', async () => {
+    const withRace = { ...PEOPLE, columns: [...PEOPLE.columns, col('race')] };
+    const { db, rpcCount } = recordingClient([[withRace]], [
+      { race: [{ value: 'Elf', count: 1 }] },
+      { race: [{ value: 'Elf', count: 2 }] },
+    ]);
     const reader = new QueryReader(db, new SchemaCatalog(db));
     await reader.describe('people');
     const [people] = await reader.describe('people') as any[];
-    assert.equal(people.columns[2].occurring[0].count, 2);
+    assert.deepEqual(people.columns.map((c: any) => c.occurring), [null, null, [{ value: 'Elf', count: 2 }]]);
+    assert.equal(rpcCount(), 1);
   });
+});
+
+describe('fitRows bytes', () => {
+  it('counts UTF-8 bytes, not characters', () => {
+    // 40 characters of ä are 80 bytes; with quotes and braces one row is about 90.
+    const rows = [{ t: 'ä'.repeat(40) }, { t: 'ä'.repeat(40) }];
+    const result = fitRows(rows, 120);
+    assert.equal(result.rows.length, 1);
+    assert.ok(Buffer.byteLength(JSON.stringify(result.rows)) <= 120);
+    assert.ok(MAX_RESULT_BYTES > 0);
+  });
+});
+
+describe('QueryReader mcp_ names that are not tables', () => {
+  for (const input of [
+    { table: 'mentions', select: 'mcp_note:source_id' },
+    { table: 'people', select: 'name, mcp_x:location_id' },
+    { table: 'people', order: [{ column: 'mcp_rank' }] },
+  ]) {
+    it(`lets ${JSON.stringify(input)} through`, async () => {
+      const { db, calls } = recordingClient([[PEOPLE, { name: 'mentions', note: null, columns: [col('id', 'uuid')] }]]);
+      await new QueryReader(db, new SchemaCatalog(db)).query(input);
+      assert.ok(calls.some(c => c[0] === 'from'));
+    });
+  }
+
+  for (const input of [
+    { table: 'users', select: 'id, mcp_grants!inner(id)' },
+    { table: 'users', select: 'id, x:people!mcp_grants(id)' },
+    { table: 'users', select: 'id, ...mcp_grants(id)' },
+    { table: 'people', order: [{ column: 'mcp_grants(name)' }] },
+  ]) {
+    it(`still refuses ${JSON.stringify(input)}`, async () => {
+      const untouchable = async (): Promise<SupabaseClient> => { throw new Error('database was called'); };
+      await assert.rejects(new QueryReader(untouchable, new SchemaCatalog(untouchable)).query(input),
+        (e: unknown) => e instanceof ToolError && /connection tables/.test(e.message));
+    });
+  }
 });

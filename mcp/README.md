@@ -8,7 +8,7 @@ Lets Claude (claude.ai or Claude Code) read everything in the campaign during a 
 |---|---|
 | `search_entities` | Find people, places, quests and notes by name (notes also by content). Returns mention links. |
 | `get_entity` | Everything about one entity: fields, text sections, related entities; for a person also tags, attributes and every advantage, feat, skill, spell, … with its rule name. |
-| `describe` | The tables Claude can read, with columns, foreign keys, enum values and what they mean (`assistant_schema()`, migration 015, from the tables' `COMMENT`s), plus the values in use, with counts, of a few free-text columns (tags, note categories, race, culture, profession, inventory carrier). |
+| `describe` | The tables Claude can read, with columns, foreign keys, enum values and what they mean (`assistant_schema()`, migrations 015 and 016, from the tables' `COMMENT`s); for one table also the values in use (`assistant_column_values()`), with counts, of a few free-text columns (tags, note categories, race, culture, profession, inventory carrier). |
 | `query` | Read any of those tables: PostgREST select with embedding, filters, order, paging, counts. At most 500 rows / ~100 KB per call. |
 | `create_person`, `create_place`, `create_quest` | Create a draft. Refuses a name that already exists unless `allow_duplicate` is set. |
 | `link_entities` | Location of a person, parent place/quest, family. The first entity must be Claude's own draft. |

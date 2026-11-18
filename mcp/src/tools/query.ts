@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { ToolError } from './entities.js';
-import { type SchemaCatalog, type TableInfo, isHiddenIdentifier } from './schema.js';
+import { type SchemaCatalog, type TableInfo, isHiddenIdentifier, reachesHiddenTable } from './schema.js';
 
 /**
  * Read-only queries over every table Claude may read, as PostgREST requests
@@ -47,12 +47,12 @@ export function inList(values: (string | number)[]): string {
   return `(${quoted.join(',')})`;
 }
 
-/** The longest prefix of rows whose JSON stays within maxBytes. */
+/** The longest prefix of rows whose JSON stays within maxBytes (UTF-8). */
 export function fitRows(rows: unknown[], maxBytes: number, offset = 0): { rows: unknown[]; truncated?: string } {
   let size = 2; // []
   let fitting = 0;
   for (const row of rows) {
-    const next = size + JSON.stringify(row).length + (fitting > 0 ? 1 : 0);
+    const next = size + Buffer.byteLength(JSON.stringify(row)) + (fitting > 0 ? 1 : 0);
     if (next > maxBytes) break;
     size = next;
     fitting++;
@@ -110,23 +110,23 @@ export class QueryReader {
     if (table === undefined) {
       return (await this.catalog.refresh()).map(({ name, note, columns }) => ({ name, note, columns: columns.map(c => c.name) }));
     }
-    const found = (await this.catalog.refresh()).find(t => t.name === table);
+    const found = await this.catalog.find(table);
     if (!found) throw new ToolError(`Unknown table "${table}". Call describe without a table to list them.`);
-    return [found];
+    const values = await this.catalog.values(table);
+    return [{ ...found, columns: found.columns.map(c => ({ ...c, occurring: values[c.name] ?? null })) }];
   }
 
   async query(input: QueryInput): Promise<QueryResult> {
     const filters = input.filters ?? [];
     const order = input.order ?? [];
     const named = [input.table, input.select ?? '', ...filters.map(f => f.column), ...order.map(o => o.column)];
-    if (named.some(isHiddenIdentifier)) {
+    if (isHiddenIdentifier(input.table) || named.slice(1).some(reachesHiddenTable)) {
       throw new ToolError("Not readable: the MCP server's own connection tables (mcp_*).");
     }
     if (named.some(name => /["\\]/.test(name))) {
       throw new ToolError('Write table and column names without quotes or backslashes.');
     }
-    const info = (await this.catalog.table(input.table))
-      ?? (await this.catalog.refresh()).find(t => t.name === input.table);
+    const info = await this.catalog.find(input.table);
     if (!info) {
       throw new ToolError(`Unknown table "${input.table}". Call describe to list the tables you can read.`);
     }
