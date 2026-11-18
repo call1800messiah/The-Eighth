@@ -13,6 +13,8 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 
 import { EntityRepository, ToolError } from '../src/tools/entities.js';
 import { createMcpServer } from '../src/tools/register.js';
+import { QueryReader } from '../src/tools/query.js';
+import { SchemaCatalog } from '../src/tools/schema.js';
 
 const URL_ = process.env['TEST_POSTGREST_URL'];
 const SECRET = process.env['TEST_JWT_SECRET'];
@@ -67,7 +69,7 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     mainQuest = await insert('quests', { name: 'Der Schatz im Silbersee', type: 'main', owner_id: GM });
     await insert('notes', { title: 'Geheimplot', content: 'Alrik ist eigentlich ein Spion.', owner_id: GM });
 
-    const server = createMcpServer(repo);
+    const server = createMcpServer(repo, new QueryReader(async () => claude, new SchemaCatalog(async () => claude)));
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
     mcp = new Client({ name: 'test', version: '1' });
     await Promise.all([server.connect(serverSide), mcp.connect(clientSide)]);
@@ -186,5 +188,135 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     assert.deepEqual(data, [{ relationship_type: 'siblings' }], 'reverse family link added');
 
     await assert.rejects(repo.updateDraft('person', draft, { title: 'x' }), /published/);
+  });
+});
+
+describe('query and describe against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not set (run test/integration.sh)' }, () => {
+  const gm = () => as(GM);
+  const claude = as(CLAUDE);
+  const repo = new EntityRepository(async () => claude, APP);
+  const reader = new QueryReader(async () => claude, new SchemaCatalog(async () => claude));
+  let zaubrina: string;
+
+  before(async () => {
+    const insert = async (table: string, row: object) => {
+      const { data, error } = await gm().from(table).insert(row).select('id').single();
+      assert.equal(error, null, error?.message);
+      return (data as { id: string }).id;
+    };
+    zaubrina = await insert('people', { name: 'Zaubrina', owner_id: GM });
+    const magnus = await insert('people', { name: 'Magnus, der Adlige', owner_id: GM });
+    await insert('people', { name: 'Bauer Tobi', owner_id: GM });
+    await insert('person_tags', { person_id: zaubrina, tag: 'magiebegabt' });
+    await insert('person_tags', { person_id: magnus, tag: 'magiebegabt' });
+    await insert('person_tags', { person_id: magnus, tag: 'adlig' });
+    const zauberer = await insert('rules', { category: 'advantage', name: 'Zauberer', is_custom: true });
+    await insert('person_advantages', { person_id: zaubrina, rule_id: zauberer, level: 'I' });
+    await repo.createDraft('person', { name: 'Entwurf Hexe' });
+    await insert('person_tags', { person_id: zaubrina, tag: 'händlerin' });
+    await insert('person_attributes', { person_id: zaubrina, type: 'lep', current: 30, max: 32 });
+    const handel = await insert('rules', { category: 'skill', name: 'Handel', is_custom: true });
+    await insert('person_skills', { person_id: zaubrina, rule_id: handel, value: 12 });
+  });
+
+  it('get_entity returns the full person sheet', async () => {
+    const person = await repo.get('person', zaubrina);
+    assert.deepEqual(person['tags'], ['händlerin', 'magiebegabt']);
+    assert.deepEqual(person['attributes'], { lep: { current: 30, max: 32 } });
+    assert.deepEqual(person['advantages'], [{ name: 'Zauberer', level: 'I' }]);
+    assert.deepEqual(person['skills'], [{ name: 'Handel', value: 12 }]);
+    assert.deepEqual(person['spells'], []);
+    assert.deepEqual(person['disadvantages'], []);
+  });
+
+  it('counts people by tag', async () => {
+    const result = await reader.query({
+      table: 'people', select: 'id, person_tags!inner(tag)',
+      filters: [{ column: 'person_tags.tag', op: 'eq', value: 'magiebegabt' }],
+      count: true, limit: 0,
+    });
+    assert.equal(result.count, 2);
+    assert.deepEqual(result.rows, []);
+  });
+
+  it('embeds rule names', async () => {
+    const result = await reader.query({ table: 'person_advantages', select: 'level, people(name), rules(name)' });
+    assert.deepEqual(result.rows, [{ level: 'I', people: { name: 'Zaubrina' }, rules: { name: 'Zauberer' } }]);
+  });
+
+  it('filters with in, also on values with commas', async () => {
+    const result = await reader.query({
+      table: 'people', select: 'name',
+      filters: [{ column: 'name', op: 'in', value: ['Zaubrina', 'Magnus, der Adlige'] }],
+      order: [{ column: 'name' }],
+    });
+    assert.deepEqual(result.rows, [{ name: 'Magnus, der Adlige' }, { name: 'Zaubrina' }]);
+  });
+
+  it('sees drafts', async () => {
+    const result = await reader.query({ table: 'people', select: 'name', filters: [{ column: 'status', op: 'eq', value: 'draft' }] });
+    assert.ok((result.rows as { name: string }[]).some(row => row.name === 'Entwurf Hexe'));
+  });
+
+  it('pages with limit and offset', async () => {
+    const first = await reader.query({ table: 'people', select: 'name', order: [{ column: 'name' }], limit: 1, count: true });
+    const second = await reader.query({ table: 'people', select: 'name', order: [{ column: 'name' }], limit: 1, offset: 1 });
+    assert.equal(first.rows.length, 1);
+    assert.ok((first.count ?? 0) >= 4);
+    assert.notDeepEqual(first.rows, second.rows);
+  });
+
+  it('reports an unknown column as a tool error', async () => {
+    await assert.rejects(reader.query({ table: 'people', select: 'nope' }),
+      (e: unknown) => e instanceof ToolError && /nope/.test(e.message) && /describe/.test(e.message));
+  });
+
+  it('reports an unknown column in a count-only query too', async () => {
+    await assert.rejects(reader.query({ table: 'people', select: 'nope', count: true, limit: 0 }),
+      (e: unknown) => e instanceof ToolError && /nope/.test(e.message) && /describe/.test(e.message));
+  });
+
+  it('points to describe for an unknown table', async () => {
+    await assert.rejects(reader.query({ table: 'dragons' }), (e: unknown) => e instanceof ToolError && /describe/.test(e.message));
+  });
+
+  it('rejects is with anything but null, true or false', async () => {
+    await assert.rejects(reader.query({ table: 'people', filters: [{ column: 'title', op: 'is', value: 'x' }] }), ToolError);
+  });
+
+  it('describes the readable tables', async () => {
+    const tables = await reader.describe();
+    const people = tables.find(t => t.name === 'people')!;
+    assert.ok(people.note);
+    assert.ok(people.columns.includes('name' as never), 'the overview lists column names only');
+    assert.ok(!tables.some(t => t.name.startsWith('mcp_')));
+    const [tags] = await reader.describe('person_tags');
+    assert.equal(tags!.columns.find(c => c.name === 'person_id')?.references, 'people.id');
+    const occurring = tags!.columns.find(c => c.name === 'tag')?.occurring;
+    assert.deepEqual(occurring?.find(o => o.value === 'magiebegabt'), { value: 'magiebegabt', count: 2 },
+      'the tags in use come with their counts');
+    await assert.rejects(reader.describe('dragons'), ToolError);
+  });
+
+  it('offers query and describe as MCP tools', async () => {
+    const server = createMcpServer(repo, reader);
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '1' });
+    await Promise.all([server.connect(serverSide), client.connect(clientSide)]);
+
+    const names = (await client.listTools()).tools.map(tool => tool.name);
+    assert.ok(names.includes('query') && names.includes('describe'));
+
+    const found = await client.callTool({ name: 'query', arguments: {
+      table: 'people', select: 'name', filters: [{ column: 'name', op: 'eq', value: 'Zaubrina' }], count: true,
+    } });
+    assert.deepEqual(parse(found), { count: 1, rows: [{ name: 'Zaubrina' }] });
+    assert.equal((found.content as any)[0].text, JSON.stringify(parse(found)), 'compact, as measured by the size cap');
+
+    const refused = await client.callTool({ name: 'query', arguments: { table: 'mcp_tokens' } });
+    assert.equal(refused.isError, true);
+
+    const described = parse(await client.callTool({ name: 'describe', arguments: { table: 'person_tags' } }));
+    assert.equal(described[0].name, 'person_tags');
   });
 });

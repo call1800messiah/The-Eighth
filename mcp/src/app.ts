@@ -12,12 +12,14 @@ import type { OAuthMetadata, OAuthProtectedResourceMetadata } from '@modelcontex
 import type { TheEighthOAuthProvider } from './oauth/provider.js';
 import { createMcpServer } from './tools/register.js';
 import type { EntityRepository } from './tools/entities.js';
+import type { QueryReader } from './tools/query.js';
 
 export interface AppOptions {
   /** Public origin, e.g. https://campaign.example.com */
   publicUrl: URL;
   provider: TheEighthOAuthProvider;
   repo: EntityRepository;
+  reader: QueryReader;
   /** Off in tests that make many requests. */
   rateLimits?: boolean;
   /** Resolves once the assistant user is signed in; rejects with the reason it is not. */
@@ -32,7 +34,7 @@ export interface AppOptions {
  *   /.well-known/oauth-protected-resource[/mcp]  RFC 9728
  *   /.well-known/oauth-authorization-server      RFC 8414 (issuer is the origin)
  */
-export function createApp({ publicUrl, provider, repo, rateLimits = true, ready }: AppOptions): express.Express {
+export function createApp({ publicUrl, provider, repo, reader, rateLimits = true, ready }: AppOptions): express.Express {
   const app = express();
   app.disable('x-powered-by');
   // Requests arrive through the app's nginx on the Docker network, which
@@ -110,7 +112,7 @@ export function createApp({ publicUrl, provider, repo, rateLimits = true, ready 
   // Stateless: a fresh server and transport per request. The tools keep no
   // per-conversation state, so there is nothing to lose between requests.
   app.post('/mcp', bearer, express.json({ limit: '1mb' }), async (req, res) => {
-    const server = createMcpServer(repo);
+    const server = createMcpServer(repo, reader);
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     res.on('close', () => {
       transport.close().catch(() => {});

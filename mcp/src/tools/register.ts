@@ -12,14 +12,19 @@ import {
   RELATIONS,
   ToolError,
 } from './entities.js';
+import { FILTER_OPS, MAX_LIMIT, type QueryReader } from './query.js';
 
 const MARKDOWN_NOTE =
   'Markdown. Refer to existing people, places, quests and notes with mention links exactly as search_entities returns them, ' +
   'e.g. [Alrik](mention:person/<uuid>); the app turns them into links and backlinks.';
 
-export const INSTRUCTIONS = `This server is a tabletop RPG campaign ("TheEighth"). It lets you look up the campaign's people, places, quests and notes, and add new people, places and quests as drafts.
+export const INSTRUCTIONS = `This server is a tabletop RPG campaign ("TheEighth"). It lets you read everything in the campaign, and add new people, places and quests as drafts.
 
-How to work with it:
+Reading:
+- To look up one person, place, quest or note, use search_entities and get_entity. They also give you mention links.
+- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. Describing a table also tells you which tags, note categories, races, cultures and professions are in use, so you can filter on the exact spelling. For "how many", ask query for count: true and limit: 0 rather than fetching every row. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
+
+Writing:
 - Always call search_entities before creating anything, and reuse what exists instead of creating a duplicate. Mention existing entities in your text with the mention link from the search result.
 - Everything you create is a draft. Only GMs and you can see drafts until a GM approves them in the app's review queue. Tell the user that, and give them the review link from the tool result.
 - You can change only your own drafts (update_draft, link_entities). Published entities are read-only for you; if one should change, say so to the user.
@@ -63,6 +68,11 @@ function text(value: unknown): CallToolResult {
   return { content: [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) }] };
 }
 
+/** Compact JSON: query results are measured that way against MAX_RESULT_BYTES. */
+function compact(value: unknown): CallToolResult {
+  return { content: [{ type: 'text', text: JSON.stringify(value) }] };
+}
+
 function error(message: string): CallToolResult {
   return { content: [{ type: 'text', text: message }], isError: true };
 }
@@ -88,7 +98,7 @@ function texts(fields: Record<string, unknown>, infos: Infos | undefined): strin
 }
 
 
-export function createMcpServer(repo: EntityRepository): McpServer {
+export function createMcpServer(repo: EntityRepository, reader: QueryReader): McpServer {
   const server = new McpServer(
     { name: 'the-eighth', version: '0.1.0' },
     { instructions: INSTRUCTIONS },
@@ -129,13 +139,52 @@ export function createMcpServer(repo: EntityRepository): McpServer {
 
   server.registerTool('get_entity', {
     title: 'Read an entity',
-    description: 'Everything about one person, place, quest or note: fields, text sections (Markdown), and links to related entities.',
+    description: 'Everything about one person, place, quest or note: fields, text sections (Markdown), and links to related entities. ' +
+      'For a person also tags, attributes, advantages, disadvantages, feats, skills, spells, cantrips and liturgies.',
     inputSchema: {
       type: z.enum(ENTITY_TYPES),
       id,
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
   }, ({ type, id: entityId }) => run(async () => text(await repo.get(type, entityId))));
+
+  server.registerTool('describe', {
+    title: 'Describe the campaign database',
+    description: 'Lists the tables you can read with query: what each one holds and its column names. ' +
+      'Give a table name to see the columns of that table in detail (type, nullable, foreign key target, enum values, notes), ' +
+      'and for free-text columns such as person_tags.tag or notes.category the values in use with their counts.',
+    inputSchema: {
+      table: z.string().min(1).max(100).optional(),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, ({ table }) => run(async () => compact(await reader.describe(table))));
+
+  server.registerTool('query', {
+    title: 'Query the campaign database',
+    description: 'Reads rows from any table describe lists, through the same access rules as the app (drafts included). ' +
+      'select uses PostgREST syntax: columns, and related tables by foreign key, e.g. "name, location:places(name)" or "value, rules(name, category)". ' +
+      'To filter rows by a related table, embed it with !inner and filter on the dotted column, e.g. select "id, name, person_tags!inner(tag)" ' +
+      'with filter { column: "person_tags.tag", op: "eq", value: "magiebegabt" }. like/ilike use % as wildcard. ' +
+      `For "how many", set count: true and limit: 0. At most ${MAX_LIMIT} rows per call; page with offset.`,
+    inputSchema: {
+      table: z.string().min(1).max(100).describe('A table from describe.'),
+      select: z.string().max(2000).optional().describe('Columns and embedded tables. Default: *.'),
+      filters: z.array(z.object({
+        column: z.string().min(1).max(200).describe('Column, or table.column of an embedded table.'),
+        op: z.enum(FILTER_OPS),
+        value: z.union([z.string().max(2000), z.number(), z.boolean(), z.null(), z.array(z.union([z.string().max(2000), z.number()])).max(500)])
+          .describe('A list for "in"; null, true or false for "is".'),
+      })).max(20).optional(),
+      order: z.array(z.object({
+        column: z.string().min(1).max(200),
+        ascending: z.boolean().optional(),
+      })).max(5).optional(),
+      limit: z.number().int().min(0).max(MAX_LIMIT).optional().describe('Default 50. 0 returns only the count.'),
+      offset: z.number().int().min(0).optional(),
+      count: z.boolean().optional().describe('Also return the total number of matching rows.'),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, input => run(async () => compact(await reader.query(input))));
 
   server.registerTool('create_person', {
     title: 'Create a person (draft)',
