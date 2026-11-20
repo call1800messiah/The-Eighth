@@ -106,6 +106,26 @@ describe('EditProjectComponent', () => {
       expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain('nicht gespeichert');
     });
 
+    it('saves once while a save is running and disables the button meanwhile', async () => {
+      create(existing);
+      let finish: (value: { success: boolean }) => void;
+      (projectService.store as jasmine.Spy).and.returnValue(new Promise((resolve) => finish = resolve));
+
+      const first = component.save();
+      const second = component.save();
+      fixture.componentRef.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBeTrue();
+
+      finish({ success: false });
+      await Promise.all([first, second]);
+      fixture.componentRef.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+
+      expect(projectService.store).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBeFalse();
+    });
+
     it('updates the project it created when a retry follows a partial failure', async () => {
       create({});
       component.projectForm.patchValue({ name: 'Neu', benefit: 'Nutzen', interval: 'Monat' });
@@ -149,6 +169,8 @@ describe('EditProjectComponent', () => {
       [`req-${requirementId}-req`, 2.5],
       [`mile-${milestoneId}-req`, null],
       [`mile-${milestoneId}-req`, 0],
+      [`mile-${milestoneId}-req`, 2147483648],
+      [`req-${requirementId}-thr`, -2147483649],
     ] as [string, string | number | null][]).forEach(([control, value]) => {
       it(`rejects ${value === '' ? 'an empty' : value} ${control.replace(/-r1|-m1/, '')} and does not save`, async () => {
         create(existing);

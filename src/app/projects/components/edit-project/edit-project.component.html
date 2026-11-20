@@ -98,7 +98,7 @@
     @if (error) {
       <p class="error" role="alert">{{ error }}</p>
     }
-    <button type="submit" class="btn" [disabled]="!projectForm.valid">
+    <button type="submit" class="btn" [disabled]="!projectForm.valid || saving">
       Speichern
     </button>
   </form>

@@ -26,6 +26,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   @Input() props: Project;
   @Output() dismissPopover = new EventEmitter<boolean>();
   error: string | null = null;
+  saving = false;
   faMinus = faMinus;
   faPlus = faPlus;
   milestones: ProjectMilestone[];
@@ -117,7 +118,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
 
   async save() {
-    if (this.projectForm.invalid) {
+    if (this.projectForm.invalid || this.saving) {
       return;
     }
     const value = this.projectForm.value;
@@ -144,7 +145,9 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       project.owner = this.userID;
     }
     this.error = null;
+    this.saving = true;
     const result = await this.projectService.store(project, this.props.id ?? this.createdId);
+    this.saving = false;
     if (result.success) {
       this.dismissPopover.emit(true);
     } else {
@@ -156,8 +159,8 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   }
 
 
-  // The database columns behind these are integers, and all but a
-  // milestone's description are NOT NULL.
+  // The point columns are int4 and NOT NULL. A milestone's description may be
+  // NULL in the database, but the form has always asked for one.
   private addMilestoneControls(milestone: ProjectMilestone) {
     this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description, Validators.required));
     this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints, points(1)));
@@ -174,11 +177,10 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
 
 
-/** A required whole number, optionally with a lower bound. */
-function points(min?: number): ValidatorFn[] {
-  const validators = [Validators.required, Validators.pattern(/^-?\d+$/)];
-  if (min !== undefined) {
-    validators.push(Validators.min(min));
-  }
-  return validators;
+const INT4_MIN = -2147483648;
+const INT4_MAX = 2147483647;
+
+/** A required whole number that fits an int4 column, optionally with a higher lower bound. */
+function points(min = INT4_MIN): ValidatorFn[] {
+  return [Validators.required, Validators.pattern(/^-?\d+$/), Validators.min(min), Validators.max(INT4_MAX)];
 }

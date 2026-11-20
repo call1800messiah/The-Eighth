@@ -95,11 +95,17 @@ export class DataService {
     if (id) {
       // Update existing
       delete storeItem.id;
-      const { error } = await this.api.from(collection as any)
+      // RLS turns a forbidden update into one that changes no row, without an
+      // error; asking for the row back is the only way to tell.
+      const { data, error } = await this.api.from(collection as any)
         .update(storeItem)
-        .eq('id', id);
+        .eq('id', id)
+        .select('id');
       if (error) {
         console.error(error);
+        return { success: false };
+      }
+      if (!data?.length) {
         return { success: false };
       }
       return { success: true, id };

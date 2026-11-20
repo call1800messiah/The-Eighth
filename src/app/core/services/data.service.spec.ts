@@ -119,8 +119,20 @@ describe('DataService', () => {
     });
 
     it('should return success:true and id on successful update', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [{ id: 'id-1' }] }));
       const result = await service.store({ name: 'Test' }, 'notes', 'id-1');
       expect(result).toEqual({ success: true, id: 'id-1' });
+    });
+
+    it('should ask for the updated row back', async () => {
+      await service.store({ name: 'Test' }, 'notes', 'id-1');
+      expect(mockApi._queryBuilder.select).toHaveBeenCalledWith('id');
+    });
+
+    it('should fail an update that RLS let change no row', async () => {
+      mockApi.from.and.returnValue(createMockQueryBuilder({ data: [] }));
+      const result = await service.store({ name: 'Test' }, 'notes', 'id-1');
+      expect(result).toEqual({ success: false });
     });
 
     it('should return success:false on error', async () => {
