@@ -218,8 +218,12 @@ export class CombatMapService {
   private transform(row: any): CombatMap {
     const hasImage = !!row.image && row.image_width > 0 && row.image_height > 0;
     // Rendered at its own width: converted to WebP, never resized, so the
-    // image still matches the map's coordinate space.
-    const imageUrl = hasImage ? this.storage.getImageURL(row.image, row.image_width) : null;
+    // image still matches the map's coordinate space. A map too large for the
+    // renderer would fail on every load, so it is served as stored.
+    const renderable = hasImage && StorageService.renderScale(row.image_width, row.image_height) === 1;
+    const imageUrl = !hasImage ? null
+      : renderable ? this.storage.getImageURL(row.image, row.image_width)
+      : this.storage.getPublicURL(row.image);
     return {
       id: row.id,
       imageUrl,

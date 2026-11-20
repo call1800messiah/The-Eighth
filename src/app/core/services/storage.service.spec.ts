@@ -104,6 +104,22 @@ describe('StorageService', () => {
     });
   });
 
+  describe('fallBackToOriginal()', () => {
+    it('swaps a render URL for the stored original', () => {
+      const img = new Image();
+      img.src = 'https://host/storage/v1/render/image/public/tde5/maps/m1/a.png?width=2000';
+      StorageService.fallBackToOriginal(img);
+      expect(img.src).toBe('https://host/storage/v1/object/public/tde5/maps/m1/a.png');
+    });
+
+    it('leaves the original alone, so a missing one does not loop', () => {
+      const img = new Image();
+      img.src = 'https://host/storage/v1/object/public/tde5/maps/m1/a.png';
+      StorageService.fallBackToOriginal(img);
+      expect(img.src).toBe('https://host/storage/v1/object/public/tde5/maps/m1/a.png');
+    });
+  });
+
   describe('originalURL()', () => {
     it('turns a render URL into the URL of the stored object', () => {
       expect(StorageService.originalURL(

@@ -20,10 +20,6 @@ export class ImageFallbackDirective {
 
   @HostListener('error')
   onError(): void {
-    const img = this.element.nativeElement;
-    const original = StorageService.originalURL(img.src);
-    if (original !== img.src) {
-      img.src = original;
-    }
+    StorageService.fallBackToOriginal(this.element.nativeElement);
   }
 }

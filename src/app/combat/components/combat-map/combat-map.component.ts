@@ -498,15 +498,7 @@ export class CombatMapComponent implements OnInit, OnChanges, OnDestroy {
         this.mapLook = '';
         this.render();
       };
-      // A render URL that fails (imgproxy down, source too large) falls back
-      // to the stored original, once
-      element.onerror = () => {
-        const original = StorageService.originalURL(element.src);
-        if (original !== element.src) {
-          element.onerror = null;
-          element.src = original;
-        }
-      };
+      element.onerror = () => StorageService.fallBackToOriginal(element);
       element.src = url;
     }
     return this.images.get(url) ?? null;

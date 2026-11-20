@@ -135,6 +135,21 @@ export class StorageService {
   }
 
 
+  /**
+   * For an image whose render failed (imgproxy down, source too large): load
+   * the stored original instead. Only a render URL is swapped, so a missing
+   * original can't loop, and the same element can fall back again once it is
+   * given another render URL. Used by `ImageFallbackDirective` and the
+   * combat map's Konva images.
+   */
+  static fallBackToOriginal(img: HTMLImageElement): void {
+    const original = StorageService.originalURL(img.src);
+    if (original !== img.src) {
+      img.src = original;
+    }
+  }
+
+
   /** The stored file behind a render URL from `getImageURL()`; any other URL unchanged. */
   static originalURL(url: string): string {
     const match = url.match(/^(.*\/storage\/v1\/)render\/image\/(public\/[^?#]+)/);
