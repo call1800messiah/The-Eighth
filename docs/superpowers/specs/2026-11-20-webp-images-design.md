@@ -86,16 +86,23 @@ format conversion only, no resize.
 (the person page). Scenes show `imageThumb` in the grid and link to `image`.
 
 **Fallback.** An `<img>` whose rendered URL fails (imgproxy down, source over
-16.8 MP) swaps once to the original public URL. This needs the original URL
+16.8 MP) swaps to the original public URL, once per image it is given. This needs the original URL
 too, so models carry `imageOriginal` (or the component derives it); the
 builder picks the lighter of the two.
 
 **Cache.** The app's nginx gets a `location /storage/v1/render/` with
-`proxy_cache` (on-disk zone in the container, ~1 GB cap, 30 days valid for
-200s), cache key including whether `Accept` contains `image/webp`, and
+`proxy_cache` (on-disk zone in the container, ~1 GB cap, 10 minutes valid
+for 200s, so a removed image stops being served soon after), a per-IP rate
+limit, a cache key of the path, the transform options and whether `Accept`
+contains `image/webp`, and
 `Vary: Accept` on the response. It must `include` the security headers file
 again if it adds headers (see CLAUDE.md). The cache may live in the
 container's filesystem: losing it on redeploy only costs a re-render.
+
+**Scenes.** Stored as uploaded, so a phone photo can be over the render
+limit. `StorageService.fitForRendering()` scales anything over 16 MP down in
+the browser before upload, and the "open image" link points at the stored
+file, since a link has no fallback.
 
 **Local dev.** Enable `[storage.image_transformation]` in
 `supabase/config.toml`.

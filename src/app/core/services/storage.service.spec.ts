@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { IMAGE_WIDTH, StorageService } from './storage.service';
+import { IMAGE_WIDTH, MAX_RENDER_PIXELS, StorageService } from './storage.service';
 import { ApiService } from './api.service';
 import { createMockApiService, createMockQueryBuilder } from '../../testing/supabase-test-helpers';
 
@@ -46,6 +46,61 @@ describe('StorageService', () => {
 
     it('has a thumb and a large width', () => {
       expect(IMAGE_WIDTH).toEqual({ thumb: 400, large: 1600 });
+    });
+  });
+
+  describe('getPublicURL()', () => {
+    it('returns the URL of the stored file, without a transform', () => {
+      expect(service.getPublicURL('scenes/s1/scene.jpg')).toBe('https://example.com/file.jpg');
+      const bucket = mockApi.storage.from.calls.mostRecent().returnValue;
+      expect(bucket.getPublicUrl).toHaveBeenCalledWith('scenes/s1/scene.jpg');
+    });
+  });
+
+  describe('renderScale()', () => {
+    it('leaves an image within the limit at full size', () => {
+      expect(StorageService.renderScale(4000, 4000)).toBe(1);
+    });
+
+    it('scales a 48 MP photo to the limit, keeping the aspect ratio', () => {
+      const scale = StorageService.renderScale(8000, 6000);
+      expect(scale).toBeLessThan(1);
+      expect(Math.floor(8000 * scale) * Math.floor(6000 * scale)).toBeLessThanOrEqual(MAX_RENDER_PIXELS);
+      expect(Math.floor(8000 * scale) * Math.floor(6000 * scale)).toBeGreaterThan(MAX_RENDER_PIXELS * 0.99);
+    });
+  });
+
+  describe('fitForRendering()', () => {
+    function imageFile(width: number, height: number, type: string, name: string): Promise<File> {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').fillRect(0, 0, width, height);
+      return new Promise(resolve => canvas.toBlob(blob => resolve(new File([blob], name, { type })), type));
+    }
+
+    it('returns an image within the limit unchanged', async () => {
+      const file = await imageFile(40, 30, 'image/png', 'small.png');
+      expect(await service.fitForRendering(file)).toBe(file);
+    });
+
+    it('leaves GIFs and undecodable files alone', async () => {
+      const gif = new File(['GIF89a'], 'a.gif', { type: 'image/gif' });
+      const broken = new File(['nope'], 'a.jpg', { type: 'image/jpeg' });
+      expect(await service.fitForRendering(gif)).toBe(gif);
+      expect(await service.fitForRendering(broken)).toBe(broken);
+    });
+
+    it('scales a JPEG over the limit down to a JPEG within it', async () => {
+      const file = await imageFile(5000, 4000, 'image/jpeg', 'Foto.JPG');
+      const result = await service.fitForRendering(file);
+      expect(result).not.toBe(file);
+      expect(result.type).toBe('image/jpeg');
+      expect(result.name).toBe('Foto.jpg');
+      const bitmap = await createImageBitmap(result);
+      expect(bitmap.width * bitmap.height).toBeLessThanOrEqual(MAX_RENDER_PIXELS);
+      expect(bitmap.width / bitmap.height).toBeCloseTo(5000 / 4000, 2);
+      bitmap.close();
     });
   });
 

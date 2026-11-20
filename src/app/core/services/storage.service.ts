@@ -14,6 +14,19 @@ import { environment } from '../../../environments/environment';
  */
 export const IMAGE_WIDTH = { thumb: 400, large: 1600 } as const;
 
+/**
+ * Largest source, in pixels, that the image renderer accepts, with some
+ * headroom: imgproxy refuses anything over IMGPROXY_MAX_SRC_RESOLUTION
+ * (16.8 MP, deploy/supabase/docker-compose.yml).
+ */
+export const MAX_RENDER_PIXELS = 16_000_000;
+
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -45,8 +58,14 @@ export class StorageService {
 
 
   getDownloadURL(fileName: string): Observable<string> {
-    const { data } = this.api.storage.from(this.bucket).getPublicUrl(fileName);
-    return of(data.publicUrl);
+    return of(this.getPublicURL(fileName));
+  }
+
+
+  /** URL of the stored file itself, not rendered. */
+  getPublicURL(path: string): string {
+    const { data } = this.api.storage.from(this.bucket).getPublicUrl(path);
+    return data.publicUrl;
   }
 
 
@@ -61,6 +80,58 @@ export class StorageService {
       transform: { width, resize: 'contain', quality: 80 },
     });
     return data.publicUrl;
+  }
+
+
+  /**
+   * The image scaled down to at most `MAX_RENDER_PIXELS`, so it can be
+   * rendered; anything smaller comes back unchanged, bytes and all. A phone
+   * photo is often 48 MP or more. GIFs are left alone (the canvas would drop
+   * their animation), and so is anything the browser cannot decode.
+   */
+  async fitForRendering(file: File): Promise<File> {
+    if (file.type === 'image/gif') {
+      return file;
+    }
+    let bitmap: ImageBitmap;
+    try {
+      bitmap = await createImageBitmap(file);
+    } catch {
+      return file;
+    }
+
+    try {
+      const scale = StorageService.renderScale(bitmap.width, bitmap.height);
+      if (scale >= 1) {
+        return file;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.floor(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.floor(bitmap.height * scale));
+      const context = canvas.getContext('2d');
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+      // JPEG stays JPEG; anything else may have transparency, so WebP, which
+      // a browser that cannot encode it replaces with PNG.
+      const type = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/webp';
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, type, 0.9));
+      if (!blob) {
+        return file;
+      }
+      const extension = IMAGE_EXTENSIONS[blob.type] ?? 'png';
+      const base = file.name.includes('.') ? file.name.slice(0, file.name.lastIndexOf('.')) : file.name;
+      return new File([blob], `${base}.${extension}`, { type: blob.type });
+    } finally {
+      bitmap.close();
+    }
+  }
+
+
+  /** Factor that brings a `width` × `height` image within `MAX_RENDER_PIXELS`; 1 if it already is. */
+  static renderScale(width: number, height: number): number {
+    const pixels = width * height;
+    return pixels > MAX_RENDER_PIXELS ? Math.sqrt(MAX_RENDER_PIXELS / pixels) : 1;
   }
 
 

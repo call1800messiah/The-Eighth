@@ -46,6 +46,8 @@ export class SceneService {
 
 
   async create(file: File, caption: string, personIds: string[]): Promise<void> {
+    // Before the row, so a failure here leaves nothing behind
+    const image = await this.storage.fitForRendering(file);
     const { data, error } = await this.api.from('scenes' as any)
       .insert({ caption: caption.trim() || null })
       .select()
@@ -61,7 +63,7 @@ export class SceneService {
     let storedPath: string | null = null;
     try {
       await this.insertPeople(data.id, personIds);
-      storedPath = await this.storage.uploadFile(SceneService.fileName(file), file, folder);
+      storedPath = await this.storage.uploadFile(SceneService.fileName(image), image, folder);
       const { error: imageError } = await this.api.from('scenes' as any)
         .update({ image: storedPath })
         .eq('id', data.id);
@@ -154,7 +156,7 @@ export class SceneService {
   private transform(row: any): Scene {
     return {
       id: row.id,
-      image: this.storage.getImageURL(row.image, IMAGE_WIDTH.large),
+      image: this.storage.getPublicURL(row.image),
       imageThumb: this.storage.getImageURL(row.image, IMAGE_WIDTH.thumb),
       caption: row.caption ?? '',
       owner: row.owner_id,

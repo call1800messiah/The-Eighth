@@ -29,11 +29,18 @@ describe('ImageFallbackDirective', () => {
     expect(img.src).toBe('https://host/storage/v1/object/public/tde5/people/p1/a.png');
   });
 
-  it('gives up after one swap, so a missing original does not loop', () => {
+  it('does not loop when the original fails too', () => {
     img.dispatchEvent(new Event('error'));
-    img.src = 'https://host/storage/v1/render/image/public/tde5/other.png?width=400';
     img.dispatchEvent(new Event('error'));
-    expect(img.src).toBe('https://host/storage/v1/render/image/public/tde5/other.png?width=400');
+    expect(img.src).toBe('https://host/storage/v1/object/public/tde5/people/p1/a.png');
+  });
+
+  it('falls back again when the binding gives it a new image', () => {
+    img.dispatchEvent(new Event('error'));
+    fixture.componentInstance.src = 'https://host/storage/v1/render/image/public/tde5/people/p1/b.png?width=400';
+    fixture.detectChanges();
+    img.dispatchEvent(new Event('error'));
+    expect(img.src).toBe('https://host/storage/v1/object/public/tde5/people/p1/b.png');
   });
 
   it('leaves an image that is not a render URL alone', () => {

@@ -252,6 +252,10 @@ export function createMockStorageService() {
     getImageURL: jasmine.createSpy('getImageURL').and.callFake(
       (path: string, width: number) => `https://example.com/render/${path}?width=${width}`
     ),
+    getPublicURL: jasmine.createSpy('getPublicURL').and.callFake(
+      (path: string) => `https://example.com/object/${path}`
+    ),
+    fitForRendering: jasmine.createSpy('fitForRendering').and.callFake((file: File) => Promise.resolve(file)),
     uploadFile: jasmine.createSpy('uploadFile').and.returnValue(Promise.resolve()),
     delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
     listFiles: jasmine.createSpy('listFiles').and.returnValue(Promise.resolve([])),

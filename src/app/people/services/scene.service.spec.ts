@@ -80,7 +80,7 @@ describe('SceneService', () => {
 
       expect(result).toEqual([{
         id: 'scene-1',
-        image: 'https://example.com/render/scenes/scene-1/scene-abc.jpg?width=1600',
+        image: 'https://example.com/object/scenes/scene-1/scene-abc.jpg',
         imageThumb: 'https://example.com/render/scenes/scene-1/scene-abc.jpg?width=400',
         caption: '',
         owner: 'user-1',
@@ -116,6 +116,19 @@ describe('SceneService', () => {
       expect(mockApi.from.calls.argsFor(2)).toEqual(['scenes']);
       expect(imageUpdate.update).toHaveBeenCalledWith({ image: storedPath });
       expect(imageUpdate.eq).toHaveBeenCalledWith('id', 'new-scene');
+    });
+
+    it('uploads the image as scaled down for rendering, under its new type', async () => {
+      const scaled = new File(['y'], 'Mein Bild.webp', { type: 'image/webp' });
+      mockStorage.fitForRendering.and.returnValue(Promise.resolve(scaled));
+      mockApi.from.and.returnValues(
+        createMockQueryBuilder({ data: { id: 'new-scene' } }), createMockQueryBuilder(), createMockQueryBuilder(),
+      );
+
+      await service.create(file, '', ['p1']);
+
+      expect(mockStorage.fitForRendering).toHaveBeenCalledWith(file);
+      expect(mockStorage.uploadFile).toHaveBeenCalledWith('scene.webp', scaled, 'scenes/new-scene');
     });
 
     it('deletes the row again when the upload fails', async () => {
