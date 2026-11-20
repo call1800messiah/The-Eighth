@@ -4,7 +4,6 @@ import { combineLatest, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import type { Person } from '../../models';
-import type { AuthUser } from '../../../auth/models/auth-user';
 import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -23,20 +22,27 @@ export class PersonSelectorComponent implements OnDestroy, OnInit {
 
   @Output() personSelected = new EventEmitter<Person>();
   people$: Observable<Person[]>;
-  user: AuthUser;
   personForm = new UntypedFormGroup({
     selectedPersonId: new UntypedFormControl('')
   });
   private subscription = new Subscription();
 
   constructor() {
-    this.user = this.auth.user;
-    // GMs may view and edit every character's values (RLS allows it), so
-    // they can pick any of them; players only get their own.
-    this.people$ = this.peopleService.getPeople().pipe(
-      map(people => this.user.isGM
-        ? people
-        : people.filter(person => person.owner === this.user.id)),
+    // Follow user$ rather than a snapshot of auth.user: the sidebar exists
+    // from app start, and AuthService emits the session user before the users
+    // table (and with it isGM) has loaded. GMs may view and edit every
+    // character's values (RLS allows it), so they can pick any of them;
+    // players only get their own.
+    this.people$ = combineLatest([
+      this.auth.user$,
+      this.peopleService.getPeople(),
+    ]).pipe(
+      map(([user, people]) => {
+        if (!user) {
+          return [];
+        }
+        return user.isGM ? people : people.filter(person => person.owner === user.id);
+      }),
     );
   }
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { firstValueFrom, of } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, of } from 'rxjs';
 
 import { PersonSelectorComponent } from './person-selector.component';
 import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
@@ -17,13 +17,15 @@ describe('PersonSelectorComponent', () => {
 
   let component: PersonSelectorComponent;
   let fixture: ComponentFixture<PersonSelectorComponent>;
+  let user$: BehaviorSubject<any>;
 
-  async function setup(user: { id: string; isGM: boolean }) {
+  async function setup(user: { id: string; isGM?: boolean }) {
+    user$ = new BehaviorSubject<any>(user);
     await TestBed.configureTestingModule({
       declarations: [PersonSelectorComponent],
       providers: [
         ...createComponentTestProviders(),
-        { provide: AuthService, useValue: { user } },
+        { provide: AuthService, useValue: { user, user$ } },
         { provide: PeopleService, useValue: { getPeople: () => of(people) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -47,6 +49,15 @@ describe('PersonSelectorComponent', () => {
 
   it('lists every character for a GM, in the order the service gives', async () => {
     await setup({ id: 'gm-1', isGM: true });
+    const listed = await firstValueFrom(component.people$);
+    expect(listed.map(p => p.id)).toEqual(['p1', 'p2', 'p3']);
+  });
+
+  it('lists every character once the GM role arrives after the first emission', async () => {
+    // AuthService emits the session user before the users table has loaded,
+    // so isGM is missing at first, and the sidebar exists from app start.
+    await setup({ id: 'gm-1' });
+    user$.next({ id: 'gm-1', isGM: true });
     const listed = await firstValueFrom(component.people$);
     expect(listed.map(p => p.id)).toEqual(['p1', 'p2', 'p3']);
   });
