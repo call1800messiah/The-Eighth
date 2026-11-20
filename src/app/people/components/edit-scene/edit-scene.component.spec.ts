@@ -15,7 +15,7 @@ describe('EditSceneComponent', () => {
   let sceneService: jasmine.SpyObj<SceneService>;
 
   const scene: Scene = {
-    id: 'scene-1', image: 'url', caption: 'Alt', owner: 'user-1', people: ['p1', 'hidden'],
+    id: 'scene-1', image: 'url', imageThumb: 'thumb', caption: 'Alt', owner: 'user-1', people: ['p1', 'hidden'],
   };
   const image = new File(['x'], 'bild.png', { type: 'image/png' });
 

@@ -18,7 +18,7 @@
       </button>
       @if (person.banner && isOwnerOrCan('viewBanner')) {
         <div class="banner">
-          <img src="{{person.banner}}" alt="Banner">
+          <img appImageFallback [src]="person.banner" alt="Banner">
         </div>
       }
     </div>

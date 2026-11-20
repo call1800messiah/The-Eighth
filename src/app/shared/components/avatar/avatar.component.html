@@ -1,7 +1,7 @@
 <div class="wrapper" (click)="goToPerson()">
   <div class="image">
     @if (person.image) {
-      <img src="{{person.image}}" alt="{{person.name}}" />
+      <img appImageFallback [src]="priority ? person.image : person.imageThumb" [alt]="person.name" />
     }
   </div>
 

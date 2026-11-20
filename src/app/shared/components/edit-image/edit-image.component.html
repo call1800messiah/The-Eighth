@@ -21,7 +21,7 @@
 
 @if (props.imageUrl) {
   <div class="form-group image">
-    <img src="{{props.imageUrl}}" />
+    <img appImageFallback [src]="props.imageUrl" alt="" />
     <label>Altes Bild</label>
   </div>
 }

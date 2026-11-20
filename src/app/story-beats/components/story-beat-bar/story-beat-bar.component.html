@@ -15,7 +15,7 @@
             (click)="promptBeat(chip)"
           >
             @if (chip.tracker.person.image) {
-              <img class="portrait" [src]="chip.tracker.person.image" alt="" />
+              <img class="portrait" appImageFallback [src]="chip.tracker.person.imageThumb" alt="" />
             } @else {
               <span class="portrait initial">{{ chip.tracker.person.name.substring(0, 1) }}</span>
             }

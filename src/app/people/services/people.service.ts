@@ -7,7 +7,7 @@ import type { Attribute } from '../../shared';
 import type { AddableRule } from '../../rules';
 import type { Place } from '../../places/models/place';
 import { ApiService } from '../../core/services/api.service';
-import { StorageService } from '../../core/services/storage.service';
+import { IMAGE_WIDTH, StorageService } from '../../core/services/storage.service';
 import { UtilService } from '../../core/services/util.service';
 import { DataService } from '../../core/services/data.service';
 import { PlaceService } from '../../places/services/place.service';
@@ -381,14 +381,11 @@ export class PeopleService {
       person = PeopleService.resolveRules(person, row, rules);
 
       if (row.image && row.image !== '') {
-        this.storage.getDownloadURL(row.image).subscribe((url) => {
-          person.image = url;
-        });
+        person.image = this.storage.getImageURL(row.image, IMAGE_WIDTH.large);
+        person.imageThumb = this.storage.getImageURL(row.image, IMAGE_WIDTH.thumb);
       }
       if (row.banner && row.banner !== '') {
-        this.storage.getDownloadURL(row.banner).subscribe((url) => {
-          person.banner = url;
-        });
+        person.banner = this.storage.getImageURL(row.banner, IMAGE_WIDTH.thumb);
       }
       if (row.location_id) {
         person.location = {

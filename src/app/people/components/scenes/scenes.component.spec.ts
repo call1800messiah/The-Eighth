@@ -17,8 +17,8 @@ describe('ScenesComponent', () => {
   let popover: any;
   let sceneService: jasmine.SpyObj<SceneService>;
 
-  const own: Scene = { id: 's1', image: 'https://example.com/1.jpg', caption: 'Eigene', owner: 'user-1', people: ['p1'] };
-  const shared: Scene = { id: 's2', image: 'https://example.com/2.jpg', caption: '', owner: 'user-2', people: ['p1'] };
+  const own: Scene = { id: 's1', image: 'https://example.com/1.jpg', imageThumb: 'https://example.com/1-thumb.jpg', caption: 'Eigene', owner: 'user-1', people: ['p1'] };
+  const shared: Scene = { id: 's2', image: 'https://example.com/2.jpg', imageThumb: 'https://example.com/2-thumb.jpg', caption: '', owner: 'user-2', people: ['p1'] };
 
   beforeEach(async () => {
     sceneService = jasmine.createSpyObj('SceneService', ['delete']);

@@ -2,7 +2,7 @@
   @for (scene of scenes; track scene.id) {
     <figure class="scene">
       <a [href]="scene.image" target="_blank" rel="noopener">
-        <img [src]="scene.image" [alt]="scene.caption || 'Szene'" loading="lazy">
+        <img appImageFallback [src]="scene.imageThumb" [alt]="scene.caption || 'Szene'" loading="lazy">
       </a>
       @if (scene.caption) {
         <figcaption>{{scene.caption}}</figcaption>

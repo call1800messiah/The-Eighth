@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import type { Place } from '../models/place';
 import type { Info } from '../../shared/models/info';
 import { UtilService } from '../../core/services/util.service';
-import { StorageService } from '../../core/services/storage.service';
+import { IMAGE_WIDTH, StorageService } from '../../core/services/storage.service';
 import { DataService } from '../../core/services/data.service';
 import { InfoType } from '../../core/enums/info-type.enum';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
@@ -107,9 +107,7 @@ export class PlaceService {
         place.parent = { id: row.parent_id };
       }
       if (row.image && row.image !== '') {
-        this.storage.getDownloadURL(row.image).subscribe((url) => {
-          place.image = url;
-        });
+        place.image = this.storage.getImageURL(row.image, IMAGE_WIDTH.large);
       }
       return place;
     });

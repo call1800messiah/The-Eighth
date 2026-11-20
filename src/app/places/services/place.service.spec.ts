@@ -93,7 +93,7 @@ describe('PlaceService', () => {
     it('should resolve image URL when image path is set', (done) => {
       service.getPlaces().subscribe(places => {
         if (places.length === 0) return;
-        expect(mockStorage.getDownloadURL).toHaveBeenCalledWith('places/gareth.jpg');
+        expect(places[0].image).toBe('https://example.com/render/places/gareth.jpg?width=1600');
         done();
       });
 

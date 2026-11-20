@@ -339,14 +339,16 @@ describe('PeopleService', () => {
       emitPeople([basePerson({ location_id: 'loc1' })]);
     });
 
-    it('should resolve image URLs via StorageService', (done) => {
+    it('should resolve portrait and banner as rendered image URLs', (done) => {
       service.getPeople().subscribe(people => {
         if (people.length === 0) return;
-        expect(mockStorage.getDownloadURL).toHaveBeenCalledWith('images/alice.jpg');
+        expect(people[0].image).toBe('https://example.com/render/images/alice.jpg?width=1600');
+        expect(people[0].imageThumb).toBe('https://example.com/render/images/alice.jpg?width=400');
+        expect(people[0].banner).toBe('https://example.com/render/images/banner.png?width=400');
         done();
       });
 
-      emitPeople([basePerson({ image: 'images/alice.jpg' })]);
+      emitPeople([basePerson({ image: 'images/alice.jpg', banner: 'images/banner.png' })]);
     });
 
     it('should sort people by name', (done) => {

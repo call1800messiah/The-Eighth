@@ -52,7 +52,7 @@ describe('PersonComponent', () => {
 
   it('shows the Szenen tab when there are scenes', async () => {
     sceneService.getScenesForPerson.and.returnValue(of([
-      { id: 's1', image: 'url', caption: '', owner: 'user-1', people: ['p1'] },
+      { id: 's1', image: 'url', imageThumb: 'thumb', caption: '', owner: 'user-1', people: ['p1'] },
     ]));
     component.ngOnDestroy();
     component.ngOnInit();

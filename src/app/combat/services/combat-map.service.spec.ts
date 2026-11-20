@@ -35,7 +35,8 @@ describe('CombatMapService', () => {
       }),
     };
     storage = {
-      getDownloadURL: (path: string) => of(`https://example.com/${path}`),
+      getImageURL: (path: string, width: number) => `https://example.com/render/${path}?width=${width}`,
+      getPublicURL: (path: string) => `https://example.com/object/${path}`,
       uploadFile: jasmine.createSpy('uploadFile').and.returnValue(Promise.resolve('maps/m1/neu-b.png')),
       delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
     };
@@ -56,7 +57,8 @@ describe('CombatMapService', () => {
     const map = await firstValueFrom(service.getMap());
     expect(map).toEqual({
       id: 'm1',
-      imageUrl: 'https://example.com/maps/m1/karte-x.png',
+      // Rendered at its own width: WebP, but the same size
+      imageUrl: 'https://example.com/render/maps/m1/karte-x.png?width=2000',
       imagePath: 'maps/m1/karte-x.png',
       size: { width: 2000, height: 1400 },
       grid: { enabled: true, size: 50, offsetX: 5, offsetY: 7 },
@@ -67,6 +69,13 @@ describe('CombatMapService', () => {
     query.select.and.returnValue(query);
     call[1](query);
     expect(query.eq).toHaveBeenCalledWith('combat_sessions.is_active', true);
+  });
+
+  it('serves a map too large for the renderer as stored, instead of failing every load', async () => {
+    rows['combat_maps'][0] = { ...rows['combat_maps'][0], image_width: 6000, image_height: 4000 };
+    const map = await firstValueFrom(service.getMap());
+    expect(map!.imageUrl).toBe('https://example.com/object/maps/m1/karte-x.png');
+    expect(map!.size).toEqual({ width: 6000, height: 4000 });
   });
 
   it('uses the blank area without an image, and null without a map', async () => {
