@@ -35,10 +35,10 @@
   }
 
   <div class="states" (click)="setStates()">
-    @for (state of combatant.states; track state) {
+    @for (state of combatant.states; track state.name) {
       <span class="state" (click)="gotoLink($event, state.link)">
         <span [innerHTML]="state.name" class="state-name"></span>
-        @for (mod of state.modifiers; track mod) {
+        @for (mod of state.modifiers; track $index) {
           <span>
             | {{mod.target}} {{mod.value}}
           </span>

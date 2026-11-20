@@ -1,6 +1,6 @@
 @if (menu) {
   <div class="context-menu">
-    @for (button of actions; track button) {
+    @for (button of actions; track button.label) {
       <button class="btn" type="button" (click)="button.action()">
         {{button.label}}
       </button>

@@ -19,7 +19,7 @@
       {{achievement.unlocked | date: 'dd.MM.yy'}}
     </div>
     <div class="people">
-      @for (person of achievement.people; track person) {
+      @for (person of achievement.people; track person.id) {
         <app-avatar [person]="person"></app-avatar>
       }
     </div>

@@ -1,7 +1,7 @@
 @if ((attributes$ | async); as attributes) {
   @if (attributes.length > 0) {
     <div class="attributes box">
-      @for (att of attributes; track att) {
+      @for (att of attributes; track att.type) {
         <div class="attribute">
           <button type="button" class="btn-text label" (click)="editAttribute(att)" title="Attribut bearbeiten">
             {{allowedAttributes[att.type].name}}

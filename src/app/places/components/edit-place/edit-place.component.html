@@ -17,7 +17,7 @@
     <div class="form-group">
       <select id="parentId" formControlName="parentId">
         <option [value]="null">Nichts</option>
-        @for (place of places$ | async; track place) {
+        @for (place of places$ | async; track place.id) {
           <option [ngValue]="place.id" [disabled]="place.id === props.id">
             {{place.name}} ({{placeTypeMap[place.type]}})
           </option>

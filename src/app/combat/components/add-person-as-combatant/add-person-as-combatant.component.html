@@ -1,5 +1,5 @@
 <div class="people">
-  @for (person of people; track person) {
+  @for (person of people; track person.id) {
     <div class="form-group">
       <input type="checkbox" [(ngModel)]="selected[person.id]" id="person-{{person.id}}" (change)="selectionChanged($event, person)">
       <label for="person-{{person.id}}">{{person.name}}</label>

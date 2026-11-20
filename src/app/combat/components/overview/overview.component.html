@@ -32,7 +32,7 @@
 
 @if (!showMap && !showAsList) {
   <app-box-grid>
-    @for (combatant of combatants$ | async; track combatant) {
+    @for (combatant of combatants$ | async; track combatant.id) {
       <app-combatant [combatant]="combatant"></app-combatant>
     }
   </app-box-grid>
@@ -40,7 +40,7 @@
 
 @if (!showMap && showAsList) {
   <div>
-    @for (combatant of combatants$ | async; track combatant) {
+    @for (combatant of combatants$ | async; track combatant.id) {
       <app-combatant [combatant]="combatant" [showAsList]="true"></app-combatant>
     }
   </div>

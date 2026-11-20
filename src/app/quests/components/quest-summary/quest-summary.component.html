@@ -15,7 +15,7 @@
     </a>
     @if (quest.subQuests && showSubQuests) {
       <ul class="subquests unstyled-list">
-        @for (subQuest of quest.subQuests; track subQuest) {
+        @for (subQuest of quest.subQuests; track subQuest.id) {
           <app-quest-summary
             [quest]="subQuest"
             [showCompleted]="showCompleted"

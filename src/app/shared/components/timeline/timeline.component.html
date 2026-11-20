@@ -6,7 +6,7 @@
       title="Ereignis hinzufügen"></fa-icon>
     </button>
     <ul class="events unstyled-list">
-      @for (event of timeline.events | async; track event) {
+      @for (event of timeline.events | async; track event.id) {
         <li class="event" (click)="editEvent(event, timeline.id)">
           <dl>
             <dt>{{event.date}} BF</dt>

@@ -95,11 +95,11 @@
             <div class="heading">Verwandte</div>
             <div class="relatives-list">
               <ul class="unstyled-list">
-                @for (relatives of person.relatives | keyvalue; track relatives) {
+                @for (relatives of person.relatives | keyvalue; track relatives.key) {
                   <li>
                     {{relativeTypes[relatives.key]}}
                     <ul>
-                      @for (relative of relatives.value; track relative) {
+                      @for (relative of relatives.value; track relative.id ?? relative.name) {
                         <li>
                           @if (relative.id) {
                             <a [routerLink]="['/people', relative.id]" class="location">{{relative.name}}</a>

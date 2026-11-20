@@ -12,7 +12,7 @@
 
   @if (place.parts && showParts) {
     <ul class="parts unstyled-list">
-      @for (part of place.parts; track part) {
+      @for (part of place.parts; track part.id) {
         <app-place-summary
           [place]="part"
           [showParts]="showParts"

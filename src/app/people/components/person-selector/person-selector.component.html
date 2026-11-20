@@ -1,7 +1,7 @@
 <form [formGroup]="personForm">
   <div class="form-group">
     <select formControlName="selectedPersonId" id="selectedPersonId">
-      @for (person of people$ | async; track person) {
+      @for (person of people$ | async; track person.id) {
         <option [ngValue]="person.id">{{person.name}}</option>
       }
     </select>

@@ -4,7 +4,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('skill')" title="Talent hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (skill of person.skills; track skill) {
+    @for (skill of person.skills; track skill.id) {
       <div class="capability">
         <button
           type="button"
@@ -41,7 +41,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('cantrip')" title="Zaubertrick hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (cantrip of person.cantrips; track cantrip) {
+    @for (cantrip of person.cantrips; track cantrip.id) {
       <div class="capability">
         <button
           type="button"
@@ -70,7 +70,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('spell')" title="Zauber hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (spell of person.spells; track spell) {
+    @for (spell of person.spells; track spell.id) {
       <div class="capability">
         <button
           type="button"
@@ -107,7 +107,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('liturgy')" title="Liturgie hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (liturgy of person.liturgys; track liturgy) {
+    @for (liturgy of person.liturgys; track liturgy.id) {
       <div class="capability">
         <button
           type="button"
@@ -149,7 +149,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('feat')" title="Sonderfertigkeit hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (feat of person.feats; track feat) {
+    @for (feat of person.feats; track feat.id) {
       <div class="capability">
         <button
           type="button"
@@ -178,7 +178,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('advantage')" title="Vorteil hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (advantage of person.advantages; track advantage) {
+    @for (advantage of person.advantages; track advantage.id) {
       <div class="capability">
         <button
           type="button"
@@ -207,7 +207,7 @@
     <button type="button" class="btn-icon small btn-add" (click)="addCapability('disadvantage')" title="Nachteil hinzufügen">
       <fa-icon [fixedWidth]="true" [icon]="faPlus"></fa-icon>
     </button>
-    @for (disadvantage of person.disadvantages; track disadvantage) {
+    @for (disadvantage of person.disadvantages; track disadvantage.id) {
       <div class="capability">
         <button
           type="button"

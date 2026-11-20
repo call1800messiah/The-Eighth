@@ -21,7 +21,7 @@
     </div>
   </div>
   <div class="requirements">
-    @for (requirement of project.requirements; track requirement) {
+    @for (requirement of project.requirements; track requirement.id) {
       <div class="requirement">
         {{getRequirementString(requirement)}}
       </div>

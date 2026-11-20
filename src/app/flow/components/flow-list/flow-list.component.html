@@ -23,7 +23,7 @@
       </div>
     }
 
-    @for (flow of filteredFlows$ | async; track flow) {
+    @for (flow of filteredFlows$ | async; track flow.id) {
       <div class="flow">
         <a class="details" [routerLink]="[flow.id]">
           <div class="flow-date">{{ getFormattedDate(flow.date) }}</div>

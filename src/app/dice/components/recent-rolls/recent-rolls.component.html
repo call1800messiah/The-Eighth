@@ -1,5 +1,5 @@
 @if (rolls$) {
-  @for (roll of rolls$ | async; track roll) {
+  @for (roll of rolls$ | async; track roll.id) {
     <div class="box" [ngClass]="{'own': roll.owner === userId}">
       <div class="user">
         {{roll.user}}

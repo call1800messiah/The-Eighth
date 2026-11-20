@@ -11,7 +11,7 @@
 </div>
 
 <app-box-grid>
-  @for (project of filteredProjects$ | async; track project) {
+  @for (project of filteredProjects$ | async; track project.id) {
     <app-project-summary
       [project]="project"
       >

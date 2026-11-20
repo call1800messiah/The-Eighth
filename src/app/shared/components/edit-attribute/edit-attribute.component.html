@@ -3,7 +3,7 @@
     @if(!props.attribute) {
       <div class="form-group">
         <select formControlName="type" id="type">
-          @for (att of allowedAttributes | keyvalue; track att) {
+          @for (att of allowedAttributes | keyvalue; track att.key) {
             <option [value]="att.key">{{ att.value }}</option>
           }
         </select>

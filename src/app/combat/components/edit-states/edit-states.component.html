@@ -2,7 +2,7 @@
   @if (states) {
     <div class="form-group">
       <select (ngModelChange)="setCombatantStates($event)" [compareWith]="compareStates" [ngModel]="props.states" multiple>
-        @for (state of states; track state) {
+        @for (state of states; track state.name) {
           <option [ngValue]="state">
             {{state.name}}
           </option>

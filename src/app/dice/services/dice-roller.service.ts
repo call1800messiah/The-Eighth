@@ -227,6 +227,7 @@ export class DiceRollerService {
   private static transformRolls(rows: any[]): Roll[] {
     return rows.map(row => {
       let roll: Roll | AttributeRoll | DamageRoll | DiceRoll | SkillRoll = {
+        id: row.id,
         created: row.created_at ? new Date(row.created_at) : new Date(),
         isPrivate: false,
         owner: row.owner_id,

@@ -26,7 +26,7 @@
   <app-container width="small">
     <nav>
       <ul class="unstyled-list">
-        @for (item of navigation$ | async; track item) {
+        @for (item of navigation$ | async; track item.link) {
           <li>
             <button type="button" class="btn borderless" (click)="navigateTo(item.link)">
               <fa-icon [icon]="item.icon" size="lg" [fixedWidth]="true"></fa-icon>

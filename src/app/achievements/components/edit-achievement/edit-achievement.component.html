@@ -10,7 +10,7 @@
     </div>
     <div class="form-group">
       <select id="people" formControlName="people" multiple [compareWith]="comparePCs">
-        @for (pc of playerCharacter$ | async; track pc) {
+        @for (pc of playerCharacter$ | async; track pc.id) {
           <option [ngValue]="pc">
             {{pc.name}}
           </option>

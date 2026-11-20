@@ -2,6 +2,8 @@ import { RollType } from '../enums/roll-type.enum';
 import { Die } from '../enums/die.enum';
 
 export interface Roll {
+  /** The rolls row id; unset on a roll not yet stored. */
+  id?: string;
   isPrivate: boolean;
   owner: string;
   created: Date;

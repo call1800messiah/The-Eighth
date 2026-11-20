@@ -7,7 +7,7 @@
   </app-top-bar-filter>
 
   <div class="inventory">
-    @for (item of filteredItems$ | async; track item) {
+    @for (item of filteredItems$ | async; track item.id) {
       <div class="item box" (click)="showEditDialog(item)">
         <div class="amount">{{item.amount}}</div>
         <div class="name">{{item.name}}</div>

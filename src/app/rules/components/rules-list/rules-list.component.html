@@ -7,12 +7,12 @@
   </app-top-bar-filter>
 
   <ul class="unstyled-list">
-    @for (type of filteredRules$ | async | keyvalue; track type) {
+    @for (type of filteredRules$ | async | keyvalue; track type.key) {
       <li class="category">
         <fa-icon style="float: right;" [icon]="ruleTypes[type.key].icon" [fixedWidth]="true"></fa-icon>
         {{ruleTypes[type.key].label}}
         <ul class="unstyled-list rules">
-          @for (rule of type.value; track rule) {
+          @for (rule of type.value; track rule.id) {
             <li class="rule" (click)="editRule(rule)">
               {{rule.name}}
               @if (rule.type === 'skill' || rule.type === 'spell') {

@@ -44,7 +44,7 @@
       <input type="text" id="location" list="places" formControlName="location">
       <label for="location">Ort</label>
       <datalist id="places">
-        @for (place of places; track place) {
+        @for (place of places; track place.id) {
           <option [value]="place.id">
             {{place.name}} ({{placeTypes[place.type]}})
           </option>

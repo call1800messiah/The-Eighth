@@ -6,11 +6,11 @@
     </button>
   </app-top-bar-filter>
 
-  @for (group of filteredNotes$ | async | keyvalue; track group) {
+  @for (group of filteredNotes$ | async | keyvalue; track group.key) {
     <div>
       <div class="category">{{group.key}}</div>
       <div>
-        @for (note of group.value; track note) {
+        @for (note of group.value; track note.id) {
           <div class="note box" [class.highlighted]="note.id === highlightedNoteId" [attr.data-note-id]="note.id" (click)="editNote(note)">
             <app-access-indicator [item]="note"></app-access-indicator>
             @if (note.title) {

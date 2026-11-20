@@ -19,7 +19,7 @@
           <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
         </button>
       </div>
-      @for (requirement of requirements; track requirement) {
+      @for (requirement of requirements; track requirement.id) {
         <div class="form-group multiple-inputs">
           <input
             class="flex-width"
@@ -70,7 +70,7 @@
           <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon>
         </button>
       </div>
-      @for (milestone of milestones; track milestone) {
+      @for (milestone of milestones; track milestone.id) {
         <div class="form-group multiple-inputs">
           <input
             class="flex-width"

@@ -13,7 +13,7 @@
 
   @if (filterText.value === '') {
     <ul class="quests unstyled-list">
-      @for (quest of quests$ | async; track quest) {
+      @for (quest of quests$ | async; track quest.id) {
         <app-quest-summary
           [quest]="quest"
           [showCompleted]="showCompleted"
@@ -25,7 +25,7 @@
 
   @if (filterText.value !== '') {
     <ul class="filtered-quests unstyled-list">
-      @for (quest of filteredQuests$ | async; track quest) {
+      @for (quest of filteredQuests$ | async; track quest.id) {
         <app-quest-summary
           [quest]="quest"
           [showCompleted]="showCompleted"

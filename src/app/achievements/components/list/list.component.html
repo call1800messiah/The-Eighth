@@ -9,7 +9,7 @@
   </app-top-bar-filter>
 
   <div class="achievements">
-    @for (achievement of filteredAchievements$ | async; track achievement) {
+    @for (achievement of filteredAchievements$ | async; track achievement.id) {
       <app-achievement
         [achievement]="achievement"
       ></app-achievement>

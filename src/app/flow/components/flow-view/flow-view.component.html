@@ -70,7 +70,7 @@
       (cdkDropListDropped)="onDrop($event)"
       class="flow-items"
       >
-      @for (item of filteredFlowItems$ | async; track item) {
+      @for (item of filteredFlowItems$ | async; track item.id) {
         <div cdkDrag class="flow-item-wrapper">
           <app-flow-item
             [dragEnabled]="filterText$.value ===''"

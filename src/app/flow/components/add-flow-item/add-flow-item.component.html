@@ -13,7 +13,7 @@
         </div>
 
         <div class="entity-list">
-          @for (quest of filteredQuests$ | async; track quest) {
+          @for (quest of filteredQuests$ | async; track quest.id) {
             <div
               class="entity-item form-group"
               [class.selected]="isSelected(quest.id)"
@@ -39,7 +39,7 @@
         </div>
 
         <div class="entity-list">
-          @for (person of filteredPeople$ | async; track person) {
+          @for (person of filteredPeople$ | async; track person.id) {
             <div
               class="entity-item form-group"
               [class.selected]="isSelected(person.id)"
@@ -66,7 +66,7 @@
         </div>
 
         <div class="entity-list">
-          @for (place of filteredPlaces$ | async; track place) {
+          @for (place of filteredPlaces$ | async; track place.id) {
             <div
               class="entity-item form-group"
               [class.selected]="isSelected(place.id)"
@@ -92,7 +92,7 @@
         </div>
 
         <div class="entity-list">
-          @for (note of filteredNotes$ | async; track note) {
+          @for (note of filteredNotes$ | async; track note.id) {
             <div
               class="entity-item form-group"
               [class.selected]="isSelected(note.id)"

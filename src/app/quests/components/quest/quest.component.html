@@ -21,7 +21,7 @@
         <div class="subquests box">
           <div class="heading">Subquests</div>
           <ul class="unstyled-list">
-            @for (subQuest of quest.subQuests; track subQuest) {
+            @for (subQuest of quest.subQuests; track subQuest.id) {
               <li class="subquest">
                 <a [routerLink]="['/quests/', subQuest.id]">{{subQuest.name}}</a>
               </li>

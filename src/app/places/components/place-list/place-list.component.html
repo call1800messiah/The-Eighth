@@ -8,7 +8,7 @@
 
   @if (filterText.value === '') {
     <ul class="places unstyled-list">
-      @for (place of places$ | async; track place) {
+      @for (place of places$ | async; track place.id) {
         <app-place-summary
           [place]="place"
           [showParts]="true"
@@ -19,7 +19,7 @@
 
   @if (filterText.value !== '') {
     <ul class="filterted-places unstyled-list">
-      @for (place of filteredPlaces$ | async; track place) {
+      @for (place of filteredPlaces$ | async; track place.id) {
         <app-place-summary
           [place]="place"
           [showParts]="false"

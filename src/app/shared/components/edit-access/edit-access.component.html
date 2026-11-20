@@ -1,7 +1,7 @@
 <div>
   @if (users && selected) {
     <div class="users">
-      @for (user of users; track user) {
+      @for (user of users; track user.id) {
         <div class="form-group">
           <input type="checkbox" [checked]="selected[user.id]" id="user-{{user.id}}" (change)="accessChanged($event, user)" [disabled]="user.isGM" />
           <label for="user-{{user.id}}">{{user.name}}</label>
