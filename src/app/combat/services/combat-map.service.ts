@@ -217,10 +217,9 @@ export class CombatMapService {
 
   private transform(row: any): CombatMap {
     const hasImage = !!row.image && row.image_width > 0 && row.image_height > 0;
-    let imageUrl: string | null = null;
-    if (hasImage) {
-      this.storage.getDownloadURL(row.image).subscribe(url => imageUrl = url).unsubscribe();
-    }
+    // Rendered at its own width: converted to WebP, never resized, so the
+    // image still matches the map's coordinate space.
+    const imageUrl = hasImage ? this.storage.getImageURL(row.image, row.image_width) : null;
     return {
       id: row.id,
       imageUrl,

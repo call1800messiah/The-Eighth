@@ -21,6 +21,7 @@ describe('SceneService', () => {
   const scene: Scene = {
     id: 'scene-1',
     image: 'https://example.com/scenes/scene-1/scene-abc.jpg',
+    imageThumb: 'https://example.com/scenes/scene-1/scene-abc-thumb.jpg',
     caption: 'Am Lagerfeuer',
     owner: 'user-1',
     people: ['p1', 'p2', 'hidden'],
@@ -79,7 +80,8 @@ describe('SceneService', () => {
 
       expect(result).toEqual([{
         id: 'scene-1',
-        image: 'https://example.com/scenes/scene-1/scene-abc.jpg',
+        image: 'https://example.com/render/scenes/scene-1/scene-abc.jpg?width=1600',
+        imageThumb: 'https://example.com/render/scenes/scene-1/scene-abc.jpg?width=400',
         caption: '',
         owner: 'user-1',
         people: ['p1', 'p2'],

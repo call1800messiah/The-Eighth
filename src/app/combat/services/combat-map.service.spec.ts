@@ -35,7 +35,7 @@ describe('CombatMapService', () => {
       }),
     };
     storage = {
-      getDownloadURL: (path: string) => of(`https://example.com/${path}`),
+      getImageURL: (path: string, width: number) => `https://example.com/render/${path}?width=${width}`,
       uploadFile: jasmine.createSpy('uploadFile').and.returnValue(Promise.resolve('maps/m1/neu-b.png')),
       delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
     };
@@ -56,7 +56,8 @@ describe('CombatMapService', () => {
     const map = await firstValueFrom(service.getMap());
     expect(map).toEqual({
       id: 'm1',
-      imageUrl: 'https://example.com/maps/m1/karte-x.png',
+      // Rendered at its own width: WebP, but the same size
+      imageUrl: 'https://example.com/render/maps/m1/karte-x.png?width=2000',
       imagePath: 'maps/m1/karte-x.png',
       size: { width: 2000, height: 1400 },
       grid: { enabled: true, size: 50, offsetX: 5, offsetY: 7 },

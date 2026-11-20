@@ -6,7 +6,7 @@ import type { Scene } from '../models';
 import type { FileUpdateRef } from '../../core/models/file-update-ref';
 import { ApiService } from '../../core/services/api.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
-import { StorageService } from '../../core/services/storage.service';
+import { IMAGE_WIDTH, StorageService } from '../../core/services/storage.service';
 
 
 
@@ -152,12 +152,10 @@ export class SceneService {
 
 
   private transform(row: any): Scene {
-    let image = '';
-    // getDownloadURL emits synchronously (public URL), see StorageService
-    this.storage.getDownloadURL(row.image).subscribe(url => image = url);
     return {
       id: row.id,
-      image,
+      image: this.storage.getImageURL(row.image, IMAGE_WIDTH.large),
+      imageThumb: this.storage.getImageURL(row.image, IMAGE_WIDTH.thumb),
       caption: row.caption ?? '',
       owner: row.owner_id,
       people: (row.scene_people ?? []).map((tag: any) => tag.person_id),

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StorageService } from './storage.service';
+import { IMAGE_WIDTH, StorageService } from './storage.service';
 import { ApiService } from './api.service';
 import { createMockApiService, createMockQueryBuilder } from '../../testing/supabase-test-helpers';
 
@@ -31,6 +31,34 @@ describe('StorageService', () => {
         expect(mockApi.storage.from).toHaveBeenCalled();
         done();
       });
+    });
+  });
+
+  describe('getImageURL()', () => {
+    it('asks for a render URL scaled down to the width, keeping the aspect ratio', () => {
+      const url = service.getImageURL('people/p1/portrait.png', IMAGE_WIDTH.thumb);
+      const bucket = mockApi.storage.from.calls.mostRecent().returnValue;
+      expect(bucket.getPublicUrl).toHaveBeenCalledWith('people/p1/portrait.png', {
+        transform: { width: 400, resize: 'contain', quality: 80 },
+      });
+      expect(url).toBe('https://example.com/file.jpg');
+    });
+
+    it('has a thumb and a large width', () => {
+      expect(IMAGE_WIDTH).toEqual({ thumb: 400, large: 1600 });
+    });
+  });
+
+  describe('originalURL()', () => {
+    it('turns a render URL into the URL of the stored object', () => {
+      expect(StorageService.originalURL(
+        'https://host/storage/v1/render/image/public/tde5/people/p1/a-b.png?width=400&resize=contain&quality=80'
+      )).toBe('https://host/storage/v1/object/public/tde5/people/p1/a-b.png');
+    });
+
+    it('leaves any other URL alone', () => {
+      const url = 'https://host/storage/v1/object/public/tde5/people/p1/a-b.png';
+      expect(StorageService.originalURL(url)).toBe(url);
     });
   });
 

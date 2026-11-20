@@ -4,7 +4,7 @@
       <app-draft-banner entityType="place" [entity]="place"></app-draft-banner>
       @if (place.image) {
         <a class="image" [href]="place.image" target="_blank">
-          <img src="{{place.image}}" alt="{{place.name}}" />
+          <img appImageFallback [src]="place.image" [alt]="place.name" />
         </a>
       }
       <div class="action-buttons">

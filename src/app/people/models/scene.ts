@@ -1,7 +1,9 @@
 export interface Scene {
   id: string;
-  /** Public URL of the image */
+  /** Rendered URL of the image, large size */
   image: string;
+  /** Rendered URL of the image, thumb size, for the grid */
+  imageThumb: string;
   caption: string;
   owner: string;
   /** Ids of the people tagged in the scene */

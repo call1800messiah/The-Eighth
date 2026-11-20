@@ -18,6 +18,7 @@ import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
 import { PlainTextPipe } from './pipes/plain-text.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
+import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
@@ -43,6 +44,7 @@ import { DraftBannerComponent } from './components/draft-banner/draft-banner.com
 
 @NgModule({
   declarations: [
+    ImageFallbackDirective,
     AudioPlayerComponent,
     AudioPlayerListComponent,
     AvatarComponent,
@@ -87,6 +89,7 @@ import { DraftBannerComponent } from './components/draft-banner/draft-banner.com
     NgOptimizedImage,
   ],
   exports: [
+    ImageFallbackDirective,
     AccessIndicatorComponent,
     AudioPlayerListComponent,
     AvatarComponent,
