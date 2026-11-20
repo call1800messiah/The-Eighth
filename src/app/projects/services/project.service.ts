@@ -28,7 +28,13 @@ export class ProjectService {
       this.projects$ = new BehaviorSubject<Project[]>([]);
       this.realtime.watch<any>(
         'projects',
-        query => query.select('*, project_milestones(*), project_requirements(*)'),
+        // Without an explicit order Postgres returns rows as they lie on disk,
+        // and an UPDATE writes a new row version, so an edited project would
+        // jump to the end of the list.
+        query => query
+          .select('*, project_milestones(*), project_requirements(*)')
+          .order('created_at', { ascending: true })
+          .order('id', { ascending: true }),
         'projects',
         ['project_milestones', 'project_requirements'],
       ).pipe(

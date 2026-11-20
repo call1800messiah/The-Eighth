@@ -5,6 +5,7 @@ import { ApiService } from '../../core/services/api.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
 import {
   createMockApiService,
+  createMockQueryBuilder,
   createMockRealtimeService,
 } from '../../testing/supabase-test-helpers';
 
@@ -40,6 +41,19 @@ describe('ProjectService', () => {
         'projects',
         ['project_milestones', 'project_requirements'],
       );
+    });
+
+    it('should order projects by creation date, so an edit does not move them', () => {
+      service.getProjects().subscribe();
+      const queryFn = mockRealtime.watch.calls.mostRecent().args[1];
+      const builder = createMockQueryBuilder();
+
+      queryFn(builder);
+
+      expect(builder.order.calls.allArgs()).toEqual([
+        ['created_at', { ascending: true }],
+        ['id', { ascending: true }],
+      ]);
     });
 
     it('should transform project rows with milestones', (done) => {
