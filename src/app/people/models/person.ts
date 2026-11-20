@@ -29,7 +29,10 @@ export interface Person extends AccessControlledItem {
   height: number;
   /** Rendered URL of the portrait, large size. */
   image: string;
-  /** Rendered URL of the portrait, thumb size, for avatars. */
+  /**
+   * Rendered URL of the portrait, thumb size, for avatars. Set together with
+   * `image` (PeopleService.transform).
+   */
   imageThumb?: string;
   liturgys?: Liturgy[];
   location?: Location;

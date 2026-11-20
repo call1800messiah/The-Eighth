@@ -370,7 +370,7 @@ export class CombatMapComponent implements OnInit, OnChanges, OnDestroy {
       const placed = this.positions.get(combatant.id);
       const position = clampToMap(placed ?? stagingPosition(staged++, grid, size), size);
       const name = this.displayName(combatant);
-      const portrait = combatant.person?.image ? this.image(combatant.person.imageThumb || combatant.person.image) : null;
+      const portrait = combatant.person?.image ? this.image(combatant.person.imageThumb) : null;
       const kind: TokenKind = !combatant.person ? 'enemy' : combatant.person.pc ? 'pc' : 'npc';
       const look = JSON.stringify([name, kind, !!portrait, combatant.active, grid.size, this.isGM]);
 
