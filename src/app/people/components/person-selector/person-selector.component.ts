@@ -31,8 +31,12 @@ export class PersonSelectorComponent implements OnDestroy, OnInit {
 
   constructor() {
     this.user = this.auth.user;
+    // GMs may view and edit every character's values (RLS allows it), so
+    // they can pick any of them; players only get their own.
     this.people$ = this.peopleService.getPeople().pipe(
-      map(people => people.filter(person => person.owner === this.user.id)),
+      map(people => this.user.isGM
+        ? people
+        : people.filter(person => person.owner === this.user.id)),
     );
   }
 
