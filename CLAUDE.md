@@ -195,7 +195,7 @@ The combat view has a third mode (map icon): `CombatMapComponent` draws the runn
 - `001_initial_schema.sql` — enums, tables, indexes, replica identity, realtime publication
 - `002_rls_policies.sql` — helper functions (`is_gm()`, `is_entity_owner()`) and every policy
 - `003_storage_buckets.sql` — bucket and storage.objects policies
-- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map, `015` `assistant_schema()` and table comments for Claude's `describe`, `016` the values in use split out into `assistant_column_values()`)
+- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map, `015` `assistant_schema()` and table comments for Claude's `describe`, `016` the values in use split out into `assistant_column_values()`, `017` `save_project()`, which writes a project and its milestones and requirements in one transaction)
 
 Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `project_milestones`, …). Query them with PostgREST embedding: `query.select('*, person_skills(rule_id, value)')`.
 

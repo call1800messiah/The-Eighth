@@ -1792,6 +1792,15 @@ export type Database = {
         Returns: boolean
       }
       is_gm: { Args: never; Returns: boolean }
+      save_project: {
+        Args: {
+          p_id: string | null
+          p_project: Json
+          p_milestones?: Json | null
+          p_requirements?: Json | null
+        }
+        Returns: string
+      }
     }
     Enums: {
       entity_status: "draft" | "published"

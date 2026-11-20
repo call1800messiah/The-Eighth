@@ -2,31 +2,25 @@ import { TestBed } from '@angular/core/testing';
 
 import { ProjectService } from './project.service';
 import { ApiService } from '../../core/services/api.service';
-import { DataService } from '../../core/services/data.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
 import {
   createMockApiService,
-  createMockDataService,
-  createMockQueryBuilder,
   createMockRealtimeService,
 } from '../../testing/supabase-test-helpers';
 
 describe('ProjectService', () => {
   let service: ProjectService;
   let mockApi: ReturnType<typeof createMockApiService>;
-  let mockData: ReturnType<typeof createMockDataService>;
   let mockRealtime: ReturnType<typeof createMockRealtimeService>;
 
   beforeEach(() => {
     mockApi = createMockApiService();
-    mockData = createMockDataService();
     mockRealtime = createMockRealtimeService();
 
     TestBed.configureTestingModule({
       providers: [
         ProjectService,
         { provide: ApiService, useValue: mockApi },
-        { provide: DataService, useValue: mockData },
         { provide: RealtimeService, useValue: mockRealtime },
       ],
     });
@@ -109,118 +103,57 @@ describe('ProjectService', () => {
   });
 
   describe('store()', () => {
-    it('should strip milestones and requirements before storing project', async () => {
-      await service.store({
-        name: 'Ship',
-        milestones: [{ description: 'M1', requiredPoints: 10 }],
-        requirements: [{ skill: 'S1', currentPoints: 0, requiredPoints: 10, threshold: 8 }],
-      } as any, 'proj1');
+    const project = {
+      name: 'Ship',
+      benefit: 'A ship',
+      interval: 'weekly',
+      owner: 'u1',
+      access: [],
+      collection: 'projects',
+      milestones: [{ id: 'm1', description: 'Keel', requiredPoints: 10 }],
+      requirements: [{ id: 'r1', skill: 'Carpentry', currentPoints: 2, requiredPoints: 20, threshold: 12 }],
+    } as any;
 
-      const storedItem = mockData.store.calls.mostRecent().args[0];
-      expect(storedItem.milestones).toBeUndefined();
-      expect(storedItem.requirements).toBeUndefined();
-      expect(storedItem.name).toBe('Ship');
+    it('saves the project and both lists in one save_project call', async () => {
+      mockApi.rpc.and.resolveTo({ data: 'proj1', error: null });
+
+      const result = await service.store(project, 'proj1');
+
+      expect(result).toEqual({ success: true, id: 'proj1' });
+      expect(mockApi.rpc).toHaveBeenCalledOnceWith('save_project', {
+        p_id: 'proj1',
+        p_project: { name: 'Ship', benefit: 'A ship', interval: 'weekly' },
+        p_milestones: [{ description: 'Keel', required_points: 10 }],
+        p_requirements: [{ skill: 'Carpentry', current_points: 2, required_points: 20, threshold: 12 }],
+      });
+      expect(mockApi.from).not.toHaveBeenCalled();
     });
 
-    it('should sync milestones after storing project', async () => {
-      await service.store({
-        name: 'Ship',
-        milestones: [{ description: 'M1', requiredPoints: 10 }],
-      } as any, 'proj1');
+    it('creates a project when there is no id and returns the new id', async () => {
+      mockApi.rpc.and.resolveTo({ data: 'new-id', error: null });
 
-      // Should delete existing then insert new
-      expect(mockApi.from).toHaveBeenCalledWith('project_milestones');
+      const result = await service.store(project);
+
+      expect(result).toEqual({ success: true, id: 'new-id' });
+      expect(mockApi.rpc.calls.mostRecent().args[1].p_id).toBeNull();
     });
 
-    it('should sync requirements after storing project', async () => {
-      await service.store({
-        name: 'Ship',
-        requirements: [{ skill: 'Carpentry', currentPoints: 0, requiredPoints: 20, threshold: 12 }],
-      } as any, 'proj1');
+    it('leaves a list alone when it is not given', async () => {
+      mockApi.rpc.and.resolveTo({ data: 'proj1', error: null });
 
-      expect(mockApi.from).toHaveBeenCalledWith('project_requirements');
+      await service.store({ name: 'Ship' }, 'proj1');
+
+      const args = mockApi.rpc.calls.mostRecent().args[1];
+      expect(args.p_milestones).toBeNull();
+      expect(args.p_requirements).toBeNull();
     });
 
-    describe('syncing rows', () => {
-      // One builder per table; `fail` names the operation that returns an error.
-      function tableBuilder(fail?: 'insert' | 'delete', insertedIds: string[] = ['new1']) {
-        const builder = createMockQueryBuilder();
-        builder.then.and.callFake((resolve: any) => {
-          const op = builder.delete.calls.any() ? 'delete' : 'insert';
-          const error = op === fail ? { message: `${op} failed` } : null;
-          const data = op === 'insert' && !error ? insertedIds.map((id) => ({ id })) : null;
-          return Promise.resolve({ data, error }).then(resolve);
-        });
-        return builder;
-      }
+    it('reports failure when the database refuses the save', async () => {
+      mockApi.rpc.and.resolveTo({ data: null, error: { code: '42501', message: 'may not be changed' } });
 
-      let builders: Record<string, any>;
+      const result = await service.store(project, 'proj1');
 
-      function useBuilders(milestones: any, requirements: any) {
-        builders = { project_milestones: milestones, project_requirements: requirements };
-        mockApi.from.and.callFake((table: string) => builders[table] ?? mockApi._queryBuilder);
-      }
-
-      const project = {
-        name: 'Ship',
-        milestones: [{ id: 'old1', description: 'M1', requiredPoints: 10 }],
-        requirements: [{ id: 'old2', skill: 'S1', currentPoints: 1, requiredPoints: 10, threshold: 8 }],
-      } as any;
-
-      it('inserts the new rows before deleting the other rows of the project', async () => {
-        useBuilders(tableBuilder(undefined, ['new1', 'new2']), tableBuilder());
-
-        const result = await service.store(project, 'proj1');
-
-        const milestones = builders.project_milestones;
-        expect(result.success).toBeTrue();
-        expect(milestones.insert).toHaveBeenCalledWith([
-          { project_id: 'proj1', description: 'M1', required_points: 10, sort_order: 0 },
-        ]);
-        expect(milestones.insert).toHaveBeenCalledBefore(milestones.delete);
-        expect(milestones.eq).toHaveBeenCalledWith('project_id', 'proj1');
-        expect(milestones.not).toHaveBeenCalledWith('id', 'in', '(new1,new2)');
-      });
-
-      it('deletes every row of the project when the list is empty', async () => {
-        useBuilders(tableBuilder(), tableBuilder());
-
-        const result = await service.store({ ...project, milestones: [] }, 'proj1');
-
-        const milestones = builders.project_milestones;
-        expect(result.success).toBeTrue();
-        expect(milestones.insert).not.toHaveBeenCalled();
-        expect(milestones.delete).toHaveBeenCalled();
-        expect(milestones.not).not.toHaveBeenCalled();
-      });
-
-      it('keeps the old rows and reports failure when the insert fails', async () => {
-        useBuilders(tableBuilder('insert'), tableBuilder());
-
-        const result = await service.store(project, 'proj1');
-
-        expect(result.success).toBeFalse();
-        expect(builders.project_milestones.delete).not.toHaveBeenCalled();
-        expect(builders.project_requirements.insert).not.toHaveBeenCalled();
-      });
-
-      it('reports failure when deleting the old rows fails', async () => {
-        useBuilders(tableBuilder(), tableBuilder('delete'));
-
-        const result = await service.store(project, 'proj1');
-
-        expect(result.success).toBeFalse();
-      });
-
-      it('does not sync rows when storing the project fails', async () => {
-        useBuilders(tableBuilder(), tableBuilder());
-        mockData.store.and.resolveTo({ success: false });
-
-        const result = await service.store(project, 'proj1');
-
-        expect(result.success).toBeFalse();
-        expect(builders.project_milestones.insert).not.toHaveBeenCalled();
-      });
+      expect(result).toEqual({ success: false });
     });
   });
 });

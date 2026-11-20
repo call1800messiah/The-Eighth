@@ -126,19 +126,6 @@ describe('EditProjectComponent', () => {
       expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBeFalse();
     });
 
-    it('updates the project it created when a retry follows a partial failure', async () => {
-      create({});
-      component.projectForm.patchValue({ name: 'Neu', benefit: 'Nutzen', interval: 'Monat' });
-      const store = projectService.store as jasmine.Spy;
-      store.and.resolveTo({ success: false, id: 'created-1' });
-
-      await component.save();
-      store.and.resolveTo({ success: true, id: 'created-1' });
-      await component.save();
-
-      expect(store.calls.argsFor(0)[1]).toBeUndefined();
-      expect(store.calls.argsFor(1)[1]).toBe('created-1');
-    });
   });
 
   describe('validation', () => {

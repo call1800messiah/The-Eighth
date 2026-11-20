@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 
 import { ApiService } from '../../core/services/api.service';
 import { Project } from '../models/project';
-import { DataService } from '../../core/services/data.service';
 import { UtilService } from '../../core/services/util.service';
 import { ProjectRequirement } from '../models/project-requirement';
 import { ProjectMilestone } from '../models/project-milestone';
@@ -17,7 +16,6 @@ import { RealtimeService } from '../../core/services/supabase-realtime.service';
 })
 export class ProjectService {
   private api = inject(ApiService);
-  private data = inject(DataService);
   private realtime = inject(RealtimeService);
 
   static readonly collection = 'projects';
@@ -43,76 +41,32 @@ export class ProjectService {
   }
 
 
+  /**
+   * Creates (no id) or updates a project together with its milestones and
+   * requirements. save_project() (migration 017) does it in one transaction, so
+   * a refused or failed save changes nothing, and saves of the same project
+   * run one after the other. A list left undefined is not touched.
+   */
   async store(project: Partial<Project>, projectId?: string): Promise<{ success: boolean; id?: string }> {
-    const milestones = project.milestones;
-    const requirements = project.requirements;
-    const cleanedProject: any = { ...project };
-    delete cleanedProject.milestones;
-    delete cleanedProject.requirements;
-
-    // Store the project itself
-    const result = await this.data.store(cleanedProject, ProjectService.collection, projectId);
-    if (!result.success) return result;
-
-    const id = projectId || result.id;
-
-    if (milestones !== undefined) {
-      const rows = milestones.map((m, i) => ({
-        project_id: id,
+    const { data, error } = await this.api.rpc('save_project', {
+      p_id: projectId ?? null,
+      p_project: { name: project.name, benefit: project.benefit, interval: project.interval },
+      p_milestones: project.milestones?.map((m) => ({
         description: m.description,
         required_points: m.requiredPoints,
-        sort_order: i,
-      }));
-      if (!await this.replaceRows('project_milestones', id, rows)) return { success: false, id };
-    }
-
-    if (requirements !== undefined) {
-      const rows = requirements.map((r, i) => ({
-        project_id: id,
+      })) ?? null,
+      p_requirements: project.requirements?.map((r) => ({
         skill: r.skill,
         current_points: r.currentPoints,
         required_points: r.requiredPoints,
         threshold: r.threshold,
-        sort_order: i,
-      }));
-      if (!await this.replaceRows('project_requirements', id, rows)) return { success: false, id };
-    }
-
-    return result;
-  }
-
-
-
-  /**
-   * Replaces a project's rows in a junction table. The new rows go in first and
-   * only then are the others deleted, so a failed insert (a NOT NULL column, RLS)
-   * leaves the old rows in place instead of losing them.
-   */
-  private async replaceRows(table: string, projectId: string, rows: object[]): Promise<boolean> {
-    let keep: string[] = [];
-    if (rows.length > 0) {
-      const { data, error } = await this.api.from(table as any)
-        .insert(rows)
-        .select('id') as { data: { id: string }[] | null; error: any };
-      if (error) {
-        console.error(error);
-        return false;
-      }
-      keep = (data ?? []).map((row) => row.id);
-    }
-
-    let query = this.api.from(table as any)
-      .delete()
-      .eq('project_id', projectId);
-    if (keep.length > 0) {
-      query = query.not('id', 'in', `(${keep.join(',')})`);
-    }
-    const { error } = await query;
+      })) ?? null,
+    });
     if (error) {
       console.error(error);
-      return false;
+      return { success: false };
     }
-    return true;
+    return { success: true, id: data };
   }
 
 

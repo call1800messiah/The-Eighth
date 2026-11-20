@@ -38,7 +38,6 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   });
   requirements: ProjectRequirement[];
   userID: string;
-  private createdId?: string;
   private subscription = new Subscription();
 
   constructor() {
@@ -146,14 +145,11 @@ export class EditProjectComponent implements OnInit, OnDestroy {
     }
     this.error = null;
     this.saving = true;
-    const result = await this.projectService.store(project, this.props.id ?? this.createdId);
+    const result = await this.projectService.store(project, this.props.id);
     this.saving = false;
     if (result.success) {
       this.dismissPopover.emit(true);
     } else {
-      // A new project can be created and still fail on its milestones or
-      // requirements; trying again must update it, not create a second one.
-      this.createdId ??= result.id;
       this.error = 'Das Projekt wurde nicht gespeichert. Bitte versuche es noch einmal.';
     }
   }
