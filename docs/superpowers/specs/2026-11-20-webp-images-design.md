@@ -114,4 +114,5 @@ file, since a link has no fallback.
 - Spec updates: `createMockStorageService()` needs `getImageURL`; services'
   specs assert the new fields.
 - Verifying in the browser (DevTools network tab) that responses are
-  `image/webp` and that a second load is a cache hit (`X-Cache-Status`).
+  `image/webp`, and in the app container's log that a second load is a cache
+  hit (`cache=HIT`; not a response header, which would leak who viewed what).
