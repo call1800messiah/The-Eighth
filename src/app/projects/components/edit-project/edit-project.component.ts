@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -25,6 +25,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
 
   @Input() props: Project;
   @Output() dismissPopover = new EventEmitter<boolean>();
+  error: string | null = null;
   faMinus = faMinus;
   faPlus = faPlus;
   milestones: ProjectMilestone[];
@@ -36,6 +37,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   });
   requirements: ProjectRequirement[];
   userID: string;
+  private createdId?: string;
   private subscription = new Subscription();
 
   constructor() {
@@ -52,16 +54,8 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       this.milestones = [...this.props.milestones];
       this.requirements = [...this.props.requirements];
       this.projectForm.patchValue(project);
-      this.requirements.forEach((requirement) => {
-        this.projectForm.addControl(`req-${requirement.id}-skill`, new UntypedFormControl(requirement.skill));
-        this.projectForm.addControl(`req-${requirement.id}-cur`, new UntypedFormControl(requirement.currentPoints));
-        this.projectForm.addControl(`req-${requirement.id}-req`, new UntypedFormControl(requirement.requiredPoints));
-        this.projectForm.addControl(`req-${requirement.id}-thr`, new UntypedFormControl(requirement.threshold));
-      });
-      this.milestones.forEach((milestone) => {
-        this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
-        this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
-      });
+      this.requirements.forEach((requirement) => this.addRequirementControls(requirement));
+      this.milestones.forEach((milestone) => this.addMilestoneControls(milestone));
     } else {
       this.milestones = [];
       this.requirements = [];
@@ -81,8 +75,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       requiredPoints: 1
     };
     this.milestones.push(milestone);
-    this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description));
-    this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints));
+    this.addMilestoneControls(milestone);
     // TODO: Fix broken change detection after adding new required inputs
   }
 
@@ -96,10 +89,7 @@ export class EditProjectComponent implements OnInit, OnDestroy {
       threshold: 0
     };
     this.requirements.push(requirement);
-    this.projectForm.addControl(`req-${requirement.id}-skill`, new UntypedFormControl(requirement.skill));
-    this.projectForm.addControl(`req-${requirement.id}-cur`, new UntypedFormControl(requirement.currentPoints));
-    this.projectForm.addControl(`req-${requirement.id}-req`, new UntypedFormControl(requirement.requiredPoints));
-    this.projectForm.addControl(`req-${requirement.id}-thr`, new UntypedFormControl(requirement.threshold));
+    this.addRequirementControls(requirement);
     // TODO: Fix broken change detection after adding new required inputs
   }
 
@@ -126,17 +116,69 @@ export class EditProjectComponent implements OnInit, OnDestroy {
   }
 
 
-  save() {
-    const project: Project = {
-      ...this.projectForm.value
+  async save() {
+    if (this.projectForm.invalid) {
+      return;
+    }
+    const value = this.projectForm.value;
+    const project: Partial<Project> = {
+      name: value.name,
+      benefit: value.benefit,
+      interval: value.interval,
+      milestones: this.milestones.map((milestone) => ({
+        id: milestone.id,
+        description: value[`mile-${milestone.id}-desc`],
+        requiredPoints: value[`mile-${milestone.id}-req`],
+      })),
+      requirements: this.requirements.map((requirement) => ({
+        id: requirement.id,
+        skill: value[`req-${requirement.id}-skill`],
+        currentPoints: value[`req-${requirement.id}-cur`],
+        requiredPoints: value[`req-${requirement.id}-req`],
+        threshold: value[`req-${requirement.id}-thr`],
+      })),
     };
     if (this.props.id) {
       project.owner = this.props.owner;
     } else {
       project.owner = this.userID;
     }
-    this.projectService.store(project, this.props.id).then(() => {
+    this.error = null;
+    const result = await this.projectService.store(project, this.props.id ?? this.createdId);
+    if (result.success) {
       this.dismissPopover.emit(true);
-    });
+    } else {
+      // A new project can be created and still fail on its milestones or
+      // requirements; trying again must update it, not create a second one.
+      this.createdId ??= result.id;
+      this.error = 'Das Projekt wurde nicht gespeichert. Bitte versuche es noch einmal.';
+    }
   }
+
+
+  // The database columns behind these are integers, and all but a
+  // milestone's description are NOT NULL.
+  private addMilestoneControls(milestone: ProjectMilestone) {
+    this.projectForm.addControl(`mile-${milestone.id}-desc`, new UntypedFormControl(milestone.description, Validators.required));
+    this.projectForm.addControl(`mile-${milestone.id}-req`, new UntypedFormControl(milestone.requiredPoints, points(1)));
+  }
+
+
+  private addRequirementControls(requirement: ProjectRequirement) {
+    this.projectForm.addControl(`req-${requirement.id}-skill`, new UntypedFormControl(requirement.skill, Validators.required));
+    this.projectForm.addControl(`req-${requirement.id}-cur`, new UntypedFormControl(requirement.currentPoints, points(0)));
+    this.projectForm.addControl(`req-${requirement.id}-req`, new UntypedFormControl(requirement.requiredPoints, points(0)));
+    this.projectForm.addControl(`req-${requirement.id}-thr`, new UntypedFormControl(requirement.threshold, points()));
+  }
+}
+
+
+
+/** A required whole number, optionally with a lower bound. */
+function points(min?: number): ValidatorFn[] {
+  const validators = [Validators.required, Validators.pattern(/^-?\d+$/)];
+  if (min !== undefined) {
+    validators.push(Validators.min(min));
+  }
+  return validators;
 }

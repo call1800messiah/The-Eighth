@@ -56,14 +56,26 @@ export class ProjectService {
 
     const id = projectId || result.id;
 
-    // Sync milestones if provided
     if (milestones !== undefined) {
-      await this.syncMilestones(id, milestones);
+      const rows = milestones.map((m, i) => ({
+        project_id: id,
+        description: m.description,
+        required_points: m.requiredPoints,
+        sort_order: i,
+      }));
+      if (!await this.replaceRows('project_milestones', id, rows)) return { success: false, id };
     }
 
-    // Sync requirements if provided
     if (requirements !== undefined) {
-      await this.syncRequirements(id, requirements);
+      const rows = requirements.map((r, i) => ({
+        project_id: id,
+        skill: r.skill,
+        current_points: r.currentPoints,
+        required_points: r.requiredPoints,
+        threshold: r.threshold,
+        sort_order: i,
+      }));
+      if (!await this.replaceRows('project_requirements', id, rows)) return { success: false, id };
     }
 
     return result;
@@ -71,43 +83,36 @@ export class ProjectService {
 
 
 
-  private async syncMilestones(projectId: string, milestones: ProjectMilestone[]) {
-    // Delete existing milestones
-    await this.api.from('project_milestones' as any)
+  /**
+   * Replaces a project's rows in a junction table. The new rows go in first and
+   * only then are the others deleted, so a failed insert (a NOT NULL column, RLS)
+   * leaves the old rows in place instead of losing them.
+   */
+  private async replaceRows(table: string, projectId: string, rows: object[]): Promise<boolean> {
+    let keep: string[] = [];
+    if (rows.length > 0) {
+      const { data, error } = await this.api.from(table as any)
+        .insert(rows)
+        .select('id') as { data: { id: string }[] | null; error: any };
+      if (error) {
+        console.error(error);
+        return false;
+      }
+      keep = (data ?? []).map((row) => row.id);
+    }
+
+    let query = this.api.from(table as any)
       .delete()
       .eq('project_id', projectId);
-
-    // Insert new ones
-    if (milestones.length > 0) {
-      const rows = milestones.map((m, i) => ({
-        project_id: projectId,
-        description: m.description,
-        required_points: m.requiredPoints,
-        sort_order: i,
-      }));
-      await this.api.from('project_milestones' as any).insert(rows);
+    if (keep.length > 0) {
+      query = query.not('id', 'in', `(${keep.join(',')})`);
     }
-  }
-
-
-  private async syncRequirements(projectId: string, requirements: ProjectRequirement[]) {
-    // Delete existing requirements
-    await this.api.from('project_requirements' as any)
-      .delete()
-      .eq('project_id', projectId);
-
-    // Insert new ones
-    if (requirements.length > 0) {
-      const rows = requirements.map((r, i) => ({
-        project_id: projectId,
-        skill: r.skill,
-        current_points: r.currentPoints,
-        required_points: r.requiredPoints,
-        threshold: r.threshold,
-        sort_order: i,
-      }));
-      await this.api.from('project_requirements' as any).insert(rows);
+    const { error } = await query;
+    if (error) {
+      console.error(error);
+      return false;
     }
+    return true;
   }
 
 
