@@ -79,6 +79,12 @@ describe('fantasy-calendar core', () => {
     expect(daysInYear(gregorian, 2024)).toBe(366);
   });
 
+  it('fromDay rejects non-integer day numbers', () => {
+    for (const n of [NaN, Infinity, -Infinity, 1.5]) {
+      expect(() => fromDay(aventurian, n)).toThrowError(RangeError);
+    }
+  });
+
   it('weekday', () => {
     expect(fromDay(aventurian, 0).weekday).toBe(4);
     expect(fromDay(aventurian, 365 * 999).weekday).toBe(2);

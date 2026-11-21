@@ -150,6 +150,9 @@ export function toDay(def: CalendarDefinition, parts: { year: number; month?: nu
 }
 
 export function fromDay(def: CalendarDefinition, n: number): ResolvedDate {
+  if (!Number.isSafeInteger(n)) {
+    throw new RangeError(`Invalid day number ${n}`);
+  }
   const m = n - def.epochDay;
   const cycle = cycleOf(def);
   const q = Math.floor(m / cycle.days);
