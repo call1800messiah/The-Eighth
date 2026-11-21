@@ -14,6 +14,8 @@
 
   .before {
     flex: 0 0 auto;
+    // The global checkbox style draws its box absolutely at left: 0; anchor it here.
+    position: relative;
   }
 }
 
