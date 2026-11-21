@@ -27,6 +27,21 @@
 #      in-game date conversion of migration 018; lists what cannot convert)
 #      then:        bash scripts/run-migrations.sh --dates --apply
 #
+# Updating an EXISTING install to migration 018 (structured in-game dates).
+# run-migrations.sh --schema replays every file from 001 and is for fresh
+# databases only; apply 018 on its own, in this order:
+#   1. docker load -i the-eighth-app.tar; tar xf the-eighth-deploy-*.tar
+#   2. Back up the database. 018 has no down migration: the backup is the
+#      rollback (pg_restore --clean --if-exists it into supabase-db).
+#        docker exec supabase-db pg_dump -U postgres -Fc postgres > before-018.dump
+#   3. Apply only 018, in one transaction:
+#        docker exec -i supabase-db psql -U postgres -d postgres -1 \
+#          -v ON_ERROR_STOP=1 < supabase/migrations/018_structured_dates.sql
+#   4. Recreate this stack (app AND mcp) right away. Either half alone breaks:
+#      the old images read and write the renamed date columns.
+#   5. Convert the dates: run-migrations.sh --dates, then --dates --apply (step 7
+#      above). Until then the app shows the old date text.
+#
 # Optional env vars:
 #   APP_PORT (default: 8082)
 #
