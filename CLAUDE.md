@@ -179,6 +179,9 @@ The combat view has a third mode (map icon): `CombatMapComponent` draws the runn
 - OAuth 2.1 for claude.ai/Claude Code, with a GM login as the approval step (`approve_mcp_grant()` runs under the GM's session). Connections (`mcp_grants`) are listed and revoked on `/drafts`.
 - The app's nginx proxies `/mcp`, `/mcp/…` and `/.well-known/oauth-*` to it. Keep those paths free in the Angular router.
 
+### Calendar
+In-game dates are integer day numbers on one shared day line; a calendar (a JSON `CalendarDefinition`) only names those day numbers (months, week, leap rules, era). The engine lives in `libs/fantasy-calendar/` and is framework-free: no Angular, RxJS, Supabase, Node or DOM imports, relative imports with `.js` extensions so it also compiles under the MCP server's `NodeNext` + `strict`. The app imports it as `@the-eighth/fantasy-calendar` (only `index.ts` is public). `fromDay`/`toDay` jump whole leap cycles, so far-past dates cost nothing. Specs under `libs/` run with `ng test` (`angular.json` includes `../libs/**/*.spec.ts`); the Gregorian fixture in `libs/fantasy-calendar/testing/` is for specs only.
+
 ### Realtime
 `RealtimeService.watch(table, queryFn, cacheKey, triggerTables)` re-runs the query when the watched table changes. **`triggerTables` matters for junction tables**: a write to `person_skills` changes no `people` row, so without listing it there the UI only updates after a reload. A table must also be a member of the `supabase_realtime` publication for any event to fire — see `supabase/migrations/004_person_capability_realtime.sql`.
 
