@@ -14,6 +14,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
+import { validateCalendar } from '../libs/fantasy-calendar/index.ts';
 import type { CalendarDefinition } from '../libs/fantasy-calendar/index.ts';
 import { convertAll, fetchAll } from './convert-dates.lib.ts';
 import type { ConversionStore } from './convert-dates.lib.ts';
@@ -59,6 +60,14 @@ const tenant = readTenant();
 const rules = JSON.parse(fs.readFileSync(`src/assets/${tenant}/rules.json`, 'utf8'));
 const calendars = rules.calendars as { default: string; list: CalendarDefinition[] };
 const def = calendars.list.find((c) => c.id === calendars.default) ?? calendars.list[0];
+// A malformed calendar makes the engine loop forever; stop before touching rows.
+const calendarErrors = validateCalendar(def);
+if (calendarErrors.length) {
+  console.error(`Calendar "${def.id}" in src/assets/${tenant}/rules.json is invalid:
+  ${calendarErrors.join('
+  ')}`);
+  process.exit(1);
+}
 
 const { url, serviceRoleKey } = getSupabaseCredentials();
 const db: SupabaseClient = createClient(url, serviceRoleKey, { auth: { persistSession: false } });

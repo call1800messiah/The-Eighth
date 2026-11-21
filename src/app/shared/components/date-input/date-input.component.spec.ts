@@ -31,7 +31,7 @@ describe('DateInputComponent', () => {
 
   function setup(opts: { calendars?: any[]; required?: boolean; legacy?: string | null } = {}) {
     const calendars = opts.calendars ?? [aventurian];
-    displayId = calendars[0].id;
+    displayId = calendars[0]?.id;
     TestBed.configureTestingModule({
       declarations: [DateInputComponent],
       imports: [ReactiveFormsModule],
@@ -197,5 +197,34 @@ describe('DateInputComponent', () => {
   it('shows the legacy text', () => {
     setup({ legacy: 'Alt 1' });
     expect(el().querySelector('.legacy')?.textContent).toContain('Bisher: Alt 1');
+  });
+
+  it('rejects a negative year instead of flipping its era', () => {
+    setup();
+    component.writeValue(null);
+    type('precision', 'year');
+    type('year', '-5');
+    check(true);
+    expect(component.validate()).toEqual({ invalidDate: true });
+    expect(emitted.some(v => v && v.day > 0)).toBe(false);
+  });
+
+  it('lets the user discard the old text', () => {
+    setup({ legacy: '1. Praios' });
+    let discarded = 0;
+    component.legacyDiscarded.subscribe(() => discarded++);
+    field('discard').click();
+    fixture.detectChanges();
+    expect(discarded).toBe(1);
+    expect(el().querySelector('.legacy')).toBeNull();
+  });
+
+  it('shows a notice and does not block the form without a calendar', () => {
+    setup({ calendars: [], required: true });
+    component.writeValue({ day: 5, precision: 'day' });
+    fixture.detectChanges();
+    expect(el().querySelector('.notice')).not.toBeNull();
+    expect(field('year')).toBeNull();
+    expect(component.validate()).toBeNull();
   });
 });

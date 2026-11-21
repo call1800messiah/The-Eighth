@@ -25,7 +25,8 @@
       <label for="profession">Profession</label>
     </div>
     <div class="form-group">
-      <app-date-input inputId="birth" formControlName="birth" [legacy]="props.birthLegacy"></app-date-input>
+      <app-date-input inputId="birth" formControlName="birth" [legacy]="props.birthLegacy"
+        (legacyDiscarded)="discardedLegacy.birth = true"></app-date-input>
       <label for="birth">Geboren</label>
     </div>
     <div class="form-group">
@@ -33,7 +34,8 @@
       <label for="height">Größe (in cm)</label>
     </div>
     <div class="form-group">
-      <app-date-input inputId="death" formControlName="death" [legacy]="props.deathLegacy"></app-date-input>
+      <app-date-input inputId="death" formControlName="death" [legacy]="props.deathLegacy"
+        (legacyDiscarded)="discardedLegacy.death = true"></app-date-input>
       <label for="death">Gestorben</label>
     </div>
     <div class="form-group">

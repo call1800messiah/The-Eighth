@@ -1,7 +1,8 @@
 <div>
   <form [formGroup]="eventForm" (ngSubmit)="save()">
     <div class="form-group">
-      <app-date-input inputId="date" formControlName="date" [legacy]="props.event?.dateLegacy"></app-date-input>
+      <app-date-input inputId="date" formControlName="date" [legacy]="props.event?.dateLegacy"
+        (legacyDiscarded)="discardedLegacy = true"></app-date-input>
       <label for="date">Datum</label>
     </div>
 

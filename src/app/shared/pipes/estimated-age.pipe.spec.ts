@@ -73,4 +73,15 @@ describe('EstimatedAgePipe', () => {
     expect(p.transform(birth)).toBe(`fmt:${birth.day}`);
     p.ngOnDestroy();
   });
+
+  it('should answer a repeated call without recomputing, but follow a new birth', () => {
+    const format = spyOn(calendarService, 'format').and.callThrough();
+    const plain = createPipe(null);
+    plain.transform(birthIn(1011));
+    plain.transform(birthIn(1011));
+    expect(format).toHaveBeenCalledTimes(1);
+    plain.transform(birthIn(1012));
+    expect(format).toHaveBeenCalledTimes(2);
+    plain.ngOnDestroy();
+  });
 });

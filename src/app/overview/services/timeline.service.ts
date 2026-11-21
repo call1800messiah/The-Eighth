@@ -4,7 +4,7 @@ import { debounceTime, map, tap } from 'rxjs/operators';
 
 import type { Timeline } from '../models/timeline';
 import type { HistoricEvent } from '../models/historic-event';
-import { dateColumns, readDate } from '../../core/calendar/date-columns';
+import { readDate, storeDate } from '../../core/calendar/date-columns';
 import { DataService } from '../../core/services/data.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
@@ -43,7 +43,7 @@ export class TimelineService {
           query => query
             .select('*')
             .eq('timeline_id', timelineId)
-            .order('date_day', { ascending: false, nullsFirst: false })
+            .order('date_day', { ascending: false, nullsFirst: true })
             .order('created_at', { ascending: false })
             .limit(limit),
           `historic_events:${timelineId}:${limit}`,
@@ -77,16 +77,7 @@ export class TimelineService {
 
   store(event: Partial<HistoricEvent>, eventId?: string) {
     const dbEvent: any = { ...event };
-    // The legacy text is never written, only cleared by a real date.
-    delete dbEvent.dateLegacy;
-    if (dbEvent.date !== undefined) {
-      const date = dbEvent.date;
-      delete dbEvent.date;
-      Object.assign(dbEvent, dateColumns('date', date));
-      if (date) {
-        dbEvent.date_legacy = null;
-      }
-    }
+    storeDate(dbEvent, 'date');
     return this.data.store(dbEvent, TimelineService.eventsCollection, eventId);
   }
 

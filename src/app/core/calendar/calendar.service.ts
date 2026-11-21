@@ -1,10 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { format, type CalendarDefinition, type FormatStyle, type InGameDate } from '@the-eighth/fantasy-calendar';
+import {
+  format,
+  validateCalendar,
+  type CalendarDefinition,
+  type FormatStyle,
+  type InGameDate,
+} from '@the-eighth/fantasy-calendar';
 
 import { RulesService } from '../../rules/services/rules.service';
 
 const STORAGE_KEY = 'calendar-display';
+/** Formatted dates kept; a full list of people or events stays well below this. */
+const FORMAT_CACHE_SIZE = 2000;
 
 /** The tenant's calendars, and which one dates are shown in. */
 @Injectable({ providedIn: 'root' })
@@ -12,6 +20,8 @@ export class CalendarService {
   private rules = inject(RulesService);
   private defaultId = '';
   private reportedBadDate = false;
+  /** Formatting walks up to a leap cycle of years; pipes ask again on every change detection. */
+  private formatCache = new Map<string, string>();
 
   calendars: CalendarDefinition[] = [];
   readonly displayCalendar$ = new BehaviorSubject<string>(CalendarService.readStored());
@@ -28,8 +38,21 @@ export class CalendarService {
         console.error('rules.json defines no calendars; dates will not be shown');
         return;
       }
-      this.calendars = config.list;
+      // The engine loops forever on a malformed calendar, so leave those out.
+      const valid = config.list.filter((calendar) => {
+        const errors = validateCalendar(calendar);
+        if (errors.length) {
+          console.error(`Calendar "${calendar?.id}" in rules.json is invalid and is left out:`, errors);
+        }
+        return errors.length === 0;
+      });
+      if (!valid.length) {
+        console.error('rules.json defines no valid calendar; dates will not be shown');
+        return;
+      }
+      this.calendars = valid;
       this.defaultId = config.default;
+      this.formatCache.clear();
     } catch (error) {
       console.error('Could not load calendars', error);
       return;
@@ -57,8 +80,18 @@ export class CalendarService {
     if (!date || !calendar) {
       return '';
     }
+    const key = `${calendar.id}|${date.day}|${date.precision}|${style ?? ''}`;
+    const cached = this.formatCache.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
     try {
-      return format(calendar, date, style);
+      const text = format(calendar, date, style);
+      if (this.formatCache.size >= FORMAT_CACHE_SIZE) {
+        this.formatCache.clear();
+      }
+      this.formatCache.set(key, text);
+      return text;
     } catch (error) {
       if (!this.reportedBadDate) {
         this.reportedBadDate = true;

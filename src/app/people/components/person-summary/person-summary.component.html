@@ -22,7 +22,7 @@
       @if (person.race && !showAsList) {
         <div class="race">{{person.race}}</div>
       }
-      <div class="birth">{{ person.birth | estimatedAge }}</div>
+      <div class="birth">{{ person.birth ? (person.birth | estimatedAge) : person.birthLegacy }}</div>
     </div>
 
     <div class="status">

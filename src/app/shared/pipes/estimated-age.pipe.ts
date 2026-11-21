@@ -1,6 +1,6 @@
 import { OnDestroy, Pipe, PipeTransform, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { yearOf, type InGameDate } from '@the-eighth/fantasy-calendar';
+import { yearOf, type CalendarDefinition, type InGameDate } from '@the-eighth/fantasy-calendar';
 
 import { CalendarService } from '../../core/calendar/calendar.service';
 import { CampaignService } from '../../overview/services/campaign.service';
@@ -18,6 +18,9 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
 
   private subscription = new Subscription();
   private campaignDate: InGameDate | null = null;
+  /** Impure, so it runs on every change detection: remember the last answer. */
+  private lastKey = '';
+  private lastResult = '';
 
   constructor() {
     this.subscription.add(
@@ -37,6 +40,15 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
     }
     // Birth years are Aventurian years whatever calendar the viewer reads.
     const calendar = this.calendars.defaultCalendar;
+    const key = `${calendar?.id}|${birth.day}|${birth.precision}|${this.campaignDate?.day}`;
+    if (key !== this.lastKey) {
+      this.lastKey = key;
+      this.lastResult = this.describe(birth, calendar);
+    }
+    return this.lastResult;
+  }
+
+  private describe(birth: InGameDate, calendar: CalendarDefinition | undefined): string {
     if (!this.campaignDate || !calendar) {
       return this.calendars.format(birth, calendar?.id);
     }

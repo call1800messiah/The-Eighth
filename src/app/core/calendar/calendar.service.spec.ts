@@ -67,4 +67,32 @@ describe('CalendarService', () => {
     expect(service.format({ day: 0, precision: 'day' })).toBe('');
     expect(console.error).toHaveBeenCalled();
   });
+
+  it('leaves out a malformed calendar instead of hanging on it', async () => {
+    spyOn(console, 'error');
+    const broken = { ...gregorian, id: 'broken', months: [{ name: 'x', days: 0 }] };
+    const service = setup({ calendars: { default: 'aventurian', list: [aventurian, broken] } });
+    await service.load();
+    expect(service.calendars.map(c => c.id)).toEqual(['aventurian']);
+    expect(service.format({ day: 0, precision: 'day' }, 'broken')).toBe('1. Praios 1 BF');
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it('shows no dates when every calendar is malformed', async () => {
+    spyOn(console, 'error');
+    const broken = { ...aventurian, week: { days: [], epochWeekday: 0 } };
+    const service = setup({ calendars: { default: 'aventurian', list: [broken] } });
+    await service.load();
+    expect(service.calendars).toEqual([]);
+    expect(service.format({ day: 0, precision: 'day' })).toBe('');
+  });
+
+  it('formats a repeated date from the cache, per calendar', async () => {
+    const service = setup();
+    await service.load();
+    const first = service.format({ day: 400, precision: 'day' });
+    expect(service.format({ day: 400, precision: 'day' })).toBe(first);
+    expect(service.format({ day: 400, precision: 'day' }, 'gregorian')).not.toBe(first);
+    expect(service.format({ day: 400, precision: 'year' })).not.toBe(first);
+  });
 });

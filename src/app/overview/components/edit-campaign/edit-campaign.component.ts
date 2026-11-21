@@ -26,15 +26,28 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
     xp: new UntypedFormControl(0),
   });
 
+  /** The user discarded the old date text; cleared on save. */
+  discardedLegacy = false;
+
+  /** Required, unless the old text still stands in for a date. */
+  get dateRequired(): boolean {
+    return !this.props?.dateLegacy || this.discardedLegacy;
+  }
+
   ngOnInit(): void {
     this.campaignForm.patchValue(this.props);
   }
 
   save() {
     if (this.campaignForm.invalid) {
+      this.campaignForm.markAllAsTouched();
       return;
     }
-    this.campaignService.store(this.campaignForm.value, this.props.id).then(() => {
+    const campaign = { ...this.campaignForm.value };
+    if (this.discardedLegacy) {
+      campaign.dateLegacy = null;
+    }
+    this.campaignService.store(campaign, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

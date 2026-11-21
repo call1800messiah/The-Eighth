@@ -1,7 +1,14 @@
-@if (legacy) {
-  <p class="legacy">Bisher: {{ legacy }}</p>
+@if (legacy && !discarded) {
+  <p class="legacy">
+    Bisher: {{ legacy }}
+    <button type="button" class="discard" data-field="discard" [disabled]="disabled"
+      title="Den alten Text beim Speichern löschen" (click)="discardLegacy()">verwerfen</button>
+  </p>
 }
 
+@if (!calendar) {
+  <p class="notice">Kein Kalender geladen; das Datum kann gerade nicht bearbeitet werden.</p>
+} @else {
 <div class="fields" (focusout)="touched()">
   <select
     [id]="inputId"
@@ -77,4 +84,9 @@
 
 @if (weekday) {
   <p class="weekday">{{ weekday }}</p>
+}
+
+@if (error) {
+  <p class="error" role="alert">{{ error }}</p>
+}
 }

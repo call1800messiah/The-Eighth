@@ -1,4 +1,4 @@
-import { type CalendarDefinition, format, parse } from './engine/index.js';
+import { type CalendarDefinition, format, parse, validateCalendar } from './engine/index.js';
 import calendars from './calendars.json' with { type: 'json' };
 import { ToolError } from '../tools/entities.js';
 
@@ -6,6 +6,12 @@ import { ToolError } from '../tools/entities.js';
 const calendar = ((calendars as { default: string; list: CalendarDefinition[] }).list
   .find(c => c.id === (calendars as { default: string }).default)
   ?? (calendars as { list: CalendarDefinition[] }).list[0]) as CalendarDefinition;
+
+// A malformed calendar makes the engine loop forever on the first date: refuse to start instead.
+const calendarErrors = validateCalendar(calendar);
+if (calendarErrors.length) {
+  throw new Error(`Calendar "${calendar.id}" is invalid: ${calendarErrors.join(' ')}`);
+}
 
 type Columns = Record<string, number | string | null>;
 

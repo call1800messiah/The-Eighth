@@ -1,9 +1,21 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, forwardRef, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Injector,
+  Input,
+  OnChanges,
+  Output,
+  forwardRef,
+  inject,
+} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
+  NgControl,
   ValidationErrors,
   Validator,
 } from '@angular/forms';
@@ -24,7 +36,11 @@ import { CalendarService } from '../../../core/calendar/calendar.service';
  *
  * Like the rich-text editor, it only emits once the user edits, so opening a
  * form never rewrites a stored value. A partly filled or non-existent date is
- * reported as `{ invalidDate: true }` and is not emitted.
+ * reported as `{ invalidDate: true }` and is not emitted, and shown as an
+ * error once the control is touched (e.g. by `markAllAsTouched()` on save).
+ *
+ * Without a loaded calendar it cannot read or write a date: it shows a notice,
+ * keeps the stored value and does not block the form.
  */
 @Component({
   selector: 'app-date-input',
@@ -40,12 +56,16 @@ import { CalendarService } from '../../../core/calendar/calendar.service';
 export class DateInputComponent implements ControlValueAccessor, Validator, OnChanges {
   private calendarService = inject(CalendarService);
   private cdr = inject(ChangeDetectorRef);
+  private injector = inject(Injector);
 
   /** Lets a `<label for="…">` focus the first field. */
   @Input() inputId = '';
   @Input() required = false;
   /** Old free-text date that was not converted yet. */
   @Input() legacy: string | null | undefined;
+  /** The user discarded the old text; the form should clear it on save. */
+  @Output() legacyDiscarded = new EventEmitter<void>();
+  discarded = false;
 
   readonly precisions: { value: Precision; label: string }[] = [
     { value: 'day', label: 'Tag' },
@@ -74,8 +94,21 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
     return this.calendarService.calendars;
   }
 
-  get calendar(): CalendarDefinition {
+  get calendar(): CalendarDefinition | undefined {
     return this.calendarService.get(this.calendarId);
+  }
+
+  /** The message to show under the fields, once the control was touched. */
+  get error(): string | null {
+    const control = this.injector.get(NgControl, null, { self: true, optional: true });
+    if (!control?.touched || !this.calendar) {
+      return null;
+    }
+    const errors = this.validate();
+    if (errors?.['required']) {
+      return 'Bitte ein Datum angeben.';
+    }
+    return errors?.['invalidDate'] ? 'Das Datum ist unvollständig oder existiert nicht.' : null;
   }
 
 
@@ -108,6 +141,9 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
   }
 
   validate(_control?: AbstractControl): ValidationErrors | null {
+    if (!this.calendar) {
+      return null;
+    }
     const state = this.read();
     if (state.kind === 'empty') {
       return this.required ? { required: true } : null;
@@ -118,6 +154,12 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
 
   touched(): void {
     this.onTouched();
+  }
+
+  discardLegacy(): void {
+    this.discarded = true;
+    this.legacyDiscarded.emit();
+    this.onValidatorChange();
   }
 
   setPrecision(precision: Precision): void {
@@ -165,6 +207,9 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
       return;
     }
     const def = this.calendar;
+    if (!def) {
+      return;
+    }
     const resolved = fromDay(def, date.day);
     this.precision = date.precision;
     this.day = String(resolved.day);
@@ -175,6 +220,9 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
   }
 
   private edited(): void {
+    if (!this.calendar) {
+      return;
+    }
     const state = this.read();
     this.weekday = '';
     if (state.kind === 'valid') {
@@ -212,15 +260,24 @@ export class DateInputComponent implements ControlValueAccessor, Validator, OnCh
     }
 
     const y = Number(year);
+    // The era is the checkbox; a typed sign would contradict it.
+    if (y < 0) {
+      return { kind: 'invalid' };
+    }
     const parts = {
       year: this.before && y !== 0 ? -y : y,
       month: needsMonth ? Number(month) : 0,
       day: needsDay ? Number(day) : 1,
     };
     const def = this.calendar;
-    if (!isValidDate(def, parts)) {
+    if (!def || !isValidDate(def, parts)) {
       return { kind: 'invalid' };
     }
-    return { kind: 'valid', date: { day: toDay(def, parts), precision: this.precision } };
+    const dayNumber = toDay(def, parts);
+    // Stored as BIGINT but read back only if exact in JavaScript (readDate).
+    if (!Number.isSafeInteger(dayNumber)) {
+      return { kind: 'invalid' };
+    }
+    return { kind: 'valid', date: { day: dayNumber, precision: this.precision } };
   }
 }

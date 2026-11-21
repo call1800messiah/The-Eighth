@@ -26,6 +26,8 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
+  /** The user discarded the old date text; cleared on save. */
+  discardedLegacy = false;
   eventForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
     date: new UntypedFormControl(null),
@@ -66,6 +68,7 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
   save() {
     if (this.eventForm.invalid) {
+      this.eventForm.markAllAsTouched();
       return;
     }
     let id: string;
@@ -78,6 +81,9 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
       event.owner = this.userID;
     }
     event.modified_at = new Date().toISOString();
+    if (this.discardedLegacy) {
+      event.dateLegacy = null;
+    }
 
     this.timelineService.store(event, id).then(() => {
       this.dismissPopover.emit(true);

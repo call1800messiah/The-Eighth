@@ -78,7 +78,7 @@ describe('TimelineService', () => {
   });
 
   describe('ordering', () => {
-    it('should order by in-game date, undated last, then by creation', (done) => {
+    it('should order by in-game date, undated first, then by creation', (done) => {
       service.getEvents('tl3').subscribe();
       setTimeout(() => {
         const queryFn = mockRealtime.watch.calls.mostRecent().args[1];
@@ -90,7 +90,7 @@ describe('TimelineService', () => {
         queryFn(builder);
         const orders = calls.filter(c => c.startsWith('order:'));
         expect(orders).toEqual([
-          'order:["date_day",{"ascending":false,"nullsFirst":false}]',
+          'order:["date_day",{"ascending":false,"nullsFirst":true}]',
           'order:["created_at",{"ascending":false}]',
         ]);
         done();

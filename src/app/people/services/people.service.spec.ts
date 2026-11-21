@@ -432,6 +432,12 @@ describe('PeopleService', () => {
       expect(stored).toEqual({ birth_day: null, birth_precision: null, death_day: null, death_precision: null });
     });
 
+    it('should clear a discarded death text so the person is alive again', async () => {
+      await service.store({ death: null, deathLegacy: null } as any, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith(
+        { death_day: null, death_precision: null, deathday_legacy: null }, 'people', 'per1');
+    });
+
     it('should delegate to DataService.store', async () => {
       await service.store({ name: 'Updated' }, 'per1');
       expect(mockData.store).toHaveBeenCalledWith({ name: 'Updated' }, 'people', 'per1');

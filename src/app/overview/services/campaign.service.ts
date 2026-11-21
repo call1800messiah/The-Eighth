@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { dateColumns, readDate } from '../../core/calendar/date-columns';
+import { readDate, storeDate } from '../../core/calendar/date-columns';
 import { CampaignData } from '../models/campaign-data';
 import { DataService } from '../../core/services/data.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
@@ -37,16 +37,7 @@ export class CampaignService {
 
   public store(campaign: Partial<CampaignData>, campaignId: string) {
     const dbCampaign: any = { ...campaign };
-    // The legacy text is never written, only cleared by a real date.
-    delete dbCampaign.dateLegacy;
-    if (dbCampaign.date !== undefined) {
-      const date = dbCampaign.date;
-      delete dbCampaign.date;
-      Object.assign(dbCampaign, dateColumns('date', date));
-      if (date) {
-        dbCampaign.date_legacy = null;
-      }
-    }
+    storeDate(dbCampaign, 'date');
     if (dbCampaign.staminaReduction !== undefined) {
       dbCampaign.stamina_reduction = dbCampaign.staminaReduction;
       delete dbCampaign.staminaReduction;
