@@ -9,17 +9,28 @@
 BEGIN;
 INSERT INTO people (id, name, owner_id) VALUES (:pub, 'Alrik', :gm);
 INSERT INTO campaign (id, name) VALUES ('cccccccc-cccc-4ccc-8ccc-cccccccccccc', 'Reise');
+INSERT INTO timelines (id, name, owner_id) VALUES ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'Logbuch', :gm);
 
 -- ── Columns ───────────────────────────────────────────────────────────────
-SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_name = 'people'
+SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'people'
   AND column_name IN ('birth_day', 'birth_precision', 'death_day', 'death_precision', 'birthday_legacy', 'birthyear_legacy', 'deathday_legacy')),
   7::BIGINT, 'people has the new and legacy date columns');
-SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_name = 'campaign'
+SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'campaign'
   AND column_name IN ('date_day', 'date_precision', 'date_legacy')), 3::BIGINT, 'campaign has the new and legacy date columns');
-SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_name = 'historic_events'
+SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'historic_events'
   AND column_name IN ('date_day', 'date_precision', 'date_legacy')), 3::BIGINT, 'historic_events has the new and legacy date columns');
-SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_name IN ('people', 'campaign', 'historic_events')
+SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name IN ('people', 'campaign', 'historic_events')
   AND column_name IN ('birthday', 'birthyear', 'deathday', 'date')), 0::BIGINT, 'the old text columns are gone');
+
+SELECT test.eq((SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public'
+  AND ((table_name IN ('campaign', 'historic_events') AND column_name = 'date_day')
+    OR (table_name = 'people' AND column_name IN ('birth_day', 'death_day')))
+  AND data_type = 'bigint'), 4::BIGINT, 'the four day columns are BIGINT');
+SELECT test.eq((SELECT obj_description('public.historic_events'::regclass, 'pg_class') LIKE '%date_day%'), true,
+  'the historic_events table comment names date_day');
+SELECT test.eq((SELECT col_description('public.people'::regclass, a.attnum) NOT LIKE '%free-text%'
+  FROM pg_attribute a WHERE a.attrelid = 'public.people'::regclass AND a.attname = 'birthyear_legacy'), true,
+  'the birthyear_legacy comment does not call it free text');
 
 -- ── Day and precision come as a pair ──────────────────────────────────────
 SELECT test.login(:gm);
@@ -48,9 +59,27 @@ DO $$ BEGIN
   RAISE EXCEPTION 'FAIL death precision without day was allowed';
 EXCEPTION WHEN check_violation THEN RAISE NOTICE 'ok   death precision without day is refused';
 END $$;
+DO $$ BEGIN
+  INSERT INTO historic_events (timeline_id, content, date_day) VALUES ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'x', 5);
+  RAISE EXCEPTION 'FAIL event day without precision was allowed';
+EXCEPTION WHEN check_violation THEN RAISE NOTICE 'ok   event day without precision is refused';
+END $$;
+DO $$ BEGIN
+  INSERT INTO historic_events (timeline_id, content, date_precision) VALUES ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'x', 'day');
+  RAISE EXCEPTION 'FAIL event precision without day was allowed';
+EXCEPTION WHEN check_violation THEN RAISE NOTICE 'ok   event precision without day is refused';
+END $$;
+DO $$ BEGIN
+  INSERT INTO historic_events (timeline_id, content, date_day, date_precision) VALUES ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'x', 5, 'week');
+  RAISE EXCEPTION 'FAIL unknown event precision was allowed';
+EXCEPTION WHEN check_violation THEN RAISE NOTICE 'ok   unknown event precision is refused';
+END $$;
+SELECT test.eq(test.affected($$INSERT INTO historic_events (timeline_id, content, date_day, date_precision) VALUES ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'x', -5, 'month')$$), 1, 'GM adds a dated timeline entry');
 SELECT test.eq(test.affected($$UPDATE campaign SET date_day = -5, date_precision = 'month'$$), 1, 'GM sets the campaign date (negative days are fine)');
 SELECT test.eq(test.affected($$UPDATE campaign SET date_day = NULL, date_precision = NULL$$), 1, 'GM clears the campaign date');
 SELECT test.eq(test.affected($$UPDATE people SET birth_day = 100, birth_precision = 'year', death_day = 200, death_precision = 'day' WHERE id = '11111111-1111-4111-8111-111111111111'$$), 1, 'GM sets birth and death');
+SELECT test.eq(test.affected($$UPDATE people SET birth_day = -36500000365, birth_precision = 'year' WHERE id = '11111111-1111-4111-8111-111111111111'$$), 1, 'a far-past birth day beyond INTEGER is stored');
+SELECT test.eq((SELECT birth_day FROM people WHERE id = :pub), -36500000365::BIGINT, 'and reads back unchanged');
 
 -- ── Players cannot write the campaign date ────────────────────────────────
 SELECT test.login(:p1);

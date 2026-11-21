@@ -4,7 +4,7 @@
 
 **Goal:** Replace every free-text in-game date (campaign date, timeline events, people's birth and death) with a day number + precision on a shared day line, read through framework-free calendar definitions, in the app and the MCP server.
 
-**Architecture:** A pure TypeScript engine in `libs/fantasy-calendar/` (no Angular/Node/DOM imports) does all calendar math. Calendars are JSON in `src/assets/{tenant}/rules.json`. The DB stores `<name>_day INTEGER` + `<name>_precision TEXT`; old text moves to `*_legacy` columns until a one-off script converts it. Angular gets a `CalendarService`, a `calendarDate` pipe, an `<app-in-game-date>` display component and an `<app-date-input>` form control; the MCP server parses text dates on write and formats on read using the same engine.
+**Architecture:** A pure TypeScript engine in `libs/fantasy-calendar/` (no Angular/Node/DOM imports) does all calendar math. Calendars are JSON in `src/assets/{tenant}/rules.json`. The DB stores `<name>_day BIGINT` + `<name>_precision TEXT`; old text moves to `*_legacy` columns until a one-off script converts it. Angular gets a `CalendarService`, a `calendarDate` pipe, an `<app-in-game-date>` display component and an `<app-date-input>` form control; the MCP server parses text dates on write and formats on read using the same engine.
 
 **Tech Stack:** TypeScript, Angular 22 (Karma/Jasmine), Supabase/Postgres (psql tests), Node MCP server (`node --test` + tsx), tsx for scripts.
 
@@ -15,7 +15,7 @@
 - Engine: no runtime dependencies; no imports from Angular, RxJS, Supabase, Node or the DOM. Relative imports inside the engine use `.js` extensions (`./types.js`) so it compiles under both the app's `moduleResolution: bundler` and the MCP's `NodeNext` + `strict: true`.
 - Engine public API only via `libs/fantasy-calendar/index.ts`; app imports `@the-eighth/fantasy-calendar`.
 - Stored truth is `{ day: number, precision: 'day' | 'month' | 'year' }` only — no calendar id, no label column.
-- Columns: `<name>_day INTEGER`, `<name>_precision TEXT CHECK (… IN ('day','month','year'))`, both NULL or both set. Old text → `*_legacy`; the app writes legacy only to clear it.
+- Columns: `<name>_day BIGINT`, `<name>_precision TEXT CHECK (… IN ('day','month','year'))`, both NULL or both set. Old text → `*_legacy`; the app writes legacy only to clear it.
 - A person is dead iff `death` is set or `deathLegacy` is set.
 - Aventurian calendar is the only calendar and the default in both `src/assets/tde5/rules.json` and `src/assets/the-eighth/rules.json`; the two definitions are identical.
 - Aventurian canon used (from Wiki Aventurica "Zeitrechnung"/"Bosparans Fall" and a fan converter; tell the user it's unconfirmed for the weekday): `hasYearZero: true` (0 BF exists; −1 is "1 v. BF"); Namenlose Tage count in the week; week order Windstag, Erdtag, Markttag, Praiostag, Rohalstag, Feuertag, Wassertag; 1. Praios 1 BF is a **Rohalstag** (so 1. Praios 1000 BF is a Markttag).
@@ -161,7 +161,7 @@ Definition: `id "aventurian"`, `name "Aventurischer Kalender"`, `epochDay 0`, mo
 - Modify: `scripts/transform-and-migrate.ts:508-510,596,1063` — write `birthday_legacy`, `birthyear_legacy`, `deathday_legacy`, `date_legacy` instead of the old names (the Firestore import stays usable; `convert-dates` runs after it). Line 807 is `flows.date` (real-world) — leave it.
 
 Migration contents:
-- `campaign`, `historic_events`: `RENAME COLUMN date TO date_legacy`; add `date_day INTEGER`, `date_precision TEXT CHECK (date_precision IN ('day','month','year'))`, `CONSTRAINT <table>_date_pair CHECK ((date_day IS NULL) = (date_precision IS NULL))`.
+- `campaign`, `historic_events`: `RENAME COLUMN date TO date_legacy`; add `date_day BIGINT`, `date_precision TEXT CHECK (date_precision IN ('day','month','year'))`, `CONSTRAINT <table>_date_pair CHECK ((date_day IS NULL) = (date_precision IS NULL))`.
 - `people`: rename `birthday`→`birthday_legacy`, `birthyear`→`birthyear_legacy`, `deathday`→`deathday_legacy`; add `birth_day`, `birth_precision`, `death_day`, `death_precision` with the same checks (`people_birth_pair`, `people_death_pair`).
 - `CREATE INDEX idx_historic_events_timeline_date ON historic_events (timeline_id, date_day DESC NULLS LAST);`
 - `COMMENT ON COLUMN` for every new and renamed column (replacing the 015 comments): `*_day` = "In-game date as a day number on the campaign day line (0 = 1. Praios 1 BF); the calendars that name it are in the app's rules.json. Sort by it."; `*_precision` = "How exact *_day is: day, month or year (then *_day is the first day of that month/year)."; `*_legacy` = "Old free-text value that could not be converted yet; NULL once converted."; `people.death_day` adds "A person is dead if death_day or deathday_legacy is set."

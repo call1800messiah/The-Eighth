@@ -125,6 +125,13 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     assert.deepEqual((mentions as any[]).map(m => m.entity_type).sort(), ['person', 'place'], 'backlinks were recorded');
   });
 
+  it('round-trips a far-past birth beyond INTEGER', async () => {
+    const result = parse(await call('create_person', { name: 'Uralter Drache', birth: '100000000 v. BF' }));
+    const read = await repo.get('person', result.created.id);
+    assert.ok((read['birth_day'] as number) < -(2 ** 31), 'the day number needs a BIGINT');
+    assert.equal(formatDateColumns(read)['birth'], '100000000 v. BF');
+  });
+
   it('keeps drafts from players', async () => {
     const { data } = await player().from('people').select('id').eq('id', draft);
     assert.deepEqual(data, []);

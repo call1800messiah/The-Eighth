@@ -133,7 +133,7 @@ Before go-live, check against DSA canon whether there is a year 0 BF and which w
 
 ### Database: migration `018_structured_dates.sql`
 
-Each in-game date becomes two columns: `<name>_day INTEGER` and `<name>_precision TEXT` with `CHECK (… IN ('day','month','year'))`, both NULL together or both set (a table `CHECK`). The old text is renamed to `<old>_legacy` and kept only for rows that couldn't be converted; the app never writes it except to clear it (NULL) when a real date is saved for that row.
+Each in-game date becomes two columns: `<name>_day BIGINT` and `<name>_precision TEXT` with `CHECK (… IN ('day','month','year'))`, both NULL together or both set (a table `CHECK`). The old text is renamed to `<old>_legacy` and kept only for rows that couldn't be converted; the app never writes it except to clear it (NULL) when a real date is saved for that row.
 
 | Table | New | Old column becomes |
 |---|---|---|
