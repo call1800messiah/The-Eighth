@@ -85,8 +85,7 @@ async function main(): Promise<void> {
   console.log(`${apply ? 'APPLY' : 'DRY RUN'} (tenant ${tenant}, calendar ${def.id})`);
   const { converted, unparsed, writeErrors } = await convertAll(def, store, apply);
   converted.forEach((line) => console.log(line));
-  console.log(`
-${converted.length} row value(s) ${apply ? 'converted' : 'would be converted'}.`);
+  console.log(`\n${converted.length} row value(s) ${apply ? 'converted' : 'would be converted'}.`);
   if (unparsed.length) {
     console.log(`${unparsed.length} could not be parsed and were left untouched:`);
     unparsed.forEach((f) => console.log(`  ${f}`));
