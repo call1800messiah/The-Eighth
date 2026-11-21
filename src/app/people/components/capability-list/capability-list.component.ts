@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faInfo, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,9 +12,15 @@ import { RulesService } from '../../../rules/services/rules.service';
 @Component({
   selector: 'app-capability-list',
   templateUrl: './capability-list.component.html',
-  styleUrl: './capability-list.component.scss'
+  styleUrl: './capability-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CapabilityListComponent {
+  private popover = inject(PopoverService);
+  private dice = inject(DiceRollerService);
+  private rules = inject(RulesService);
+
   @Input() person: Person;
   displayRule$: Observable<AddableRule | undefined>;
   faInfo = faInfo;
@@ -22,11 +28,7 @@ export class CapabilityListComponent {
   ruleTypes = RulesService.ruleTypes;
   private selectedRule$: BehaviorSubject<string | undefined>;
 
-  constructor(
-    private popover: PopoverService,
-    private dice: DiceRollerService,
-    private rules: RulesService,
-  ) {
+  constructor() {
     this.selectedRule$ = new BehaviorSubject(undefined);
     this.displayRule$ = combineLatest([this.rules.getDynamicRules(), this.selectedRule$]).pipe(
       map(([rules, selectedRule]) => rules.find((rule) => rule.id === selectedRule))

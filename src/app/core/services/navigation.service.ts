@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import {
   faChartBar,
   faCompass,
   faDharmachakra,
   faFistRaised,
+  faRobot,
   faMeteor,
   faNoteSticky,
   faScaleBalanced,
@@ -23,6 +24,8 @@ import { NavEntry } from '../models/nav-entry';
   providedIn: 'root'
 })
 export class NavigationService {
+  private router = inject(Router);
+
   public navVisible$: BehaviorSubject<boolean>;
   public pageLabel$: BehaviorSubject<string>;
   public showBackButton$: BehaviorSubject<boolean>;
@@ -85,11 +88,15 @@ export class NavigationService {
       icon: faScaleBalanced,
       link: '/rules'
     },
+    {
+      icon: faRobot,
+      label: 'Claude',
+      link: '/drafts',
+      gmOnly: true,
+    },
   ];
 
-  constructor(
-    private router: Router,
-  ) {
+  constructor() {
     this.navVisible$ = new BehaviorSubject(this.showNav);
     this.activeNavigation = this.navigation[0];
     this.pageLabel$ = new BehaviorSubject(this.activeNavigation.label);
@@ -99,7 +106,9 @@ export class NavigationService {
         if (!this.currentBackLink) {
           this.showBackButton$.next(false);
         }
-        const active = this.navigation.find((page) => page.link === event.url);
+        // Ignore the query: mention links open `/notes?note=<id>`.
+        const path = event.urlAfterRedirects.split(/[?#]/)[0];
+        const active = this.navigation.find((page) => page.link === path);
         if (active) {
           this.activeNavigation = active;
           this.pageLabel$.next(this.activeNavigation.label);

@@ -1,2 +1,4 @@
-<app-audio-player *ngFor="let url of audioFiles" [name]="'Santana'" [fileUrl]="url" [icon]="faGuitar">
-</app-audio-player>
+@for (url of audioFiles; track url) {
+  <app-audio-player [name]="'Santana'" [fileUrl]="url" [icon]="faGuitar">
+  </app-audio-player>
+}

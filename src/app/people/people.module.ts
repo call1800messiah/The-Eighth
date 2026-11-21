@@ -4,12 +4,14 @@ import { CommonModule } from '@angular/common';
 import { ListComponent } from './components/list/list.component';
 import { PeopleRoutingModule } from './people-routing.module';
 import { PersonSummaryComponent } from './components/person-summary/person-summary.component';
+import { ScenesComponent } from './components/scenes/scenes.component';
 import { SharedModule } from '../shared/shared.module';
 import { EditPersonComponent } from './components/edit-person/edit-person.component';
 import { PersonComponent } from './components/person/person.component';
 import { AttributesComponent } from './components/attributes/attributes.component';
 import { CapabilityListComponent } from './components/capability-list/capability-list.component';
 import { EditCapabilityComponent } from './components/edit-capability/edit-capability.component';
+import { EditSceneComponent } from './components/edit-scene/edit-scene.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { PersonSelectorComponent } from './components/person-selector/person-selector.component';
 import { RulesModule } from '../rules/rules.module';
@@ -21,11 +23,13 @@ import { RulesModule } from '../rules/rules.module';
     AttributesComponent,
     CapabilityListComponent,
     EditCapabilityComponent,
+    EditSceneComponent,
     EditPersonComponent,
     ListComponent,
     PersonComponent,
     PersonSelectorComponent,
     PersonSummaryComponent,
+    ScenesComponent,
     StatsComponent,
   ],
   imports: [

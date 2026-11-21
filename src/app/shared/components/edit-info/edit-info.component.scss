@@ -1,0 +1,6 @@
+.error {
+  border: var(--border-line-width, 1px) solid var(--color-high);
+  color: var(--color-high);
+  margin: 0 0 var(--item-padding);
+  padding: calc(var(--item-padding) / 2);
+}

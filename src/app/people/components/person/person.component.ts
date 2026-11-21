@@ -1,11 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { from, Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import type { AuthUser } from '../../../auth/models/auth-user';
-import type { Person } from '../../models';
+import type { EditSceneProps, Person, Scene } from '../../models';
 import type {
   EditAccessProps,
   EditAttributeProps,
@@ -28,16 +28,30 @@ import { PeopleService } from '../../services/people.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EditAccessComponent } from '../../../shared/components/edit-access/edit-access.component';
 import { EditTagsComponent } from '../../../shared/components/edit-tags/edit-tags.component';
+import type { EditTagsProps } from '../../../shared/models/edit-tags-props';
 import { EditCapabilityComponent } from '../edit-capability/edit-capability.component';
+import { SceneService } from '../../services/scene.service';
+import { EditSceneComponent } from '../edit-scene/edit-scene.component';
 
 
 
 @Component({
   selector: 'app-person',
   templateUrl: './person.component.html',
-  styleUrls: ['./person.component.scss']
+  styleUrls: ['./person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PersonComponent implements OnInit, OnDestroy {
+  private auth = inject(AuthService);
+  private data = inject(DataService);
+  private navigation = inject(NavigationService);
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+  private route = inject(ActivatedRoute);
+  private sceneService = inject(SceneService);
+  private util = inject(UtilService);
+
   @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
@@ -79,6 +93,10 @@ export class PersonComponent implements OnInit, OnDestroy {
         restricted: true,
       },
       {
+        label: 'Szene hinzufügen',
+        action: this.addScene.bind(this),
+      },
+      {
         label: 'Neue Info',
         action: this.addDetail.bind(this)
       }
@@ -88,18 +106,11 @@ export class PersonComponent implements OnInit, OnDestroy {
   person: Person;
   person$: Observable<Person>;
   relativeTypes = PeopleService.relativeTypes;
+  scenes$: Observable<Scene[]>;
   user: AuthUser;
   private personSub: Subscription;
 
-  constructor(
-    private auth: AuthService,
-    private data: DataService,
-    private navigation: NavigationService,
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-    private route: ActivatedRoute,
-    private util: UtilService,
-  ) {
+  constructor() {
     this.user = this.auth.user;
   }
 
@@ -121,6 +132,7 @@ export class PersonComponent implements OnInit, OnDestroy {
           this.navigation.setPageLabel(this.isOwnerOrCan('viewName') ? person.name : person.name.split(' ')[0], '/people');
         }
         this.infos$ = this.data.getInfos(this.person.id, PeopleService.collection);
+        this.scenes$ = this.sceneService.getScenesForPerson(this.person.id);
       }
     });
   }
@@ -177,6 +189,13 @@ export class PersonComponent implements OnInit, OnDestroy {
   }
 
 
+  private addScene() {
+    this.popover.showPopover<EditSceneProps>('Szene hinzufügen', EditSceneComponent, {
+      personId: this.person.id,
+    });
+  }
+
+
   private editAccess() {
     this.popover.showPopover<EditAccessProps>('Zugriff regeln', EditAccessComponent, {
       collection: PeopleService.collection,
@@ -221,10 +240,12 @@ export class PersonComponent implements OnInit, OnDestroy {
 
 
   private editTags() {
-    this.popover.showPopover('Tags editieren', EditTagsComponent, {
-      collection: PeopleService.collection,
-      id: this.person.id,
-      tags: this.person.tags,
-    });
+    const personId = this.person.id;
+    const previous = this.person.tags || [];
+    const props: EditTagsProps = {
+      tags: previous,
+      save: (tags) => this.peopleService.storeTags(personId, previous, tags),
+    };
+    this.popover.showPopover('Tags editieren', EditTagsComponent, props);
   }
 }

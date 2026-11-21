@@ -6,6 +6,24 @@ aside {
   padding: var(--container-horizontal-padding);
 }
 
+.xp {
+  margin: var(--container-horizontal-padding) 0;
+}
+
+dt {
+  display: inline-block;
+  font-weight: bold;
+  padding-right: var(--item-padding);
+  vertical-align: top;
+  width: 100px;
+}
+
+dd {
+  display: inline-block;
+  margin: 0;
+  width: calc(100% - 100px);
+}
+
 
 
 @media(min-width: $break-sm) {

@@ -1,20 +1,23 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 import { FlowViewComponent } from './flow-view.component';
 import { FlowService } from '../../services/flow.service';
 import { PopoverService } from '../../../core/services/popover.service';
 import { NavigationService } from '../../../core/services/navigation.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 describe('FlowViewComponent', () => {
   let component: FlowViewComponent;
   let fixture: ComponentFixture<FlowViewComponent>;
   let flowServiceSpy: jasmine.SpyObj<FlowService>;
   let popoverServiceSpy: jasmine.SpyObj<PopoverService>;
-  let navigationServiceSpy: jasmine.SpyObj<NavigationService>;
 
   beforeEach(async () => {
     const flowSpy = jasmine.createSpyObj('FlowService', [
+      'getFlowById',
       'getEnrichedFlowItems',
       'addItem',
       'removeItem',
@@ -22,22 +25,26 @@ describe('FlowViewComponent', () => {
     ]);
     const popoverSpy = jasmine.createSpyObj('PopoverService', ['showPopover']);
     const navigationSpy = jasmine.createSpyObj('NavigationService', ['setPageLabel']);
+    const authSpy = { user: { id: 'u1', name: 'Test', isGM: true } };
 
+    flowSpy.getFlowById.and.returnValue(of({ id: 'flow1', date: new Date(), title: 'Test Flow' }));
     flowSpy.getEnrichedFlowItems.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
+      schemas: [NO_ERRORS_SCHEMA],
       declarations: [ FlowViewComponent ],
       providers: [
         { provide: FlowService, useValue: flowSpy },
         { provide: PopoverService, useValue: popoverSpy },
-        { provide: NavigationService, useValue: navigationSpy }
+        { provide: NavigationService, useValue: navigationSpy },
+        { provide: AuthService, useValue: authSpy },
+        { provide: ActivatedRoute, useValue: { paramMap: of({ get: () => 'flow1' }) } },
       ]
     })
     .compileComponents();
 
     flowServiceSpy = TestBed.inject(FlowService) as jasmine.SpyObj<FlowService>;
     popoverServiceSpy = TestBed.inject(PopoverService) as jasmine.SpyObj<PopoverService>;
-    navigationServiceSpy = TestBed.inject(NavigationService) as jasmine.SpyObj<NavigationService>;
   });
 
   beforeEach(() => {
@@ -50,20 +57,18 @@ describe('FlowViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('T-FLOW-C01: should load enriched flow items on init', () => {
-    expect(flowServiceSpy.getEnrichedFlowItems).toHaveBeenCalled();
-    expect(navigationServiceSpy.setPageLabel).toHaveBeenCalledWith('Session Flow');
+  it('should load enriched flow items on init', () => {
+    expect(flowServiceSpy.getEnrichedFlowItems).toHaveBeenCalledWith('flow1');
   });
 
-  it('T-FLOW-C05: should open AddFlowItemComponent modal when Add Item clicked', () => {
+  it('should open AddFlowItemComponent modal when Add Item clicked', () => {
     component.showAddItemModal();
     expect(popoverServiceSpy.showPopover).toHaveBeenCalled();
   });
 
-  it('T-FLOW-C06: should remove item when removeItem called', async () => {
-    spyOn(window, 'confirm').and.returnValue(true);
+  it('should remove item via flow service', async () => {
     flowServiceSpy.removeItem.and.returnValue(Promise.resolve(true));
-    await component.removeItem('item1');
-    expect(flowServiceSpy.removeItem).toHaveBeenCalledWith('item1');
+    component.removeItem('item1');
+    expect(flowServiceSpy.removeItem).toHaveBeenCalledWith('flow1', 'item1');
   });
 });

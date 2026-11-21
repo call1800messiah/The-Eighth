@@ -2,30 +2,36 @@
   <form [formGroup]="capabilityForm" (ngSubmit)="save()">
     <div class="form-group">
       <select id="type" formControlName="type" required (change)="onTypeChanged()">
-        <option [ngValue]="type.key" *ngFor="let type of addableRuleTypes | keyvalue; let i = index">
-          {{ruleTypes[type.key].label}}
-        </option>
+        @for (type of addableRuleTypes | keyvalue; track type; let i = $index) {
+          <option [ngValue]="type.key">
+            {{ruleTypes[type.key].label}}
+          </option>
+        }
       </select>
       <label for="type">Art *</label>
     </div>
 
-    <div class="form-group" *ngIf="(filteredRules$ | async) as filteredRules">
-      @if (capabilityForm.get('type').value === '') {
-        <input type="hidden" formControlName="rule" required>
-      } @else if (filteredRules.length === 0 && !props.capability) {
-        <div>
-          Alle {{ruleTypes[capabilityForm.get('type').value].label}} sind bereits hinzugefügt.
+    @if ((filteredRules$ | async); as filteredRules) {
+      <div class="form-group">
+        @if (capabilityForm.get('type').value === '') {
           <input type="hidden" formControlName="rule" required>
-        </div>
-      } @else {
-        <select id="rule" formControlName="rule" required (change)="onRuleChanged()">
-          <option [ngValue]="rule.id" *ngFor="let rule of filteredRules; let i = index">
-            {{rule.name}}
-          </option>
-        </select>
-        <label for="rule">Name *</label>
-      }
-    </div>
+        } @else if (filteredRules.length === 0 && !props.capability) {
+          <div>
+            Alle {{ruleTypes[capabilityForm.get('type').value].label}} sind bereits hinzugefügt.
+            <input type="hidden" formControlName="rule" required>
+          </div>
+        } @else {
+          <select id="rule" formControlName="rule" required (change)="onRuleChanged()">
+            @for (rule of filteredRules; track rule; let i = $index) {
+              <option [ngValue]="rule.id">
+                {{rule.name}}
+              </option>
+            }
+          </select>
+          <label for="rule">Name *</label>
+        }
+      </div>
+    }
 
 
     @if (selectedRule && (selectedRule.type === 'spell' || selectedRule.type === 'skill' || selectedRule.type === 'liturgy')) {
@@ -37,8 +43,8 @@
 
     @if (
       selectedRule
-        && (selectedRule.type === 'advantage' || selectedRule.type === 'disadvantage' || selectedRule.type === 'feat')
-        && selectedRule.requiresDetails
+      && (selectedRule.type === 'advantage' || selectedRule.type === 'disadvantage' || selectedRule.type === 'feat')
+      && selectedRule.requiresDetails
       ) {
       <div class="form-group">
         <input type="text" step="1" id="details" formControlName="details" required>
@@ -49,7 +55,7 @@
     @if (
       selectedRule
       && (selectedRule.type === 'advantage' || selectedRule.type === 'disadvantage' || selectedRule.type === 'feat')
-        && selectedRule.hasLevels
+      && selectedRule.hasLevels
       ) {
       <div class="form-group">
         <input type="text" step="1" id="level" formControlName="level" required>
@@ -57,13 +63,14 @@
       </div>
     }
 
-    <div class="locked-input" *ngIf="props.capability">
-      <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
-
-      <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
-        Löschen
-      </button>
-    </div>
+    @if (props.capability) {
+      <div class="locked-input">
+        <app-unlock-button (toggle)="toggleDelete()"></app-unlock-button>
+        <button type="button" class="btn" (click)="delete()" [disabled]="deleteDisabled">
+          Löschen
+        </button>
+      </div>
+    }
 
     <button type="submit" class="btn" [disabled]="!capabilityForm.valid">
       Speichern

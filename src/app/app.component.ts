@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from './core/services/auth.service';
@@ -11,18 +11,20 @@ import { PopoverService } from './core/services/popover.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AppComponent {
+  private auth = inject(AuthService);
+  private config = inject(ConfigService);
+  private popover = inject(PopoverService);
+
   isLoggedIn$: Observable<boolean>;
   popoverOpen$: Observable<boolean>;
   sidebarOpen$: Observable<boolean>;
 
-  constructor(
-    private auth: AuthService,
-    private config: ConfigService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.isLoggedIn$ = this.auth.isLoggedIn();
     this.sidebarOpen$ = this.config.sidebarOpen$;
     this.popoverOpen$ = this.popover.isPopoverVisible$;

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { LoadingTriggerComponent } from './loading-trigger.component';
+import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('LoadingTriggerComponent', () => {
   let component: LoadingTriggerComponent;
@@ -8,9 +10,10 @@ describe('LoadingTriggerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoadingTriggerComponent]
-    })
-    .compileComponents();
+      declarations: [LoadingTriggerComponent],
+      providers: createComponentTestProviders(),
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LoadingTriggerComponent);
     component = fixture.componentInstance;

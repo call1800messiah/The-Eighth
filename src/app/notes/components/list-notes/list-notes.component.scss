@@ -10,6 +10,10 @@
   margin-top: var(--item-padding);
   position: relative;
   white-space: pre-line;
+
+  &.highlighted {
+    outline: 2px solid var(--color-primary);
+  }
 }
 
 .title {

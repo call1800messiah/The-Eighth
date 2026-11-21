@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -16,9 +16,15 @@ export interface EditNoteProps extends Partial<Note> {
 @Component({
   selector: 'app-edit-note',
   templateUrl: './edit-note.component.html',
-  styleUrl: './edit-note.component.scss'
+  styleUrl: './edit-note.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
+  private auth = inject(AuthService);
+  private dataService = inject(DataService);
+  private noteService = inject(NotesService);
+
   @Input() props: EditNoteProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -30,11 +36,7 @@ export class EditNoteComponent implements OnDestroy, OnInit, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private dataService: DataService,
-    private noteService: NotesService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;

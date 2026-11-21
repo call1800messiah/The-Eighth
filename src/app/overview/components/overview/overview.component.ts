@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as GSheetReader from 'g-sheets-api';
 
@@ -14,17 +14,19 @@ import { EditCampaignComponent } from '../edit-campaign/edit-campaign.component'
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+  styleUrls: ['./overview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OverviewComponent implements OnInit {
+  private campaignService = inject(CampaignService);
+  private navService = inject(NavigationService);
+  private popover = inject(PopoverService);
+
   campaignInfo: CampaignData;
   money$: Subject<number>;
 
-  constructor(
-    private campaignService: CampaignService,
-    private navService: NavigationService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.campaignService.getCampaignInfo().subscribe((campaignInfo) => {
       if (!campaignInfo) {
         return;

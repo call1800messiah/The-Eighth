@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,18 +12,18 @@ import { EditNoteComponent } from '../edit-note/edit-note.component';
 @Component({
   selector: 'app-note',
   templateUrl: './note.component.html',
-  styleUrls: ['./note.component.scss']
+  styleUrls: ['./note.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class NoteComponent implements OnInit, OnDestroy {
+  private notesService = inject(NotesService);
+  private popover = inject(PopoverService);
+
   @Input() entityId?: string; // Optional input for embedded usage
   @Input() noteId?: string; // Alias for entityId
   note: Note;
   private noteSub: Subscription;
-
-  constructor(
-    private notesService: NotesService,
-    private popover: PopoverService,
-  ) {}
 
   ngOnInit(): void {
     // Support both entityId and noteId for backwards compatibility

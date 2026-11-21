@@ -22,4 +22,15 @@ describe('ProgressBarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('renders one marker per milestone when milestones share a position', () => {
+    const warn = spyOn(console, 'warn');
+    const shared = TestBed.createComponent(ProgressBarComponent);
+    shared.componentInstance.markers = [50, 50, 100];
+    shared.detectChanges();
+
+    expect(shared.nativeElement.querySelectorAll('.marker').length).toBe(3);
+    const duplicateKeys = warn.calls.allArgs().filter(args => String(args[0]).includes('NG0955'));
+    expect(duplicateKeys).toEqual([]);
+  });
 });

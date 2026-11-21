@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -14,18 +14,20 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-recent-rolls',
   templateUrl: './recent-rolls.component.html',
-  styleUrls: ['./recent-rolls.component.scss']
+  styleUrls: ['./recent-rolls.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RecentRollsComponent implements OnInit {
+  private auth = inject(AuthService);
+  private dice = inject(DiceRollerService);
+  private userService = inject(UserService);
+
   @Input() amount = 100;
   rolls$: Observable<any>;
   userId: string;
 
-  constructor(
-    private auth: AuthService,
-    private dice: DiceRollerService,
-    private userService: UserService,
-  ) {
+  constructor() {
     this.userId = this.auth.user.id;
   }
 

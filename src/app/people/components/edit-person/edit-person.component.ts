@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -14,16 +14,21 @@ import { PlaceService } from '../../../places/services/place.service';
 @Component({
   selector: 'app-edit-person',
   templateUrl: './edit-person.component.html',
-  styleUrls: ['./edit-person.component.scss']
+  styleUrls: ['./edit-person.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private peopleService = inject(PeopleService);
+  private placeService = inject(PlaceService);
+
   @Input() props: Person;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new UntypedFormGroup({
-    birthday: new UntypedFormControl(''),
-    birthyear: new UntypedFormControl(1000),
+    birth: new UntypedFormControl(null),
     culture: new UntypedFormControl(''),
-    deathday: new UntypedFormControl(''),
+    death: new UntypedFormControl(null),
     height: new UntypedFormControl(0),
     location: new UntypedFormControl(''),
     name: new UntypedFormControl(''),
@@ -32,17 +37,16 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
     race: new UntypedFormControl(''),
     title: new UntypedFormControl(''),
     xp: new UntypedFormControl(0),
+    xpSpent: new UntypedFormControl(null),
   });
+  /** Old date texts the user discarded; cleared on save. */
+  discardedLegacy = { birth: false, death: false };
   userID: string;
   places: Place[] = [];
   placeTypes = PlaceService.placeTypes;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private peopleService: PeopleService,
-    private placeService: PlaceService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;
@@ -73,9 +77,19 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
+    if (this.personForm.invalid) {
+      this.personForm.markAllAsTouched();
+      return;
+    }
     const person: Person = {
       ...this.personForm.value
     };
+    if (this.discardedLegacy.birth) {
+      person.birthLegacy = null;
+    }
+    if (this.discardedLegacy.death) {
+      person.deathLegacy = null;
+    }
     if (this.props.id) {
       person.owner = this.props.owner;
     } else {

@@ -1,13 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, mergeMap, Observable } from 'rxjs';
 import { debounceTime, map, tap } from 'rxjs/operators';
 
 import type { Timeline } from '../models/timeline';
 import type { HistoricEvent } from '../models/historic-event';
-import { ApiService } from '../../core/services/api.service';
-import { UtilService } from '../../core/services/util.service';
-import { AuthUser } from '../../auth/models/auth-user';
-import { AuthService } from '../../core/services/auth.service';
+import { readDate, storeDate } from '../../core/calendar/date-columns';
+import { DataService } from '../../core/services/data.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -15,18 +14,17 @@ import { AuthService } from '../../core/services/auth.service';
   providedIn: 'root'
 })
 export class TimelineService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'timelines';
-  private user: AuthUser;
+  static readonly eventsCollection = 'historic_events';
   private pageSize = 10;
   private readonly timelineEvents: Record<string, Observable<HistoricEvent[]>>
   private readonly timelineLimit: Record<string, BehaviorSubject<number>>;
   private readonly timelineTotal: Record<string, number>;
 
-  constructor(
-    private api: ApiService,
-    private auth: AuthService,
-  ) {
-    this.user = this.auth.user;
+  constructor() {
     this.timelineEvents = {};
     this.timelineLimit = {};
     this.timelineTotal = {};
@@ -36,19 +34,21 @@ export class TimelineService {
 
   getEvents(timelineId: string): Observable<HistoricEvent[]> {
     if (!this.timelineEvents[timelineId]) {
-      const eventCollection = `${TimelineService.collection}/${timelineId}/events`;
       this.timelineLimit[timelineId] = new BehaviorSubject<number>(this.pageSize);
       this.timelineTotal[timelineId] = 0;
       this.timelineEvents[timelineId] = this.timelineLimit[timelineId].pipe(
         debounceTime(300),
-        mergeMap((limit) => this.api.getDataFromCollection(
-          eventCollection,
-          (ref) => ref
-            .where('access', 'array-contains', this.user.id)
-            .limit(limit)
-            .orderBy('created', 'desc')
+        mergeMap((limit) => this.realtime.watch<any>(
+          'historic_events',
+          query => query
+            .select('*')
+            .eq('timeline_id', timelineId)
+            .order('date_day', { ascending: false, nullsFirst: true })
+            .order('created_at', { ascending: false })
+            .limit(limit),
+          `historic_events:${timelineId}:${limit}`,
         )),
-        map((events) => this.transformEvents(events, eventCollection)),
+        map((rows) => this.transformEvents(rows)),
         tap((events) => this.timelineTotal[timelineId] = events.length),
       );
     }
@@ -57,8 +57,12 @@ export class TimelineService {
 
 
   getTimeline(id: string): Observable<Timeline> {
-    return this.api.getItemFromCollection(`${TimelineService.collection}/${id}`).pipe(
-      map((timeline) => this.transformTimeline(timeline)),
+    return this.realtime.watchOne<any>('timelines', id).pipe(
+      map((row) => ({
+        id: row.id,
+        name: row.name,
+        events: this.getEvents(row.id),
+      })),
     );
   }
 
@@ -71,33 +75,26 @@ export class TimelineService {
   }
 
 
-
-  private transformEvents(events: any[], collection: string): HistoricEvent[] {
-    return events.reduce((all: HistoricEvent[], event, index) => {
-      const eventData = event.payload.doc.data();
-      const loadedEvent = {
-        access: eventData.access,
-        collection,
-        content: eventData.content,
-        created: eventData.created ? new Date(eventData.created.seconds * 1000) : null,
-        date: eventData.date,
-        id: event.payload.doc.id,
-        modified: eventData.modified ? new Date(eventData.modified.seconds * 1000) : null,
-        owner: eventData.owner ? eventData.owner : null,
-        type: eventData.type,
-      }
-      all.push(loadedEvent);
-
-      return all;
-    }, []).sort(UtilService.orderByCreated);
+  store(event: Partial<HistoricEvent>, eventId?: string) {
+    const dbEvent: any = { ...event };
+    storeDate(dbEvent, 'date');
+    return this.data.store(dbEvent, TimelineService.eventsCollection, eventId);
   }
 
 
-  private transformTimeline(data: any): Timeline {
-    return {
-      id: data.payload.id,
-      name: data.payload.data()?.name,
-      events: this.getEvents(data.payload.id),
-    };
+
+  private transformEvents(rows: any[]): HistoricEvent[] {
+    return rows.map(row => ({
+      access: [],
+      collection: TimelineService.eventsCollection,
+      content: row.content,
+      created: row.created_at ? new Date(row.created_at) : null,
+      date: readDate(row.date_day, row.date_precision),
+      dateLegacy: row.date_legacy ?? null,
+      id: row.id,
+      modified: row.modified_at ? new Date(row.modified_at) : null,
+      owner: row.owner_id,
+      type: row.type,
+    }));
   }
 }

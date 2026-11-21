@@ -1,4 +1,3 @@
-import type { FieldValue } from '@angular/fire/firestore';
 import { PlaceType } from './place-type.enum';
 
 export interface PlaceDB {
@@ -8,6 +7,6 @@ export interface PlaceDB {
   isPrivate: boolean;
   name: string;
   owner: string;
-  parentId?: string | FieldValue;
+  parentId?: string | null;
   type: PlaceType;
 }

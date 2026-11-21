@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import type { CombatState, PopoverChild } from '../../../shared';
 import type { Combatant } from '../../models/combatant';
 import { CombatService } from '../../services/combat.service';
@@ -8,17 +8,19 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-edit-states',
   templateUrl: './edit-states.component.html',
-  styleUrls: ['./edit-states.component.scss']
+  styleUrls: ['./edit-states.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditStatesComponent implements OnInit, PopoverChild {
+  private combatService = inject(CombatService);
+  private rulesService = inject(RulesService);
+
   @Input() props: Combatant;
   @Output() dismissPopover = new EventEmitter<boolean>();
   states: CombatState[] = [];
 
-  constructor(
-    private combatService: CombatService,
-    private rulesService: RulesService,
-  ) {
+  constructor() {
     this.rulesService.getRulesConfig().then((rules) => {
       this.states = rules.states.sort(UtilService.orderByName);
     });

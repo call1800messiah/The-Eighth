@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -18,9 +18,17 @@ import { AuthUser } from '../../../auth/models/auth-user';
 @Component({
   selector: 'app-flow-view',
   templateUrl: './flow-view.component.html',
-  styleUrls: ['./flow-view.component.scss']
+  styleUrls: ['./flow-view.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class FlowViewComponent implements OnInit, OnDestroy {
+  private auth = inject(AuthService);
+  private flowService = inject(FlowService);
+  private popover = inject(PopoverService);
+  private navigation = inject(NavigationService);
+  private route = inject(ActivatedRoute);
+
   faPlus = faPlus;
   faStickyNote = faStickyNote;
   faEdit = faEdit;
@@ -37,13 +45,7 @@ export class FlowViewComponent implements OnInit, OnDestroy {
 
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private flowService: FlowService,
-    private popover: PopoverService,
-    private navigation: NavigationService,
-    private route: ActivatedRoute
-  ) {
+  constructor() {
     this.user = this.auth.user;
     this.initialFilterText = localStorage.getItem('flow-view-filter') || '';
     this.filterText$ = new BehaviorSubject<string>(this.initialFilterText);
@@ -107,7 +109,7 @@ export class FlowViewComponent implements OnInit, OnDestroy {
     const items = [...(event.container.data || [])];
     moveItemInArray(items, event.previousIndex, event.currentIndex);
 
-    // Update order in Firestore
+    // Persist the new order
     this.flowService.reorderItems(this.flowId, items).then(success => {
       if (!success) {
         console.error('Failed to reorder items');

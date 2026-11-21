@@ -1,16 +1,19 @@
-<div *ngIf="attributes$ && person" class="values">
-  <app-attributes
-    [attributeValues$]="attributes$"
-    [canEdit]="isOwnerOrCan('editStats')"
-    [personId]="person.id"
-  ></app-attributes>
+@if (attributes$ && person) {
+  <div class="values">
+    <app-attributes
+      [attributeValues$]="attributes$"
+      [canEdit]="isOwnerOrCan('editStats')"
+      [personId]="person.id"
+    ></app-attributes>
+    <app-bar-attributes
+      [attributeValues$]="attributes$"
+      [canEdit]="isOwnerOrCan('editHitPoints')"
+      [personId]="person.id"
+      >
+    </app-bar-attributes>
+  </div>
+}
 
-  <app-bar-attributes
-    [attributeValues$]="attributes$"
-    [canEdit]="isOwnerOrCan('editHitPoints')"
-    [personId]="person.id"
-  >
-  </app-bar-attributes>
-</div>
-
-<app-capability-list *ngIf="person" [person]="person"></app-capability-list>
+@if (person) {
+  <app-capability-list [person]="person"></app-capability-list>
+}

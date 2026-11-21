@@ -10,6 +10,7 @@ import { QuestsModule } from '../quests/quests.module';
 import { PeopleModule } from '../people/people.module';
 import { PlacesModule } from '../places/places.module';
 import { NotesModule } from '../notes/notes.module';
+import { StoryBeatsModule } from '../story-beats/story-beats.module';
 
 import { FlowViewComponent } from './components/flow-view/flow-view.component';
 import { FlowItemComponent } from './components/flow-item/flow-item.component';
@@ -36,7 +37,8 @@ import { EditFlowComponent } from './components/edit-flow/edit-flow.component';
     QuestsModule,
     PeopleModule,
     PlacesModule,
-    NotesModule
+    NotesModule,
+    StoryBeatsModule
   ]
 })
 export class FlowModule { }

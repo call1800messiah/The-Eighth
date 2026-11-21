@@ -1,0 +1,25 @@
+.scenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--item-padding);
+}
+
+.scene {
+  margin: 0;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  figcaption {
+    padding-top: calc(var(--item-padding) / 2);
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

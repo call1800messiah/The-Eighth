@@ -1,0 +1,319 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
+
+import {
+  ENTITY_TYPES,
+  EntityRepository,
+  INFO_TYPES,
+  type Infos,
+  PLACE_TYPES,
+  type PersonFields,
+  QUEST_TYPES,
+  RELATIONS,
+  ToolError,
+} from './entities.js';
+import { parseDateInput, formatDateColumns } from '../calendar/dates.js';
+import { FILTER_OPS, MAX_LIMIT, type QueryReader } from './query.js';
+
+const MARKDOWN_NOTE =
+  'Markdown. Refer to existing people, places, quests and notes with mention links exactly as search_entities returns them, ' +
+  'e.g. [Alrik](mention:person/<uuid>); the app turns them into links and backlinks.';
+
+export const INSTRUCTIONS = `This server is a tabletop RPG campaign ("TheEighth"). It lets you read everything in the campaign, and add new people, places and quests as drafts.
+
+Reading:
+- To look up one person, place, quest or note, use search_entities and get_entity. They also give you mention links.
+- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. Describing a table also tells you which tags, note categories, races, cultures and professions are in use, so you can filter on the exact spelling. For "how many", ask query for count: true and limit: 0 rather than fetching every row. In-game dates are stored as day numbers: tables name them <x>_day and <x>_precision, and the results add <x> as text such as "3. Praios 1010 BF". Old text that was not converted yet is in <x>_legacy columns (birthday_legacy, birthyear_legacy, deathday_legacy, date_legacy); read those too. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
+
+Writing:
+- Always call search_entities before creating anything, and reuse what exists instead of creating a duplicate. Mention existing entities in your text with the mention link from the search result.
+- Everything you create is a draft. Only GMs and you can see drafts until a GM approves them in the app's review queue. Tell the user that, and give them the review link from the tool result.
+- You can change only your own drafts (update_draft, link_entities). Published entities are read-only for you; if one should change, say so to the user.
+- Give birth and death as "3. Praios 1010 BF", "Phex 1027 BF" or "1010 BF"; an empty value clears the date.
+- Write in the language of the existing entries (usually German), in Markdown. Keep the GM's facts; mark your own inventions as suggestions where it matters.`;
+
+const id = z.string().uuid();
+const draftType = z.enum(['person', 'place', 'quest']);
+
+const markdown = (what: string) => z.string().max(20000).describe(`${what} ${MARKDOWN_NOTE}`);
+
+const infoShape = (kinds: (keyof typeof INFO_TYPES)[]) => z.object(Object.fromEntries(
+  kinds.map(kind => [kind, markdown(`"${INFO_TYPES[kind]}" section.`).optional()]),
+)).partial().optional();
+
+const personInfos = infoShape(['appearance', 'background', 'character', 'goals', 'note']);
+const placeInfos = infoShape(['appearance', 'background', 'note']);
+const questInfos = infoShape(['goals', 'reward', 'note']);
+
+const optionalText = (description: string) => z.string().max(200).nullable().optional().describe(description);
+
+const DATE_HELP = 'A date in the campaign calendar: "3. Praios 1010 BF", "Phex 1027 BF" or "1010 BF".';
+
+const personFields = {
+  title: optionalText('Title or epithet, e.g. "Baronin von Gareth".'),
+  race: optionalText('Spezies/Rasse.'),
+  culture: optionalText('Kultur.'),
+  profession: optionalText('Profession.'),
+  birth: optionalText(DATE_HELP),
+  death: optionalText(DATE_HELP + ' Only if the person is dead.'),
+  height: z.number().int().min(30).max(400).nullable().optional().describe('Height in cm.'),
+};
+
+const placeFields = {
+  inhabitants: optionalText('Number or description of inhabitants, e.g. "ca. 1200".'),
+};
+
+const questFields = {
+  description: markdown('What the quest is about.').nullable().optional(),
+};
+
+function text(value: unknown): CallToolResult {
+  return { content: [{ type: 'text', text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) }] };
+}
+
+/** Compact JSON: query results are measured that way against MAX_RESULT_BYTES. */
+function compact(value: unknown): CallToolResult {
+  return { content: [{ type: 'text', text: JSON.stringify(value) }] };
+}
+
+function error(message: string): CallToolResult {
+  return { content: [{ type: 'text', text: message }], isError: true };
+}
+
+/** Runs a tool body; ToolErrors become messages for Claude, anything else is logged. */
+async function run(body: () => Promise<CallToolResult>): Promise<CallToolResult> {
+  try {
+    return await body();
+  } catch (e) {
+    if (e instanceof ToolError) {
+      return error(e.message);
+    }
+    console.error(e);
+    return error('Something went wrong on the server. Try again; if it keeps failing, tell the user.');
+  }
+}
+
+/** birth / death as the date columns; setting one also clears its old free-text columns. */
+function personColumns<T extends { birth?: string | null; death?: string | null }>(fields: T) {
+  const { birth, death, ...rest } = fields;
+  const born = parseDateInput(birth, 'birth');
+  const died = parseDateInput(death, 'death');
+  return {
+    ...rest,
+    ...(born ? { ...born, birthday_legacy: null, birthyear_legacy: null } : {}),
+    ...(died ? { ...died, deathday_legacy: null } : {}),
+  } as PersonFields;
+}
+
+function texts(fields: Record<string, unknown>, infos: Infos | undefined): string[] {
+  return [
+    ...Object.values(fields).filter((value): value is string => typeof value === 'string'),
+    ...Object.values(infos ?? {}).filter((value): value is string => typeof value === 'string'),
+  ];
+}
+
+
+export function createMcpServer(repo: EntityRepository, reader: QueryReader): McpServer {
+  const server = new McpServer(
+    { name: 'the-eighth', version: '0.1.0' },
+    { instructions: INSTRUCTIONS },
+  );
+
+  const created = async (type: 'person' | 'place' | 'quest', name: string, newId: string, written: string[]) => {
+    const unknown = await repo.unknownMentions(written);
+    return text({
+      created: { type, id: newId, name, status: 'draft' },
+      mention: `[${name}](mention:${type}/${newId})`,
+      url: repo.url(type, newId),
+      review: `A GM approves or discards it at ${repo.reviewUrl}`,
+      ...(unknown.length ? { warning: `These mention links point at nothing: ${unknown.join(', ')}. Fix them with update_draft.` } : {}),
+    });
+  };
+
+  const duplicates = async (type: 'person' | 'place' | 'quest', name: string, allow: boolean | undefined) => {
+    if (allow) return null;
+    const same = await repo.sameName(type, name);
+    return same.length === 0 ? null : error(
+      `A ${type} named "${name}" already exists:\n${JSON.stringify(same, null, 2)}\n` +
+      'Use it (get_entity, mention links) instead of creating a duplicate. If this really is a different one, call again with allow_duplicate: true.');
+  };
+
+  server.registerTool('search_entities', {
+    title: 'Search the campaign',
+    description: 'Finds people, places, quests and notes by name (notes also by content). Call this before creating anything, ' +
+      'and to get mention links for entities you refer to. Results include drafts.',
+    inputSchema: {
+      query: z.string().min(1).max(200).describe('Name or part of it.'),
+      types: z.array(z.enum(ENTITY_TYPES)).min(1).optional().describe('Limit to these kinds. Default: all.'),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, ({ query, types }) => run(async () => {
+    const hits = await repo.search(query, types);
+    return text(hits.length ? hits : `Nothing found for "${query}".`);
+  }));
+
+  server.registerTool('get_entity', {
+    title: 'Read an entity',
+    description: 'Everything about one person, place, quest or note: fields, text sections (Markdown), and links to related entities. ' +
+      'For a person also tags, attributes, advantages, disadvantages, feats, skills, spells, cantrips and liturgies.',
+    inputSchema: {
+      type: z.enum(ENTITY_TYPES),
+      id,
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, ({ type, id: entityId }) => run(async () => text(formatDateColumns(await repo.get(type, entityId)))));
+
+  server.registerTool('describe', {
+    title: 'Describe the campaign database',
+    description: 'Lists the tables you can read with query: what each one holds and its column names. ' +
+      'Give a table name to see the columns of that table in detail (type, nullable, foreign key target, enum values, notes), ' +
+      'and for free-text columns such as person_tags.tag or notes.category the values in use with their counts.',
+    inputSchema: {
+      table: z.string().min(1).max(100).optional(),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, ({ table }) => run(async () => compact(await reader.describe(table))));
+
+  server.registerTool('query', {
+    title: 'Query the campaign database',
+    description: 'Reads rows from any table describe lists, through the same access rules as the app (drafts included). ' +
+      'select uses PostgREST syntax: columns, and related tables by foreign key, e.g. "name, location:places(name)" or "value, rules(name, category)". ' +
+      'To filter rows by a related table, embed it with !inner and filter on the dotted column, e.g. select "id, name, person_tags!inner(tag)" ' +
+      'with filter { column: "person_tags.tag", op: "eq", value: "magiebegabt" }. like/ilike use % as wildcard. ' +
+      `For "how many", set count: true and limit: 0. At most ${MAX_LIMIT} rows per call; page with offset.`,
+    inputSchema: {
+      table: z.string().min(1).max(100).describe('A table from describe.'),
+      select: z.string().max(2000).optional().describe('Columns and embedded tables. Default: *.'),
+      filters: z.array(z.object({
+        column: z.string().min(1).max(200).describe('Column, or table.column of an embedded table.'),
+        op: z.enum(FILTER_OPS),
+        value: z.union([z.string().max(2000), z.number(), z.boolean(), z.null(), z.array(z.union([z.string().max(2000), z.number()])).max(500)])
+          .describe('A list for "in"; null, true or false for "is".'),
+      })).max(20).optional(),
+      order: z.array(z.object({
+        column: z.string().min(1).max(200),
+        ascending: z.boolean().optional(),
+      })).max(5).optional(),
+      limit: z.number().int().min(0).max(MAX_LIMIT).optional().describe('Default 50. 0 returns only the count.'),
+      offset: z.number().int().min(0).optional(),
+      count: z.boolean().optional().describe('Also return the total number of matching rows.'),
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  }, input => run(async () => compact(await reader.query(input))));
+
+  server.registerTool('create_person', {
+    title: 'Create a person (draft)',
+    description: 'Adds a non-player character as a draft for GM review. Search first. Link it to places and other people afterwards with link_entities.',
+    inputSchema: {
+      name: z.string().min(1).max(200),
+      ...personFields,
+      infos: personInfos.describe('Text sections of the person page.'),
+      allow_duplicate: z.boolean().optional().describe('Create even though one with the same name exists.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, ({ name, infos, allow_duplicate, ...fields }) => run(async () => {
+    const duplicate = await duplicates('person', name, allow_duplicate);
+    if (duplicate) return duplicate;
+    const { id: newId } = await repo.createDraft('person', { name, ...personColumns(fields) }, infos as Infos);
+    return created('person', name, newId, texts(fields, infos as Infos));
+  }));
+
+  server.registerTool('create_place', {
+    title: 'Create a place (draft)',
+    description: 'Adds a place as a draft for GM review. Search first. Put it inside a region, city or building with link_entities (part_of).',
+    inputSchema: {
+      name: z.string().min(1).max(200),
+      type: z.enum(Object.keys(PLACE_TYPES) as [keyof typeof PLACE_TYPES]).describe(
+        `Kind of place: ${Object.entries(PLACE_TYPES).map(([key, label]) => `${key} (${label})`).join(', ')}.`),
+      ...placeFields,
+      infos: placeInfos.describe('Text sections of the place page.'),
+      allow_duplicate: z.boolean().optional().describe('Create even though one with the same name exists.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, ({ name, infos, allow_duplicate, ...fields }) => run(async () => {
+    const duplicate = await duplicates('place', name, allow_duplicate);
+    if (duplicate) return duplicate;
+    const { id: newId } = await repo.createDraft('place', { name, ...fields }, infos as Infos);
+    return created('place', name, newId, texts(fields, infos as Infos));
+  }));
+
+  server.registerTool('create_quest', {
+    title: 'Create a quest (draft)',
+    description: 'Adds a quest, scene or task as a draft for GM review. Search first. Make it part of a larger quest with link_entities (part_of).',
+    inputSchema: {
+      name: z.string().min(1).max(200),
+      type: z.enum(Object.keys(QUEST_TYPES) as [keyof typeof QUEST_TYPES]).describe(
+        `Kind: ${Object.entries(QUEST_TYPES).map(([key, label]) => `${key} (${label})`).join(', ')}.`),
+      ...questFields,
+      infos: questInfos.describe('Text sections of the quest page.'),
+      allow_duplicate: z.boolean().optional().describe('Create even though one with the same name exists.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  }, ({ name, infos, allow_duplicate, ...fields }) => run(async () => {
+    const duplicate = await duplicates('quest', name, allow_duplicate);
+    if (duplicate) return duplicate;
+    const { id: newId } = await repo.createDraft('quest', { name, ...fields }, infos as Infos);
+    return created('quest', name, newId, texts(fields, infos as Infos));
+  }));
+
+  server.registerTool('link_entities', {
+    title: 'Link two entities',
+    description: 'Connects one of your drafts to another entity (published or draft). Relations: ' +
+      Object.entries(RELATIONS).map(([key, meaning]) => `${key}: ${meaning}`).join('; ') +
+      '. The first entity must be your draft; for family links the reverse direction is added when the GM publishes it.',
+    inputSchema: {
+      from_type: draftType,
+      from_id: id.describe('Your draft.'),
+      relation: z.enum(Object.keys(RELATIONS) as [keyof typeof RELATIONS]),
+      to_type: draftType,
+      to_id: id,
+      remove: z.boolean().optional().describe('Remove this link instead of adding it.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, ({ from_type, from_id, relation, to_type, to_id, remove }) => run(async () =>
+    text(await repo.link({ type: from_type, id: from_id }, relation, { type: to_type, id: to_id }, remove))));
+
+  server.registerTool('update_draft', {
+    title: 'Change one of your drafts',
+    description: 'Changes fields or text sections of a draft you created. Only the given fields change; ' +
+      'a text section given as "" is removed. Published entities cannot be changed.',
+    inputSchema: {
+      type: draftType,
+      id,
+      name: z.string().min(1).max(200).optional(),
+      fields: z.object({
+        ...personFields,
+        ...placeFields,
+        ...questFields,
+        type: z.string().optional().describe('Place or quest kind, as in create_place / create_quest.'),
+      }).partial().optional().describe('Fields to change; which apply depends on the type.'),
+      infos: infoShape(['appearance', 'background', 'character', 'goals', 'reward', 'note']).describe('Text sections to replace.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  }, ({ type, id: draftId, name, fields = {}, infos }) => run(async () => {
+    const allowed: Record<string, string[]> = {
+      person: Object.keys(personFields),
+      place: [...Object.keys(placeFields), 'type'],
+      quest: [...Object.keys(questFields), 'type'],
+    };
+    const wrong = Object.keys(fields).filter(key => !allowed[type].includes(key));
+    if (wrong.length) {
+      return error(`A ${type} has no ${wrong.join(', ')}. Fields: ${allowed[type].join(', ')}.`);
+    }
+    const kinds = type === 'place' ? PLACE_TYPES : type === 'quest' ? QUEST_TYPES : null;
+    if (kinds && fields.type !== undefined && !(fields.type in kinds)) {
+      return error(`Unknown ${type} type "${fields.type}". Use one of: ${Object.keys(kinds).join(', ')}.`);
+    }
+    const changes = { ...(type === 'person' ? personColumns(fields) : fields), ...(name ? { name } : {}) };
+    await repo.updateDraft(type, draftId, changes, infos as Infos);
+    const unknown = await repo.unknownMentions(texts(changes, infos as Infos));
+    return text({
+      updated: { type, id: draftId },
+      url: repo.url(type, draftId),
+      ...(unknown.length ? { warning: `These mention links point at nothing: ${unknown.join(', ')}.` } : {}),
+    });
+  }));
+
+  return server;
+}

@@ -1,0 +1,119 @@
+:host {
+  background-color: var(--color-dark);
+  border: var(--border-line-width) solid var(--color-primary);
+  color: var(--color-primary);
+  display: block;
+  position: relative;
+}
+
+.toolbar {
+  border-bottom: var(--border-line-width) solid var(--color-primary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  // Clears the floating label of .form-group, which sits on the top border.
+  padding: 10px 5px 4px;
+}
+
+.tool {
+  background: none;
+  border: var(--border-line-width) solid transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: var(--detail-text-font-size);
+  height: 28px;
+  min-width: 28px;
+  padding: 0 4px;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--color-primary);
+  }
+
+  &.active {
+    background-color: var(--color-primary);
+    color: var(--color-dark);
+  }
+}
+
+.content {
+  cursor: text;
+}
+
+// ProseMirror renders inside .content, outside this component's view
+// encapsulation, hence ::ng-deep (scoped to this host).
+:host ::ng-deep .rich-text-content {
+  font-family: var(--base-body-font-family);
+  font-size: var(--base-body-font-size);
+  line-height: var(--base-body-line-height);
+  max-height: 60vh;
+  min-height: 200px;
+  outline: none;
+  overflow-y: auto;
+  padding: 5px;
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+
+  p { margin: 0 0 0.5em; }
+  h1, h2, h3 { margin: 0.5em 0; }
+  ul, ol { margin: 0 0 0.5em; padding-left: 2em; }
+  blockquote {
+    border-left: 3px solid var(--color-primary);
+    margin: 0 0 0.5em;
+    padding-left: 1em;
+  }
+  a { color: inherit; text-decoration: underline; }
+
+  .mention {
+    border-bottom: 1px dotted var(--color-primary);
+    font-weight: bold;
+  }
+
+  .suggestion {
+    background-color: rgba(var(--color-primary-rgb), 0.2);
+  }
+}
+
+.mention-picker {
+  background-color: var(--color-dark);
+  border: var(--border-line-width) solid var(--color-primary);
+  list-style: none;
+  margin: 0;
+  max-width: calc(100% - 10px);
+  min-width: 200px;
+  padding: 0;
+  position: absolute;
+  z-index: 10;
+
+  li {
+    cursor: pointer;
+    display: flex;
+    gap: var(--item-padding);
+    justify-content: space-between;
+    padding: 4px 8px;
+
+    // Hover only outlines, so it never looks like a second selection next
+    // to the keyboard one.
+    &:hover {
+      outline: 1px solid var(--color-primary);
+      outline-offset: -1px;
+    }
+
+    &.selected {
+      background-color: var(--color-primary);
+      color: var(--color-dark);
+    }
+  }
+
+  .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .type {
+    font-size: var(--detail-text-font-size);
+    opacity: 0.8;
+  }
+}

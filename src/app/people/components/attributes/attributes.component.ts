@@ -1,6 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import type { Attribute, EditAttributeProps } from '../../../shared';
@@ -16,9 +15,15 @@ import { UtilService } from '../../../core/services/util.service';
 @Component({
   selector: 'app-attributes',
   templateUrl: './attributes.component.html',
-  styleUrl: './attributes.component.scss'
+  styleUrl: './attributes.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AttributesComponent implements OnInit {
+  private dice = inject(DiceRollerService);
+  private popover = inject(PopoverService);
+  private rulesService = inject(RulesService);
+
   @Input() attributeValues$: Observable<Attribute[]>;
   @Input() canEdit: boolean;
   @Input() personId: string;
@@ -26,12 +31,8 @@ export class AttributesComponent implements OnInit {
   allowedAttributes$: Observable<AllowedAttribute[]>;
   attributes$: Observable<Attribute[]>;
 
-  constructor(
-    private dice: DiceRollerService,
-    private popover: PopoverService,
-    private rulesService: RulesService,
-  ) {
-    this.allowedAttributes$ = fromPromise(this.rulesService.getRulesConfig()).pipe(
+  constructor() {
+    this.allowedAttributes$ = from(this.rulesService.getRulesConfig()).pipe(
       map((rules) => rules.allowedAttributes),
       tap((allowedAttributes) => {
         this.allowedAttributes = allowedAttributes.reduce((acc, attribute) => {

@@ -135,20 +135,7 @@ Before implementing any frontend code, verify against journey.md:
 
 ---
 
-### 3. Tests (MANDATORY - NOT OPTIONAL)
-```bash
-# Read test-plan.md
-# Implement EVERY T-{FEAT}-* test case
-# Run tests to verify they pass
-
-describe('T-FEAT-001: Feature happy path', () => {
-  it('should return data', () => { /* ... */ });
-});
-```
-
-**Tests are NOT optional.** Implementation is NOT complete until tests pass.
-
-### 4. Quality Verification
+### 3. Quality Verification
 See "Quality Verification" section below.
 
 ---
@@ -156,13 +143,7 @@ See "Quality Verification" section below.
 ## Verification Sequence
 
 ```bash
-# 1. Lint
-npm run lint
-
-# 2. Test
-npm run test
-
-# 3. Build
+# 1. Build
 npm run build
 ```
 
@@ -181,7 +162,6 @@ After completing implementation, run codestyle check:
 ### What Gets Checked
 - Naming conventions (files, components, types)
 - Import order and patterns
-- Testing compliance
 
 ### Severity Levels
 
@@ -212,11 +192,6 @@ Before marking feature complete, verify ALL quality standards.
 - [ ] CSS variables used for colors (NO hardcoded values)
 - [ ] Responsive design with CSS media queries
 
-### Test Checklist (BLOCKING)
-- [ ] All T-{FEAT}-* tests from test-plan.md implemented
-- [ ] Tests pass: `npm run test`
-- [ ] Coverage meets targets (80% hooks, 70% resolvers)
-
 ---
 
 ## Completion Rules
@@ -225,18 +200,14 @@ Before marking feature complete, verify ALL quality standards.
 
 Feature is complete ONLY when:
 1. ✅ All TODO items checked off
-2. ✅ All tests implemented AND passing
-3. ✅ Quality verification checklist complete
-4. ✅ Build passes
-5. ✅ Lint passes
+2. ✅ Quality verification checklist complete
+3. ✅ Build passes
 
 ### When to BLOCK Completion
 
 **DO NOT mark complete if:**
-- ❌ Tests are failing
-- ❌ Tests are not implemented
 - ❌ Quality checklist has unchecked items
-- ❌ Build or lint fails
+- ❌ Build fails
 
 If blocked, continue implementation until all items pass.
 

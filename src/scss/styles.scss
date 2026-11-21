@@ -225,3 +225,14 @@ h2 {
     }
   }
 }
+
+// Marks one of Claude's drafts in lists (only GMs see drafts).
+.draft-tag {
+  border: var(--border-line-width) dashed currentColor;
+  font-size: var(--detail-text-font-size);
+  font-weight: normal;
+  line-height: var(--detail-text-line-height);
+  margin-left: 0.5em;
+  padding: 0 4px;
+  vertical-align: middle;
+}

@@ -30,7 +30,24 @@
       "Skill(implement:*)",
       "Skill(test:*)",
       "Skill(codestyle:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(docker info:*)",
+      "Bash(npx supabase start)",
+      "Bash(netsh interface ipv4 show excludedportrange:*)",
+      "Bash(findstr:*)",
+      "Bash(git rm:*)",
+      "Bash(node -e:*)",
+      "Bash(npx supabase:*)",
+      "Bash(timeout:*)",
+      "Bash(npx ng build:*)",
+      "Bash(npx ng test --no-watch --browsers=ChromeHeadless)",
+      "Bash(npx ng test:*)",
+      "Bash(Select-String:*)",
+      "Bash(npx tsx:*)",
+      "Bash(psql:*)",
+      "Bash(ng build:*)",
+      "Bash(bash -n scripts/run-migrations.sh)",
+      "Bash(bash -n docker/db/init-roles.sh)"
     ]
   }
 }

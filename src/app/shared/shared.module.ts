@@ -15,15 +15,19 @@ import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
+import { CalendarDatePipe } from './pipes/calendar-date.pipe';
+import { DateInputComponent } from './components/date-input/date-input.component';
+import { InGameDateComponent } from './components/in-game-date/in-game-date.component';
+import { PlainTextPipe } from './pipes/plain-text.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
+import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { UnlockButtonComponent } from './components/unlock-button/unlock-button.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { BoxGridComponent } from './components/box-grid/box-grid.component';
 import { TopBarFilterComponent } from './components/top-bar-filter/top-bar-filter.component';
-import { TplVarDirective } from './directives/tpl-var.directive';
 import { ContainerComponent } from './components/container/container.component';
 import { PopoverComponent } from './components/popover/popover.component';
 import { ContextMenuComponent } from './components/context-menu/context-menu.component';
@@ -34,19 +38,29 @@ import { LoadingTriggerComponent } from './components/loading-trigger/loading-tr
 import { BarAttributesComponent } from './components/bar-attributes/bar-attributes.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TabPanelComponent } from './components/tabs/tab-panel.component';
+import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
+import { MarkdownComponent } from './components/markdown/markdown.component';
+import { BacklinksComponent } from './components/backlinks/backlinks.component';
+import { DraftBannerComponent } from './components/draft-banner/draft-banner.component';
 
 
 
 @NgModule({
   declarations: [
+    ImageFallbackDirective,
     AudioPlayerComponent,
     AudioPlayerListComponent,
     AvatarComponent,
+    BacklinksComponent,
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
+    CalendarDatePipe,
+    DateInputComponent,
+    InGameDateComponent,
     ContainerComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAttributeComponent,
     EditEventComponent,
     EditImageComponent,
@@ -55,12 +69,14 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     FocusOnInitDirective,
     InfoBoxComponent,
     LoadingTriggerComponent,
+    MarkdownComponent,
+    PlainTextPipe,
     PopoverComponent,
     ProgressBarComponent,
+    RichTextEditorComponent,
     SelectOnFocusDirective,
     TimelineComponent,
     TopBarFilterComponent,
-    TplVarDirective,
     UnlockButtonComponent,
     ContextMenuComponent,
     EditAccessComponent,
@@ -79,15 +95,21 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     NgOptimizedImage,
   ],
   exports: [
+    ImageFallbackDirective,
     AccessIndicatorComponent,
     AudioPlayerListComponent,
     AvatarComponent,
+    BacklinksComponent,
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
+    CalendarDatePipe,
+    DateInputComponent,
+    InGameDateComponent,
     ContainerComponent,
     ContextMenuComponent,
     DashboardComponent,
+    DraftBannerComponent,
     EditAccessComponent,
     EditAttributeComponent,
     EditImageComponent,
@@ -99,16 +121,18 @@ import { TabPanelComponent } from './components/tabs/tab-panel.component';
     FormsModule,
     InfoBoxComponent,
     LoadingTriggerComponent,
+    MarkdownComponent,
     NgOptimizedImage,
+    PlainTextPipe,
     PopoverComponent,
     ProgressBarComponent,
     ReactiveFormsModule,
+    RichTextEditorComponent,
     SelectOnFocusDirective,
     TabsComponent,
     TabPanelComponent,
     TimelineComponent,
     TopBarFilterComponent,
-    TplVarDirective,
     UnlockButtonComponent,
   ],
 })

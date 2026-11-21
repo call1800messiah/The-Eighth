@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -23,9 +23,17 @@ import { EditAccessComponent } from '../../../shared/components/edit-access/edit
 @Component({
   selector: 'app-place',
   templateUrl: './place.component.html',
-  styleUrls: ['./place.component.scss']
+  styleUrls: ['./place.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PlaceComponent implements OnInit, OnDestroy {
+  private popover = inject(PopoverService);
+  private route = inject(ActivatedRoute);
+  private navigation = inject(NavigationService);
+  private placeService = inject(PlaceService);
+  private util = inject(UtilService);
+
   @Input() entityId?: string; // Optional input for embedded usage
   faBars = faBars;
   infos$: Observable<Map<InfoType, Info[]>>;
@@ -57,13 +65,7 @@ export class PlaceComponent implements OnInit, OnDestroy {
   placeTypes = PlaceService.placeTypes;
   private subscription: Subscription;
 
-  constructor(
-    private popover: PopoverService,
-    private route: ActivatedRoute,
-    private navigation: NavigationService,
-    private placeService: PlaceService,
-    private util: UtilService,
-  ) {
+  constructor() {
     this.subscription = new Subscription();
   }
 

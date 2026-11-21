@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { faList, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faList, faMap, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
-import type { Person } from '../../../people/models/person';
+import { isDead, type Person } from '../../../people/models/person';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -18,28 +18,33 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+  styleUrls: ['./overview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OverviewComponent implements OnInit {
+  private auth = inject(AuthService);
+  private combatService = inject(CombatService);
+  private peopleService = inject(PeopleService);
+  private popover = inject(PopoverService);
+
   combatants$: Observable<Combatant[]>;
   displayAsBox: boolean;
   faList = faList;
+  faMap = faMap;
   faPlus = faPlus;
   faUsers = faUsers;
   newCombatant = '';
   people: Person[];
   user: AuthUser;
   showAsList = false;
+  showMap = false;
 
-  constructor(
-    private auth: AuthService,
-    private combatService: CombatService,
-    private peopleService: PeopleService,
-    private popover: PopoverService,
-  ) {
+  constructor() {
     this.combatants$ = this.combatService.getCombatants();
     this.displayAsBox = environment.tenant === 'tde5';
     this.showAsList = localStorage.getItem('combat-show-as-list') === 'true';
+    this.showMap = localStorage.getItem('combat-show-map') === 'true';
     this.user = this.auth.user;
   }
 
@@ -59,7 +64,7 @@ export class OverviewComponent implements OnInit {
   showAddPersonDialog() {
     combineLatest([
       this.peopleService.getPeople().pipe(
-        map((people) => people.filter(person => !person.deathday)),
+        map((people) => people.filter(person => !isDead(person))),
       ),
       this.combatService.getIdsOfPeopleInFight(),
     ]).pipe(
@@ -78,5 +83,17 @@ export class OverviewComponent implements OnInit {
   toggleDisplayStyle() {
     this.showAsList = !this.showAsList;
     localStorage.setItem('combat-show-as-list', this.showAsList.toString());
+    this.setShowMap(false);
+  }
+
+
+  toggleMap() {
+    this.setShowMap(!this.showMap);
+  }
+
+
+  private setShowMap(show: boolean) {
+    this.showMap = show;
+    localStorage.setItem('combat-show-map', show.toString());
   }
 }

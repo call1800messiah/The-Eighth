@@ -1,3 +1,5 @@
+@import '../../../../scss/variables.scss';
+
 .loading-state,
 .error-state {
   text-align: center;
@@ -43,4 +45,16 @@
 
 .flow-items.cdk-drop-list-dragging .flow-item-wrapper:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Keeps the story beat tracker in reach while scrolling a long flow. The filter
+// bar is sticky on its own from this breakpoint, so this takes over from it as
+// the element that sticks.
+@media (min-width: $break-sm) {
+  .flow-head {
+    background: var(--body-background);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
 }

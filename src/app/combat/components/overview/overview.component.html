@@ -6,25 +6,42 @@
 
   <button type="button" class="btn-icon btn-add" (click)="addCombatant()">
     <fa-icon [icon]="faPlus" [fixedWidth]="true"
-             title="Kämpfer hinzufügen"></fa-icon>
+    title="Kämpfer hinzufügen"></fa-icon>
   </button>
 
   <button type="button" class="btn-icon btn-people" (click)="showAddPersonDialog()">
     <fa-icon [icon]="faUsers" [fixedWidth]="true"
-             title="Person als Kämpfer hinzufügen"></fa-icon>
+    title="Person als Kämpfer hinzufügen"></fa-icon>
   </button>
 
-  <button type="button" class="btn-icon" [ngClass]="{'active': showAsList}" (click)="toggleDisplayStyle()">
+  <button type="button" class="btn-icon" [ngClass]="{'active': showAsList && !showMap}" (click)="toggleDisplayStyle()">
     <fa-icon [icon]="faList" [fixedWidth]="true"
-             title="Anzeigestil wechseln"></fa-icon>
+    title="Anzeigestil wechseln"></fa-icon>
+  </button>
+
+  <button type="button" class="btn-icon btn-map" [ngClass]="{'active': showMap}" (click)="toggleMap()">
+    <fa-icon [icon]="faMap" [fixedWidth]="true"
+    title="Kampfkarte"></fa-icon>
   </button>
 </div>
 
+@if (showMap) {
+  <app-combat-map [combatants]="combatants$ | async"></app-combat-map>
+}
 
-<app-box-grid *ngIf="!showAsList">
-  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant"></app-combatant>
-</app-box-grid>
 
-<div *ngIf="showAsList">
-  <app-combatant *ngFor="let combatant of combatants$ | async" [combatant]="combatant" [showAsList]="true"></app-combatant>
-</div>
+@if (!showMap && !showAsList) {
+  <app-box-grid>
+    @for (combatant of combatants$ | async; track combatant.id) {
+      <app-combatant [combatant]="combatant"></app-combatant>
+    }
+  </app-box-grid>
+}
+
+@if (!showMap && showAsList) {
+  <div>
+    @for (combatant of combatants$ | async; track combatant.id) {
+      <app-combatant [combatant]="combatant" [showAsList]="true"></app-combatant>
+    }
+  </div>
+}

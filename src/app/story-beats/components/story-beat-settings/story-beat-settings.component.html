@@ -1,0 +1,29 @@
+@if (state$ | async; as state) {
+  @if (state.session; as session) {
+    <div class="form-group">
+      <input
+        type="number"
+        id="beat-interval"
+        min="5"
+        max="480"
+        step="5"
+        [ngModel]="session.intervalMinutes"
+        (change)="setInterval(session, $any($event.target).value)"
+      />
+      <label for="beat-interval">Intervall (Minuten)</label>
+    </div>
+
+    <h3>Anwesend</h3>
+    @for (pc of state.pcs; track pc.id) {
+      <div class="form-group">
+        <input
+          type="checkbox"
+          id="beat-present-{{pc.id}}"
+          [checked]="!session.mutedPersonIds.includes(pc.id)"
+          (change)="toggleMuted(session, pc.id)"
+        />
+        <label for="beat-present-{{pc.id}}">{{ pc.name }}</label>
+      </div>
+    }
+  }
+}

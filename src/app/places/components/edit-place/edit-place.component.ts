@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { deleteField } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
 
 import type { Place } from '../../models/place';
@@ -14,9 +13,14 @@ import { PlaceService } from '../../services/place.service';
 @Component({
   selector: 'app-edit-place',
   templateUrl: './edit-place.component.html',
-  styleUrls: ['./edit-place.component.scss']
+  styleUrls: ['./edit-place.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
+  private placeService = inject(PlaceService);
+  private auth = inject(AuthService);
+
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -35,10 +39,7 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private placeService: PlaceService,
-    private auth: AuthService,
-  ) {
+  constructor() {
     this.places$ = this.placeService.getPlaces();
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
@@ -69,10 +70,8 @@ export class EditPlaceComponent implements OnInit, OnDestroy, PopoverChild {
     } else {
       place.owner = this.userID;
     }
-    if (this.props.id && place.parentId === 'null') {
-      place.parentId = deleteField();
-    } else if (place.parentId === 'null') {
-      delete place.parentId;
+    if (place.parentId === 'null') {
+      place.parentId = null;
     }
     this.placeService.store(place, this.props.id).then(() => {
       this.dismissPopover.emit(true);

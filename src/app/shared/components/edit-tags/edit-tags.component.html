@@ -11,13 +11,14 @@
   </div>
 
   <div class="tag-list">
-    <div class="single-tag" *ngFor="let tag of tagsList">
-      {{tag}}
-
-      <button type="button" class="btn-icon" (click)="removeTag(tag)">
-        <fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon>
-      </button>
-    </div>
+    @for (tag of tagsList; track tag) {
+      <div class="single-tag">
+        {{tag}}
+        <button type="button" class="btn-icon" (click)="removeTag(tag)">
+          <fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon>
+        </button>
+      </div>
+    }
   </div>
 
   <button type="button" class="btn" (click)="save()">

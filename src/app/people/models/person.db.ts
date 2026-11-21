@@ -8,12 +8,16 @@ export interface PersonDB {
   access: string[];
   attributes?: Attribute[];
   banner?: string;
-  birthday: string;
-  birthyear: number;
+  birth_day: number | null;
+  birth_precision: string | null;
+  birthday_legacy: string | null;
+  birthyear_legacy: number | null;
   cantrips?: Record<string, number>;
   children?: string[];
   culture: string;
-  deathday: string;
+  death_day: number | null;
+  death_precision: string | null;
+  deathday_legacy: string | null;
   disadvantages?: Record<string, {
     details?: string;
     level?: string;
@@ -40,4 +44,5 @@ export interface PersonDB {
   tags?: string[];
   title: string;
   xp?: number;
+  xpSpent?: number | null;
 }

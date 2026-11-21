@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import type { Quest } from '../../models/quest';
 import { QuestsService } from '../../services/quests.service';
@@ -8,7 +8,9 @@ import { QuestsService } from '../../services/quests.service';
 @Component({
   selector: 'app-quest-summary',
   templateUrl: './quest-summary.component.html',
-  styleUrls: ['./quest-summary.component.scss']
+  styleUrls: ['./quest-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class QuestSummaryComponent implements OnInit {
   @Input() quest: Quest;

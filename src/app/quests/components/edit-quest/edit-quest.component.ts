@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { deleteField } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
 
 import type { Quest, QuestDB } from '../../models';
@@ -13,9 +12,14 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-quest',
   templateUrl: './edit-quest.component.html',
-  styleUrls: ['./edit-quest.component.scss']
+  styleUrls: ['./edit-quest.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private questService = inject(QuestsService);
+
   @Input() props: Quest;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
@@ -34,10 +38,7 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private questService: QuestsService,
-  ) {
+  constructor() {
     this.quests$ = this.questService.getQuests();
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
@@ -69,10 +70,8 @@ export class EditQuestComponent implements OnInit, OnDestroy, PopoverChild {
     } else {
       quest.owner = this.userID;
     }
-    if (this.props.id && quest.parentId === 'null') {
-      quest.parentId = deleteField();
-    } else if (quest.parentId === 'null') {
-      delete quest.parentId;
+    if (quest.parentId === 'null') {
+      quest.parentId = null;
     }
     this.questService.store(quest, this.props.id).then(() => {
       this.dismissPopover.emit(true);

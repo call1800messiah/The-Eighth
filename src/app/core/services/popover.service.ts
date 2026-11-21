@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 
@@ -12,9 +12,7 @@ export class PopoverService {
   popoverComponent$: Subject<any>;
   private popoverVisible = false;
 
-  constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
-  ) {
+  constructor() {
     this.isPopoverVisible$ = new BehaviorSubject<boolean>(this.popoverVisible);
     this.popoverTitle$ = new BehaviorSubject<string>('');
     this.popoverComponent$ = new Subject<any>();
@@ -27,7 +25,7 @@ export class PopoverService {
   }
 
 
-  showPopover<T>(title: string, component, props: T = {} as T) {
+  showPopover<T>(title: string, component: Type<unknown>, props: T = {} as T) {
     if (this.popoverVisible) {
       console.error('Can\'t open multiple popovers at once.');
       return;
@@ -37,7 +35,6 @@ export class PopoverService {
     this.isPopoverVisible$.next(this.popoverVisible);
     this.popoverTitle$.next(title);
 
-    const resolver = this.componentFactoryResolver.resolveComponentFactory(component);
-    this.popoverComponent$.next([resolver, props]);
+    this.popoverComponent$.next([component, props]);
   }
 }

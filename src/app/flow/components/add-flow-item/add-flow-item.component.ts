@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,6 +12,8 @@ import { PeopleService } from '../../../people/services/people.service';
 import { PlaceService } from '../../../places/services/place.service';
 import { NotesService } from '../../../notes/services/notes.service';
 import { PopoverChild } from '../../../shared';
+import { filterBySearch } from '../../../shared/utils/search';
+import { markdownToPlainText } from '../../../shared/markdown/mentions';
 
 export interface AddFlowItemProps {
   flowId: string;
@@ -20,9 +22,17 @@ export interface AddFlowItemProps {
 @Component({
   selector: 'app-add-flow-item',
   templateUrl: './add-flow-item.component.html',
-  styleUrls: ['./add-flow-item.component.scss']
+  styleUrls: ['./add-flow-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AddFlowItemComponent implements OnInit, PopoverChild {
+  private flowService = inject(FlowService);
+  private questsService = inject(QuestsService);
+  private peopleService = inject(PeopleService);
+  private placesService = inject(PlaceService);
+  private notesService = inject(NotesService);
+
   @Input() props: AddFlowItemProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
 
@@ -39,14 +49,7 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
   filteredNotes$: Observable<Note[]>;
 
   selectedItems: string[] = [];
-
-  constructor(
-    private flowService: FlowService,
-    private questsService: QuestsService,
-    private peopleService: PeopleService,
-    private placesService: PlaceService,
-    private notesService: NotesService,
-  ) {}
+  preview = (text: string) => markdownToPlainText(text).slice(0, 35);
 
   ngOnInit(): void {
     this.quests$ = this.questsService.getQuests();
@@ -59,48 +62,28 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
       this.quests$,
       this.searchText$
     ]).pipe(
-      map(([quests, searchText]) => this.filterBySearch(quests, searchText.toLowerCase(), 'name'))
+      map(([quests, searchText]) => filterBySearch(quests, searchText, ['name']))
     );
 
     this.filteredPeople$ = combineLatest([
       this.people$,
       this.searchText$
     ]).pipe(
-      map(([people, searchText]) => this.filterBySearch(people, searchText.toLowerCase(), 'name'))
+      map(([people, searchText]) => filterBySearch(people, searchText, ['name']))
     );
 
     this.filteredPlaces$ = combineLatest([
       this.places$,
       this.searchText$
     ]).pipe(
-      map(([places, searchText]) => this.filterBySearch(places, searchText.toLowerCase(), 'name'))
+      map(([places, searchText]) => filterBySearch(places, searchText, ['name']))
     );
 
     this.filteredNotes$ = combineLatest([
       this.notes$,
       this.searchText$
     ]).pipe(
-      map(([notes, searchText]) => this.filterNotesBySearch(notes, searchText.toLowerCase()))
-    );
-  }
-
-  private filterNotesBySearch(notes: Note[], searchText: string): Note[] {
-    if (!searchText || searchText.trim() === '') {
-      return notes;
-    }
-    return notes.filter(note =>
-      note.title?.toLowerCase().includes(searchText) ||
-      note.content?.toLowerCase().includes(searchText) ||
-      note.category?.toLowerCase().includes(searchText)
-    );
-  }
-
-  private filterBySearch(items: any[], searchText: string, field: string): any[] {
-    if (!searchText || searchText.trim() === '') {
-      return items;
-    }
-    return items.filter(item =>
-      item[field]?.toLowerCase().includes(searchText)
+      map(([notes, searchText]) => filterBySearch(notes, searchText, ['title', 'content', 'category']))
     );
   }
 
@@ -146,7 +129,7 @@ export class AddFlowItemComponent implements OnInit, PopoverChild {
       return null;
     }).filter(item => item !== null);
 
-    // Add all items in a single Firebase write
+    // Add all items in a single write
     await this.flowService.addItems(this.props.flowId, itemsToAdd);
     this.dismissPopover.emit(true);
   }

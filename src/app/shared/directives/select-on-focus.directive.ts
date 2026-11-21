@@ -3,7 +3,8 @@ import { Directive, HostListener } from '@angular/core';
 
 
 @Directive({
-  selector: '[appSelectOnFocus]'
+  selector: '[appSelectOnFocus]',
+  standalone: false
 })
 export class SelectOnFocusDirective {
 

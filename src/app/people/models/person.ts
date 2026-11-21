@@ -1,3 +1,4 @@
+import type { InGameDate } from '@the-eighth/fantasy-calendar';
 import type { Attribute, CombatState } from '../../shared';
 import type { AccessControlledItem } from '../../core/models/access-controlled-item';
 import type { Relative } from './relative';
@@ -11,20 +12,31 @@ import type { Spell } from './spell';
 import type { Liturgy } from './liturgy';
 
 export interface Person extends AccessControlledItem {
+  /** 'draft' until a GM publishes what Claude created (migration 013). */
+  status?: 'draft' | 'published';
   id: string;
   advantages?: Advantage[];
   attributes?: Attribute[];
+  /** Rendered URL of the banner, thumb size. */
   banner: string;
-  birthday: string;
-  birthyear: number;
+  birth: InGameDate | null;
+  /** Text from before structured dates (e.g. '9. Rondra 1011'); shown only while `birth` is empty. */
+  birthLegacy: string | null;
   cantrips?: Cantrip[];
   children?: Relative[];
   culture: string;
-  deathday: string;
+  death: InGameDate | null;
+  deathLegacy: string | null;
   disadvantages?: Disadvantage[];
   feats?: Feat[];
   height: number;
+  /** Rendered URL of the portrait, large size. */
   image: string;
+  /**
+   * Rendered URL of the portrait, thumb size, for avatars. Set together with
+   * `image` (PeopleService.transform).
+   */
+  imageThumb?: string;
   liturgys?: Liturgy[];
   location?: Location;
   name: string;
@@ -41,4 +53,10 @@ export interface Person extends AccessControlledItem {
   tags?: string[];
   title: string;
   xp?: number;
+  xpSpent?: number | null;
+}
+
+/** Dead means a death date or a legacy death text is set. */
+export function isDead(person: Pick<Person, 'death' | 'deathLegacy'>): boolean {
+  return !!person.death || !!person.deathLegacy;
 }

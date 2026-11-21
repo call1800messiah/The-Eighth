@@ -1,15 +1,17 @@
-<div class="note-detail" *ngIf="note">
-  <div class="note-content">
-    {{ note.content }}
+@if (note) {
+  <div class="note-detail">
+    <app-markdown class="note-content" [text]="note.content"></app-markdown>
+    <app-backlinks entityType="note" [entityId]="note.id"></app-backlinks>
+    <div class="note-actions">
+      <button type="button" class="btn" (click)="editNote()">
+        Bearbeiten
+      </button>
+    </div>
   </div>
+}
 
-  <div class="note-actions">
-    <button type="button" class="btn" (click)="editNote()">
-      Bearbeiten
-    </button>
+@if (!note) {
+  <div class="note-not-found">
+    <p>Notiz nicht gefunden</p>
   </div>
-</div>
-
-<div class="note-not-found" *ngIf="!note">
-  <p>Notiz nicht gefunden</p>
-</div>
+}

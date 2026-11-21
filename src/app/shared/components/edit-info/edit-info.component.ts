@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -12,12 +12,19 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-info',
   templateUrl: './edit-info.component.html',
-  styleUrls: ['./edit-info.component.scss']
+  styleUrls: ['./edit-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
+  private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+  private dataService = inject(DataService);
+
   @Input() props: EditInfoProps;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
+  error: string | null = null;
   infoForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
     type: new UntypedFormControl(0),
@@ -26,10 +33,7 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   userID: string;
   private subscription = new Subscription();
 
-  constructor(
-    private auth: AuthService,
-    private dataService: DataService,
-  ) {
+  constructor() {
     this.subscription.add(
       this.auth.user$.subscribe((user) => {
         this.userID = user.id;
@@ -49,30 +53,33 @@ export class EditInfoComponent implements OnInit, OnDestroy, PopoverChild {
   }
 
 
-  delete() {
+  async delete() {
     if (this.props.info) {
-      this.dataService.delete(this.props.info.id, `${this.props.collection}/${this.props.parentId}/info`).then(() => {
+      this.error = null;
+      if (await this.dataService.deleteInfo(this.props.info.id)) {
         this.dismissPopover.emit(true);
-      });
+      } else {
+        this.error = 'Die Info wurde nicht gelöscht. Du darfst sie vermutlich nicht bearbeiten.';
+        this.cdr.markForCheck();
+      }
     }
   }
 
 
-  save() {
-    let id: string;
-    const info: Info = {...this.infoForm.value};
-    if (this.props.info) {
-      id = this.props.info.id;
-      info.owner = this.props.info.owner;
-    } else {
-      info.created = new Date();
+  async save() {
+    const info = { ...this.infoForm.value };
+    if (!this.props.info) {
       info.owner = this.userID;
     }
-    info.modified = new Date();
 
-    this.dataService.store(info, `${this.props.collection}/${this.props.parentId}/info`, id).then(() => {
+    this.error = null;
+    const result = await this.dataService.storeInfo(info, this.props.collection, this.props.parentId, this.props.info?.id);
+    if (result.success) {
       this.dismissPopover.emit(true);
-    });
+    } else {
+      this.error = 'Die Info wurde nicht gespeichert. Du darfst sie vermutlich nicht bearbeiten.';
+      this.cdr.markForCheck();
+    }
   }
 
 

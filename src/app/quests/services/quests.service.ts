@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import type { AuthUser } from '../../auth/models/auth-user';
 import type { Quest } from '../models/quest';
-import { ApiService } from '../../core/services/api.service';
 import { UtilService } from '../../core/services/util.service';
-import { AuthService } from '../../core/services/auth.service';
 import { DataService } from '../../core/services/data.service';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -15,6 +13,9 @@ import { DataService } from '../../core/services/data.service';
   providedIn: 'root'
 })
 export class QuestsService {
+  private data = inject(DataService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'quests';
   static questTypes = {
     main: 'Hauptqueste',
@@ -23,37 +24,27 @@ export class QuestsService {
     task: 'Aufgabe',
   };
   private quests$: BehaviorSubject<Quest[]>;
-  private user: AuthUser;
-
-  constructor(
-    private api: ApiService,
-    private auth: AuthService,
-    private data: DataService,
-  ) {
-    this.user = this.auth.user;
-  }
 
 
 
-  private static transformQuests(quests: any[]): Quest[] {
-    return quests.reduce((all, entry) => {
-      const questData = entry.payload.doc.data();
+  private static transformQuests(rows: any[]): Quest[] {
+    return rows.map(row => {
       const quest: Quest = {
-        access: questData.access,
+        access: [],
         collection: QuestsService.collection,
-        completed: questData.completed || false,
-        description: questData.description || '',
-        id: entry.payload.doc.id,
-        name: questData.name || '',
-        owner: questData.owner,
-        type: questData.type || null
+        completed: row.completed || false,
+        description: row.description || '',
+        id: row.id,
+        name: row.name || '',
+        owner: row.owner_id,
+        status: row.status ?? 'published',
+        type: row.type || null
       };
-      if (questData.parentId) {
-        quest.parent = { id: questData.parentId };
+      if (row.parent_id) {
+        quest.parent = { id: row.parent_id };
       }
-      all.push(quest);
-      return all;
-    }, []);
+      return quest;
+    });
   }
 
 
@@ -68,10 +59,10 @@ export class QuestsService {
   getQuests(): Observable<Quest[]> {
     if (!this.quests$) {
       this.quests$ = new BehaviorSubject<Quest[]>([]);
-      this.api.getDataFromCollection(
-        QuestsService.collection,
-        (ref) => ref
-          .where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'quests',
+        undefined,
+        'quests',
       ).pipe(
         map(QuestsService.transformQuests),
         map(this.resolveParents),
@@ -86,7 +77,17 @@ export class QuestsService {
 
 
   store(quest: Partial<Quest>, questId?: string) {
-    return this.data.store(quest, QuestsService.collection, questId);
+    const cleanedQuest: any = { ...quest };
+    if (quest.parent) {
+      cleanedQuest.parent_id = quest.parent.id;
+      delete cleanedQuest.parent;
+    }
+    if ('parentId' in cleanedQuest) {
+      cleanedQuest.parent_id = cleanedQuest.parentId || null;
+      delete cleanedQuest.parentId;
+    }
+    delete cleanedQuest.subQuests;
+    return this.data.store(cleanedQuest, QuestsService.collection, questId);
   }
 
 

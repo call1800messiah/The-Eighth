@@ -1,18 +1,13 @@
-import { Injectable } from '@angular/core';
-import { deleteField, FieldValue } from '@angular/fire/firestore';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-
+import { map } from 'rxjs/operators';
 
 import { ApiService } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service';
 import { Project } from '../models/project';
-import { AuthUser } from '../../auth/models/auth-user';
-import { DataService } from '../../core/services/data.service';
 import { UtilService } from '../../core/services/util.service';
 import { ProjectRequirement } from '../models/project-requirement';
 import { ProjectMilestone } from '../models/project-milestone';
-import { ProjectDB } from '../models/project.db';
+import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
 
 
@@ -20,29 +15,30 @@ import { ProjectDB } from '../models/project.db';
   providedIn: 'root'
 })
 export class ProjectService {
+  private api = inject(ApiService);
+  private realtime = inject(RealtimeService);
+
   static readonly collection = 'projects';
   private projects$: BehaviorSubject<Project[]>;
-  private user: AuthUser;
-
-  constructor(
-    private api: ApiService,
-    private auth: AuthService,
-    private data: DataService,
-  ) {
-    this.user = this.auth.user;
-  }
 
 
 
   getProjects(): Observable<Project[]> {
     if (!this.projects$) {
       this.projects$ = new BehaviorSubject<Project[]>([]);
-      this.api.getDataFromCollection(
-        ProjectService.collection,
-        (ref) => ref.
-          where('access', 'array-contains', this.user.id)
+      this.realtime.watch<any>(
+        'projects',
+        // Without an explicit order Postgres returns rows as they lie on disk,
+        // and an UPDATE writes a new row version, so an edited project would
+        // jump to the end of the list.
+        query => query
+          .select('*, project_milestones(*), project_requirements(*)')
+          .order('created_at', { ascending: true })
+          .order('id', { ascending: true }),
+        'projects',
+        ['project_milestones', 'project_requirements'],
       ).pipe(
-        map(this.transformProjects.bind(this))
+        map(rows => this.transformProjects(rows))
       ).subscribe((projects: Project[]) => {
         this.projects$.next(projects);
       });
@@ -51,126 +47,66 @@ export class ProjectService {
   }
 
 
-  store(project: Partial<Project>, projectId?: string): Promise<{ success: boolean; id?: string }> {
-    return this.data.store(this.serializeProject(project, projectId), ProjectService.collection, projectId);
-  }
-
-
-
-  private serializeProject(project: Partial<Project>, projectID?: string): ProjectDB {
-    const mDesc: Record<string, string | FieldValue> = {};
-    const mReq: Record<string, number | FieldValue> = {};
-    const rCur: Record<string, number | FieldValue> = {};
-    const rReq: Record<string, number | FieldValue> = {};
-    const rSkill: Record<string, string | FieldValue> = {};
-    const rThresh: Record<string, number | FieldValue> = {};
-
-    Object.entries(project).forEach(([key, value]) => {
-      const split = key.split('-');
-      if (split[0] === 'mile' && split[2] === 'req') {
-        mReq[split[1]] = value as unknown as number;
-      }
-      if (split[0] === 'mile' && split[2] === 'desc') {
-        mDesc[split[1]] = value as unknown as string;
-      }
-      if (split[0] === 'req' && split[2] === 'req') {
-        rReq[split[1]] = value as unknown as number;
-      }
-      if (split[0] === 'req' && split[2] === 'cur') {
-        rCur[split[1]] = value as unknown as number;
-      }
-      if (split[0] === 'req' && split[2] === 'skill') {
-        rSkill[split[1]] = value as unknown as string;
-      }
-      if (split[0] === 'req' && split[2] === 'thr') {
-        rThresh[split[1]] = value as unknown as number;
-      }
+  /**
+   * Creates (no id) or updates a project together with its milestones and
+   * requirements. save_project() (migration 017) does it in one transaction, so
+   * a refused or failed save changes nothing, and saves of the same project
+   * run one after the other. A list left undefined is not touched.
+   */
+  async store(project: Partial<Project>, projectId?: string): Promise<{ success: boolean; id?: string }> {
+    const { data, error } = await this.api.rpc('save_project', {
+      p_id: projectId ?? null,
+      p_project: { name: project.name, benefit: project.benefit, interval: project.interval },
+      p_milestones: project.milestones?.map((m) => ({
+        description: m.description,
+        required_points: m.requiredPoints,
+      })) ?? null,
+      p_requirements: project.requirements?.map((r) => ({
+        skill: r.skill,
+        current_points: r.currentPoints,
+        required_points: r.requiredPoints,
+        threshold: r.threshold,
+      })) ?? null,
     });
-
-    if (projectID) {
-      this.projects$.pipe(
-        take(1),
-        map((projects) => projects.find((p) => p.id === projectID))
-      ).subscribe((currentProject) => {
-        if (currentProject) {
-          currentProject.milestones.forEach((milestone) => {
-            if (!mDesc[milestone.id]) {
-              mDesc[milestone.id] = deleteField();
-              mReq[milestone.id] = deleteField();
-            }
-          });
-          currentProject.requirements.forEach((requirement) => {
-            if (!rSkill[requirement.id]) {
-              rThresh[requirement.id] = deleteField();
-              rSkill[requirement.id] = deleteField();
-              rReq[requirement.id] = deleteField();
-              rCur[requirement.id] = deleteField();
-            }
-          });
-        }
-      });
+    if (error) {
+      console.error(error);
+      return { success: false };
     }
-
-    return {
-      access: project.access || [this.user.id],
-      benefit: project.benefit,
-      interval: project.interval,
-      mDesc,
-      mReq,
-      name: project.name,
-      owner: project.owner,
-      rCur,
-      rReq,
-      rSkill,
-      rThresh,
-    };
+    return { success: true, id: data };
   }
 
 
-  private transformProjects(projects: any[]): Project[] {
-    return projects.reduce((all, entry) => {
-      const projectData = entry.payload.doc.data();
-      const milestones: ProjectMilestone[] = !projectData.mDesc || !projectData.mReq
-        ? []
-        : Object.entries(projectData.mDesc).reduce((allM, [id, description]) => {
-        if (projectData.mReq[id]) {
-          allM.push({
-            id,
-            description,
-            requiredPoints: projectData.mReq[id]
-          });
-        }
-        return allM;
-      }, []).sort(UtilService.orderByRequiredPoints);
+  private transformProjects(rows: any[]): Project[] {
+    return rows.map(row => {
+      const milestones: ProjectMilestone[] = (row.project_milestones || [])
+        .sort(UtilService.orderByRequiredPoints)
+        .map((m: any) => ({
+          id: m.id,
+          description: m.description,
+          requiredPoints: m.required_points,
+        }));
 
-      const requirements: ProjectRequirement[] = !projectData.rSkill || !projectData.rCur || !projectData.rReq || !projectData.rThresh
-        ? []
-        : Object.entries(projectData.rSkill).reduce((allR, [id, skill]) => {
-        if (projectData.rCur[id] !== undefined) {
-          allR.push({
-            id,
-            skill,
-            currentPoints: projectData.rCur[id],
-            requiredPoints: projectData.rReq[id],
-            threshold: projectData.rThresh[id],
-          });
-        }
-        return allR;
-      }, []).sort(UtilService.orderBySkill);
+      const requirements: ProjectRequirement[] = (row.project_requirements || [])
+        .sort(UtilService.orderBySkill)
+        .map((r: any) => ({
+          id: r.id,
+          skill: r.skill,
+          currentPoints: r.current_points,
+          requiredPoints: r.required_points,
+          threshold: r.threshold,
+        }));
 
-      const project: Project = {
-        access: projectData.access,
-        benefit: projectData.benefit,
+      return {
+        access: [],
+        benefit: row.benefit,
         collection: ProjectService.collection,
-        id: entry.payload.doc.id,
-        interval: projectData.interval,
+        id: row.id,
+        interval: row.interval,
         milestones,
-        name: projectData.name,
-        owner: projectData.owner,
+        name: row.name,
+        owner: row.owner_id,
         requirements,
       };
-      all.push(project);
-      return all;
-    }, []);
+    });
   }
 }

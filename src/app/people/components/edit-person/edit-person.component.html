@@ -25,33 +25,37 @@
       <label for="profession">Profession</label>
     </div>
     <div class="form-group">
-      <input type="text" id="birthday" formControlName="birthday">
-      <label for="birthday">Geburtstag</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="birthyear" step="1" formControlName="birthyear">
-      <label for="birthyear">Geburtsjahr</label>
+      <app-date-input inputId="birth" formControlName="birth" [legacy]="props.birthLegacy"
+        (legacyDiscarded)="discardedLegacy.birth = true"></app-date-input>
+      <label for="birth">Geboren</label>
     </div>
     <div class="form-group">
       <input type="number" id="height" step="1" formControlName="height">
       <label for="height">Größe (in cm)</label>
     </div>
     <div class="form-group">
-      <input type="text" id="deathday" formControlName="deathday">
-      <label for="deathday">Todestag</label>
+      <app-date-input inputId="death" formControlName="death" [legacy]="props.deathLegacy"
+        (legacyDiscarded)="discardedLegacy.death = true"></app-date-input>
+      <label for="death">Gestorben</label>
     </div>
     <div class="form-group">
       <input type="text" id="location" list="places" formControlName="location">
       <label for="location">Ort</label>
       <datalist id="places">
-        <option *ngFor="let place of places" [value]="place.id">
-          {{place.name}} ({{placeTypes[place.type]}})
-        </option>
+        @for (place of places; track place.id) {
+          <option [value]="place.id">
+            {{place.name}} ({{placeTypes[place.type]}})
+          </option>
+        }
       </datalist>
     </div>
     <div class="form-group">
       <input type="number" id="xp" step="1" formControlName="xp">
       <label for="xp">Abenteuerpunkte</label>
+    </div>
+    <div class="form-group">
+      <input type="number" id="xpSpent" step="1" formControlName="xpSpent">
+      <label for="xpSpent">Ausgegebene Abenteuerpunkte</label>
     </div>
     <button type="submit" class="btn" [disabled]="!personForm.valid">
       Speichern
