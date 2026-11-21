@@ -20,7 +20,7 @@ describe('StoryBeatService', () => {
   const people = [
     { id: 'p-thalio', name: 'Thalio', pc: true },
     { id: 'p-katun', name: 'Katun', pc: true },
-    { id: 'p-dead', name: 'Albrecht', pc: true, deathday: '1. Praios' },
+    { id: 'p-dead', name: 'Albrecht', pc: true, death: null, deathLegacy: '1. Praios' },
     { id: 'p-npc', name: 'Tau', pc: false },
     { id: 'p-lucano', name: 'Lucano', pc: true },
   ];

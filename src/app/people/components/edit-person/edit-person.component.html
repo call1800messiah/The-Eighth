@@ -25,20 +25,16 @@
       <label for="profession">Profession</label>
     </div>
     <div class="form-group">
-      <input type="text" id="birthday" formControlName="birthday">
-      <label for="birthday">Geburtstag</label>
-    </div>
-    <div class="form-group">
-      <input type="number" id="birthyear" step="1" formControlName="birthyear">
-      <label for="birthyear">Geburtsjahr</label>
+      <app-date-input inputId="birth" formControlName="birth" [legacy]="props.birthLegacy"></app-date-input>
+      <label for="birth">Geboren</label>
     </div>
     <div class="form-group">
       <input type="number" id="height" step="1" formControlName="height">
       <label for="height">Größe (in cm)</label>
     </div>
     <div class="form-group">
-      <input type="text" id="deathday" formControlName="deathday">
-      <label for="deathday">Todestag</label>
+      <app-date-input inputId="death" formControlName="death" [legacy]="props.deathLegacy"></app-date-input>
+      <label for="death">Gestorben</label>
     </div>
     <div class="form-group">
       <input type="text" id="location" list="places" formControlName="location">

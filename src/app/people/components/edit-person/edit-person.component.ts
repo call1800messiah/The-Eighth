@@ -26,10 +26,9 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
   @Input() props: Person;
   @Output() dismissPopover = new EventEmitter<boolean>();
   personForm = new UntypedFormGroup({
-    birthday: new UntypedFormControl(''),
-    birthyear: new UntypedFormControl(1000),
+    birth: new UntypedFormControl(null),
     culture: new UntypedFormControl(''),
-    deathday: new UntypedFormControl(''),
+    death: new UntypedFormControl(null),
     height: new UntypedFormControl(0),
     location: new UntypedFormControl(''),
     name: new UntypedFormControl(''),
@@ -76,6 +75,9 @@ export class EditPersonComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
+    if (this.personForm.invalid) {
+      return;
+    }
     const person: Person = {
       ...this.personForm.value
     };

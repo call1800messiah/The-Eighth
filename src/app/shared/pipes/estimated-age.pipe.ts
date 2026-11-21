@@ -1,6 +1,8 @@
 import { OnDestroy, Pipe, PipeTransform, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { yearOf, type InGameDate } from '@the-eighth/fantasy-calendar';
 
+import { CalendarService } from '../../core/calendar/calendar.service';
 import { CampaignService } from '../../overview/services/campaign.service';
 
 
@@ -12,18 +14,15 @@ import { CampaignService } from '../../overview/services/campaign.service';
 })
 export class EstimatedAgePipe implements PipeTransform, OnDestroy {
   private campaignService = inject(CampaignService);
+  private calendars = inject(CalendarService);
 
   private subscription = new Subscription();
-  private date: number;
+  private campaignDate: InGameDate | null = null;
 
   constructor() {
     this.subscription.add(
       this.campaignService.getCampaignInfo().subscribe((data) => {
-        // Interim: the campaign date is an InGameDate now; Task 9 rewrites this pipe.
-        if (typeof data?.date === 'string') {
-          const dateSplit = (data.date as string).split(' ');
-          this.date = parseInt(dateSplit[dateSplit.length - 1], 10);
-        }
+        this.campaignDate = data?.date ?? null;
       })
     );
   }
@@ -32,11 +31,16 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  transform(value: number, ...args: unknown[]): string {
-    if (!this.date) {
-      return `${value} BF`;
+  transform(birth: InGameDate | null): string {
+    if (!birth) {
+      return '';
     }
-    const age = this.date - value;
+    // Birth years are Aventurian years whatever calendar the viewer reads.
+    const calendar = this.calendars.defaultCalendar;
+    if (!this.campaignDate || !calendar) {
+      return this.calendars.format(birth, calendar?.id);
+    }
+    const age = yearOf(calendar, this.campaignDate.day) - yearOf(calendar, birth.day);
 
     if (age > 10000) {
       return 'unermeßlich alt';

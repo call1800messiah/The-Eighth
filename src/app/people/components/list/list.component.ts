@@ -3,7 +3,7 @@ import { BehaviorSubject, combineLatest, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { faList, faPlus, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons';
 
-import type { Person } from '../../models/person';
+import { isDead, type Person } from '../../models/person';
 import { PopoverService } from '../../../core/services/popover.service';
 import { EditPersonComponent } from '../edit-person/edit-person.component';
 import { PeopleService } from '../../services/people.service';
@@ -86,7 +86,7 @@ export class ListComponent implements OnInit {
         || (person.race && person.race.toLowerCase().indexOf(lowText) !== -1)
         || (person.culture && person.culture.toLowerCase().indexOf(lowText) !== -1)
         || (person.tags && person.tags.find((tag) => tag.toLowerCase().indexOf(lowText) !== -1) !== undefined)
-      ) && (!person.deathday || showDead);
+      ) && (!isDead(person) || showDead);
     });
   }
 }

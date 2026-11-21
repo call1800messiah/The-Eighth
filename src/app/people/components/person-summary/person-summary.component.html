@@ -22,13 +22,13 @@
       @if (person.race && !showAsList) {
         <div class="race">{{person.race}}</div>
       }
-      <div class="birthday">{{person.birthyear | estimatedAge}}</div>
+      <div class="birth">{{ person.birth | estimatedAge }}</div>
     </div>
 
     <div class="status">
-      @if (person.deathday) {
+      @if (isDead(person)) {
         <fa-icon [icon]="faSkullCrossbones" [fixedWidth]="true"
-        title="Gestorben am {{person.deathday}} BF"></fa-icon>
+        [title]="person.death ? ('Gestorben am ' + (person.death | calendarDate)) : ('Gestorben am ' + person.deathLegacy)"></fa-icon>
       }
       @if (person.pc) {
         <fa-icon [icon]="faUser" [fixedWidth]="true"

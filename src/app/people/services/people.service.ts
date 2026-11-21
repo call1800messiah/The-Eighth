@@ -4,6 +4,7 @@ import { map, take } from 'rxjs/operators';
 
 import type { Advantage, Cantrip, Disadvantage, Feat, Liturgy, Person, Relative, Skill } from '../models';
 import type { Attribute } from '../../shared';
+import { dateColumns, readDate } from '../../core/calendar/date-columns';
 import type { AddableRule } from '../../rules';
 import type { Place } from '../../places/models/place';
 import { ApiService } from '../../core/services/api.service';
@@ -290,6 +291,26 @@ export class PeopleService {
 
   store(person: Partial<Person>, personId?: string) {
     const cleaned: any = { ...person };
+    // Legacy texts are never written, only cleared by a real date.
+    delete cleaned.birthLegacy;
+    delete cleaned.deathLegacy;
+    if ('birth' in cleaned) {
+      const birth = cleaned.birth;
+      delete cleaned.birth;
+      Object.assign(cleaned, dateColumns('birth', birth));
+      if (birth) {
+        cleaned.birthday_legacy = null;
+        cleaned.birthyear_legacy = null;
+      }
+    }
+    if ('death' in cleaned) {
+      const death = cleaned.death;
+      delete cleaned.death;
+      Object.assign(cleaned, dateColumns('death', death));
+      if (death) {
+        cleaned.deathday_legacy = null;
+      }
+    }
     if ('location' in cleaned) {
       const loc = cleaned.location;
       cleaned.location_id = loc && typeof loc === 'object' ? (loc.id || null) : (loc || null);
@@ -356,11 +377,12 @@ export class PeopleService {
       let person: Person = {
         access: [],
         banner: null,
-        birthday: row.birthday || null,
-        birthyear: row.birthyear !== undefined ? row.birthyear : null,
+        birth: readDate(row.birth_day, row.birth_precision),
+        birthLegacy: [row.birthday_legacy, row.birthyear_legacy].filter(v => v != null).join(' ') || null,
         collection: PeopleService.collection,
         culture: row.culture || null,
-        deathday: row.deathday || null,
+        death: readDate(row.death_day, row.death_precision),
+        deathLegacy: row.deathday_legacy || null,
         height: row.height !== undefined ? row.height : null,
         image: null,
         id: row.id,

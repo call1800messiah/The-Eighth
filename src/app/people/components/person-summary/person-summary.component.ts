@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { faSkullCrossbones, faUser } from '@fortawesome/free-solid-svg-icons';
 
-import type { Person } from '../../models/person';
+import { isDead, type Person } from '../../models/person';
 import { AuthUser } from '../../../auth/models/auth-user';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -21,6 +21,7 @@ export class PersonSummaryComponent implements OnInit {
   @Input() showAsList = false;
   faSkullCrossbones = faSkullCrossbones;
   faUser = faUser;
+  isDead = isDead;
   user: AuthUser;
 
   constructor() {
