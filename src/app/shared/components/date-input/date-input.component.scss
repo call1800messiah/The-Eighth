@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--item-padding);
+
+  > * {
+    flex: 1 1 6rem;
+    min-width: 0;
+  }
+
+  .before {
+    flex: 0 0 auto;
+  }
+}
+
+.legacy,
+.weekday {
+  font-size: var(--detail-text-font-size);
+  font-style: italic;
+  margin: 0 0 var(--item-padding);
+  opacity: 0.7;
+}
+
+.weekday {
+  margin: var(--item-padding) 0 0;
+}

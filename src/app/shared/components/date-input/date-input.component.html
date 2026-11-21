@@ -1,0 +1,80 @@
+@if (legacy) {
+  <p class="legacy">Bisher: {{ legacy }}</p>
+}
+
+<div class="fields" (focusout)="touched()">
+  <select
+    [id]="inputId"
+    data-field="precision"
+    aria-label="Genauigkeit"
+    [disabled]="disabled"
+    (change)="setPrecision($any($event.target).value)">
+    @for (p of precisions; track p.value) {
+      <option [value]="p.value" [selected]="p.value === precision">{{ p.label }}</option>
+    }
+  </select>
+
+  @if (precision === 'day') {
+    <input
+      type="number"
+      min="1"
+      data-field="day"
+      aria-label="Tag"
+      placeholder="Tag"
+      [value]="day"
+      [disabled]="disabled"
+      (input)="setDay($any($event.target).value)">
+  }
+
+  @if (precision !== 'year') {
+    <select
+      data-field="month"
+      aria-label="Monat"
+      [disabled]="disabled"
+      (change)="setMonth($any($event.target).value)">
+      <option value="" [selected]="month === ''">Monat</option>
+      @for (m of calendar.months; track $index) {
+        <option [value]="$index" [selected]="'' + $index === month">{{ m.name }}</option>
+      }
+    </select>
+  }
+
+  <input
+    type="number"
+    min="0"
+    data-field="year"
+    aria-label="Jahr"
+    placeholder="Jahr"
+    [value]="year"
+    [disabled]="disabled"
+    (input)="setYear($any($event.target).value)">
+
+  @if (calendar.era.beforeSuffix) {
+    <span class="before">
+      <input
+        type="checkbox"
+        data-field="before"
+        [id]="inputId + '-before'"
+        [checked]="before"
+        [disabled]="disabled"
+        (change)="setBefore($any($event.target).checked)">
+      <label [for]="inputId + '-before'">{{ calendar.era.beforeSuffix }}</label>
+    </span>
+  }
+
+  @if (calendars.length > 1) {
+    <select
+      data-field="calendar"
+      aria-label="Kalender"
+      [disabled]="disabled"
+      (change)="setCalendar($any($event.target).value)">
+      @for (c of calendars; track c.id) {
+        <option [value]="c.id" [selected]="c.id === calendarId">{{ c.name }}</option>
+      }
+    </select>
+  }
+</div>
+
+@if (weekday) {
+  <p class="weekday">{{ weekday }}</p>
+}
