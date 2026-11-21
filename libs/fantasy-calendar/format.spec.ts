@@ -69,6 +69,12 @@ describe('fantasy-calendar format', () => {
     expect(parse(noZero, '1')).not.toBeNull();
   });
 
+  it('parse accepts years up to the engine bound and no further', () => {
+    expect(parse(av, '999999999999 v. BF')?.precision).toBe('year');
+    expect(parse(av, '1. Praios 999999999999')?.precision).toBe('day');
+    expect(parse(av, '1000000000000 v. BF')).toBeNull();
+  });
+
   it('parse never throws on odd input', () => {
     for (const text of ['\u0000', '9'.repeat(400), '. . .', '-', 'v. BF', 'BF', '1. Praios 99999999999999999999']) {
       expect(() => parse(av, text)).not.toThrow();

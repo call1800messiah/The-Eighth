@@ -6,6 +6,12 @@ interface Cycle {
   days: number; // days per leap cycle
 }
 
+/**
+ * Largest year (either side of the epoch) the engine accepts. Any year within it gives a day
+ * number that is a safe integer, so it survives a BIGINT column and a JavaScript number.
+ */
+export const MAX_YEAR = 999_999_999_999;
+
 const cycles = new WeakMap<CalendarDefinition, Cycle>();
 
 function floorMod(a: number, b: number): number {
@@ -112,6 +118,7 @@ export function daysInMonth(def: CalendarDefinition, year: number, month: number
 export function isValidDate(def: CalendarDefinition, parts: DateParts): boolean {
   const { year, month, day } = parts;
   if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return false;
+  if (Math.abs(year) > MAX_YEAR) return false;
   if (!def.era.hasYearZero && year === 0) return false;
   if (month < 0 || month >= def.months.length) return false;
   return day >= 1 && day <= daysInMonth(def, year, month);

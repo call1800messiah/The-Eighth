@@ -95,6 +95,15 @@ describe('DateInputComponent', () => {
     expect(component.validate({} as any)).toEqual({ invalidDate: true });
   });
 
+  it('is invalid and emits nothing for a year beyond the engine bound', () => {
+    setup();
+    component.writeValue(null);
+    type('precision', 'year');
+    type('year', '1000000000000');
+    expect(emitted.length).toBe(0);
+    expect(component.validate({} as any)).toEqual({ invalidDate: true });
+  });
+
   it('is invalid when partly filled', () => {
     setup();
     component.writeValue(null);

@@ -1,5 +1,5 @@
 import { CalendarDefinition, InGameDate, Precision } from './types.js';
-import { fromDay, isValidDate, toDay } from './core.js';
+import { MAX_YEAR, fromDay, isValidDate, toDay } from './core.js';
 
 export type FormatStyle = 'long' | 'short';
 
@@ -48,6 +48,12 @@ function suffixPattern(suffix: string | undefined): RegExp | null {
   return new RegExp(`^(.*?)\\s*${body}$`, 'i');
 }
 
+/** At most as many digits as MAX_YEAR has; isValidDate checks the value itself. */
+const YEAR = String.raw`-?\d{1,${String(MAX_YEAR).length}}`;
+const DAY_MONTH_YEAR = new RegExp(String.raw`^(\d{1,6})\.\s*(\D.*?)\s+(${YEAR})$`);
+const MONTH_YEAR = new RegExp(String.raw`^(\D.*?)\s+(${YEAR})$`);
+const YEAR_ONLY = new RegExp(`^(${YEAR})$`);
+
 function findMonth(def: CalendarDefinition, text: string): number {
   const t = text.toLowerCase();
   return def.months.findIndex((m) =>
@@ -74,11 +80,11 @@ export function parse(def: CalendarDefinition, text: string): InGameDate | null 
     let dayText: string | null = null;
     let yearText: string;
     let m: RegExpExecArray | null;
-    if ((m = /^(\d{1,6})\.\s*(\D.*?)\s+(-?\d{1,12})$/.exec(s))) {
+    if ((m = DAY_MONTH_YEAR.exec(s))) {
       [, dayText, monthText, yearText] = m;
-    } else if ((m = /^(\D.*?)\s+(-?\d{1,12})$/.exec(s))) {
+    } else if ((m = MONTH_YEAR.exec(s))) {
       [, monthText, yearText] = m;
-    } else if ((m = /^(-?\d{1,12})$/.exec(s))) {
+    } else if ((m = YEAR_ONLY.exec(s))) {
       yearText = m[1];
     } else {
       return null;

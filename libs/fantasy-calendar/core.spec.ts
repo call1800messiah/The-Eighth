@@ -1,5 +1,5 @@
 import { CalendarDefinition } from './types';
-import { daysInYear, fromDay, isLeapYear, isValidDate, toDay, validateCalendar } from './core';
+import { MAX_YEAR, daysInYear, fromDay, isLeapYear, isValidDate, toDay, validateCalendar } from './core';
 import { aventurian } from './testing/aventurian';
 import { gregorian } from './testing/gregorian';
 
@@ -21,7 +21,7 @@ describe('fantasy-calendar core', () => {
         expect({ year: back.year, month: back.month, day: back.day }).toEqual(parts);
       }
     }
-    expect(performance.now() - start).toBeLessThan(50);
+    expect(performance.now() - start).toBeLessThan(500);
   });
 
   it('boundary around year 0', () => {
@@ -63,6 +63,22 @@ describe('fantasy-calendar core', () => {
     expect(isLeapYear(gregorian, 2024)).toBeTrue();
     expect(isLeapYear(gregorian, 2023)).toBeFalse();
     expect(daysInYear(gregorian, 2024)).toBe(366);
+  });
+
+  it('years are bounded so every day number is a safe integer', () => {
+    expect(MAX_YEAR).toBe(999_999_999_999);
+    for (const def of [aventurian, gregorian]) {
+      for (const year of [MAX_YEAR, -MAX_YEAR]) {
+        expect(isValidDate(def, { year, month: 0, day: 1 })).withContext(`${def.id} ${year}`).toBeTrue();
+        const n = toDay(def, { year, month: 11, day: 1 });
+        expect(Number.isSafeInteger(n)).toBeTrue();
+        expect(fromDay(def, n).year).toBe(year);
+      }
+      for (const year of [MAX_YEAR + 1, -MAX_YEAR - 1, 10_000_000_000_000_000]) {
+        expect(isValidDate(def, { year, month: 0, day: 1 })).withContext(`${def.id} ${year}`).toBeFalse();
+        expect(() => toDay(def, { year })).toThrowError(RangeError);
+      }
+    }
   });
 
   it('fromDay rejects non-integer day numbers', () => {

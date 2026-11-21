@@ -59,5 +59,7 @@ for _ in $(seq 1 50); do
 done
 
 cd "$MCP_DIR"
+# The tools import src/calendar/, which only sync-calendar writes (npm test does it as a pre-hook).
+npm run --silent sync-calendar
 TEST_POSTGREST_URL="http://127.0.0.1:$REST_PORT" TEST_JWT_SECRET="$JWT_SECRET" \
   node --import tsx --test test/tools.integration.test.ts
