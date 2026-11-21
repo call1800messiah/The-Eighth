@@ -64,8 +64,7 @@ const def = calendars.list.find((c) => c.id === calendars.default) ?? calendars.
 const calendarErrors = validateCalendar(def);
 if (calendarErrors.length) {
   console.error(`Calendar "${def.id}" in src/assets/${tenant}/rules.json is invalid:
-  ${calendarErrors.join('
-  ')}`);
+  ${calendarErrors.join('\n  ')}`);
   process.exit(1);
 }
 
