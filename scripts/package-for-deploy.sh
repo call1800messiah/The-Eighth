@@ -100,7 +100,8 @@ docker build \
   .
 
 log "Building MCP server image..."
-npm --prefix mcp run sync-calendar
+# The tenant computed above, not whatever NG_APP_TENANT the shell happens to have.
+NG_APP_TENANT="$TENANT" npm --prefix mcp run sync-calendar
 docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
 
 # ---------------------------------------------------------------------------
@@ -132,6 +133,9 @@ FILES=(
   scripts/transform-and-migrate.ts
   scripts/migrate-storage.ts
   scripts/validate-migration.ts
+  scripts/convert-dates.ts
+  scripts/convert-dates.lib.ts
+  libs/fantasy-calendar
   data/export
   src/assets
   package.json
@@ -141,7 +145,7 @@ FILES=(
 
 EXCLUDES=(
   --exclude='node_modules' --exclude='.angular' --exclude='.git'
-  --exclude='coverage' --exclude='*.tmp' --exclude='deploy/supabase/.env.example'
+  --exclude='coverage' --exclude='*.tmp' --exclude='*.spec.ts' --exclude='deploy/supabase/.env.example'
 )
 
 if [ "$INCLUDE_SECRETS" = true ]; then
@@ -188,4 +192,5 @@ echo ""
 warn "  Root .env on the server (used by run-migrations.sh) needs:"
 warn "    SUPABASE_URL=http://<server-LAN-IP>:8000   (same as GATEWAY_BIND_IP in deploy/supabase/.env, not the public domain)"
 warn "    SUPABASE_SERVICE_ROLE_KEY=<same value as SERVICE_ROLE_KEY in deploy/supabase/.env>"
+warn "    NG_APP_TENANT=$TENANT   (read by run-migrations.sh --dates; the-eighth if unset)"
 echo ""

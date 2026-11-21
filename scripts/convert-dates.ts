@@ -5,14 +5,18 @@
  *   npm run dates:convert             # dry run, writes nothing
  *   npm run dates:convert -- --apply  # update rows
  *
- * Rows that do not convert are left untouched and listed at the end.
+ * On the server: bash scripts/run-migrations.sh --dates [--apply], which passes
+ * SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (and NG_APP_TENANT, if set).
+ *
+ * Rows that do not parse or cannot be written are left untouched and listed
+ * at the end. Exit code 1 only if a write failed: unparseable text is expected.
  */
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
-import { format } from '../libs/fantasy-calendar/index.ts';
 import type { CalendarDefinition } from '../libs/fantasy-calendar/index.ts';
-import { convertBirth, convertDate, Converted } from './convert-dates.lib.ts';
+import { convertAll, fetchAll } from './convert-dates.lib.ts';
+import type { ConversionStore } from './convert-dates.lib.ts';
 
 const apply = process.argv.includes('--apply');
 
@@ -59,81 +63,39 @@ const def = calendars.list.find((c) => c.id === calendars.default) ?? calendars.
 const { url, serviceRoleKey } = getSupabaseCredentials();
 const db: SupabaseClient = createClient(url, serviceRoleKey, { auth: { persistSession: false } });
 
-let changed = 0;
-const failed: string[] = [];
-
-async function update(table: string, id: string, patch: Record<string, unknown>): Promise<void> {
-  if (!apply) return;
-  const { error } = await db.from(table).update(patch).eq('id', id);
-  if (error) throw new Error(`${table} ${id}: ${error.message}`);
-}
-
-function report(table: string, id: string, legacy: string, c: Converted): void {
-  changed++;
-  console.log(`${table} ${id}: "${legacy}" → ${format(def, c)}`);
-}
-
-async function rows(table: string, columns: string): Promise<any[]> {
-  const { data, error } = await db.from(table).select(`id, ${columns}`);
-  if (error) throw new Error(`${table}: ${error.message}`);
-  return data ?? [];
-}
-
-async function convertSimple(table: string): Promise<void> {
-  for (const r of await rows(table, 'date_legacy')) {
-    if (r.date_legacy == null) continue;
-    const c = convertDate(def, r.date_legacy);
-    if (!c) {
-      failed.push(`${table} ${r.id}: "${r.date_legacy}"`);
-      continue;
-    }
-    report(table, r.id, r.date_legacy, c);
-    await update(table, r.id, { date_day: c.day, date_precision: c.precision, date_legacy: null });
-  }
-}
-
-async function convertPeople(): Promise<void> {
-  for (const r of await rows('people', 'birthday_legacy, birthyear_legacy, deathday_legacy')) {
-    if (r.birthday_legacy != null || r.birthyear_legacy != null) {
-      const label = [r.birthday_legacy, r.birthyear_legacy].filter((x) => x != null).join(' ');
-      const c = convertBirth(def, r.birthday_legacy, r.birthyear_legacy);
-      if (!c) {
-        failed.push(`people ${r.id} birth: "${label}"`);
-      } else {
-        report('people birth', r.id, label, c);
-        await update('people', r.id, {
-          birth_day: c.day,
-          birth_precision: c.precision,
-          birthday_legacy: null,
-          birthyear_legacy: null,
-        });
-      }
-    }
-    if (r.deathday_legacy != null) {
-      const c = convertDate(def, r.deathday_legacy);
-      if (!c) {
-        failed.push(`people ${r.id} death: "${r.deathday_legacy}"`);
-      } else {
-        report('people death', r.id, r.deathday_legacy, c);
-        await update('people', r.id, {
-          death_day: c.day,
-          death_precision: c.precision,
-          deathday_legacy: null,
-        });
-      }
-    }
-  }
-}
+const store: ConversionStore = {
+  rows: (table, columns, legacy) =>
+    fetchAll((from, to) =>
+      db
+        .from(table)
+        .select(`id, ${columns}`)
+        .or(legacy.map((c) => `${c}.not.is.null`).join(','))
+        .order('id')
+        .range(from, to),
+    ).catch((e) => {
+      throw new Error(`${table}: ${e.message}`);
+    }),
+  update: async (table, id, patch) => {
+    const { error } = await db.from(table).update(patch).eq('id', id);
+    return error ? error.message : null;
+  },
+};
 
 async function main(): Promise<void> {
   console.log(`${apply ? 'APPLY' : 'DRY RUN'} (tenant ${tenant}, calendar ${def.id})`);
-  await convertSimple('campaign');
-  await convertSimple('historic_events');
-  await convertPeople();
-  console.log(`\n${changed} row value(s) ${apply ? 'converted' : 'would be converted'}.`);
-  if (failed.length) {
-    console.log(`${failed.length} could not be converted and were left untouched:`);
-    failed.forEach((f) => console.log(`  ${f}`));
+  const { converted, unparsed, writeErrors } = await convertAll(def, store, apply);
+  converted.forEach((line) => console.log(line));
+  console.log(`
+${converted.length} row value(s) ${apply ? 'converted' : 'would be converted'}.`);
+  if (unparsed.length) {
+    console.log(`${unparsed.length} could not be parsed and were left untouched:`);
+    unparsed.forEach((f) => console.log(`  ${f}`));
+  }
+  if (writeErrors.length) {
+    console.error(`${writeErrors.length} could not be written and were left untouched:`);
+    writeErrors.forEach((f) => console.error(`  ${f}`));
+    // Unparseable text is expected (it stays as legacy text); a failed write is not.
+    process.exitCode = 1;
   }
 }
 

@@ -23,8 +23,9 @@
 #   4. On server:   tar xf the-eighth-deploy-*.tar
 #   5. Create Portainer stack from this file
 #   6. On server:   bash scripts/run-migrations.sh
-#   7. After migration 018 (structured dates): npm run dates:convert (dry run, lists
-#      what cannot convert), then npm run dates:convert -- --apply
+#   7. On server:   bash scripts/run-migrations.sh --dates           (dry run of the
+#      in-game date conversion of migration 018; lists what cannot convert)
+#      then:        bash scripts/run-migrations.sh --dates --apply
 #
 # Optional env vars:
 #   APP_PORT (default: 8082)

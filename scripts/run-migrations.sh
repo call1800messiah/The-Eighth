@@ -7,9 +7,13 @@
 #   bash scripts/run-migrations.sh --data-only    # data migration only
 #   bash scripts/run-migrations.sh --validate     # validation only
 #   bash scripts/run-migrations.sh --schema       # apply supabase/migrations/*.sql only
+#                                                 # (fresh databases only: replays from 001)
+#   bash scripts/run-migrations.sh --dates        # in-game date conversion (migration 018), dry run
+#   bash scripts/run-migrations.sh --dates --apply  # ... and write it
 #
 # Requires:
 #   - .env file with SUPABASE_URL and SERVICE_ROLE_KEY (or SUPABASE_SERVICE_ROLE_KEY)
+#   - NG_APP_TENANT in .env for --dates (the tenant's calendar; the-eighth if unset)
 #   - data/export/ directory with Firebase export (for --data-only / default)
 #   - SUPABASE_DB_URL set in .env (for --schema), e.g.
 #     postgres://postgres:PASSWORD@supabase-host:5432/postgres
@@ -44,6 +48,8 @@ RUN_SCHEMA=false
 RUN_DATA=true
 RUN_STORAGE=true
 RUN_VALIDATE=true
+RUN_DATES=false
+DATES_APPLY=""
 
 for arg in "$@"; do
   case "$arg" in
@@ -51,6 +57,8 @@ for arg in "$@"; do
     --data-only)    RUN_STORAGE=false; RUN_VALIDATE=false ;;
     --validate)     RUN_DATA=false; RUN_STORAGE=false ;;
     --no-storage)   RUN_STORAGE=false ;;
+    --dates)        RUN_DATES=true; RUN_DATA=false; RUN_STORAGE=false; RUN_VALIDATE=false ;;
+    --apply)        DATES_APPLY="--apply" ;;
     *) warn "Unknown argument: $arg" ;;
   esac
 done
@@ -138,7 +146,42 @@ if [ "$RUN_SCHEMA" = true ]; then
   exit 0
 fi
 
+if [ -n "$DATES_APPLY" ] && [ "$RUN_DATES" = false ]; then
+  error "--apply only goes with --dates"
+  exit 1
+fi
+
 wait_for_rest
+
+# ---------------------------------------------------------------------------
+# In-game date conversion (migration 018): legacy text -> day number + precision
+# ---------------------------------------------------------------------------
+
+if [ "$RUN_DATES" = true ]; then
+  if [ -n "$DATES_APPLY" ]; then
+    log "Converting in-game dates (writing)..."
+  else
+    log "Converting in-game dates (dry run; nothing is written - add --apply to write)..."
+  fi
+  # Node 22 (the Firestore steps below still use 20): supabase-js needs Node's native WebSocket.
+  $DOCKER_RUN \
+    -e SUPABASE_URL="${SUPABASE_URL}" \
+    -e SUPABASE_SERVICE_ROLE_KEY="$SRK" \
+    -e NG_APP_TENANT="${NG_APP_TENANT:-}" \
+    -v "$PROJECT_DIR/scripts":/app/scripts:ro \
+    -v "$PROJECT_DIR/libs":/app/libs:ro \
+    -v "$PROJECT_DIR/src/assets":/app/src/assets:ro \
+    -v "$PROJECT_DIR/package.json":/app/package.json:ro \
+    -v "$PROJECT_DIR/package-lock.json":/app/package-lock.json:ro \
+    -v "$PROJECT_DIR/tsconfig.json":/app/tsconfig.json:ro \
+    -w /app \
+    node:22-alpine sh -c "npm ci --ignore-scripts && npx tsx scripts/convert-dates.ts $DATES_APPLY"
+
+  log "Date conversion done."
+  echo ""
+  log "All done."
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # Data migration
