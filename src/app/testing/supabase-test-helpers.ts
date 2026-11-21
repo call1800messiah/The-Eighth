@@ -374,6 +374,7 @@ export function createComponentTestProviders() {
         getRulesConfig: () => Promise.resolve<Rules>({
           addableRuleTypes: {},
           allowedAttributes: [],
+          calendars: { default: '', list: [] },
           edition: 5,
           hitLocations: {},
           states: [],
