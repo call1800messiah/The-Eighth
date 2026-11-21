@@ -1,21 +1,7 @@
 import { CalendarDefinition } from './types';
 import { daysInYear, fromDay, isLeapYear, isValidDate, toDay, validateCalendar } from './core';
+import { aventurian } from './testing/aventurian';
 import { gregorian } from './testing/gregorian';
-
-const aventurian: CalendarDefinition = {
-  id: 'aventurian',
-  name: 'Aventurian',
-  epochDay: 0,
-  months: [
-    ...Array.from({ length: 12 }, (_, i) => ({ name: `Month ${i + 1}`, days: 30 })),
-    { name: 'Nameless Days', days: 5 },
-  ],
-  week: {
-    days: ['Windstag', 'Erdstag', 'Markttag', 'Rohalstag', 'Feuertag', 'Wassertag', 'Freitag'],
-    epochWeekday: 4,
-  },
-  era: { suffix: 'BF', hasYearZero: true },
-};
 
 describe('fantasy-calendar core', () => {
   it('round-trips every day from -800 to 800 years', () => {
