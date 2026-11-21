@@ -97,6 +97,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "[package] Building MCP server image..." -ForegroundColor Green
+npm --prefix mcp run sync-calendar
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Calendar sync for the MCP server failed."
+    exit 1
+}
 docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Docker build of the MCP server failed."

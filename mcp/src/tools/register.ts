@@ -8,10 +8,12 @@ import {
   INFO_TYPES,
   type Infos,
   PLACE_TYPES,
+  type PersonFields,
   QUEST_TYPES,
   RELATIONS,
   ToolError,
 } from './entities.js';
+import { parseDateInput, formatDateColumns } from '../calendar/dates.js';
 import { FILTER_OPS, MAX_LIMIT, type QueryReader } from './query.js';
 
 const MARKDOWN_NOTE =
@@ -22,12 +24,13 @@ export const INSTRUCTIONS = `This server is a tabletop RPG campaign ("TheEighth"
 
 Reading:
 - To look up one person, place, quest or note, use search_entities and get_entity. They also give you mention links.
-- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. Describing a table also tells you which tags, note categories, races, cultures and professions are in use, so you can filter on the exact spelling. For "how many", ask query for count: true and limit: 0 rather than fetching every row. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
+- For any other question (how many, who has, which ones, combat, sessions, inventory, timeline, rules, ...), call describe to see the tables and what they mean, then query them. Describing a table also tells you which tags, note categories, races, cultures and professions are in use, so you can filter on the exact spelling. For "how many", ask query for count: true and limit: 0 rather than fetching every row. In-game dates are stored as day numbers: tables name them <x>_day and <x>_precision, and the results add <x> as text such as "3. Praios 1010 BF". Old text that was not converted yet is in <x>_legacy columns (birthday_legacy, birthyear_legacy, deathday_legacy, date_legacy); read those too. Resolve ids to names by embedding, e.g. select "name, person_tags(tag)" or "value, rules(name)".
 
 Writing:
 - Always call search_entities before creating anything, and reuse what exists instead of creating a duplicate. Mention existing entities in your text with the mention link from the search result.
 - Everything you create is a draft. Only GMs and you can see drafts until a GM approves them in the app's review queue. Tell the user that, and give them the review link from the tool result.
 - You can change only your own drafts (update_draft, link_entities). Published entities are read-only for you; if one should change, say so to the user.
+- Give birth and death as "3. Praios 1010 BF", "Phex 1027 BF" or "1010 BF"; an empty value clears the date.
 - Write in the language of the existing entries (usually German), in Markdown. Keep the GM's facts; mark your own inventions as suggestions where it matters.`;
 
 const id = z.string().uuid();
@@ -45,14 +48,15 @@ const questInfos = infoShape(['goals', 'reward', 'note']);
 
 const optionalText = (description: string) => z.string().max(200).nullable().optional().describe(description);
 
+const DATE_HELP = 'A date in the campaign calendar: "3. Praios 1010 BF", "Phex 1027 BF" or "1010 BF".';
+
 const personFields = {
   title: optionalText('Title or epithet, e.g. "Baronin von Gareth".'),
   race: optionalText('Spezies/Rasse.'),
   culture: optionalText('Kultur.'),
   profession: optionalText('Profession.'),
-  birthday: optionalText('Day and month of birth in the campaign calendar, e.g. "3. Praios".'),
-  birthyear: z.number().int().nullable().optional().describe('Year of birth (BF).'),
-  deathday: optionalText('Date of death, if dead.'),
+  birth: optionalText(DATE_HELP),
+  death: optionalText(DATE_HELP + ' Only if the person is dead.'),
   height: z.number().int().min(30).max(400).nullable().optional().describe('Height in cm.'),
 };
 
@@ -88,6 +92,18 @@ async function run(body: () => Promise<CallToolResult>): Promise<CallToolResult>
     console.error(e);
     return error('Something went wrong on the server. Try again; if it keeps failing, tell the user.');
   }
+}
+
+/** birth / death as the date columns; setting one also clears its old free-text columns. */
+function personColumns<T extends { birth?: string | null; death?: string | null }>(fields: T) {
+  const { birth, death, ...rest } = fields;
+  const born = parseDateInput(birth, 'birth');
+  const died = parseDateInput(death, 'death');
+  return {
+    ...rest,
+    ...(born ? { ...born, birthday_legacy: null, birthyear_legacy: null } : {}),
+    ...(died ? { ...died, deathday_legacy: null } : {}),
+  } as PersonFields;
 }
 
 function texts(fields: Record<string, unknown>, infos: Infos | undefined): string[] {
@@ -146,7 +162,7 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
       id,
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
-  }, ({ type, id: entityId }) => run(async () => text(await repo.get(type, entityId))));
+  }, ({ type, id: entityId }) => run(async () => text(formatDateColumns(await repo.get(type, entityId)))));
 
   server.registerTool('describe', {
     title: 'Describe the campaign database',
@@ -199,7 +215,7 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
   }, ({ name, infos, allow_duplicate, ...fields }) => run(async () => {
     const duplicate = await duplicates('person', name, allow_duplicate);
     if (duplicate) return duplicate;
-    const { id: newId } = await repo.createDraft('person', { name, ...fields }, infos as Infos);
+    const { id: newId } = await repo.createDraft('person', { name, ...personColumns(fields) }, infos as Infos);
     return created('person', name, newId, texts(fields, infos as Infos));
   }));
 
@@ -289,7 +305,7 @@ export function createMcpServer(repo: EntityRepository, reader: QueryReader): Mc
     if (kinds && fields.type !== undefined && !(fields.type in kinds)) {
       return error(`Unknown ${type} type "${fields.type}". Use one of: ${Object.keys(kinds).join(', ')}.`);
     }
-    const changes = { ...fields, ...(name ? { name } : {}) };
+    const changes = { ...(type === 'person' ? personColumns(fields) : fields), ...(name ? { name } : {}) };
     await repo.updateDraft(type, draftId, changes, infos as Infos);
     const unknown = await repo.unknownMentions(texts(changes, infos as Infos));
     return text({

@@ -100,6 +100,7 @@ docker build \
   .
 
 log "Building MCP server image..."
+npm --prefix mcp run sync-calendar
 docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
 
 # ---------------------------------------------------------------------------
