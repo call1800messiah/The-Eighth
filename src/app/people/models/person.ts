@@ -1,3 +1,4 @@
+import type { InGameDate } from '@the-eighth/fantasy-calendar';
 import type { Attribute, CombatState } from '../../shared';
 import type { AccessControlledItem } from '../../core/models/access-controlled-item';
 import type { Relative } from './relative';
@@ -18,12 +19,14 @@ export interface Person extends AccessControlledItem {
   attributes?: Attribute[];
   /** Rendered URL of the banner, thumb size. */
   banner: string;
-  birthday: string;
-  birthyear: number;
+  birth: InGameDate | null;
+  /** Text from before structured dates (e.g. '9. Rondra 1011'); shown only while `birth` is empty. */
+  birthLegacy: string | null;
   cantrips?: Cantrip[];
   children?: Relative[];
   culture: string;
-  deathday: string;
+  death: InGameDate | null;
+  deathLegacy: string | null;
   disadvantages?: Disadvantage[];
   feats?: Feat[];
   height: number;
@@ -51,4 +54,9 @@ export interface Person extends AccessControlledItem {
   title: string;
   xp?: number;
   xpSpent?: number | null;
+}
+
+/** Dead means a death date or a legacy death text is set. */
+export function isDead(person: Pick<Person, 'death' | 'deathLegacy'>): boolean {
+  return !!person.death || !!person.deathLegacy;
 }

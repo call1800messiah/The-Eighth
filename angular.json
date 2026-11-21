@@ -96,6 +96,7 @@
           "builder": "@ngx-env/builder:karma",
           "options": {
             "main": "src/test.ts",
+            "include": ["**/*.spec.ts", "../libs/**/*.spec.ts"],
             "polyfills": [
               "zone.js"
             ],

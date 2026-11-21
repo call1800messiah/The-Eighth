@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 
 import { MentionService, MentionTarget } from './mention.service';
+import { CalendarService } from '../calendar/calendar.service';
 import { ApiService } from './api.service';
 import { RealtimeService } from './supabase-realtime.service';
 import { createMockQueryBuilder } from '../../testing/supabase-test-helpers';
@@ -47,6 +48,7 @@ describe('MentionService', () => {
         MentionService,
         { provide: ApiService, useValue: api },
         { provide: RealtimeService, useValue: realtime },
+        { provide: CalendarService, useValue: { format: (date: any) => date ? `${date.day} BF` : '' } },
       ],
     });
     service = TestBed.inject(MentionService);
@@ -129,6 +131,38 @@ describe('MentionService', () => {
       ['Notiz', 'Notiz über Alrik', { path: '/notes', queryParams: { note: NOTE } }],
       ['Quest', 'Der Schatz', { path: `/quests/${QUEST}` }],
     ]);
+  });
+
+  describe('event backlinks', () => {
+    const EVENT = '77777777-7777-4777-8777-777777777777';
+
+    async function eventLabel(row: any) {
+      tables['mentions'] = [{ source_type: 'historic_event', source_id: EVENT }];
+      api.from.and.callFake((table: string) => createMockQueryBuilder({
+        data: table === 'historic_events' ? [{ id: EVENT, content: 'Schlacht', ...row }] : [],
+      }));
+      const backlinks = await firstValueFrom(service.getBacklinks('place', 'p1'));
+      return backlinks[0].label;
+    }
+
+    it('asks for the date columns', async () => {
+      await eventLabel({});
+      expect(api.from).toHaveBeenCalledWith('historic_events');
+      const builder = api.from.calls.all().map((c: any) => c.returnValue).find((b: any) => b.select.calls.count() > 0 && b.select.calls.mostRecent().args[0].includes('content'));
+      expect(builder.select).toHaveBeenCalledWith('id, content, date_day, date_precision, date_legacy');
+    });
+
+    it('labels an event with its formatted date', async () => {
+      expect(await eventLabel({ date_day: 100, date_precision: 'year', date_legacy: null })).toBe('100 BF: Schlacht');
+    });
+
+    it('falls back to the legacy text', async () => {
+      expect(await eventLabel({ date_day: null, date_precision: null, date_legacy: '1. Praios' })).toBe('1. Praios: Schlacht');
+    });
+
+    it('has no date prefix without any date', async () => {
+      expect(await eventLabel({ date_day: null, date_precision: null, date_legacy: null })).toBe('Schlacht');
+    });
   });
 
   it('watches backlinks of one entity only', () => {

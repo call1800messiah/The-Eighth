@@ -9,7 +9,7 @@
       @for (event of timeline.events | async; track event.id) {
         <li class="event" (click)="editEvent(event, timeline.id)">
           <dl>
-            <dt>{{event.date}} BF</dt>
+            <dt><app-in-game-date [date]="event.date" [legacy]="event.dateLegacy"></app-in-game-date></dt>
             <dd><app-markdown [text]="event.content"></app-markdown></dd>
           </dl>
           <app-access-indicator [item]="event"></app-access-indicator>

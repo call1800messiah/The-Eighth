@@ -4,7 +4,7 @@ import { map, take } from 'rxjs/operators';
 import { faList, faMap, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import type { Combatant } from '../../models/combatant';
-import type { Person } from '../../../people/models/person';
+import { isDead, type Person } from '../../../people/models/person';
 import type { AuthUser } from '../../../auth/models/auth-user';
 import { CombatService } from '../../services/combat.service';
 import { PopoverService } from '../../../core/services/popover.service';
@@ -64,7 +64,7 @@ export class OverviewComponent implements OnInit {
   showAddPersonDialog() {
     combineLatest([
       this.peopleService.getPeople().pipe(
-        map((people) => people.filter(person => !person.deathday)),
+        map((people) => people.filter(person => !isDead(person))),
       ),
       this.combatService.getIdsOfPeopleInFight(),
     ]).pipe(

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 
-import type { Person } from '../../people';
+import { isDead, type Person } from '../../people';
 import type { BeatKind, BeatSession, BeatTracker, StoryBeat } from '../models';
 import { ApiService } from '../../core/services/api.service';
 import { PeopleService } from '../../people/services/people.service';
@@ -131,7 +131,7 @@ export class StoryBeatService {
 
   static buildState(session: BeatSession | null, people: Person[]): StoryBeatState {
     const pcs = people
-      .filter(person => person.pc && !person.deathday)
+      .filter(person => person.pc && !isDead(person))
       .sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
     if (!session) {

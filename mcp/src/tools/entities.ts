@@ -71,9 +71,14 @@ export interface PersonFields {
   race?: string | null;
   culture?: string | null;
   profession?: string | null;
-  birthday?: string | null;
-  birthyear?: number | null;
-  deathday?: string | null;
+  birth_day?: number | null;
+  birth_precision?: string | null;
+  death_day?: number | null;
+  death_precision?: string | null;
+  /** Old free text, cleared whenever the structured date is written. */
+  birthday_legacy?: null;
+  birthyear_legacy?: null;
+  deathday_legacy?: null;
   height?: number | null;
 }
 
@@ -496,7 +501,7 @@ export class EntityRepository {
 
 
 const FIELDS: Record<EntityType, string[]> = {
-  person: ['id', 'name', 'title', 'race', 'culture', 'profession', 'birthday', 'birthyear', 'deathday', 'height', 'pc', 'status', 'created_at'],
+  person: ['id', 'name', 'title', 'race', 'culture', 'profession', 'birth_day', 'birth_precision', 'death_day', 'death_precision', 'birthday_legacy', 'birthyear_legacy', 'deathday_legacy', 'height', 'pc', 'status', 'created_at'],
   place: ['id', 'name', 'type', 'inhabitants', 'status', 'created_at'],
   quest: ['id', 'name', 'type', 'description', 'completed', 'status', 'created_at'],
   note: ['id', 'title', 'category', 'content', 'created_at', 'modified_at'],

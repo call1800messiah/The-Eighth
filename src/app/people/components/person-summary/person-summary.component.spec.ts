@@ -3,6 +3,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PersonSummaryComponent } from './person-summary.component';
 import { EstimatedAgePipe } from '../../../shared/pipes/estimated-age.pipe';
+import { CalendarDatePipe } from '../../../shared/pipes/calendar-date.pipe';
 import { createComponentTestProviders } from '../../../testing/supabase-test-helpers';
 
 describe('PersonSummaryComponent', () => {
@@ -11,7 +12,7 @@ describe('PersonSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PersonSummaryComponent, EstimatedAgePipe],
+      declarations: [PersonSummaryComponent, EstimatedAgePipe, CalendarDatePipe],
       providers: createComponentTestProviders(),
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

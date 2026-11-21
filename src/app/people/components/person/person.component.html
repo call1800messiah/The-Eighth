@@ -35,13 +35,13 @@
           <dt>Titel</dt>
           <dd>{{person.title}}</dd>
         }
-        @if (person.birthyear || person.birthday) {
+        @if (person.birth || person.birthLegacy) {
           <dt>Geboren</dt>
-          <dd>{{person.birthday}} {{person.birthyear}} BF</dd>
+          <dd><app-in-game-date [date]="person.birth" [legacy]="person.birthLegacy"></app-in-game-date></dd>
         }
-        @if (person.deathday) {
+        @if (person.death || person.deathLegacy) {
           <dt>Gestorben</dt>
-          <dd>{{person.deathday}} BF</dd>
+          <dd><app-in-game-date [date]="person.death" [legacy]="person.deathLegacy"></app-in-game-date></dd>
         }
         @if (person.race) {
           <dt>Rasse</dt>

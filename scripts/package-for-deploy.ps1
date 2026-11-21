@@ -97,6 +97,16 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "[package] Building MCP server image..." -ForegroundColor Green
+# The tenant computed above, not whatever NG_APP_TENANT the shell happens to have.
+$PrevTenant = $env:NG_APP_TENANT
+$env:NG_APP_TENANT = $Tenant
+npm --prefix mcp run sync-calendar
+$SyncExit = $LASTEXITCODE
+$env:NG_APP_TENANT = $PrevTenant
+if ($SyncExit -ne 0) {
+    Write-Error "Calendar sync for the MCP server failed."
+    exit 1
+}
 docker build --platform linux/amd64 -t the-eighth-mcp:latest mcp
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Docker build of the MCP server failed."
@@ -139,6 +149,9 @@ $Files = @(
     "scripts/transform-and-migrate.ts"
     "scripts/migrate-storage.ts"
     "scripts/validate-migration.ts"
+    "scripts/convert-dates.ts"
+    "scripts/convert-dates.lib.ts"
+    "libs/fantasy-calendar"
     "data/export"
     "src/assets"
     "package.json"
@@ -152,6 +165,7 @@ $Excludes = @(
     "--exclude=.git"
     "--exclude=coverage"
     "--exclude=*.tmp"
+    "--exclude=*.spec.ts"
     "--exclude=deploy/supabase/.env.example"
 )
 
@@ -200,4 +214,5 @@ Write-Host ""
 Write-Host "Root .env on the server (used by run-migrations.sh) needs:" -ForegroundColor Yellow
 Write-Host "  SUPABASE_URL=http://<server-LAN-IP>:8000   (same as GATEWAY_BIND_IP in deploy/supabase/.env, not the public domain)"
 Write-Host "  SUPABASE_SERVICE_ROLE_KEY=<same value as SERVICE_ROLE_KEY in deploy/supabase/.env>"
+Write-Host "  NG_APP_TENANT=$Tenant   (read by run-migrations.sh --dates; the-eighth if unset)"
 Write-Host ""

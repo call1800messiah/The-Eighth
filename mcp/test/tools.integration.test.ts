@@ -4,6 +4,7 @@
  * skipped when TEST_POSTGREST_URL is not set.
  */
 import { before, describe, it } from 'node:test';
+import { formatDateColumns } from '../src/calendar/dates.js';
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { PostgrestClient } from '@supabase/postgrest-js';
@@ -103,7 +104,7 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     const result = parse(await call('create_person', {
       name: 'Hesindiane',
       profession: 'Magierin',
-      birthyear: 1012,
+      birth: '3. Praios 1012 BF',
       infos: {
         background: `Schwester von [Alrik](mention:person/${alrik}), lebt in [Gareth](mention:place/${gareth}).`,
         appearance: 'Groß, rotes Haar.',
@@ -117,10 +118,18 @@ describe('tools against the database', { skip: !URL_ && 'TEST_POSTGREST_URL not 
     const read = await repo.get('person', draft);
     assert.equal(read['profession'], 'Magierin');
     assert.equal(read['status'], 'draft');
+    assert.equal(formatDateColumns(read)['birth'], '3. Praios 1012 BF');
     assert.deepEqual(Object.keys(read['infos'] as object).sort(), ['appearance', 'background']);
 
     const { data: mentions } = await gm().from('mentions').select('entity_type, entity_id').eq('source_type', 'info_box');
     assert.deepEqual((mentions as any[]).map(m => m.entity_type).sort(), ['person', 'place'], 'backlinks were recorded');
+  });
+
+  it('round-trips a far-past birth beyond INTEGER', async () => {
+    const result = parse(await call('create_person', { name: 'Uralter Drache', birth: '100000000 v. BF' }));
+    const read = await repo.get('person', result.created.id);
+    assert.ok((read['birth_day'] as number) < -(2 ** 31), 'the day number needs a BIGINT');
+    assert.equal(formatDateColumns(read)['birth'], '100000000 v. BF');
   });
 
   it('keeps drafts from players', async () => {

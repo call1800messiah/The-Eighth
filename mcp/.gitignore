@@ -1,2 +1,4 @@
 node_modules
 dist
+src/calendar/engine/
+src/calendar/calendars.json

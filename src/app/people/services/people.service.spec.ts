@@ -84,7 +84,8 @@ describe('PeopleService', () => {
   function basePerson(overrides: any = {}) {
     return {
       id: 'per1', name: 'Alice', owner_id: 'u1', pc: true,
-      birthday: null, birthyear: null, culture: null, deathday: null,
+      birth_day: null, birth_precision: null, birthday_legacy: null, birthyear_legacy: null,
+      culture: null, death_day: null, death_precision: null, deathday_legacy: null,
       height: null, profession: null, race: null, title: null, xp: 0, xp_spent: null,
       image: '', banner: '', location_id: null,
       person_advantages: [], person_cantrips: [], person_disadvantages: [],
@@ -384,7 +385,59 @@ describe('PeopleService', () => {
     });
   });
 
+  describe('birth and death', () => {
+    it('should join the legacy birth texts', (done) => {
+      service.getPeople().subscribe(people => {
+        if (people.length === 0) return;
+        expect(people[0].birthLegacy).toBe('9. Rondra 1011');
+        expect(people[0].birth).toBeNull();
+        done();
+      });
+
+      emitPeople([basePerson({ birthday_legacy: '9. Rondra', birthyear_legacy: 1011 })]);
+    });
+
+    it('should read a structured birth and death', (done) => {
+      service.getPeople().subscribe(people => {
+        if (people.length === 0) return;
+        expect(people[0].birth).toEqual({ day: 5, precision: 'year' });
+        expect(people[0].death).toEqual({ day: 9, precision: 'day' });
+        expect(people[0].deathLegacy).toBe('Bald');
+        expect(people[0].birthLegacy).toBeNull();
+        done();
+      });
+
+      emitPeople([basePerson({
+        birth_day: 5, birth_precision: 'year', death_day: 9, death_precision: 'day', deathday_legacy: 'Bald',
+      })]);
+    });
+  });
+
   describe('store()', () => {
+    it('should write a death as columns and clear its legacy text', async () => {
+      await service.store({ death: { day: 9, precision: 'day' }, deathLegacy: 'Bald' } as any, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith(
+        { death_day: 9, death_precision: 'day', deathday_legacy: null }, 'people', 'per1');
+    });
+
+    it('should write a birth and clear both legacy columns', async () => {
+      await service.store({ birth: { day: 5, precision: 'year' } } as any, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith(
+        { birth_day: 5, birth_precision: 'year', birthday_legacy: null, birthyear_legacy: null }, 'people', 'per1');
+    });
+
+    it('should write null columns but keep the legacy text when the date is null', async () => {
+      await service.store({ birth: null, death: null, birthLegacy: 'x', deathLegacy: 'y' } as any, 'per1');
+      const stored = mockData.store.calls.mostRecent().args[0];
+      expect(stored).toEqual({ birth_day: null, birth_precision: null, death_day: null, death_precision: null });
+    });
+
+    it('should clear a discarded death text so the person is alive again', async () => {
+      await service.store({ death: null, deathLegacy: null } as any, 'per1');
+      expect(mockData.store).toHaveBeenCalledWith(
+        { death_day: null, death_precision: null, deathday_legacy: null }, 'people', 'per1');
+    });
+
     it('should delegate to DataService.store', async () => {
       await service.store({ name: 'Updated' }, 'per1');
       expect(mockData.store).toHaveBeenCalledWith({ name: 'Updated' }, 'people', 'per1');

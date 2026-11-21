@@ -46,6 +46,11 @@ bash scripts/run-migrations.sh --schema
 # Data + storage + validation
 bash scripts/run-migrations.sh
 
+# After migration 018 (structured dates): convert the old date text.
+# Dry run first (lists rows that cannot convert), then apply
+npm run dates:convert
+npm run dates:convert -- --apply
+
 # Local: reset and reseed
 npm run db:reset
 
@@ -73,6 +78,8 @@ tar xf the-eighth-deploy-*.tar
 See `docker-compose.portainer.yml` for the full server-side sequence, and `deploy/supabase/` for the Supabase stack itself.
 
 `the-eighth-app.tar` holds both images, the app and the MCP server (`mcp/`). The MCP server needs a one-time `bash scripts/create-mcp-user.sh <email>` and four stack variables (see `mcp/README.md`); until then it answers 503 and the app is unaffected.
+
+**Migration 018 on an existing database** (structured in-game dates; `--schema` replays from 001 and is for fresh databases only): after `docker load`, (1) back up the database, since 018 has no down migration and the backup is the rollback; (2) apply only `018_structured_dates.sql` with `docker exec -i supabase-db psql … -1 -v ON_ERROR_STOP=1`; (3) recreate the stack, app and MCP server together, because either one on its old image breaks saving or reading dates; (4) convert the old date text with `bash scripts/run-migrations.sh --dates` (dry run), then `--dates --apply`. The app shows the old text until step 4. The exact commands are in `docker-compose.portainer.yml`.
 
 The archive leaves out the Firebase service account key and the user password files (`data/user-credentials.json`, `data/export/_user_credentials.json`). Only a first-time Firestore migration needs them: pass `-IncludeMigrationSecrets` / `--include-migration-secrets` for that, and delete them from the server afterwards.
 
@@ -179,6 +186,9 @@ The combat view has a third mode (map icon): `CombatMapComponent` draws the runn
 - OAuth 2.1 for claude.ai/Claude Code, with a GM login as the approval step (`approve_mcp_grant()` runs under the GM's session). Connections (`mcp_grants`) are listed and revoked on `/drafts`.
 - The app's nginx proxies `/mcp`, `/mcp/…` and `/.well-known/oauth-*` to it. Keep those paths free in the Angular router.
 
+### Calendar
+In-game dates are integer day numbers on one shared day line; a calendar (a JSON `CalendarDefinition`) only names those day numbers (months, week, leap rules, era). The engine lives in `libs/fantasy-calendar/` and is framework-free: no Angular, RxJS, Supabase, Node or DOM imports, relative imports with `.js` extensions so it also compiles under the MCP server's `NodeNext` + `strict`. The app imports it as `@the-eighth/fantasy-calendar` (only `index.ts` is public). `fromDay`/`toDay` jump whole leap cycles, so far-past dates cost nothing. Specs under `libs/` run with `ng test` (`angular.json` includes `../libs/**/*.spec.ts`); the Gregorian fixture in `libs/fantasy-calendar/testing/` is for specs only.
+
 ### Realtime
 `RealtimeService.watch(table, queryFn, cacheKey, triggerTables)` re-runs the query when the watched table changes. **`triggerTables` matters for junction tables**: a write to `person_skills` changes no `people` row, so without listing it there the UI only updates after a reload. A table must also be a member of the `supabase_realtime` publication for any event to fire — see `supabase/migrations/004_person_capability_realtime.sql`.
 
@@ -195,7 +205,7 @@ The combat view has a third mode (map icon): `CombatMapComponent` draws the runn
 - `001_initial_schema.sql` — enums, tables, indexes, replica identity, realtime publication
 - `002_rls_policies.sql` — helper functions (`is_gm()`, `is_entity_owner()`) and every policy
 - `003_storage_buckets.sql` — bucket and storage.objects policies
-- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map, `015` `assistant_schema()` and table comments for Claude's `describe`, `016` the values in use split out into `assistant_column_values()`, `017` `save_project()`, which writes a project and its milestones and requirements in one transaction)
+- `004_…` onward — incremental changes (`012` mentions, `013` drafts, the assistant role, and MCP OAuth state, `014` combat map, `015` `assistant_schema()` and table comments for Claude's `describe`, `016` the values in use split out into `assistant_column_values()`, `017` `save_project()`, which writes a project and its milestones and requirements in one transaction, `018` in-game dates as a BIGINT day number plus a precision, the old text kept in `*_legacy` columns until `scripts/convert-dates.ts` converts it)
 
 Junction tables replace Firestore's `Record<id, value>` maps (`person_skills`, `project_milestones`, …). Query them with PostgREST embedding: `query.select('*, person_skills(rule_id, value)')`.
 
@@ -249,7 +259,7 @@ All services use `providedIn: 'root'`.
 - Jasmine + Karma, Chrome by default
 - Coverage: `./coverage/The-Eighth/`
 - Tests live beside sources as `*.spec.ts`
-- **The suite is green** (537 passing as of 2026-11-03). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
+- **The suite is green** (698 passing as of 2026-11-21). Keep it that way — a red suite gets ignored, which is how capability add/delete stayed broken in production.
 
 ### Writing specs against Supabase
 Use the helpers in `src/app/testing/supabase-test-helpers.ts` rather than hand-rolling mocks. Two failure modes account for most breakage:

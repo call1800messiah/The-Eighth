@@ -12,7 +12,10 @@
     "target": "ES2022",
     "useDefineForClassFields": false,
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@the-eighth/fantasy-calendar": ["./libs/fantasy-calendar/index.ts"]
+    }
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true

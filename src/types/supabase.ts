@@ -194,7 +194,9 @@ export type Database = {
           captain: string | null
           created_at: string | null
           crewcount: number | null
-          date: string | null
+          date_day: number | null
+          date_legacy: string | null
+          date_precision: string | null
           id: string
           name: string
           ship: string | null
@@ -207,7 +209,9 @@ export type Database = {
           captain?: string | null
           created_at?: string | null
           crewcount?: number | null
-          date?: string | null
+          date_day?: number | null
+          date_legacy?: string | null
+          date_precision?: string | null
           id?: string
           name: string
           ship?: string | null
@@ -220,7 +224,9 @@ export type Database = {
           captain?: string | null
           created_at?: string | null
           crewcount?: number | null
-          date?: string | null
+          date_day?: number | null
+          date_legacy?: string | null
+          date_precision?: string | null
           id?: string
           name?: string
           ship?: string | null
@@ -561,7 +567,9 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
-          date: string | null
+          date_day: number | null
+          date_legacy: string | null
+          date_precision: string | null
           id: string
           modified_at: string | null
           owner_id: string | null
@@ -571,7 +579,9 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
-          date?: string | null
+          date_day?: number | null
+          date_legacy?: string | null
+          date_precision?: string | null
           id?: string
           modified_at?: string | null
           owner_id?: string | null
@@ -581,7 +591,9 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
-          date?: string | null
+          date_day?: number | null
+          date_legacy?: string | null
+          date_precision?: string | null
           id?: string
           modified_at?: string | null
           owner_id?: string | null
@@ -806,11 +818,15 @@ export type Database = {
       people: {
         Row: {
           banner: string | null
-          birthday: string | null
-          birthyear: number | null
+          birth_day: number | null
+          birth_precision: string | null
+          birthday_legacy: string | null
+          birthyear_legacy: number | null
           created_at: string | null
           culture: string | null
-          deathday: string | null
+          death_day: number | null
+          death_precision: string | null
+          deathday_legacy: string | null
           height: number | null
           id: string
           image: string | null
@@ -827,11 +843,15 @@ export type Database = {
         }
         Insert: {
           banner?: string | null
-          birthday?: string | null
-          birthyear?: number | null
+          birth_day?: number | null
+          birth_precision?: string | null
+          birthday_legacy?: string | null
+          birthyear_legacy?: number | null
           created_at?: string | null
           culture?: string | null
-          deathday?: string | null
+          death_day?: number | null
+          death_precision?: string | null
+          deathday_legacy?: string | null
           height?: number | null
           id?: string
           image?: string | null
@@ -848,11 +868,15 @@ export type Database = {
         }
         Update: {
           banner?: string | null
-          birthday?: string | null
-          birthyear?: number | null
+          birth_day?: number | null
+          birth_precision?: string | null
+          birthday_legacy?: string | null
+          birthyear_legacy?: number | null
           created_at?: string | null
           culture?: string | null
-          deathday?: string | null
+          death_day?: number | null
+          death_precision?: string | null
+          deathday_legacy?: string | null
           height?: number | null
           id?: string
           image?: string | null

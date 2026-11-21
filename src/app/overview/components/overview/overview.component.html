@@ -2,7 +2,7 @@
   @if (campaignInfo; as campaign) {
     <dl (click)="editCampaign()">
       <dt>Aktuelles Datum</dt>
-      <dd>{{campaign.date}} BF</dd>
+      <dd><app-in-game-date [date]="campaign.date" [legacy]="campaign.dateLegacy"></app-in-game-date></dd>
       @if (campaign.xp) {
         <dt>Abenteuerpunkte</dt>
         <dd>{{campaign.xp}}</dd>

@@ -6,6 +6,7 @@ import { DataService } from '../../../core/services/data.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
+import { TimelineService } from '../../../overview/services/timeline.service';
 import { HistoricEvent } from '../../../overview/models/historic-event';
 
 
@@ -20,13 +21,16 @@ import { HistoricEvent } from '../../../overview/models/historic-event';
 export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
   private auth = inject(AuthService);
   private dataService = inject(DataService);
+  private timelineService = inject(TimelineService);
 
   @Input() props: any;
   @Output() dismissPopover = new EventEmitter<boolean>();
   deleteDisabled = true;
+  /** The user discarded the old date text; cleared on save. */
+  discardedLegacy = false;
   eventForm = new UntypedFormGroup({
     content: new UntypedFormControl(''),
-    date: new UntypedFormControl(''),
+    date: new UntypedFormControl(null),
     type: new UntypedFormControl(0),
   });
   eventTypes = Object.values(ConfigService.eventTypes);
@@ -63,6 +67,10 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
 
 
   save() {
+    if (this.eventForm.invalid) {
+      this.eventForm.markAllAsTouched();
+      return;
+    }
     let id: string;
     const event: any = { ...this.eventForm.value, timeline_id: this.props.parent };
     if (this.props.event) {
@@ -73,8 +81,11 @@ export class EditEventComponent implements OnInit, OnDestroy, PopoverChild {
       event.owner = this.userID;
     }
     event.modified_at = new Date().toISOString();
+    if (this.discardedLegacy) {
+      event.dateLegacy = null;
+    }
 
-    this.dataService.store(event, 'historic_events', id).then(() => {
+    this.timelineService.store(event, id).then(() => {
       this.dismissPopover.emit(true);
     });
   }

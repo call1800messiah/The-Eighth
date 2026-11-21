@@ -5,8 +5,9 @@
       <label for="name">Name *</label>
     </div>
     <div class="form-group">
-      <input type="text" id="date" formControlName="date" required>
-      <label for="name">Datum *</label>
+      <app-date-input inputId="date" formControlName="date" [required]="dateRequired" [legacy]="props.dateLegacy"
+        (legacyDiscarded)="discardedLegacy = true"></app-date-input>
+      <label for="date">Datum{{ dateRequired ? ' *' : '' }}</label>
     </div>
     @if (props.xp) {
       <div class="form-group">

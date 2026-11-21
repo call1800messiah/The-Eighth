@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { formatDateColumns } from '../calendar/dates.js';
 import { ToolError } from './entities.js';
 import { type SchemaCatalog, type TableInfo, isHiddenIdentifier, reachesHiddenTable } from './schema.js';
 
@@ -164,7 +165,7 @@ export class QueryReader {
     const result: QueryResult = { rows: [] };
     if (input.count || countOnly) result.count = count ?? 0;
     if (!countOnly) {
-      const fitted = fitRows((data ?? []) as unknown[], this.maxBytes, offset);
+      const fitted = fitRows(((data ?? []) as Record<string, unknown>[]).map(row => formatDateColumns(row)) as unknown[], this.maxBytes, offset);
       result.rows = fitted.rows;
       if (fitted.truncated) result.truncated = fitted.truncated;
     }

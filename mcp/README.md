@@ -64,6 +64,14 @@ The server is its own small OAuth 2.1 authorization server, built on the MCP SDK
 
 The app's nginx proxies `/mcp`, `/mcp/…` and the two `/.well-known/oauth-…` documents to this container (`the-eighth-mcp:3000` on the `supabase` network). It is not published on a port of its own.
 
+## In-game dates
+
+People, the campaign and timeline events store dates as a day number plus a precision (`birth_day`/`birth_precision`, `death_*`, `date_*`). `create_person` and `update_draft` take `birth` and `death` as text ("3. Praios 1010 BF", "Phex 1027 BF", "1010 BF"; empty clears) and convert it with the tenant's default calendar; setting one also clears the old `*_legacy` text. `get_entity` and `query` add each date as text next to its columns (`birth` beside `birth_day`). Old text that was not converted yet is in the `*_legacy` columns.
+
+Deploying this onto an existing database needs migration 018 applied on its own (after a backup) and the app and this server recreated together: the old image of either one reads or writes the renamed date columns. Then `bash scripts/run-migrations.sh --dates` (dry run) and `--dates --apply` convert the old text. The full order is in `docker-compose.portainer.yml`.
+
+The calendar engine lives in `libs/fantasy-calendar/` and the definitions in `src/assets/<tenant>/rules.json`. `npm run sync-calendar` copies both into `src/calendar/` (git-ignored); `build`, `typecheck` and `test` run it first, and `scripts/package-for-deploy.*` runs it before `docker build`. The tenant comes from `NG_APP_TENANT` or the root `.env`, default `the-eighth`.
+
 ## Development
 
 ```bash
