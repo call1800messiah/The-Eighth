@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, combineLatest, from, of } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';
 
+import { CalendarService } from '../calendar/calendar.service';
+import { readDate } from '../calendar/date-columns';
 import { ApiService } from './api.service';
 import { RealtimeService } from './supabase-realtime.service';
 import type { MentionResolution, MentionResolver } from '../../shared/markdown/markdown-renderer';
@@ -61,6 +63,7 @@ interface MentionRow {
 export class MentionService {
   private api = inject(ApiService);
   private realtime = inject(RealtimeService);
+  private calendar = inject(CalendarService);
 
   private targets$: Observable<MentionTarget[]>;
 
@@ -215,7 +218,7 @@ export class MentionService {
 
     const [achievements, events, infos, rules] = await Promise.all([
       fetchRows<{ name: string }>('achievements', 'id, name', idsOf('achievement')),
-      fetchRows<{ content: string; date: string | null }>('historic_events', 'id, content, date', idsOf('historic_event')),
+      fetchRows<{ content: string; date_day: number | null; date_precision: string | null; date_legacy: string | null }>('historic_events', 'id, content, date_day, date_precision, date_legacy', idsOf('historic_event')),
       fetchRows<{ entity_type: string; entity_id: string }>('info_boxes', 'id, entity_type, entity_id', idsOf('info_box')),
       fetchRows<{ name: string }>('rules', 'id, name', idsOf('rule')),
     ]);
@@ -252,7 +255,8 @@ export class MentionService {
           const event = events.get(sourceId);
           if (event) {
             const text = markdownToPlainText(event.content).slice(0, 40);
-            backlinks.push({ ...base, kind: 'Ereignis', label: event.date ? `${event.date}: ${text}` : text, route: { path: '/overview' } });
+            const date = this.calendar.format(readDate(event.date_day, event.date_precision)) || event.date_legacy;
+            backlinks.push({ ...base, kind: 'Ereignis', label: date ? `${date}: ${text}` : text, route: { path: '/overview' } });
           }
           break;
         }

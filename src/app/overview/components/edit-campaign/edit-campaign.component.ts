@@ -19,7 +19,7 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
   campaignForm = new UntypedFormGroup({
     captain: new UntypedFormControl(''),
     crewcount: new UntypedFormControl(0),
-    date: new UntypedFormControl(''),
+    date: new UntypedFormControl(null),
     name: new UntypedFormControl(''),
     ship: new UntypedFormControl(''),
     staminaReduction: new UntypedFormControl(0),
@@ -31,6 +31,9 @@ export class EditCampaignComponent implements OnInit, PopoverChild {
   }
 
   save() {
+    if (this.campaignForm.invalid) {
+      return;
+    }
     this.campaignService.store(this.campaignForm.value, this.props.id).then(() => {
       this.dismissPopover.emit(true);
     });

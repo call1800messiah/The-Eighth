@@ -4,7 +4,7 @@ import { debounceTime, map, tap } from 'rxjs/operators';
 
 import type { Timeline } from '../models/timeline';
 import type { HistoricEvent } from '../models/historic-event';
-import { UtilService } from '../../core/services/util.service';
+import { dateColumns, readDate } from '../../core/calendar/date-columns';
 import { DataService } from '../../core/services/data.service';
 import { RealtimeService } from '../../core/services/supabase-realtime.service';
 
@@ -43,6 +43,7 @@ export class TimelineService {
           query => query
             .select('*')
             .eq('timeline_id', timelineId)
+            .order('date_day', { ascending: false, nullsFirst: false })
             .order('created_at', { ascending: false })
             .limit(limit),
           `historic_events:${timelineId}:${limit}`,
@@ -75,7 +76,18 @@ export class TimelineService {
 
 
   store(event: Partial<HistoricEvent>, eventId?: string) {
-    return this.data.store(event, TimelineService.eventsCollection, eventId);
+    const dbEvent: any = { ...event };
+    // The legacy text is never written, only cleared by a real date.
+    delete dbEvent.dateLegacy;
+    if (dbEvent.date !== undefined) {
+      const date = dbEvent.date;
+      delete dbEvent.date;
+      Object.assign(dbEvent, dateColumns('date', date));
+      if (date) {
+        dbEvent.date_legacy = null;
+      }
+    }
+    return this.data.store(dbEvent, TimelineService.eventsCollection, eventId);
   }
 
 
@@ -86,11 +98,12 @@ export class TimelineService {
       collection: TimelineService.eventsCollection,
       content: row.content,
       created: row.created_at ? new Date(row.created_at) : null,
-      date: row.date,
+      date: readDate(row.date_day, row.date_precision),
+      dateLegacy: row.date_legacy ?? null,
       id: row.id,
       modified: row.modified_at ? new Date(row.modified_at) : null,
       owner: row.owner_id,
       type: row.type,
-    })).sort(UtilService.orderByCreated);
+    }));
   }
 }

@@ -19,8 +19,9 @@ export class EstimatedAgePipe implements PipeTransform, OnDestroy {
   constructor() {
     this.subscription.add(
       this.campaignService.getCampaignInfo().subscribe((data) => {
-        if (data?.date) {
-          const dateSplit = data.date.split(' ');
+        // Interim: the campaign date is an InGameDate now; Task 9 rewrites this pipe.
+        if (typeof data?.date === 'string') {
+          const dateSplit = (data.date as string).split(' ');
           this.date = parseInt(dateSplit[dateSplit.length - 1], 10);
         }
       })
