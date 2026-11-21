@@ -4,7 +4,7 @@ const PRECISIONS: string[] = ['day', 'month', 'year'];
 
 /** Builds a date from its two stored columns; null unless both are set and valid. */
 export function readDate(day: number | null | undefined, precision: string | null | undefined): InGameDate | null {
-  if (day === null || day === undefined || !precision || !PRECISIONS.includes(precision)) {
+  if (typeof day !== 'number' || !Number.isSafeInteger(day) || !precision || !PRECISIONS.includes(precision)) {
     return null;
   }
   return { day, precision: precision as Precision };

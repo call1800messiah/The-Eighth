@@ -51,6 +51,15 @@ describe('CalendarService', () => {
     expect(service.format(null)).toBe('');
   });
 
+  it('returns an empty string for an invalid day without throwing', async () => {
+    spyOn(console, 'error');
+    const service = setup();
+    await service.load();
+    expect(service.format({ day: 1.5, precision: 'day' })).toBe('');
+    expect(service.format({ day: NaN, precision: 'day' })).toBe('');
+    expect(console.error).toHaveBeenCalledTimes(1);
+  });
+
   it('does not throw and formats nothing when rules lack calendars', async () => {
     spyOn(console, 'error');
     const service = setup({});

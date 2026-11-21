@@ -11,6 +11,7 @@ const STORAGE_KEY = 'calendar-display';
 export class CalendarService {
   private rules = inject(RulesService);
   private defaultId = '';
+  private reportedBadDate = false;
 
   calendars: CalendarDefinition[] = [];
   readonly displayCalendar$ = new BehaviorSubject<string>(CalendarService.readStored());
@@ -56,7 +57,15 @@ export class CalendarService {
     if (!date || !calendar) {
       return '';
     }
-    return format(calendar, date, style);
+    try {
+      return format(calendar, date, style);
+    } catch (error) {
+      if (!this.reportedBadDate) {
+        this.reportedBadDate = true;
+        console.error('Could not format date', date, error);
+      }
+      return '';
+    }
   }
 
   private static readStored(): string {

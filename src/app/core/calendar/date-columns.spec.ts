@@ -10,6 +10,8 @@ describe('date-columns', () => {
     expect(readDate(5, null)).toBeNull();
     expect(readDate(undefined, 'day')).toBeNull();
     expect(readDate(5, 'bogus')).toBeNull();
+    expect(readDate(1.5, 'day')).toBeNull();
+    expect(readDate(NaN, 'day')).toBeNull();
   });
 
   it('builds columns', () => {
