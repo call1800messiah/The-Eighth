@@ -20,7 +20,7 @@ export function format(def: CalendarDefinition, date: InGameDate, style: FormatS
   const isShort = style === 'short';
   const era = def.era;
   const before = r.year < (era.hasYearZero ? 0 : 1);
-  const signed = before && era.beforeSuffix === undefined;
+  const signed = before && (isShort || era.beforeSuffix === undefined);
   let year = String(signed ? r.year : Math.abs(r.year));
   if (!isShort) {
     if (before && era.beforeSuffix !== undefined) year += ` ${era.beforeSuffix}`;

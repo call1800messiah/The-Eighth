@@ -1,4 +1,5 @@
 import { CalendarDefinition, DateParts, ResolvedDate } from './types.js';
+import { fromAstronomical, toAstronomical } from './era.js';
 
 interface Cycle {
   length: number; // years per leap cycle
@@ -53,14 +54,6 @@ export function validateCalendar(def: CalendarDefinition): string[] {
     }
   });
   return errors;
-}
-
-function toAstronomical(def: CalendarDefinition, year: number): number {
-  return def.era.hasYearZero ? year : year < 0 ? year + 1 : year;
-}
-
-function fromAstronomical(def: CalendarDefinition, astro: number): number {
-  return def.era.hasYearZero ? astro : astro <= 0 ? astro - 1 : astro;
 }
 
 function isLeapAstro(def: CalendarDefinition, astro: number): boolean {

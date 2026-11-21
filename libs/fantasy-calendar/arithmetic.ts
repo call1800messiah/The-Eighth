@@ -1,14 +1,6 @@
 import { CalendarDefinition } from './types.js';
+import { fromAstronomical as fromOrdinal, toAstronomical as toOrdinal } from './era.js';
 import { daysInMonth, fromDay, toDay } from './core.js';
-
-/** Year numbering without a gap: the calendar year with year zero closed up. */
-function toOrdinal(def: CalendarDefinition, year: number): number {
-  return def.era.hasYearZero ? year : year < 0 ? year + 1 : year;
-}
-
-function fromOrdinal(def: CalendarDefinition, ordinal: number): number {
-  return def.era.hasYearZero ? ordinal : ordinal <= 0 ? ordinal - 1 : ordinal;
-}
 
 export function yearOf(def: CalendarDefinition, n: number): number {
   return fromDay(def, n).year;

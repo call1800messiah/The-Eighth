@@ -23,6 +23,14 @@ describe('fantasy-calendar format', () => {
     expect(format(av, dateOf(av, { year: 1027, month: 8 }, 'month'), 'short')).toBe('Phe 1027');
   });
 
+  it('format short signs pre-epoch years and parses back', () => {
+    const d = dateOf(av, { year: -3, month: 11, day: 12 }, 'day');
+    expect(format(av, d, 'short')).toBe('12. Rah -3');
+    expect(format(av, dateOf(av, { year: -3500 }, 'year'), 'short')).toBe('-3500');
+    expect(format(av, dateOf(av, { year: 3500 }, 'year'), 'short')).toBe('3500');
+    expect(parse(av, format(av, d, 'short'))).toEqual(d);
+  });
+
   it('dateOf normalises coarser precision', () => {
     expect(dateOf(av, { year: 1027, month: 8, day: 17 }, 'month').day).toBe(
       toDay(av, { year: 1027, month: 8, day: 1 }),
