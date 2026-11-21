@@ -46,6 +46,11 @@ bash scripts/run-migrations.sh --schema
 # Data + storage + validation
 bash scripts/run-migrations.sh
 
+# After migration 018 (structured dates): convert the old date text.
+# Dry run first (lists rows that cannot convert), then apply
+npm run dates:convert
+npm run dates:convert -- --apply
+
 # Local: reset and reseed
 npm run db:reset
 
