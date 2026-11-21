@@ -15,6 +15,8 @@ import { BarComponent } from './components/bar/bar.component';
 import { EditAttributeComponent } from './components/edit-attribute/edit-attribute.component';
 import { InfoBoxComponent } from './components/info-box/info-box.component';
 import { EstimatedAgePipe } from './pipes/estimated-age.pipe';
+import { CalendarDatePipe } from './pipes/calendar-date.pipe';
+import { InGameDateComponent } from './components/in-game-date/in-game-date.component';
 import { PlainTextPipe } from './pipes/plain-text.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FocusOnInitDirective } from './directives/focus-on-init.directive';
@@ -52,6 +54,8 @@ import { DraftBannerComponent } from './components/draft-banner/draft-banner.com
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
+    CalendarDatePipe,
+    InGameDateComponent,
     ContainerComponent,
     DashboardComponent,
     DraftBannerComponent,
@@ -97,6 +101,8 @@ import { DraftBannerComponent } from './components/draft-banner/draft-banner.com
     BarComponent,
     BarAttributesComponent,
     BoxGridComponent,
+    CalendarDatePipe,
+    InGameDateComponent,
     ContainerComponent,
     ContextMenuComponent,
     DashboardComponent,

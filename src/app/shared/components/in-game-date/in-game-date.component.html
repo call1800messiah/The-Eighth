@@ -1,0 +1,5 @@
+@if (date) {
+  {{ date | calendarDate: calendar }}
+} @else if (legacy) {
+  <span class="legacy-date" title="Altes Datum, noch nicht umgewandelt">{{ legacy }}</span>
+}
